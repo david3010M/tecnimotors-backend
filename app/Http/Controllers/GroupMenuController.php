@@ -14,7 +14,7 @@ class GroupMenuController extends Controller
      */
     public function index()
     {
-        return ('Hola Mundo');
+        return ('Hola Mundo - hello world');
     }
 
     /**
