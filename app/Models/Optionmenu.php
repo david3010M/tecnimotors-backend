@@ -7,23 +7,33 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @OA\Schema (
- *     title="GroupMenu",
+ *     schema="OptionMenu",
+ *     title="OptionMenu",
  *     type="object",
- *     required={"id","name", "icon"},
+ *     required={"id","name", "icon","groupmenu_id"},
  *     @OA\Property(property="id", type="number", example="1"),
- *     @OA\Property(property="name", type="string", example="Admin"),
+ *     @OA\Property(property="name", type="string", example="Principal"),
+ *     @OA\Property(property="route", type="string", example="principal"),
  *     @OA\Property(property="icon", type="string", example="fas fa-user"),
+ * @OA\Property(property="groupmenu_id", type="string", example="1"),
  *     @OA\Property(property="created_at", type="string", example="2024-03-27 01:42:21"),
+ * @OA\Property(
+ *         property="group_menu",
+ *         ref="#/components/schemas/GroupMenu"
+ *     ),
  * )
  */
-class GroupMenu extends Model
+
+class Optionmenu extends Model
 {
     use SoftDeletes;
 
     protected $fillable = [
         'id',
         'name',
+        'route',
         'icon',
+        'groupmenu_id',
         'created_at',
 
     ];
