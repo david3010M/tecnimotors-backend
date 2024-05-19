@@ -359,6 +359,209 @@
                 ]
             }
         },
+        "/tecnimotors-backend/public/api/searchByDni/{dni}": {
+            "get": {
+                "tags": [
+                    "Search"
+                ],
+                "summary": "Search information by DNI",
+                "description": "Search information about a person by their DNI number.",
+                "operationId": "7bf10fa2b6c8cc37228acccdd95696cd",
+                "parameters": [
+                    {
+                        "name": "dni",
+                        "in": "path",
+                        "description": "DNI number of the person to search",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Information found successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "code": {
+                                                "type": "integer",
+                                                "example": 0
+                                            },
+                                            "dni": {
+                                                "type": "string",
+                                                "example": "string"
+                                            },
+                                            "apepat": {
+                                                "type": "string",
+                                                "example": "string"
+                                            },
+                                            "apemat": {
+                                                "type": "string",
+                                                "example": "string"
+                                            },
+                                            "apcas": {
+                                                "type": "string",
+                                                "example": ""
+                                            },
+                                            "nombres": {
+                                                "type": "string",
+                                                "example": "string"
+                                            },
+                                            "fecnac": {
+                                                "type": "string",
+                                                "format": "date"
+                                            },
+                                            "ubigeo": {
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/searchByRuc/{ruc}": {
+            "get": {
+                "tags": [
+                    "Search"
+                ],
+                "summary": "Search information by RUC",
+                "description": "Search information about a person by their RUC number.",
+                "operationId": "0cd43cd06e3d475a4b29c800d8c77831",
+                "parameters": [
+                    {
+                        "name": "ruc",
+                        "in": "path",
+                        "description": "RUC number of the person to search",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Information found successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "code": {
+                                                "type": "integer",
+                                                "example": 0
+                                            },
+                                            "RUC": {
+                                                "type": "string",
+                                                "example": "string"
+                                            },
+                                            "RazonSocial": {
+                                                "type": "string",
+                                                "example": "string"
+                                            },
+                                            "Direccion": {
+                                                "type": "string",
+                                                "example": "string"
+                                            },
+                                            "Tipo": {
+                                                "type": "string"
+                                            },
+                                            "Inscripcion": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/tecnimotors-backend/public/api/user/{id}": {
             "put": {
                 "tags": [
@@ -575,6 +778,58 @@
                                         "msg": {
                                             "type": "string",
                                             "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/transporte/public/api/logout": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Logout",
+                "description": "Log out user.",
+                "operationId": "35d860b321f8aba4b8b02c7be5ac796d",
+                "responses": {
+                    "200": {
+                        "description": "Successful logout"
+                    },
+                    "401": {
+                        "description": "Unauthenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "An error occurred while trying to log out. Please try again later."
                                         }
                                     },
                                     "type": "object"
