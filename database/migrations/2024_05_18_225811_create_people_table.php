@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('typeofDocument');
             $table->string('documentNumber')->unique();
-            $table->string('names');
+            $table->string('names')->nullable();
             $table->string('fatherSurname')->nullable();
             $table->string('motherSurname')->nullable();
             $table->string('businessName')->nullable();

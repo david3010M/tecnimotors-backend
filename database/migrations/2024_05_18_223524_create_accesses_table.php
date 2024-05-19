@@ -20,8 +20,8 @@ return new class extends Migration
 
             
             $table->timestamps();
-            $table->unique(['optionmenu_id', 'typeuser_id']);
-            $table->softDeletes();
+            // $table->unique(['optionmenu_id', 'typeuser_id']);
+           
         });
     }
 

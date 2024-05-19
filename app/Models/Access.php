@@ -26,9 +26,9 @@ class Access extends Model
  *     ),
  * )
  */
-    use SoftDeletes;
+   
 
-    protected $table = 'access';
+
 
     protected $fillable = [
         'optionmenu_id',
@@ -38,7 +38,7 @@ class Access extends Model
 
     protected $hidden = [
         'updated_at',
-        'deleted_at',
+       
     ];
 
     public function optionMenu()
