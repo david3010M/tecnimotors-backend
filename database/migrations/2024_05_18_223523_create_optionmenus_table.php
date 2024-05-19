@@ -13,10 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('group_menus', function (Blueprint $table) {
+        Schema::create('optionmenus', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 100)->nullable();
-            $table->string('icon', 100)->nullable();
+            $table->string('name')->unique();
+            $table->string('route')->unique();
+            $table->string('icon');
+            $table->foreignId('groupmenu_id')->nullable()->unsigned()->constrained('group_menus');
+            
             $table->timestamps();
             $table->softDeletes();
         });
@@ -29,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('group_menus');
+        Schema::dropIfExists('optionmenus');
     }
 };

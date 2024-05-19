@@ -1,0 +1,876 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API's TecniMotors",
+        "description": "API's for TecniMotors",
+        "version": "1.0"
+    },
+    "paths": {
+        "/tecnimotors-backend/public/api/groupmenu": {
+            "get": {
+                "tags": [
+                    "Group Menu"
+                ],
+                "summary": "Get all Group menus",
+                "operationId": "80f2a59eff04c7c6241dc6db9db763b9",
+                "responses": {
+                    "200": {
+                        "description": "List of active Group Menus",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/GroupMenu"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Group Menu"
+                ],
+                "summary": "Create a new Group menu",
+                "operationId": "e99a382c11e61ba740b961577be26fa2",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "icon",
+                                    "order"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Admin"
+                                    },
+                                    "icon": {
+                                        "type": "string",
+                                        "example": "fas fa-user"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "New Group Menu created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GroupMenu"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/groupmenu/{id}": {
+            "get": {
+                "tags": [
+                    "Group Menu"
+                ],
+                "summary": "Show the specified Group menu",
+                "operationId": "30cbd4eab110d79c33912a9cc0ade811",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Group Menu",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Group Menu found"
+                    },
+                    "404": {
+                        "description": "Group Menu not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Group Menu not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Group Menu"
+                ],
+                "summary": "Update the specified Group menu",
+                "operationId": "f9b83a5773e047a3a2ca5ec5de30008c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Group Menu",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "icon",
+                                    "order"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Admin"
+                                    },
+                                    "icon": {
+                                        "type": "string",
+                                        "example": "fas fa-user"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Group Menu updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GroupMenu"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Group Menu not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Group Menu not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Group Menu"
+                ],
+                "summary": "Remove the specified Group menu",
+                "operationId": "4e9245108d3eac0086aa457dd6d2696c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Group Menu",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Group Menu deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Group Menu deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Group Menu not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Group Menu not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Group Menu has option menus associated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Group Menu has option menus associated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/user/{id}": {
+            "put": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Update user by ID",
+                "operationId": "affc0ad26498e0690a049f9275e0b8dc",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of user",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "1"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "names",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "username": {
+                                        "description": "Usrname of the user",
+                                        "type": "string",
+                                        "example": "admin"
+                                    },
+                                    "password": {
+                                        "description": "Password of the user",
+                                        "type": "string",
+                                        "example": "12345678"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Typeuser or User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Login user",
+                "description": "Authenticate user and generate access token",
+                "operationId": "cf1667c332d56452678713ad04d37ccb",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "username": {
+                                        "type": "string",
+                                        "example": "username"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "123456"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "User not authenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Credentials are invalid",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid credentials."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/transporte/public/api/authenticate": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Get Profile user",
+                "description": "Get user",
+                "operationId": "c34fb8a41afa8d7e8880c3f9e05d7411",
+                "responses": {
+                    "200": {
+                        "description": "User authenticated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        },
+                                        "menu": {
+                                            "type": "array",
+                                            "items": {
+                                                "description": "Menú",
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Access": {
+                "title": "Access",
+                "properties": {
+                    "id": {
+                        "type": "number",
+                        "example": "1"
+                    },
+                    "typeuser_id": {
+                        "type": "number",
+                        "example": "1"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-01-01T00:00:00Z"
+                    },
+                    "optionmenu": {
+                        "$ref": "#/components/schemas/OptionMenu"
+                    },
+                    "typeuser": {
+                        "$ref": "#/components/schemas/TypeUser"
+                    }
+                },
+                "type": "object"
+            },
+            "GroupMenu": {
+                "title": "GroupMenu",
+                "required": [
+                    "id",
+                    "name",
+                    "icon"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "number",
+                        "example": "1"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Admin"
+                    },
+                    "icon": {
+                        "type": "string",
+                        "example": "fas fa-user"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "example": "2024-03-27 01:42:21"
+                    }
+                },
+                "type": "object"
+            },
+            "OptionMenu": {
+                "title": "OptionMenu",
+                "required": [
+                    "id",
+                    "name",
+                    "icon",
+                    "groupmenu_id"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "number",
+                        "example": "1"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Principal"
+                    },
+                    "route": {
+                        "type": "string",
+                        "example": "principal"
+                    },
+                    "icon": {
+                        "type": "string",
+                        "example": "fas fa-user"
+                    },
+                    "groupmenu_id": {
+                        "type": "string",
+                        "example": "1"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "example": "2024-03-27 01:42:21"
+                    },
+                    "group_menu": {
+                        "$ref": "#/components/schemas/GroupMenu"
+                    }
+                },
+                "type": "object"
+            },
+            "Person": {
+                "title": "Person",
+                "required": [
+                    "id",
+                    "typeofDocument",
+                    "documentNumber"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "number",
+                        "example": "1"
+                    },
+                    "typeofDocument": {
+                        "type": "string",
+                        "example": "DNI"
+                    },
+                    "documentNumber": {
+                        "type": "string",
+                        "example": "12345678"
+                    },
+                    "names": {
+                        "type": "string",
+                        "example": "John"
+                    },
+                    "fatherSurname": {
+                        "type": "string",
+                        "example": "Doe"
+                    },
+                    "motherSurname": {
+                        "type": "string",
+                        "example": "Smith"
+                    },
+                    "businessName": {
+                        "type": "string",
+                        "example": "Doe Enterprises"
+                    },
+                    "representativeDni": {
+                        "type": "string",
+                        "example": "87654321"
+                    },
+                    "representativeNames": {
+                        "type": "string",
+                        "example": "Jane Doe"
+                    },
+                    "address": {
+                        "type": "string",
+                        "example": "123 Main St"
+                    },
+                    "phone": {
+                        "type": "string",
+                        "example": "+1234567890"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "john.doe@example.com"
+                    },
+                    "origin": {
+                        "type": "string",
+                        "example": "City"
+                    },
+                    "ocupation": {
+                        "type": "string",
+                        "example": "Engineer"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-01-01T00:00:00Z"
+                    }
+                },
+                "type": "object"
+            },
+            "TypeUser": {
+                "title": "TypeUser",
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "number",
+                        "example": "1"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Administrador"
+                    }
+                },
+                "type": "object"
+            },
+            "User": {
+                "title": "User",
+                "required": [
+                    "id",
+                    "username",
+                    "password",
+                    "worker_id",
+                    "typeofUser_id"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "number",
+                        "example": "1"
+                    },
+                    "username": {
+                        "type": "string",
+                        "example": "johndoe"
+                    },
+                    "password": {
+                        "type": "string",
+                        "example": "password123"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-01-01T00:00:00Z"
+                    },
+                    "worker_id": {
+                        "description": "Foreign key referencing Worker",
+                        "type": "number",
+                        "example": "1"
+                    },
+                    "typeofUser_id": {
+                        "description": "Foreign key referencing TypeOfUser",
+                        "type": "number",
+                        "example": "1"
+                    },
+                    "worker": {
+                        "$ref": "#/components/schemas/Worker"
+                    },
+                    "TypeUser": {
+                        "$ref": "#/components/schemas/TypeUser"
+                    }
+                },
+                "type": "object"
+            },
+            "Worker": {
+                "title": "Worker",
+                "required": [
+                    "id",
+                    "occupation",
+                    "person_id"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "number",
+                        "example": "1"
+                    },
+                    "startDate": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2023-01-01"
+                    },
+                    "birthDate": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "1990-01-01"
+                    },
+                    "occupation": {
+                        "type": "string",
+                        "example": "Engineer"
+                    },
+                    "person_id": {
+                        "description": "Foreign key referencing Person",
+                        "type": "number",
+                        "example": "1"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-01-01T00:00:00Z"
+                    },
+                    "person": {
+                        "$ref": "#/components/schemas/Person"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "name": "Authorization",
+                "in": "header",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    }
+}

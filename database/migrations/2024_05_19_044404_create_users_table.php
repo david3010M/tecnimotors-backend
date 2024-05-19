@@ -13,10 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('group_menus', function (Blueprint $table) {
+        Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 100)->nullable();
-            $table->string('icon', 100)->nullable();
+            $table->string('username', 255)->unique();
+            $table->string('password', 255);
+ 
+            $table->foreignId('typeofUser_id')->nullable()->unsigned()->constrained('type_users');
+            $table->foreignId('worker_id')->nullable()->unsigned()->constrained('workers');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -29,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('group_menus');
+        Schema::dropIfExists('users');
     }
 };
