@@ -359,10 +359,412 @@
                 ]
             }
         },
+        "/tecnimotors-backend/public/api/searchByDni/{dni}": {
+            "get": {
+                "tags": [
+                    "Search"
+                ],
+                "summary": "Search information by DNI",
+                "description": "Search information about a person by their DNI number.",
+                "operationId": "7bf10fa2b6c8cc37228acccdd95696cd",
+                "parameters": [
+                    {
+                        "name": "dni",
+                        "in": "path",
+                        "description": "DNI number of the person to search",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Information found successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "code": {
+                                                "type": "integer",
+                                                "example": 0
+                                            },
+                                            "dni": {
+                                                "type": "string",
+                                                "example": "string"
+                                            },
+                                            "apepat": {
+                                                "type": "string",
+                                                "example": "string"
+                                            },
+                                            "apemat": {
+                                                "type": "string",
+                                                "example": "string"
+                                            },
+                                            "apcas": {
+                                                "type": "string",
+                                                "example": ""
+                                            },
+                                            "nombres": {
+                                                "type": "string",
+                                                "example": "string"
+                                            },
+                                            "fecnac": {
+                                                "type": "string",
+                                                "format": "date"
+                                            },
+                                            "ubigeo": {
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/searchByRuc/{ruc}": {
+            "get": {
+                "tags": [
+                    "Search"
+                ],
+                "summary": "Search information by RUC",
+                "description": "Search information about a person by their RUC number.",
+                "operationId": "0cd43cd06e3d475a4b29c800d8c77831",
+                "parameters": [
+                    {
+                        "name": "ruc",
+                        "in": "path",
+                        "description": "RUC number of the person to search",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Information found successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "code": {
+                                                "type": "integer",
+                                                "example": 0
+                                            },
+                                            "RUC": {
+                                                "type": "string",
+                                                "example": "string"
+                                            },
+                                            "RazonSocial": {
+                                                "type": "string",
+                                                "example": "string"
+                                            },
+                                            "Direccion": {
+                                                "type": "string",
+                                                "example": "string"
+                                            },
+                                            "Tipo": {
+                                                "type": "string"
+                                            },
+                                            "Inscripcion": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/user": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get all Group menus",
+                "operationId": "61fe647dbdfbe0383d70ae7511a1f1b2",
+                "responses": {
+                    "200": {
+                        "description": "List of active Users",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/User"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Store a new user",
+                "operationId": "c2a546de531d2506070dfe15de97583f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "username",
+                                    "password",
+                                    "typeofUser_id",
+                                    "worker_id"
+                                ],
+                                "properties": {
+                                    "username": {
+                                        "description": "Username of the user",
+                                        "type": "string",
+                                        "example": "username"
+                                    },
+                                    "password": {
+                                        "description": "Password of the user",
+                                        "type": "string",
+                                        "example": "12345678"
+                                    },
+                                    "typeofUser_id": {
+                                        "description": "Type of user",
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "worker_id": {
+                                        "description": "Worker of user",
+                                        "type": "integer",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Typeuser not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Typeuser not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/tecnimotors-backend/public/api/user/{id}": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Show the specified Group menu",
+                "operationId": "ecb19a9af137e070d51eb00228facb5e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the User",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User found"
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
             "put": {
                 "tags": [
-                    "Users"
+                    "User"
                 ],
                 "summary": "Update user by ID",
                 "operationId": "affc0ad26498e0690a049f9275e0b8dc",
@@ -384,19 +786,31 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "names",
-                                    "password"
+                                    "username",
+                                    "password",
+                                    "typeofUser_id",
+                                    "worker_id"
                                 ],
                                 "properties": {
                                     "username": {
-                                        "description": "Usrname of the user",
+                                        "description": "Username of the user",
                                         "type": "string",
-                                        "example": "admin"
+                                        "example": "username"
                                     },
                                     "password": {
                                         "description": "Password of the user",
                                         "type": "string",
                                         "example": "12345678"
+                                    },
+                                    "typeofUser_id": {
+                                        "description": "Type of user",
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "worker_id": {
+                                        "description": "Worker of user",
+                                        "type": "integer",
+                                        "example": "1"
                                     }
                                 },
                                 "type": "object"
@@ -440,6 +854,95 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Remove the specified Group menu",
+                "operationId": "3e373909977f7056a7590e84794b6134",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the User",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "User has option menus associated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User has option menus associated"
                                         }
                                     },
                                     "type": "object"
@@ -575,6 +1078,58 @@
                                         "msg": {
                                             "type": "string",
                                             "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/transporte/public/api/logout": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Logout",
+                "description": "Log out user.",
+                "operationId": "35d860b321f8aba4b8b02c7be5ac796d",
+                "responses": {
+                    "200": {
+                        "description": "Successful logout"
+                    },
+                    "401": {
+                        "description": "Unauthenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "An error occurred while trying to log out. Please try again later."
                                         }
                                     },
                                     "type": "object"

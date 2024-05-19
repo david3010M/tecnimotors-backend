@@ -70,6 +70,17 @@ class User  extends Authenticatable
     }
     public function typeUser()
     {
-        return $this->belongsTo(Worker::class, 'typeUser_id');
+        return $this->belongsTo(TypeUser::class, 'typeofUser_id');
+    }
+
+    public function allAccessIds()
+    {
+        $typeUser = $this->typeUser;
+
+        if (!$typeUser) {
+            return [];
+        }
+
+        return $typeUser->access()->pluck('id')->toArray();
     }
 }

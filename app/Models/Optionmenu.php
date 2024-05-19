@@ -35,7 +35,6 @@ class Optionmenu extends Model
         'icon',
         'groupmenu_id',
         'created_at',
-
     ];
     protected $hidden = [
         'updated_at',

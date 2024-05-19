@@ -31,4 +31,9 @@ class GroupMenu extends Model
         'updated_at',
         'deleted_at',
     ];
+
+    public function optionMenus()
+    {
+        return $this->hasMany(Optionmenu::class, 'groupmenu_id');
+    }
 }

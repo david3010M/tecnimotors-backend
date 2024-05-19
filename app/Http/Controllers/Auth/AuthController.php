@@ -88,11 +88,15 @@ class AuthController extends Controller
             Auth::loginUsingId($user->id);
 
             $token = $user->createToken('auth_token', ['expires' => now()->addHours(2)])->plainTextToken;
+            $user = User::with(['typeUser', 'worker'])->find($user->id);
+
+            $tipeUser = $user->typeUser;
 
             // -------------------------------------------------
             return response()->json([
                 'access_token' => $token,
-                'user' => User::with(['typeUser', 'worker', 'typeUser.access'])->find($user->id),
+                'user' => $user,
+                'optionMenuAccess' => $user->typeUser->getAccess($user->id),
                 'permissions' => Optionmenu::pluck('id'),
 
             ]);
@@ -158,7 +162,8 @@ class AuthController extends Controller
 
             return response()->json([
                 'access_token' => $token,
-                'user' => User::with(['typeUser', 'worker', 'typeUser.access'])->find($user->id),
+                'user' => $user,
+                'optionMenuAccess' => $user->typeUser->getAccess($user->id),
                 'permissions' => Optionmenu::pluck('id'),
 
             ]);
