@@ -37,5 +37,14 @@ class DatabaseSeeder extends Seeder
                 Person::create($object);
             }
         }
+
+        $this->call(GroupMenuSeeder::class);
+        $this->call(TypeUserSeeder::class);
+
+        $this->call(OptionMenuSeeder::class);
+        $this->call(WorkerSeeder::class);
+        $this->call(AccessSeeder::class);
+        $this->call(UserSeeder::class);
+
     }
 }
