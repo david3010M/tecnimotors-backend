@@ -105,7 +105,7 @@ class GroupMenuController extends Controller
 
         $object = GroupMenu::create($data);
         $object = GroupMenu::find($object->id);
-        return $object;
+        return response()->json($object, 200);
     }
 
     /**
@@ -156,9 +156,9 @@ class GroupMenuController extends Controller
     public function show(int $id)
     {
 
-        $groupMenu = GroupMenu::find($id);
-        if ($groupMenu) {
-            return $groupMenu;
+        $object = GroupMenu::find($id);
+        if ($object) {
+            return response()->json($object, 200);
         }
         return response()->json(
             ['message' => 'Group Menu not found'], 404
@@ -245,12 +245,15 @@ class GroupMenuController extends Controller
             ],
             'icon' => 'required|string',
         ]);
+
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
-        $groupMenu->update($request->all());
-        return $groupMenu;
+        $object = $groupMenu->update($request->all());
+        $object = GroupMenu::find($object->id);
+        return response()->json($object, 200);
+
     }
 
     /**
@@ -329,8 +332,6 @@ class GroupMenuController extends Controller
             );
         }
         $groupMenu->delete();
-        return response()->json(
-            ['message' => 'Option Menu deleted successfully']
-        );
+
     }
 }

@@ -25,6 +25,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('login', [AuthController::class, 'login']);
 
 Route::group(["middleware" => ["auth:sanctum"]], function () {
+
     Route::get('logout', [AuthController::class, 'logout']);
     Route::get('authenticate', [AuthController::class, 'authenticate']);
 
@@ -36,7 +37,7 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::resource('user', UserController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'user.index', 'store' => 'user.store', 'show' => 'user.show', 'update' => 'user.update', 'destroy' => 'user.destroy']);
 
-        //USER
+    //USER
     Route::resource('groupmenu', GroupMenuController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
     ->names(['index' => 'groupmenu.index', 'store' => 'groupmenu.store', 'show' => 'groupmenu.show', 'update' => 'groupmenu.update', 'destroy' => 'groupmenu.destroy']);
 
