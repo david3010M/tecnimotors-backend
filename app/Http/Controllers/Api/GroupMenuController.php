@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\GroupMenu;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class GroupMenuController extends Controller
 {
@@ -85,11 +86,26 @@ class GroupMenuController extends Controller
  */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|unique:groupmenu',
+        $validator = validator()->make($request->all(), [
+            'name' => [
+                'required',
+                Rule::unique('group_menus')->whereNull('deleted_at'),
+            ],
             'icon' => 'required|string',
         ]);
-        return GroupMenu::create($request->all());
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $data = [
+            'name' => $request->input('name'),
+            'icon' => $request->input('icon'),
+        ];
+
+        $object = GroupMenu::create($data);
+        $object = GroupMenu::find($object->id);
+        return $object;
     }
 
     /**
@@ -141,12 +157,13 @@ class GroupMenuController extends Controller
     {
 
         $groupMenu = GroupMenu::find($id);
-        if (!$groupMenu) {
-            return response()->json(
-                ['message' => 'Group Menu not found'], 404
-            );
+        if ($groupMenu) {
+            return $groupMenu;
         }
-        return $groupMenu;
+        return response()->json(
+            ['message' => 'Group Menu not found'], 404
+        );
+
     }
 
     /**
@@ -221,10 +238,17 @@ class GroupMenuController extends Controller
                 ['message' => 'Group Menu not found'], 404
             );
         }
-        $request->validate([
-            'name' => 'required|string|unique:groupmenu,name,' . $id . ',id',
+        $validator = validator()->make($request->all(), [
+            'name' => [
+                'required',
+                Rule::unique('group_menus')->ignore($id)->whereNull('deleted_at'),
+            ],
             'icon' => 'required|string',
         ]);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
         $groupMenu->update($request->all());
         return $groupMenu;
     }

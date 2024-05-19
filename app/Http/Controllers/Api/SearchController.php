@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Validator;
 
 class SearchController extends Controller
 {
@@ -57,6 +58,13 @@ class SearchController extends Controller
 
     public function searchByDni($dni)
     {
+
+        $validator = Validator::make(['dni' => $dni], [
+            'dni' => 'required|numeric|digits:8',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
 
         $respuesta = array();
         $client = new Client();
@@ -131,6 +139,14 @@ class SearchController extends Controller
 
     public function searchByRuc($ruc)
     {
+
+        $validator = Validator::make(['ruc' => $ruc], [
+            'ruc' => 'required|numeric|digits:11',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
         $respuesta = array();
 
         $client = new Client([
