@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Person;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class PersonController extends Controller
 {
@@ -93,7 +94,10 @@ class PersonController extends Controller
 
         $validator = validator()->make($request->all(), [
             'typeofDocument' => 'required',
-            'documentNumber' => 'required',
+            'documentNumber' => [
+                'required',
+                Rule::unique('people')->whereNull('deleted_at'),
+            ],
         ]);
 
         if ($validator->fails()) {
@@ -103,18 +107,28 @@ class PersonController extends Controller
         $data = [
             'typeofDocument' => $request->input('typeofDocument'),
             'documentNumber' => $request->input('documentNumber'),
-            'names' => $request->input('names') ?? null,
-            'fatherSurname' => $request->input('fatherSurname') ?? null,
-            'motherSurname' => $request->input('motherSurname') ?? null,
-            'businessName' => $request->input('businessName') ?? null,
-            'representativeDni' => $request->input('representativeDni') ?? null,
-            'representativeNames' => $request->input('representativeNames') ?? null,
             'address' => $request->input('address') ?? null,
             'phone' => $request->input('phone') ?? null,
             'email' => $request->input('email') ?? null,
             'origin' => $request->input('origin') ?? null,
             'ocupation' => $request->input('ocupation') ?? null,
+            'names' => null,
+            'fatherSurname' => null,
+            'motherSurname' => null,
+            'businessName' => null,
+            'representativeDni' => null,
+            'representativeNames' => null,
         ];
+
+        if ($request->input('typeofDocument') == 'DNI') {
+            $data['names'] = $request->input('names') ?? null;
+            $data['fatherSurname'] = $request->input('fatherSurname') ?? null;
+            $data['motherSurname'] = $request->input('motherSurname') ?? null;
+        } elseif ($request->input('typeofDocument') == 'RUC') {
+            $data['businessName'] = $request->input('businessName') ?? null;
+            $data['representativeDni'] = $request->input('representativeDni') ?? null;
+            $data['representativeNames'] = $request->input('representativeNames') ?? null;
+        }
 
         $object = Person::create($data);
         $object = Person::find($object->id);
@@ -250,7 +264,10 @@ class PersonController extends Controller
         }
         $validator = validator()->make($request->all(), [
             'typeofDocument' => 'required',
-            'documentNumber' => 'required',
+            'documentNumber' => [
+                'required',
+                Rule::unique('people')->ignore($id)->whereNull('deleted_at'),
+            ],
         ]);
 
         if ($validator->fails()) {
@@ -260,18 +277,28 @@ class PersonController extends Controller
         $data = [
             'typeofDocument' => $request->input('typeofDocument'),
             'documentNumber' => $request->input('documentNumber'),
-            'names' => $request->input('names') ?? null,
-            'fatherSurname' => $request->input('fatherSurname') ?? null,
-            'motherSurname' => $request->input('motherSurname') ?? null,
-            'businessName' => $request->input('businessName') ?? null,
-            'representativeDni' => $request->input('representativeDni') ?? null,
-            'representativeNames' => $request->input('representativeNames') ?? null,
             'address' => $request->input('address') ?? null,
             'phone' => $request->input('phone') ?? null,
             'email' => $request->input('email') ?? null,
             'origin' => $request->input('origin') ?? null,
             'ocupation' => $request->input('ocupation') ?? null,
         ];
+
+        if ($request->input('typeofDocument') == 'DNI') {
+            $data['names'] = $request->input('names') ?? null;
+            $data['fatherSurname'] = $request->input('fatherSurname') ?? null;
+            $data['motherSurname'] = $request->input('motherSurname') ?? null;
+            $data['businessName'] = null;
+            $data['representativeDni'] = null;
+            $data['representativeNames'] = null;
+        } elseif ($request->input('typeofDocument') == 'RUC') {
+            $data['names'] = null;
+            $data['fatherSurname'] = null;
+            $data['motherSurname'] = null;
+            $data['businessName'] = $request->input('businessName') ?? null;
+            $data['representativeDni'] = $request->input('representativeDni') ?? null;
+            $data['representativeNames'] = $request->input('representativeNames') ?? null;
+        }
 
         $object->update($data);
         $object = Person::find($object->id);
@@ -338,6 +365,7 @@ class PersonController extends Controller
                 ['message' => 'Person not found'], 404
             );
         }
+        //REVISAR ASOCIACIONES
         $object->delete();
     }
 

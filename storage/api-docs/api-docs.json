@@ -63,8 +63,7 @@
                             "schema": {
                                 "required": [
                                     "name",
-                                    "icon",
-                                    "order"
+                                    "icon"
                                 ],
                                 "properties": {
                                     "name": {
@@ -201,8 +200,7 @@
                             "schema": {
                                 "required": [
                                     "name",
-                                    "icon",
-                                    "order"
+                                    "icon"
                                 ],
                                 "properties": {
                                     "name": {
@@ -1417,6 +1415,65 @@
                         "bearerAuth": []
                     }
                 ]
+            },
+            "post": {
+                "tags": [
+                    "TypeUser"
+                ],
+                "summary": "Create a new Type User",
+                "operationId": "d9a1575aacfc135f28f7517b5c3ee80b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Admin"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "New Type User created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TypeUser"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/tecnimotors-backend/public/api/typeUser/{id}": {
@@ -1440,6 +1497,96 @@
                 "responses": {
                     "200": {
                         "description": "TypeUser found"
+                    },
+                    "404": {
+                        "description": "TypeUser not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "TypeUser not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "TypeUser"
+                ],
+                "summary": "Update the specified Type User",
+                "operationId": "a3d3869783bdbcb9cac8429bcdb93e03",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the TypeUser",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Admin"
+                                    },
+                                    "icon": {
+                                        "type": "string",
+                                        "example": "fas fa-user"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "TypeUser updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TypeUser"
+                                }
+                            }
+                        }
                     },
                     "404": {
                         "description": "TypeUser not found",
@@ -1539,6 +1686,95 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/typeUser/setAccess": {
+            "post": {
+                "tags": [
+                    "TypeUser"
+                ],
+                "summary": "Set Access for a Type User",
+                "operationId": "3f0a7ac6b527d27724a98b1bef44db14",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "typeUser_id",
+                                    "accesses"
+                                ],
+                                "properties": {
+                                    "typeUser_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "accesses": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            1,
+                                            2,
+                                            3
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Accesses set for Type User",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TypeUser"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "TypeUser not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "TypeUser not found"
                                         }
                                     },
                                     "type": "object"
@@ -1993,6 +2229,97 @@
                         "bearerAuth": []
                     }
                 ]
+            },
+            "post": {
+                "tags": [
+                    "Worker"
+                ],
+                "summary": "Store a new worker",
+                "operationId": "251a5c7956dd86cb4a740744c0c784c4",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "person_id"
+                                ],
+                                "properties": {
+                                    "startDate": {
+                                        "description": "StartDate of the worker",
+                                        "type": "string",
+                                        "example": null
+                                    },
+                                    "birthDate": {
+                                        "description": "BirthDate of the worker",
+                                        "type": "string",
+                                        "example": null
+                                    },
+                                    "occupation": {
+                                        "description": "Occupationi of the worker",
+                                        "type": "string",
+                                        "example": "-"
+                                    },
+                                    "person_id": {
+                                        "description": "Worker ID",
+                                        "type": "integer",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Worker"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/tecnimotors-backend/public/api/worker/{id}": {
@@ -2042,6 +2369,109 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Worker"
+                ],
+                "summary": "Update worker by ID",
+                "operationId": "9e955179c8eab2dcec72c57259dff609",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of worker",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "1"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "person_id"
+                                ],
+                                "properties": {
+                                    "startDate": {
+                                        "description": "StartDate of the worker",
+                                        "type": "string",
+                                        "example": null
+                                    },
+                                    "birthDate": {
+                                        "description": "BirthDate of the worker",
+                                        "type": "string",
+                                        "example": null
+                                    },
+                                    "occupation": {
+                                        "description": "Occupationi of the worker",
+                                        "type": "string",
+                                        "example": "-"
+                                    },
+                                    "person_id": {
+                                        "description": "Worker ID",
+                                        "type": "integer",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Worker"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User  not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
                                         }
                                     },
                                     "type": "object"

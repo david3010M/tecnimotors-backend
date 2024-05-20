@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Person;
 use App\Models\Worker;
+use Illuminate\Http\Request;
 
 class WorkerController extends Controller
 {
@@ -99,6 +101,148 @@ class WorkerController extends Controller
     }
 
     /**
+     * @OA\Post(
+     *      path="/tecnimotors-backend/public/api/worker",
+     *      summary="Store a new worker",
+     *      tags={"Worker"},
+     *      security={{"bearerAuth": {}}},
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *              required={"person_id"},
+     *              @OA\Property(property="startDate", type="string", example=null, description="StartDate of the worker"),
+     *              @OA\Property(property="birthDate", type="string", example=null, description="BirthDate of the worker"),
+     *               @OA\Property(property="occupation", type="string", example="-", description="Occupationi of the worker"),
+     *              @OA\Property(property="person_id", type="integer", example="1", description="Worker ID")
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=201,
+     *          description="User created",
+     *          @OA\JsonContent(ref="#/components/schemas/Worker")
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="User not found",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="User not found")
+     *          )
+     *      )
+     * )
+     */
+
+    public function store(Request $request)
+    {
+
+        $validator = validator()->make($request->all(), [
+            'person_id' => 'required|exists:people,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $data = [
+            'startDate' => $request->input('startDate'),
+            'birthDate' => $request->input('birthDate'),
+            'occupation' => $request->input('occupation'),
+            'person_id' => $request->input('person_id'),
+
+        ];
+
+        $object = Worker::create($data);
+        $object = Worker::with(['person'])->find($object->id);
+        return response()->json($object, 200);
+
+    }
+
+    /**
+     * @OA\Put(
+     *     path="/tecnimotors-backend/public/api/worker/{id}",
+     *     summary="Update worker by ID",
+     *     tags={"Worker"},
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Parameter(
+     *          name="id",
+     *          in="path",
+     *          description="ID of worker",
+     *          required=true,
+     *          example="1",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *     ),
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *              required={"person_id"},
+     *              @OA\Property(property="startDate", type="string", example=null, description="StartDate of the worker"),
+     *              @OA\Property(property="birthDate", type="string", example=null, description="BirthDate of the worker"),
+     *               @OA\Property(property="occupation", type="string", example="-", description="Occupationi of the worker"),
+     *              @OA\Property(property="person_id", type="integer", example="1", description="Worker ID")
+     *          )
+     *      ),
+     *     @OA\Response(
+     *          response=200,
+     *          description="User updated",
+     *          @OA\JsonContent(ref="#/components/schemas/Worker")
+     *     ),
+     *     @OA\Response(
+     *          response=404,
+     *          description="User  not found",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="User not found")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *          )
+     *     ),
+
+     * )
+     *
+     */
+    public function update(Request $request, string $id)
+    {
+
+        $object = Worker::find($id);
+
+        if (!$object) {
+            return response()->json(
+                ['message' => 'User not found'], 404
+            );
+        }
+        $validator = validator()->make($request->all(), [
+            'person_id' => 'required|exists:people,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $data = [
+            'startDate' => $request->input('startDate'),
+            'birthDate' => $request->input('birthDate'),
+            'occupation' => $request->input('occupation'),
+            'person_id' => $request->input('person_id'),
+        ];
+
+        $object->update($data);
+        $object = Worker::with(['person'])->find($object->id);
+        return response()->json($object, 200);
+    }
+
+    /**
      * Remove the specified Worker
      * @OA\Delete (
      *     path="/tecnimotors-backend/public/api/worker/{id}",
@@ -158,6 +302,8 @@ class WorkerController extends Controller
                 ['message' => 'Worker not found'], 404
             );
         }
+
+        //REVISAR ASOCIACIONES
         $object->delete();
     }
 }
