@@ -40,4 +40,9 @@ class Optionmenu extends Model
         'updated_at',
         'deleted_at',
     ];
+
+    public function groupmenu()
+    {
+        return $this->belongsTo(Person::class, 'groupmenu_id');
+    }
 }

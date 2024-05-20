@@ -73,9 +73,9 @@ class UserController extends Controller
      *      ),
      *      @OA\Response(
      *          response=404,
-     *          description="Typeuser not found",
+     *          description="User not found",
      *          @OA\JsonContent(
-     *              @OA\Property(property="message", type="string", example="Typeuser not found")
+     *              @OA\Property(property="message", type="string", example="User not found")
      *          )
      *      )
      * )
@@ -144,7 +144,7 @@ class UserController extends Controller
      *     ),
      *     @OA\Response(
      *          response=404,
-     *          description="Typeuser or User not found",
+     *          description="User  not found",
      *          @OA\JsonContent(
      *              @OA\Property(property="message", type="string", example="User not found")
      *          )
@@ -163,9 +163,9 @@ class UserController extends Controller
     public function update(Request $request, string $id)
     {
 
-        $user = User::find($id);
+        $object = User::find($id);
 
-        if (!$user) {
+        if (!$object) {
             return response()->json(
                 ['message' => 'User not found'], 404
             );
@@ -190,7 +190,7 @@ class UserController extends Controller
             'worker_id' => $request->worker_id,
         ];
 
-        $object = User::create($data);
+        $object->update($data);
         $object = User::find($object->id);
         return response()->json($object, 200);
     }

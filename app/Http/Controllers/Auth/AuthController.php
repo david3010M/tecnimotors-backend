@@ -167,6 +167,7 @@ class AuthController extends Controller
                 'permissions' => Optionmenu::pluck('id'),
 
             ]);
+            
         } catch (\Exception $e) {
             return response()->json([
                 "message" => "Error interno del servidor: " . $e,
