@@ -121,19 +121,19 @@ class AuthController extends Controller
      *         description="User authenticated successfully",
      *         @OA\JsonContent(
      *             @OA\Property(
-     *             property="user",
-     *             type="object",
-     *             description="User",
-     *             ref="#/components/schemas/User"
-     *              ),
-     *          @OA\Property(
-     *          property="menu",
-     *          type="array",
-     *              @OA\Items(
-     *              type="object",
-     *               description="Menú"
-     *              )
-     *),
+     *                 property="user",
+     *                 type="object",
+     *                 description="User",
+     *                 ref="#/components/schemas/User"
+     *             ),
+     *             @OA\Property(
+     *                 property="menu",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     description="Menú"
+     *                 )
+     *             )
      *         )
      *     ),
      *     @OA\Response(
@@ -143,7 +143,7 @@ class AuthController extends Controller
      *             @OA\Property(property="error", type="string", example="The given data was invalid.")
      *         )
      *     ),
-     *        @OA\Response(
+     *     @OA\Response(
      *         response=401,
      *         description="Unauthenticated.",
      *         @OA\JsonContent(
@@ -167,7 +167,7 @@ class AuthController extends Controller
                 'permissions' => Optionmenu::pluck('id'),
 
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 "message" => "Error interno del servidor: " . $e,

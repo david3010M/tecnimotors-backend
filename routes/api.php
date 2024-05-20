@@ -59,6 +59,9 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
 
     //TYPEUSER
     Route::resource('typeUser', TypeUserController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
-        ->names(['index' => 'typeUser.index', 'store' => 'typeUser.store', 'show' => 'typeUser.show', 'update' => 'typeUser.update', 'destroy' => 'typeUser.destroy']);
+        ->names(['index' => 'typeUser.index', 'store' => 'typeUser.store', 'show' => 'typeUser.show',
+            'update' => 'typeUser.update', 'destroy' => 'typeUser.destroy']);
+
+    Route::post('typeUser/setAccess', [TypeUserController::class, 'setAccess'])->name('typeUser.setAccess');
 
 });

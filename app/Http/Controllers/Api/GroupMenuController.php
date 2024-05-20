@@ -51,7 +51,7 @@ class GroupMenuController extends Controller
  *     @OA\RequestBody(
  *          required=true,
  *          @OA\JsonContent(
- *              required={"name", "icon", "order"},
+ *              required={"name", "icon"},
  *              @OA\Property(
  *                  property="name",
  *                  type="string",
@@ -184,7 +184,7 @@ class GroupMenuController extends Controller
      *     @OA\RequestBody(
      *          required=true,
      *          @OA\JsonContent(
-     *              required={"name", "icon", "order"},
+     *              required={"name", "icon"},
      *              @OA\Property(
      *                  property="name",
      *                  type="string",

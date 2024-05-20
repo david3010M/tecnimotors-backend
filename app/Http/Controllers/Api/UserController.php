@@ -39,7 +39,7 @@ class UserController extends Controller
 
     public function index()
     {
-        return response()->json(User::simplePaginate(15));
+        return response()->json(User::with(['worker','worker.person','typeUser'])->simplePaginate(15));
     }
 
     /**
