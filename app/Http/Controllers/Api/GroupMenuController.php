@@ -232,8 +232,8 @@ class GroupMenuController extends Controller
     public function update(Request $request, int $id)
     {
 
-        $groupMenu = GroupMenu::find($id);
-        if (!$groupMenu) {
+        $object = GroupMenu::find($id);
+        if (!$object) {
             return response()->json(
                 ['message' => 'Group Menu not found'], 404
             );
@@ -250,7 +250,12 @@ class GroupMenuController extends Controller
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
-        $object = $groupMenu->update($request->all());
+        $data = [
+            'name' => $request->input('name'),
+            'icon' => $request->input('icon'),
+        ];
+
+        $object->update($data);
         $object = GroupMenu::find($object->id);
         return response()->json($object, 200);
 

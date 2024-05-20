@@ -73,14 +73,4 @@ class User  extends Authenticatable
         return $this->belongsTo(TypeUser::class, 'typeofUser_id');
     }
 
-    public function allAccessIds()
-    {
-        $typeUser = $this->typeUser;
-
-        if (!$typeUser) {
-            return [];
-        }
-
-        return $typeUser->access()->pluck('id')->toArray();
-    }
 }

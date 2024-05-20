@@ -359,6 +359,818 @@
                 ]
             }
         },
+        "/tecnimotors-backend/public/api/optionMenu": {
+            "get": {
+                "tags": [
+                    "Option Menu"
+                ],
+                "summary": "Get all Option Menus",
+                "operationId": "c5ce1c9f88d0f28764a96dda0e626ab6",
+                "responses": {
+                    "200": {
+                        "description": "List of active Option Menus",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/OptionMenu"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Option Menu"
+                ],
+                "summary": "Create a new Option Menu",
+                "operationId": "6df753a074d78864f36b980f14518707",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "route",
+                                    "icon"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Admin"
+                                    },
+                                    "route": {
+                                        "type": "string",
+                                        "example": "admin"
+                                    },
+                                    "icon": {
+                                        "type": "string",
+                                        "example": "fas fa-user"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "New Option Menu created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OptionMenu"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/optionMenu/{id}": {
+            "get": {
+                "tags": [
+                    "Option Menu"
+                ],
+                "summary": "Show the specified Option Menu",
+                "operationId": "9fa533935d6feabd15e1f9b8358c4686",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Option Menu",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Option Menu found"
+                    },
+                    "404": {
+                        "description": "Option Menu not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Option Menu not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Option Menu"
+                ],
+                "summary": "Update the specified Group menu",
+                "operationId": "4aca3551d4a54352c067fb1624ece5b5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Option Menu",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "icon",
+                                    "route",
+                                    "order"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Admin"
+                                    },
+                                    "route": {
+                                        "type": "string",
+                                        "example": "admin"
+                                    },
+                                    "icon": {
+                                        "type": "string",
+                                        "example": "fas fa-user"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Option Menu updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OptionMenu"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Option Menu not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Option Menu not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Option Menu"
+                ],
+                "summary": "Remove the specified Option Menu",
+                "operationId": "ae3ea122fd6c817f5790deff5733f931",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Option Menu",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Option Menu deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Option Menu deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Option Menu not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Option Menu not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/person": {
+            "get": {
+                "tags": [
+                    "Person"
+                ],
+                "summary": "Get all Persons",
+                "operationId": "fe70677103312908179fbcdb6bbe6065",
+                "responses": {
+                    "200": {
+                        "description": "List of active Persons",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Person"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Person"
+                ],
+                "summary": "Store a new person",
+                "operationId": "776a3a79382650f7d0e3dd7ba1d048ab",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "typeofDocument",
+                                    "documentNumber"
+                                ],
+                                "properties": {
+                                    "typeofDocument": {
+                                        "description": "Type of Document",
+                                        "type": "string",
+                                        "example": "DNI"
+                                    },
+                                    "documentNumber": {
+                                        "description": "Document Number",
+                                        "type": "string",
+                                        "example": "12345678"
+                                    },
+                                    "names": {
+                                        "description": "Names",
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "fatherSurname": {
+                                        "description": "Father's Surname",
+                                        "type": "string",
+                                        "example": "Doe"
+                                    },
+                                    "motherSurname": {
+                                        "description": "Mother's Surname",
+                                        "type": "string",
+                                        "example": "Smith"
+                                    },
+                                    "businessName": {
+                                        "description": "Business Name",
+                                        "type": "string",
+                                        "example": "Doe Enterprises"
+                                    },
+                                    "representativeDni": {
+                                        "description": "Representative's DNI",
+                                        "type": "string",
+                                        "example": "87654321"
+                                    },
+                                    "representativeNames": {
+                                        "description": "Representative's Names",
+                                        "type": "string",
+                                        "example": "Jane Doe"
+                                    },
+                                    "address": {
+                                        "description": "Address",
+                                        "type": "string",
+                                        "example": "123 Main St"
+                                    },
+                                    "phone": {
+                                        "description": "Phone Number",
+                                        "type": "string",
+                                        "example": "+123456789"
+                                    },
+                                    "email": {
+                                        "description": "Email",
+                                        "type": "string",
+                                        "example": "example@example.com"
+                                    },
+                                    "origin": {
+                                        "description": "Origin",
+                                        "type": "string",
+                                        "example": "USA"
+                                    },
+                                    "ocupation": {
+                                        "description": "Occupation",
+                                        "type": "string",
+                                        "example": "Engineer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Person created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Person"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Person not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Person not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/person/{id}": {
+            "get": {
+                "tags": [
+                    "Person"
+                ],
+                "summary": "Show the specified Person",
+                "operationId": "c08abf3369f0fd0d3c7161c0abb6afec",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Person",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Person found"
+                    },
+                    "404": {
+                        "description": "Person not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Person not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Person"
+                ],
+                "summary": "Update person by ID",
+                "operationId": "f010886656452655f830e4a69e13b4bc",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of person",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "1"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "typeofDocument",
+                                    "documentNumber"
+                                ],
+                                "properties": {
+                                    "typeofDocument": {
+                                        "description": "Type of Document",
+                                        "type": "string",
+                                        "example": "DNI"
+                                    },
+                                    "documentNumber": {
+                                        "description": "Document Number",
+                                        "type": "string",
+                                        "example": "12345678"
+                                    },
+                                    "names": {
+                                        "description": "Names",
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "fatherSurname": {
+                                        "description": "Father's Surname",
+                                        "type": "string",
+                                        "example": "Doe"
+                                    },
+                                    "motherSurname": {
+                                        "description": "Mother's Surname",
+                                        "type": "string",
+                                        "example": "Smith"
+                                    },
+                                    "businessName": {
+                                        "description": "Business Name",
+                                        "type": "string",
+                                        "example": "Doe Enterprises"
+                                    },
+                                    "representativeDni": {
+                                        "description": "Representative's DNI",
+                                        "type": "string",
+                                        "example": "87654321"
+                                    },
+                                    "representativeNames": {
+                                        "description": "Representative's Names",
+                                        "type": "string",
+                                        "example": "Jane Doe"
+                                    },
+                                    "address": {
+                                        "description": "Address",
+                                        "type": "string",
+                                        "example": "123 Main St"
+                                    },
+                                    "phone": {
+                                        "description": "Phone Number",
+                                        "type": "string",
+                                        "example": "+123456789"
+                                    },
+                                    "email": {
+                                        "description": "Email",
+                                        "type": "string",
+                                        "example": "example@example.com"
+                                    },
+                                    "origin": {
+                                        "description": "Origin",
+                                        "type": "string",
+                                        "example": "USA"
+                                    },
+                                    "ocupation": {
+                                        "description": "Occupation",
+                                        "type": "string",
+                                        "example": "Engineer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Person or User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Person"
+                ],
+                "summary": "Remove the specified Person",
+                "operationId": "de425df1a690ea4b2d22bd54c88979b3",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Person",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Person deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Person deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Person not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Person not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/tecnimotors-backend/public/api/searchByDni/{dni}": {
             "get": {
                 "tags": [
@@ -562,6 +1374,186 @@
                 ]
             }
         },
+        "/tecnimotors-backend/public/api/typeUser": {
+            "get": {
+                "tags": [
+                    "TypeUser"
+                ],
+                "summary": "Get all TypeUsers",
+                "operationId": "650827ce47efd20759d56bceb711e19c",
+                "responses": {
+                    "200": {
+                        "description": "List of active TypeUsers",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/TypeUser"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/typeUser/{id}": {
+            "get": {
+                "tags": [
+                    "TypeUser"
+                ],
+                "summary": "Show the specified TypeUser",
+                "operationId": "91e2080b28ffd0c722cbb7a58033f095",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the TypeUser",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "TypeUser found"
+                    },
+                    "404": {
+                        "description": "TypeUser not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "TypeUser not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "TypeUser"
+                ],
+                "summary": "Remove the specified TypeUser",
+                "operationId": "dff9bb9222bd102c54b4eddd061e9284",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the TypeUser",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "TypeUser deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "TypeUser deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "TypeUser not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "TypeUser not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/tecnimotors-backend/public/api/user": {
             "get": {
                 "tags": [
@@ -678,14 +1670,14 @@
                         }
                     },
                     "404": {
-                        "description": "Typeuser not found",
+                        "description": "User not found",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Typeuser not found"
+                                            "example": "User not found"
                                         }
                                     },
                                     "type": "object"
@@ -830,7 +1822,7 @@
                         }
                     },
                     "404": {
-                        "description": "Typeuser or User not found",
+                        "description": "User  not found",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -943,6 +1935,186 @@
                                         "message": {
                                             "type": "string",
                                             "example": "User has option menus associated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/worker": {
+            "get": {
+                "tags": [
+                    "Worker"
+                ],
+                "summary": "Get all Workers",
+                "operationId": "27949dc3f4c5c6d49e07337a50da883e",
+                "responses": {
+                    "200": {
+                        "description": "List of active Workers",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Worker"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/worker/{id}": {
+            "get": {
+                "tags": [
+                    "Worker"
+                ],
+                "summary": "Show the specified Worker",
+                "operationId": "8d7c4a85ab831fbce720d7db20864bc9",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Worker",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Worker found"
+                    },
+                    "404": {
+                        "description": "Worker not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Worker not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Worker"
+                ],
+                "summary": "Remove the specified Worker",
+                "operationId": "ab90fad233e4c8d0aa64d55fdba4a456",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Worker",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Worker deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Worker deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Worker not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Worker not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
                                         }
                                     },
                                     "type": "object"
