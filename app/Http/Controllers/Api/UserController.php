@@ -39,7 +39,7 @@ class UserController extends Controller
 
     public function index()
     {
-        return response()->json(User::with(['worker','worker.person','typeUser'])->simplePaginate(15));
+        return response()->json(User::with(['worker', 'worker.person', 'typeUser'])->simplePaginate(15));
     }
 
     /**
@@ -52,7 +52,6 @@ class UserController extends Controller
      *          required=true,
      *          @OA\JsonContent(
      *              required={"username","password","typeofUser_id","worker_id"},
-
      *              @OA\Property(property="username", type="string", example="username", description="Username of the user"),
      *              @OA\Property(property="password", type="string", example="12345678", description="Password of the user"),
      *              @OA\Property(property="typeofUser_id", type="integer", example="1", description="Type of user"),
@@ -83,7 +82,6 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-
         $validator = validator()->make($request->all(), [
             'username' => 'required|string',
             'password' => 'required|string',
@@ -130,7 +128,6 @@ class UserController extends Controller
      *          required=true,
      *          @OA\JsonContent(
      *              required={"username","password","typeofUser_id","worker_id"},
-
      *              @OA\Property(property="username", type="string", example="username", description="Username of the user"),
      *              @OA\Property(property="password", type="string", example="12345678", description="Password of the user"),
      *              @OA\Property(property="typeofUser_id", type="integer", example="1", description="Type of user"),
@@ -156,7 +153,6 @@ class UserController extends Controller
      *              @OA\Property(property="message", type="string", example="Unauthenticated.")
      *          )
      *     ),
-
      * )
      *
      */
