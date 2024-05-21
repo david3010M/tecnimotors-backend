@@ -35,7 +35,6 @@ class AuthController extends Controller
      *         )
      *     ),
      *
-
      *      @OA\Response(
      *          response=401,
      *          description="User not authenticated",
@@ -111,7 +110,7 @@ class AuthController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/transporte/public/api/authenticate",
+     *     path="/tecnimotors-backend/public/api/authenticate",
      *     summary="Get Profile user",
      *     tags={"Authentication"},
      *     security={{"bearerAuth":{}}},
@@ -177,7 +176,7 @@ class AuthController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/transporte/public/api/logout",
+     *     path="/tecnimotors-backend/public/api/logout",
      *     tags={"Authentication"},
      *     summary="Logout",
      *     description="Log out user.",
