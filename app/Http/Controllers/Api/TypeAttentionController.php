@@ -13,7 +13,7 @@ class TypeAttentionController extends Controller
     /**
      * Get all Type Attentions
      * @OA\Get (
-     *     path="/tecnimotors-backend/public/api/typeattention",
+     *     path="/tecnimotors-backend/public/api/typeAttention",
      *     tags={"Type Attention"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Response(
@@ -50,7 +50,7 @@ class TypeAttentionController extends Controller
     /**
      * Create a new Type Attention
      * @OA\Post (
-     *     path="/tecnimotors-backend/public/api/typeattention",
+     *     path="/tecnimotors-backend/public/api/typeAttention",
      *     tags={"Type Attention"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -108,7 +108,7 @@ class TypeAttentionController extends Controller
     /**
      * Show a Type Attention
      * @OA\Get (
-     *     path="/tecnimotors-backend/public/api/typeattention/{id}",
+     *     path="/tecnimotors-backend/public/api/typeAttention/{id}",
      *     tags={"Type Attention"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
@@ -153,7 +153,7 @@ class TypeAttentionController extends Controller
     /**
      * Update a Type Attention
      * @OA\Put (
-     *     path="/tecnimotors-backend/public/api/typeattention/{id}",
+     *     path="/tecnimotors-backend/public/api/typeAttention/{id}",
      *     tags={"Type Attention"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
@@ -230,7 +230,7 @@ class TypeAttentionController extends Controller
     /**
      * Delete a Type Attention
      * @OA\Delete (
-     *     path="/tecnimotors-backend/public/api/typeattention/{id}",
+     *     path="/tecnimotors-backend/public/api/typeAttention/{id}",
      *     tags={"Type Attention"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(

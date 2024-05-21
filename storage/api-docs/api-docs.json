@@ -2219,13 +2219,13 @@
                 ]
             }
         },
-        "/tecnimotors-backend/public/api/typeattention": {
+        "/tecnimotors-backend/public/api/typeAttention": {
             "get": {
                 "tags": [
                     "Type Attention"
                 ],
                 "summary": "Get all Type Attentions",
-                "operationId": "0a731792796971207d4bbd87a51171ff",
+                "operationId": "cc9c28880d46ace086b2611e1958e35c",
                 "responses": {
                     "200": {
                         "description": "List of active Type Attentions",
@@ -2305,7 +2305,7 @@
                     "Type Attention"
                 ],
                 "summary": "Create a new Type Attention",
-                "operationId": "836fd2dd95c5efe63727592276c3217d",
+                "operationId": "eefcedd44ee4d0b98b3b5f94b189dddd",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -2376,13 +2376,13 @@
                 ]
             }
         },
-        "/tecnimotors-backend/public/api/typeattention/{id}": {
+        "/tecnimotors-backend/public/api/typeAttention/{id}": {
             "get": {
                 "tags": [
                     "Type Attention"
                 ],
                 "summary": "Show a Type Attention",
-                "operationId": "ed7337b9802654dfd2f5053fefe9f4f1",
+                "operationId": "f85433cbc6a41d90bb260923202285be",
                 "parameters": [
                     {
                         "name": "id",
@@ -2449,7 +2449,7 @@
                     "Type Attention"
                 ],
                 "summary": "Update a Type Attention",
-                "operationId": "c272957fe65646ca8bed15a49f71e003",
+                "operationId": "94b1ace24d8bf5d40d00f00320cd4aa7",
                 "parameters": [
                     {
                         "name": "id",
@@ -2551,7 +2551,7 @@
                     "Type Attention"
                 ],
                 "summary": "Delete a Type Attention",
-                "operationId": "f61e05fe88ae1e585379d3fd2e557959",
+                "operationId": "ec529d754190be52f9eb72231ffcd245",
                 "parameters": [
                     {
                         "name": "id",
@@ -3038,13 +3038,13 @@
                 ]
             }
         },
-        "/tecnimotors-backend/public/api/typevehicle": {
+        "/tecnimotors-backend/public/api/typeVehicle": {
             "get": {
                 "tags": [
                     "Type Vehicle"
                 ],
                 "summary": "Get all Type Vehicles",
-                "operationId": "d97b5e1eba0a0cb65b87b10f8c7521a6",
+                "operationId": "8efe7275401984879531f221441725bb",
                 "responses": {
                     "200": {
                         "description": "List of active Type Vehicles",
@@ -3124,7 +3124,7 @@
                     "Type Vehicle"
                 ],
                 "summary": "Create a new Type Vehicle",
-                "operationId": "7a4d89c15a3c8d332a3cbbec12ec447e",
+                "operationId": "85f12b82c47cacf6888db13fc822ed68",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -3195,13 +3195,13 @@
                 ]
             }
         },
-        "/tecnimotors-backend/public/api/typevehicle/{id}": {
+        "/tecnimotors-backend/public/api/typeVehicle/{id}": {
             "get": {
                 "tags": [
                     "Type Vehicle"
                 ],
                 "summary": "Show a Type Vehicle",
-                "operationId": "b7438e9a2484a31e4771a487533c7966",
+                "operationId": "d7ffa54eb0f3b09c1125e9cf9744f495",
                 "parameters": [
                     {
                         "name": "id",
@@ -3268,7 +3268,7 @@
                     "Type Vehicle"
                 ],
                 "summary": "Update a Type Vehicle",
-                "operationId": "be1fbb8fa53dcaabf4585b60e253a4f4",
+                "operationId": "03a0d98b9550b468d171e801cf540c8b",
                 "parameters": [
                     {
                         "name": "id",
@@ -3370,7 +3370,7 @@
                     "Type Vehicle"
                 ],
                 "summary": "Delete a Type Vehicle",
-                "operationId": "1b7dbe037315ecd200a3c83583979cbd",
+                "operationId": "2f01d89adb835e56d63d0b4a8c01eda8",
                 "parameters": [
                     {
                         "name": "id",
