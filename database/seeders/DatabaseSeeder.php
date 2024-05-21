@@ -45,6 +45,11 @@ class DatabaseSeeder extends Seeder
         $this->call(WorkerSeeder::class);
         $this->call(AccessSeeder::class);
         $this->call(UserSeeder::class);
+        $this->call(TypeAttentionSeeder::class);
+        $this->call(TypeVehicleSeeder::class);
+        $this->call(BrandSeeder::class);
+        $this->call(ElementSeeder::class);
+        $this->call(VehicleSeeder::class);
 
     }
 }
