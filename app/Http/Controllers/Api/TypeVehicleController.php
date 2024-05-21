@@ -12,7 +12,7 @@ class TypeVehicleController extends Controller
     /**
      * Get all Type Vehicles
      * @OA\Get (
-     *     path="/tecnimotors-backend/public/api/typevehicle",
+     *     path="/tecnimotors-backend/public/api/typeVehicle",
      *     tags={"Type Vehicle"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Response(
@@ -49,7 +49,7 @@ class TypeVehicleController extends Controller
     /**
      * Create a new Type Vehicle
      * @OA\Post (
-     *     path="/tecnimotors-backend/public/api/typevehicle",
+     *     path="/tecnimotors-backend/public/api/typeVehicle",
      *     tags={"Type Vehicle"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -107,7 +107,7 @@ class TypeVehicleController extends Controller
     /**
      * Show a Type Vehicle
      * @OA\Get (
-     *     path="/tecnimotors-backend/public/api/typevehicle/{id}",
+     *     path="/tecnimotors-backend/public/api/typeVehicle/{id}",
      *     tags={"Type Vehicle"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
@@ -151,7 +151,7 @@ class TypeVehicleController extends Controller
     /**
      * Update a Type Vehicle
      * @OA\Put (
-     *     path="/tecnimotors-backend/public/api/typevehicle/{id}",
+     *     path="/tecnimotors-backend/public/api/typeVehicle/{id}",
      *     tags={"Type Vehicle"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
@@ -228,7 +228,7 @@ class TypeVehicleController extends Controller
     /**
      * Delete a Type Vehicle
      * @OA\Delete (
-     *     path="/tecnimotors-backend/public/api/typevehicle/{id}",
+     *     path="/tecnimotors-backend/public/api/typeVehicle/{id}",
      *     tags={"Type Vehicle"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
