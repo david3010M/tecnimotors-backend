@@ -4,7 +4,9 @@ use App\Http\Controllers\Api\GroupMenuController;
 use App\Http\Controllers\Api\OptionMenuController;
 use App\Http\Controllers\Api\PersonController;
 use App\Http\Controllers\Api\SearchController;
+use App\Http\Controllers\Api\TypeAttentionController;
 use App\Http\Controllers\Api\TypeUserController;
+use App\Http\Controllers\Api\TypeVehicleController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\WorkerController;
 use App\Http\Controllers\Auth\AuthController;
@@ -26,7 +28,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('login', [AuthController::class, 'login']);
+Route::post('login', [AuthController::class, 'login'])->name('login');
 
 Route::group(["middleware" => ["auth:sanctum"]], function () {
 
@@ -63,5 +65,15 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
             'update' => 'typeUser.update', 'destroy' => 'typeUser.destroy']);
 
     Route::post('typeUser/setAccess', [TypeUserController::class, 'setAccess'])->name('typeUser.setAccess');
+
+    // TYPE ATTENTION
+    Route::resource('typeattention', TypeAttentionController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'typeattention.index', 'store' => 'typeattention.store', 'show' => 'typeattention.show',
+            'update' => 'typeattention.update', 'destroy' => 'typeattention.destroy']);
+
+    // TYPE VEHICLE
+    Route::resource('typevehicle', TypeVehicleController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'typevehicle.index', 'store' => 'typevehicle.store', 'show' => 'typevehicle.show',
+            'update' => 'typevehicle.update', 'destroy' => 'typevehicle.destroy']);
 
 });

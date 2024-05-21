@@ -42,48 +42,49 @@ class GroupMenuController extends Controller
     {
         return response()->json(GroupMenu::simplePaginate(15));
     }
-/**
- * Create a new Group menu
- * @OA\Post (
- *     path="/tecnimotors-backend/public/api/groupmenu",
- *     tags={"Group Menu"},
- *     security={{"bearerAuth":{}}},
- *     @OA\RequestBody(
- *          required=true,
- *          @OA\JsonContent(
- *              required={"name", "icon"},
- *              @OA\Property(
- *                  property="name",
- *                  type="string",
- *                  example="Admin"
- *              ),
- *              @OA\Property(
- *                  property="icon",
- *                  type="string",
- *                  example="fas fa-user"
- *              ),
- *          )
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="New Group Menu created",
- *         @OA\JsonContent(
- *             ref="#/components/schemas/GroupMenu"
- *         )
- *     ),
- *      @OA\Response(
- *          response=401,
- *          description="Unauthorized",
- *          @OA\JsonContent(
- *              @OA\Property(
- *                  property="message",
- *                  type="string",
- *                  example="Unauthenticated"
- *              )
- *          )
- *      )
- * )
- */
+
+    /**
+     * Create a new Group menu
+     * @OA\Post (
+     *     path="/tecnimotors-backend/public/api/groupmenu",
+     *     tags={"Group Menu"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *              required={"name", "icon"},
+     *              @OA\Property(
+     *                  property="name",
+     *                  type="string",
+     *                  example="Admin"
+     *              ),
+     *              @OA\Property(
+     *                  property="icon",
+     *                  type="string",
+     *                  example="fas fa-user"
+     *              ),
+     *          )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="New Group Menu created",
+     *         @OA\JsonContent(
+     *             ref="#/components/schemas/GroupMenu"
+     *         )
+     *     ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthorized",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="message",
+     *                  type="string",
+     *                  example="Unauthenticated"
+     *              )
+     *          )
+     *      )
+     * )
+     */
     public function store(Request $request)
     {
         $validator = validator()->make($request->all(), [
@@ -195,7 +196,6 @@ class GroupMenuController extends Controller
      *                  type="string",
      *                  example="fas fa-user"
      *              ),
-
      *          )
      *     ),
      *     @OA\Response(
@@ -337,6 +337,10 @@ class GroupMenuController extends Controller
             );
         }
         $groupMenu->delete();
+
+        return response()->json(
+            ['message' => 'Group Menu deleted successfully']
+        );
 
     }
 }
