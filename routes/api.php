@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\BrandController;
+use App\Http\Controllers\Api\ElementController;
 use App\Http\Controllers\Api\GroupMenuController;
 use App\Http\Controllers\Api\OptionMenuController;
 use App\Http\Controllers\Api\PersonController;
@@ -8,6 +10,7 @@ use App\Http\Controllers\Api\TypeAttentionController;
 use App\Http\Controllers\Api\TypeUserController;
 use App\Http\Controllers\Api\TypeVehicleController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\VehicleController;
 use App\Http\Controllers\Api\WorkerController;
 use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Http\Request;
@@ -76,4 +79,15 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
         ->names(['index' => 'typevehicle.index', 'store' => 'typevehicle.store', 'show' => 'typevehicle.show',
             'update' => 'typevehicle.update', 'destroy' => 'typevehicle.destroy']);
 
+    //  BRAND
+    Route::resource('brand', BrandController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'brand.index', 'store' => 'brand.store', 'show' => 'brand.show', 'update' => 'brand.update', 'destroy' => 'brand.destroy']);
+
+    //  ELEMENT
+    Route::resource('element', ElementController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'element.index', 'store' => 'element.store', 'show' => 'element.show', 'update' => 'element.update', 'destroy' => 'element.destroy']);
+
+    //  VEHICLE
+    Route::resource('vehicle', VehicleController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'vehicle.index', 'store' => 'vehicle.store', 'show' => 'vehicle.show', 'update' => 'vehicle.update', 'destroy' => 'vehicle.destroy']);
 });
