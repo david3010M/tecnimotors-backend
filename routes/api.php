@@ -70,14 +70,14 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::post('typeUser/setAccess', [TypeUserController::class, 'setAccess'])->name('typeUser.setAccess');
 
     // TYPE ATTENTION
-    Route::resource('typeattention', TypeAttentionController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
-        ->names(['index' => 'typeattention.index', 'store' => 'typeattention.store', 'show' => 'typeattention.show',
-            'update' => 'typeattention.update', 'destroy' => 'typeattention.destroy']);
+    Route::resource('typeAttention', TypeAttentionController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'typeAttention.index', 'store' => 'typeAttention.store', 'show' => 'typeAttention.show',
+            'update' => 'typeAttention.update', 'destroy' => 'typeAttention.destroy']);
 
     // TYPE VEHICLE
-    Route::resource('typevehicle', TypeVehicleController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
-        ->names(['index' => 'typevehicle.index', 'store' => 'typevehicle.store', 'show' => 'typevehicle.show',
-            'update' => 'typevehicle.update', 'destroy' => 'typevehicle.destroy']);
+    Route::resource('typeVehicle', TypeVehicleController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'typeVehicle.index', 'store' => 'typeVehicle.store', 'show' => 'typeVehicle.show',
+            'update' => 'typeVehicle.update', 'destroy' => 'typeVehicle.destroy']);
 
     //  BRAND
     Route::resource('brand', BrandController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
