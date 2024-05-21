@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class VehicleController extends Controller
 {
@@ -80,7 +81,11 @@ class VehicleController extends Controller
     public function store(Request $request)
     {
         $validator = validator()->make($request->all(), [
-            'plate' => 'required|string',
+            'plate' => [
+                'required',
+                'string',
+                Rule::unique('vehicles')->whereNull('deleted_at')
+            ],
             'km' => 'required|numeric',
             'year' => 'required|numeric',
             'model' => 'required|string',
@@ -213,7 +218,11 @@ class VehicleController extends Controller
         }
 
         $validator = validator()->make($request->all(), [
-            'plate' => 'required|string',
+            'plate' => [
+                'required',
+                'string',
+                Rule::unique('vehicles')->ignore($id)->whereNull('deleted_at')
+            ],
             'km' => 'required|numeric',
             'year' => 'required|numeric',
             'model' => 'required|string',
