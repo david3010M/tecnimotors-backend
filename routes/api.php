@@ -1,16 +1,24 @@
 <?php
 
 use App\Http\Controllers\Api\AttentionController;
+use App\Http\Controllers\Api\BankController;
 use App\Http\Controllers\Api\BrandController;
+use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\ConceptMovController;
+use App\Http\Controllers\Api\ConceptPayController;
 use App\Http\Controllers\Api\ElementController;
 use App\Http\Controllers\Api\ElementForAttentionController;
 use App\Http\Controllers\Api\GroupMenuController;
 use App\Http\Controllers\Api\OptionMenuController;
 use App\Http\Controllers\Api\PersonController;
+use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\SearchController;
+use App\Http\Controllers\Api\ServiceController;
+use App\Http\Controllers\Api\SupplierController;
 use App\Http\Controllers\Api\TypeAttentionController;
 use App\Http\Controllers\Api\TypeUserController;
 use App\Http\Controllers\Api\TypeVehicleController;
+use App\Http\Controllers\Api\UnitController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VehicleController;
 use App\Http\Controllers\Api\WorkerController;
@@ -104,5 +112,35 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     // ELEMENT
     Route::resource('element', ElementController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'element.index', 'store' => 'element.store', 'show' => 'element.show', 'update' => 'element.update', 'destroy' => 'element.destroy']);
+//    SERVICE
+    Route::resource('service', ServiceController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'service.index', 'store' => 'service.store', 'show' => 'service.show', 'update' => 'service.update', 'destroy' => 'service.destroy']);
 
+//    UNIT
+    Route::resource('unit', UnitController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'unit.index', 'store' => 'unit.store', 'show' => 'unit.show', 'update' => 'unit.update', 'destroy' => 'unit.destroy']);
+
+//    CATEGORY
+    Route::resource('category', CategoryController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'category.index', 'store' => 'category.store', 'show' => 'category.show', 'update' => 'category.update', 'destroy' => 'category.destroy']);
+
+//    PRODUCT
+    Route::resource('product', ProductController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'product.index', 'store' => 'product.store', 'show' => 'product.show', 'update' => 'product.update', 'destroy' => 'product.destroy']);
+
+//    SUPPLIER
+    Route::resource('supplier', SupplierController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'supplier.index', 'store' => 'supplier.store', 'show' => 'supplier.show', 'update' => 'supplier.update', 'destroy' => 'supplier.destroy']);
+
+//    CONCEPT MOV
+    Route::resource('conceptMov', ConceptMovController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'conceptMov.index', 'store' => 'conceptMov.store', 'show' => 'conceptMov.show', 'update' => 'conceptMov.update', 'destroy' => 'conceptMov.destroy']);
+
+//    BANK
+    Route::resource('bank', BankController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'bank.index', 'store' => 'bank.store', 'show' => 'bank.show', 'update' => 'bank.update', 'destroy' => 'bank.destroy']);
+
+//    CONCEPT PAY
+    Route::resource('conceptPay', ConceptPayController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'conceptPay.index', 'store' => 'conceptPay.store', 'show' => 'conceptPay.show', 'update' => 'conceptPay.update', 'destroy' => 'conceptPay.destroy']);
 });
