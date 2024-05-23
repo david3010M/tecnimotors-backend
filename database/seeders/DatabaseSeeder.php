@@ -50,6 +50,15 @@ class DatabaseSeeder extends Seeder
         $this->call(BrandSeeder::class);
         $this->call(ElementSeeder::class);
         $this->call(VehicleSeeder::class);
+        $this->call(ServiceSeeder::class);
+        $this->call(UnitSeeder::class);
+        $this->call(CategorySeeder::class);
+        $this->call(ProductSeeder::class);
+        $this->call(SupplierSeeder::class);
+        $this->call(ConceptMovSeeder::class);
+        $this->call(BankSeeder::class);
+        $this->call(ConceptPaySeeder::class);
+
 
     }
 }
