@@ -1,28 +1,20 @@
 <?php
 
+use App\Http\Controllers\Api\AttentionController;
 use App\Http\Controllers\Api\BrandController;
-use App\Http\Controllers\Api\CategoryController;
-use App\Http\Controllers\Api\ConceptMovController;
-use App\Http\Controllers\Api\ConceptPayController;
 use App\Http\Controllers\Api\ElementController;
 use App\Http\Controllers\Api\ElementForAttentionController;
-
 use App\Http\Controllers\Api\GroupMenuController;
 use App\Http\Controllers\Api\OptionMenuController;
 use App\Http\Controllers\Api\PersonController;
-use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\SearchController;
-use App\Http\Controllers\Api\ServiceController;
-use App\Http\Controllers\Api\SupplierController;
 use App\Http\Controllers\Api\TypeAttentionController;
 use App\Http\Controllers\Api\TypeUserController;
 use App\Http\Controllers\Api\TypeVehicleController;
-use App\Http\Controllers\Api\UnitController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VehicleController;
 use App\Http\Controllers\Api\WorkerController;
 use App\Http\Controllers\Auth\AuthController;
-use App\Models\ElementForAttention;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -100,4 +92,17 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     //  VEHICLE
     Route::resource('vehicle', VehicleController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'vehicle.index', 'store' => 'vehicle.store', 'show' => 'vehicle.show', 'update' => 'vehicle.update', 'destroy' => 'vehicle.destroy']);
+
+//  ATTENTION
+    Route::resource('attention', AttentionController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'attention.index', 'store' => 'attention.store', 'show' => 'attention.show', 'update' => 'attention.update', 'destroy' => 'attention.destroy']);
+
+// ELEMENTFORATTENTION
+    Route::resource('elementForAttention', ElementForAttentionController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'elementForAttention.index', 'store' => 'elementForAttention.store', 'show' => 'elementForAttention.show', 'update' => 'elementForAttention.update', 'destroy' => 'elementForAttention.destroy']);
+
+    // ELEMENT
+    Route::resource('element', ElementController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'element.index', 'store' => 'element.store', 'show' => 'element.show', 'update' => 'element.update', 'destroy' => 'element.destroy']);
+
 });
