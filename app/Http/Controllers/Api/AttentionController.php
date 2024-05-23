@@ -176,7 +176,7 @@ class AttentionController extends Controller
             'vehicle_id' => 'required|exists:vehicles,id',
             'worker_id' => 'required|exists:workers,id',
             'elements' => 'nullable|array',
-            'elements.*' => 'exists:element_for_attentions,id',
+            'elements.*' => 'exists:elements,id',
             'details' => 'required|array|min:1',
             // 'details.*' => 'exists:details,id',
 
