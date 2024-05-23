@@ -147,7 +147,7 @@ class BrandController extends Controller
     {
         $brand = Brand::find($id);
         if (!$brand) {
-            return response()->json(['error' => 'Brand not found'], 404);
+            return response()->json(['message' => 'Brand not found'], 404);
         }
         return response()->json($brand);
     }
