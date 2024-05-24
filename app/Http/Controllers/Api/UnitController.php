@@ -144,7 +144,7 @@ class UnitController extends Controller
         $unit = Unit::find($id);
 
         if (!$unit) {
-            return response()->json(['error' => 'Not found'], 404);
+            return response()->json(['error' => 'Unit Not found'], 404);
         }
 
         return response()->json($unit);
@@ -203,7 +203,7 @@ class UnitController extends Controller
         $unit = Unit::find($id);
 
         if (!$unit) {
-            return response()->json(['error' => 'Not found'], 404);
+            return response()->json(['error' => 'Unit Not found'], 404);
         }
 
         $validator = validator()->make($request->all(), [
@@ -281,7 +281,7 @@ class UnitController extends Controller
         $unit = Unit::find($id);
 
         if (!$unit) {
-            return response()->json(['error' => 'Not found'], 404);
+            return response()->json(['error' => 'Unit Not found'], 404);
         }
 
 //        if ($unit->products()->count() > 0) {
