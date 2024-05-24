@@ -16,8 +16,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     @OA\Property(property="observations", type="string", example="Some observations here."),
  *     @OA\Property(property="fuelLevel", type="integer", example="80"),
  *     @OA\Property(property="km", type="integer", example="15000"),
- *     @OA\Property(property="routeImage", type="string", example="http://example.com/image.jpg"),
- *     @OA\Property(property="created_at", type="string", format="date-time", example="2024-05-21 04:09:25")
+ *     @OA\Property(property="routeImage", type="string", example="/image.jpg"),
+ *     @OA\Property(property="created_at", type="string", format="date-time", example="2024-05-21 04:09:25"),
+ *         @OA\Property(
+ *         property="worker",
+ *         ref="#/components/schemas/Worker"
+ *     ),@OA\Property(
+ *         property="vehicle",
+ *         ref="#/components/schemas/Vehicle"
+ *     ),
  * )
  */
 
@@ -49,11 +56,11 @@ class Attention extends Model
 
     public function worker()
     {
-        return $this->belongsTo(Person::class, 'worker_id');
+        return $this->belongsTo(Worker::class, 'worker_id');
     }
     public function vehicle()
     {
-        return $this->belongsTo(Person::class, 'vehicle_id');
+        return $this->belongsTo(Vehicle::class, 'vehicle_id');
     }
 
     public function elementForAttention()
@@ -92,4 +99,9 @@ class Attention extends Model
     }
 
     //REVISAR QUE NO TENGA RELACIONES
+
+    public function details()
+    {
+        return $this->hasMany(DetailAttention::class);
+    }
 }

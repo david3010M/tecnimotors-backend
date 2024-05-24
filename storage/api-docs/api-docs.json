@@ -4979,9 +4979,15 @@
                                     "name"
                                 ],
                                 "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "example": "Consulta"
+                                    "specialty_id": {
+                                        "description": "Specialty ID",
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "worker_id": {
+                                        "description": "Worker ID",
+                                        "type": "integer",
+                                        "example": "1"
                                     }
                                 },
                                 "type": "object"
@@ -8120,12 +8126,18 @@
                     },
                     "routeImage": {
                         "type": "string",
-                        "example": "http://example.com/image.jpg"
+                        "example": "/image.jpg"
                     },
                     "created_at": {
                         "type": "string",
                         "format": "date-time",
                         "example": "2024-05-21 04:09:25"
+                    },
+                    "worker": {
+                        "$ref": "#/components/schemas/Worker"
+                    },
+                    "vehicle": {
+                        "$ref": "#/components/schemas/Vehicle"
                     }
                 },
                 "type": "object"
@@ -8181,6 +8193,130 @@
                     "name": {
                         "type": "string",
                         "example": "Category 1"
+                    }
+                },
+                "type": "object"
+            },
+            "DetailAttention": {
+                "required": [
+                    "salePrice",
+                    "attention_id"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "salePrice": {
+                        "type": "decimal",
+                        "example": "0.00"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "Producto"
+                    },
+                    "comment": {
+                        "type": "string",
+                        "example": "comment"
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "Generada"
+                    },
+                    "dateRegister": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2024-04-24"
+                    },
+                    "dateMax": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2024-04-24"
+                    },
+                    "dateCurrent": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2024-04-24"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-04-24 12:27:41"
+                    },
+                    "attention_id": {
+                        "type": "integer",
+                        "example": "Attention 1"
+                    },
+                    "service_id": {
+                        "type": "integer",
+                        "example": "service 1"
+                    },
+                    "product_id": {
+                        "type": "integer",
+                        "example": "product 1"
+                    },
+                    "worker_id": {
+                        "type": "integer",
+                        "example": "worker 1"
+                    },
+                    "attention": {
+                        "$ref": "#/components/schemas/Attention"
+                    },
+                    "service": {
+                        "$ref": "#/components/schemas/Service"
+                    },
+                    "product": {
+                        "$ref": "#/components/schemas/Product"
+                    },
+                    "worker": {
+                        "$ref": "#/components/schemas/Worker"
+                    }
+                },
+                "type": "object"
+            },
+            "DetailAttentionRequest": {
+                "required": [
+                    "salePrice",
+                    "attention_id"
+                ],
+                "properties": {
+                    "salePrice": {
+                        "type": "decimal",
+                        "example": "0.00"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "Producto"
+                    },
+                    "comment": {
+                        "type": "string",
+                        "example": "comment"
+                    },
+                    "attention_id": {
+                        "type": "integer",
+                        "example": "Attention 1"
+                    },
+                    "service_id": {
+                        "type": "integer",
+                        "example": "service 1"
+                    },
+                    "product_id": {
+                        "type": "integer",
+                        "example": "product 1"
+                    },
+                    "worker_id": {
+                        "type": "integer",
+                        "example": "worker 1"
+                    },
+                    "dateRegister": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2024-04-24"
+                    },
+                    "dateMax": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2024-04-24"
                     }
                 },
                 "type": "object"

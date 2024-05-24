@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attention;
+use App\Models\DetailAttention;
 use App\Models\Element;
 use App\Models\ElementForAttention;
+use App\Models\Service;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -92,7 +95,7 @@ class AttentionController extends Controller
      */
     public function show(int $id)
     {
-        $object = Attention::with(['worker', 'vehicle'])->find($id);
+        $object = Attention::with(['worker.person', 'vehicle', 'details'])->find($id);
         $object->elements = $object->getElements($object->id);
         if (!$object) {
             return response()->json(['message' => 'Attention not found'], 404);
@@ -178,7 +181,7 @@ class AttentionController extends Controller
             'elements' => 'nullable|array',
             'elements.*' => 'exists:elements,id',
             'details' => 'required|array|min:1',
-            // 'details.*' => 'exists:details,id',
+  
 
         ]);
 
@@ -197,7 +200,7 @@ class AttentionController extends Controller
             'typeofDocument' => $request->input('typeofDocument') ?? null,
             'fuelLevel' => $request->input('fuelLevel') ?? null,
             'km' => $request->input('km') ?? null,
-            'routeImage' => $request->input('routeImage') ?? null,
+            'routeImage' => 'ruta.jpg',
             'vehicle_id' => $request->input('vehicle_id') ?? null,
             'worker_id' => $request->input('worker_id') ?? null,
         ];
@@ -206,21 +209,42 @@ class AttentionController extends Controller
 
         if ($object) {
             //ASIGNAR ELEMENTS
-            $details = $request->input('elements');
+            $elements = $request->input('elements');
 
-            foreach ($details as $detail) {
+            foreach ($elements as $element) {
 
                 $objectData = [
-                    'element_id' => $detail['id'],
+                    'element_id' => $element['id'],
                     'attention_id' => $object->id,
                 ];
                 ElementForAttention::create($objectData)->id;
 
             }
 
+            //ASIGNAR DETAILS
+            $detailsAttentions = $request->input('details');
+
+            foreach ($detailsAttentions as $detail) {
+
+                $service = Service::find($detail['service_id']);
+                $objectData = [
+                    'saleprice' => $service->saleprice ?? '0.00',
+                    'type' => 'Service',
+                    'comment' => $detail['comment'] ?? '-',
+                    'status' => $detail['status'] ?? 'Generada',
+                    'dateRegister' => Carbon::now(),
+                    'dateMax' => $detail['dateMax']??null,
+                    'worker_id' => $detail['worker_id'],
+                    'product_id' => $detail['product_id'] ?? null,
+                    'service_id' => $detail['service_id'],
+                    'attention_id' => $object->id,
+                ];
+                DetailAttention::create($objectData)->id;
+            }
+
         }
 
-        $object = Attention::with(['worker', 'vehicle'])->find($object->id);
+        $object = Attention::with(['worker.person', 'vehicle','details'])->find($object->id);
         $object->elements = $object->getElements($object->id);
 
         return response()->json($object);
@@ -332,7 +356,7 @@ class AttentionController extends Controller
 
         $object->setElements($object->id, $details);
 
-        $object = Attention::with(['worker', 'vehicle'])->find($object->id);
+        $object = Attention::with(['worker.person', 'vehicle', 'details'])->find($object->id);
         $object->elements = $object->getElements($object->id);
 
         return response()->json($object);
