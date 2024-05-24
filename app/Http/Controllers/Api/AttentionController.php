@@ -329,9 +329,8 @@ class AttentionController extends Controller
         $object->update($data);
 
         $details = $request->input('elements', []);
-   
+
         $object->setElements($object->id, $details);
-            
 
         $object = Attention::with(['worker', 'vehicle'])->find($object->id);
         $object->elements = $object->getElements($object->id);

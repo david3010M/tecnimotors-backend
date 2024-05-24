@@ -50,4 +50,9 @@ class Worker extends Model
     {
         return $this->belongsTo(Person::class, 'person_id');
     }
+
+    public function specialties()
+    {
+        return $this->belongsToMany(Specialty::class, 'specialty_people');
+    }
 }

@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Access extends Model
 {
@@ -26,9 +25,6 @@ class Access extends Model
  *     ),
  * )
  */
-   
-
-
 
     protected $fillable = [
         'optionmenu_id',
@@ -38,7 +34,7 @@ class Access extends Model
 
     protected $hidden = [
         'updated_at',
-       
+
     ];
 
     public function optionMenu()

@@ -14,6 +14,9 @@ use App\Http\Controllers\Api\PersonController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\ServiceController;
+use App\Http\Controllers\Api\SpecialtyController;
+use App\Http\Controllers\Api\SpecialtyPersonController;
+
 use App\Http\Controllers\Api\SupplierController;
 use App\Http\Controllers\Api\TypeAttentionController;
 use App\Http\Controllers\Api\TypeUserController;
@@ -143,4 +146,12 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
 //    CONCEPT PAY
     Route::resource('conceptPay', ConceptPayController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'conceptPay.index', 'store' => 'conceptPay.store', 'show' => 'conceptPay.show', 'update' => 'conceptPay.update', 'destroy' => 'conceptPay.destroy']);
+
+//    SPECIALTY
+    Route::resource('specialty', SpecialtyController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'specialty.index', 'store' => 'specialty.store', 'show' => 'specialty.show', 'update' => 'specialty.update', 'destroy' => 'specialty.destroy']);
+//    SPECIALTY
+    Route::resource('specialtyPerson', SpecialtyPersonController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'specialtyPerson.index', 'store' => 'specialtyPerson.store', 'show' => 'specialtyPerson.show', 'update' => 'specialtyPerson.update', 'destroy' => 'specialtyPerson.destroy']);
+
 });

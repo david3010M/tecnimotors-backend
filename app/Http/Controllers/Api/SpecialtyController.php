@@ -3,35 +3,24 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Person;
 use App\Models\Specialty;
-use App\Models\Worker;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
-class WorkerController extends Controller
+class SpecialtyController extends Controller
 {
     /**
-     * Get all Workers
+     * Get all Specialties
      * @OA\Get (
-     *     path="/tecnimotors-backend/public/api/worker",
-     *     tags={"Worker"},
+     *     path="/tecnimotors-backend/public/api/specialty",
+     *     tags={"Specialty"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Response(
      *         response=200,
-     *         description="List of active Workers",
+     *         description="List of active Specialties",
      *         @OA\JsonContent(
      *             type="array",
-     *             @OA\Items(ref="#/components/schemas/Worker")
-     *         )
-     *     ),
-     *       @OA\Parameter(
-     *         name="speciality_id",
-     *         in="query",
-     *         description="ID of the Specialty to filter Workers",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="integer",
-     *             example=1
+     *             @OA\Items(ref="#/components/schemas/Specialty")
      *         )
      *     ),
      *     @OA\Response(
@@ -48,55 +37,40 @@ class WorkerController extends Controller
      * )
      */
 
-    public function index(Request $request)
+    public function index()
     {
-        $speciality_id = $request->input('speciality_id');
-        if (!$speciality_id) {
-            return response()->json(Worker::with(['person'])->simplePaginate(15));
-        } else {
-            $object = Specialty::find($speciality_id);
-            if (!$object) {
-                return response()->json(
-                    ['message' => 'Specialty not found'], 404
-                );
-            }
-            $workers = Worker::whereHas('specialties', function ($query) use ($speciality_id) {
-                $query->where('specialties.id', $speciality_id);
-            })->with(['person'])->simplePaginate(15);
-
-            return response()->json($workers);
-        }
+        return response()->json(Specialty::simplePaginate(15));
 
     }
 
     /**
-     * Show the specified Worker
+     * Show the specified Specialty
      * @OA\Get (
-     *     path="/tecnimotors-backend/public/api/worker/{id}",
-     *     tags={"Worker"},
+     *     path="/tecnimotors-backend/public/api/specialty/{id}",
+     *     tags={"Specialty"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
-     *         description="ID of the Worker",
+     *         description="ID of the Specialty",
      *         @OA\Schema(
      *             type="number"
      *         )
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Worker found",
+     *         description="Specialty found",
      *
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Worker not found",
+     *         description="Specialty not found",
      *         @OA\JsonContent(
      *             @OA\Property(
      *                 property="message",
      *                 type="string",
-     *                 example="Worker not found"
+     *                 example="Specialty not found"
      *             )
      *         )
      *     ),
@@ -117,36 +91,34 @@ class WorkerController extends Controller
     public function show(int $id)
     {
 
-        $object = Worker::with(['person', 'specialties'])->find($id);
+        $object = Specialty::find($id);
         if ($object) {
             return response()->json($object, 200);
         }
         return response()->json(
-            ['message' => 'Worker not found'], 404
+            ['message' => 'Specialty not found'], 404
         );
 
     }
 
     /**
      * @OA\Post(
-     *      path="/tecnimotors-backend/public/api/worker",
-     *      summary="Store a new worker",
-     *      tags={"Worker"},
+     *      path="/tecnimotors-backend/public/api/specialty",
+     *      summary="Store a new specialty",
+     *      tags={"Specialty"},
      *      security={{"bearerAuth": {}}},
      *      @OA\RequestBody(
      *          required=true,
      *          @OA\JsonContent(
      *              required={"person_id"},
-     *              @OA\Property(property="startDate", type="string", example=null, description="StartDate of the worker"),
-     *              @OA\Property(property="birthDate", type="string", example=null, description="BirthDate of the worker"),
-     *               @OA\Property(property="occupation", type="string", example="-", description="Occupationi of the worker"),
-     *              @OA\Property(property="person_id", type="integer", example="1", description="Worker ID")
+     *              @OA\Property(property="name", type="string", example="Especialidad 1", description="Name"),
+     *
      *          )
      *      ),
      *      @OA\Response(
      *          response=201,
      *          description="User created",
-     *          @OA\JsonContent(ref="#/components/schemas/Worker")
+     *          @OA\JsonContent(ref="#/components/schemas/Specialty")
      *      ),
      *      @OA\Response(
      *          response=401,
@@ -155,13 +127,6 @@ class WorkerController extends Controller
      *              @OA\Property(property="message", type="string", example="Unauthenticated.")
      *          )
      *      ),
-     *      @OA\Response(
-     *          response=404,
-     *          description="User not found",
-     *          @OA\JsonContent(
-     *              @OA\Property(property="message", type="string", example="User not found")
-     *          )
-     *      )
      * )
      */
 
@@ -169,7 +134,10 @@ class WorkerController extends Controller
     {
 
         $validator = validator()->make($request->all(), [
-            'person_id' => 'required|exists:people,id',
+            'name' => [
+                'required',
+                Rule::unique('specialties')->whereNull('deleted_at'),
+            ],
         ]);
 
         if ($validator->fails()) {
@@ -177,29 +145,25 @@ class WorkerController extends Controller
         }
 
         $data = [
-            'startDate' => $request->input('startDate'),
-            'birthDate' => $request->input('birthDate'),
-            'occupation' => $request->input('occupation'),
-            'person_id' => $request->input('person_id'),
-
+            'name' => $request->input('name'),
         ];
 
-        $object = Worker::create($data);
-        $object = Worker::with(['person'])->find($object->id);
+        $object = Specialty::create($data);
+        $object = Specialty::find($object->id);
         return response()->json($object, 200);
 
     }
 
     /**
      * @OA\Put(
-     *     path="/tecnimotors-backend/public/api/worker/{id}",
-     *     summary="Update worker by ID",
-     *     tags={"Worker"},
+     *     path="/tecnimotors-backend/public/api/specialty/{id}",
+     *     summary="Update specialty by ID",
+     *     tags={"Specialty"},
      *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *          name="id",
      *          in="path",
-     *          description="ID of worker",
+     *          description="ID of specialty",
      *          required=true,
      *          example="1",
      *          @OA\Schema(
@@ -210,23 +174,14 @@ class WorkerController extends Controller
      *          required=true,
      *          @OA\JsonContent(
      *              required={"person_id"},
-     *              @OA\Property(property="startDate", type="string", example=null, description="StartDate of the worker"),
-     *              @OA\Property(property="birthDate", type="string", example=null, description="BirthDate of the worker"),
-     *               @OA\Property(property="occupation", type="string", example="-", description="Occupationi of the worker"),
-     *              @OA\Property(property="person_id", type="integer", example="1", description="Worker ID")
+     *              @OA\Property(property="name", type="string", example="Espcialidad 2", description="Name"),
+     *
      *          )
      *      ),
      *     @OA\Response(
      *          response=200,
      *          description="User updated",
-     *          @OA\JsonContent(ref="#/components/schemas/Worker")
-     *     ),
-     *     @OA\Response(
-     *          response=404,
-     *          description="User  not found",
-     *          @OA\JsonContent(
-     *              @OA\Property(property="message", type="string", example="User not found")
-     *          )
+     *          @OA\JsonContent(ref="#/components/schemas/Specialty")
      *     ),
      *     @OA\Response(
      *          response=401,
@@ -242,15 +197,18 @@ class WorkerController extends Controller
     public function update(Request $request, string $id)
     {
 
-        $object = Worker::find($id);
+        $object = Specialty::find($id);
 
         if (!$object) {
             return response()->json(
-                ['message' => 'User not found'], 404
+                ['message' => 'Specialty not found'], 404
             );
         }
         $validator = validator()->make($request->all(), [
-            'person_id' => 'required|exists:people,id',
+            'name' => [
+                'required',
+                Rule::unique('specialties')->ignore($id)->whereNull('deleted_at'),
+            ],
         ]);
 
         if ($validator->fails()) {
@@ -258,51 +216,48 @@ class WorkerController extends Controller
         }
 
         $data = [
-            'startDate' => $request->input('startDate'),
-            'birthDate' => $request->input('birthDate'),
-            'occupation' => $request->input('occupation'),
-            'person_id' => $request->input('person_id'),
+            'name' => $request->input('name'),
         ];
 
         $object->update($data);
-        $object = Worker::with(['person'])->find($object->id);
+        $object = Specialty::find($object->id);
         return response()->json($object, 200);
     }
 
     /**
-     * Remove the specified Worker
+     * Remove the specified Specialty
      * @OA\Delete (
-     *     path="/tecnimotors-backend/public/api/worker/{id}",
-     *     tags={"Worker"},
+     *     path="/tecnimotors-backend/public/api/specialty/{id}",
+     *     tags={"Specialty"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
-     *         description="ID of the Worker",
+     *         description="ID of the Specialty",
      *         @OA\Schema(
      *             type="number"
      *         )
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Worker deleted",
+     *         description="Specialty deleted",
      *         @OA\JsonContent(
      *             @OA\Property(
      *                 property="message",
      *                 type="string",
-     *                 example="Worker deleted successfully"
+     *                 example="Specialty deleted successfully"
      *             )
      *         )
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Worker not found",
+     *         description="Specialty not found",
      *         @OA\JsonContent(
      *             @OA\Property(
      *                 property="message",
      *                 type="string",
-     *                 example="Worker not found"
+     *                 example="Specialty not found"
      *             )
      *         )
      *     ),
@@ -323,10 +278,16 @@ class WorkerController extends Controller
      */
     public function destroy(int $id)
     {
-        $object = Worker::find($id);
+        $object = Specialty::find($id);
         if (!$object) {
             return response()->json(
-                ['message' => 'Worker not found'], 404
+                ['message' => 'Specialty not found'], 404
+            );
+        }
+
+        if ($object->workers()->count() > 0) {
+            return response()->json(
+                ['message' => 'Specialty have Relation with workers'], 404
             );
         }
 
