@@ -97,12 +97,8 @@
                     "description": "Attention data",
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
-                                "required": [
-                                    "vehicle_id",
-                                    "worker_id"
-                                ],
                                 "properties": {
                                     "arrivalDate": {
                                         "description": "Date Attention",
@@ -165,6 +161,11 @@
                                             "type": "integer",
                                             "example": 1
                                         }
+                                    },
+                                    "routeImage": {
+                                        "description": "Image file",
+                                        "type": "string",
+                                        "format": "binary"
                                     }
                                 },
                                 "type": "object"
