@@ -138,12 +138,12 @@ class AttentionController extends Controller
      *             @OA\Property(
      *                 property="elements",
      *                 type="array",
-     *                 @OA\Items(type="integer", example={1, 2, 3})
+     *                 @OA\Items(type="integer", example=1)
      *             ),
      *             @OA\Property(
      *                 property="detailsProducts",
      *                 type="array",
-     *                 @OA\Items(type="integer", example={1, 2, 3})
+     *                 @OA\Items(type="integer", example=1)
      *             )
      *         )
      *     ),
@@ -179,7 +179,7 @@ class AttentionController extends Controller
 
             'fuelLevel' => 'required|in:0,2,4,6,8,10',
             'km' => 'required',
-            'routeImage' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'routeImage' => 'nullable|image|mimes:jpeg,png,jpg,gif',
             'vehicle_id' => 'required|exists:vehicles,id',
             'worker_id' => 'required|exists:workers,id',
             'elements' => 'nullable',
@@ -192,7 +192,7 @@ class AttentionController extends Controller
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
-        $tipo = 'NRO';
+        $tipo = 'NUM°';
         $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM attentions a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
         $siguienteNum = (int) $resultado;
 
@@ -213,7 +213,7 @@ class AttentionController extends Controller
 
         if ($object) {
             //ASIGNAR ELEMENTS
-            $elements = $request->input('elements')[0] ?? [];
+            $elements = $request->input('elements') ?? [];
             foreach ($elements as $element) {
                 $objectData = [
                     'element_id' => $element,
@@ -223,7 +223,7 @@ class AttentionController extends Controller
             }
 
             //ASIGNAR PRODUCTS
-            $detailsProducts = $request->input('detailsProducts')[0] ?? [];
+            $detailsProducts = $request->input('detailsProducts') ?? [];
             $sumProducts = 0;
             foreach ($detailsProducts as $idProduct) {
 
