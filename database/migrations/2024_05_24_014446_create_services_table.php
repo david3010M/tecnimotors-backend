@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->integer('quantity');
             $table->decimal('saleprice', 10, 2);
             $table->decimal('time', 10, 2);
+            $table->foreignId('specialty_id')->nullable()->unsigned()->constrained('specialties');
             $table->timestamps();
             $table->softDeletes();
         });

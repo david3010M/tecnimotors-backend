@@ -26,8 +26,29 @@ class WorkerSeeder extends Seeder
                 'id' => 2,
                 'startDate' => null,
                 'birthDate' => null,
-                'occupation' => 'Prueba',
-                'person_id' => 2, 
+                'occupation' => 'Proveedor',
+                'person_id' => 3, 
+            ],
+            [
+                'id' => 3,
+                'startDate' => null,
+                'birthDate' => null,
+                'occupation' => 'Mecanico',
+                'person_id' => 4, 
+            ],
+            [
+                'id' => 4,
+                'startDate' => null,
+                'birthDate' => null,
+                'occupation' => 'Mecanico',
+                'person_id' => 4, 
+            ],
+            [
+                'id' => 5,
+                'startDate' => null,
+                'birthDate' => null,
+                'occupation' => 'Mecanico',
+                'person_id' => 4, 
             ],
         ];
 

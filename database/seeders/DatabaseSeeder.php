@@ -27,6 +27,16 @@ class DatabaseSeeder extends Seeder
             ['id' => '3', 'typeofDocument' => 'RUC',
                 'documentNumber' => '10123456789',
                 'businessName' => 'company SAC'],
+
+            ['id' => '4', 'typeofDocument' => 'DNI',
+                'documentNumber' => '89765431', 'names' => 'Miguel Angel',
+                'fatherSurname' => 'Guevara', 'motherSurname' =>
+                'Cajusol'],
+
+            ['id' => '5', 'typeofDocument' => 'DNI',
+                'documentNumber' => '89754321', 'names' => 'Renatto',
+                'fatherSurname' => 'Perleche', 'motherSurname' =>
+                '-'],
         ];
 
         foreach ($array as $object) {
@@ -50,7 +60,7 @@ class DatabaseSeeder extends Seeder
         $this->call(BrandSeeder::class);
         $this->call(ElementSeeder::class);
         $this->call(VehicleSeeder::class);
-        $this->call(ServiceSeeder::class);
+        
         $this->call(UnitSeeder::class);
         $this->call(CategorySeeder::class);
         $this->call(ProductSeeder::class);
@@ -59,6 +69,9 @@ class DatabaseSeeder extends Seeder
         $this->call(BankSeeder::class);
         $this->call(ConceptPaySeeder::class);
 
+        $this->call(SpecialtySeeder::class);
+        $this->call(SpecialtyByPersonSeeder::class);
+        $this->call(ServiceSeeder::class);
 
     }
 }
