@@ -21,6 +21,12 @@ return new class extends Migration
             $table->string('observations')->nullable();
             $table->string('fuelLevel')->nullable();
             $table->decimal('km')->nullable();
+
+            $table->decimal('totalService')->nullable();
+            $table->decimal('totalProducts')->nullable();
+            $table->decimal('total')->nullable();
+            $table->decimal('debtAmount')->nullable()->default(0.00);
+
             $table->string('routeImage')->nullable();
             $table->foreignId('worker_id')->nullable()->unsigned()->constrained('workers');
             $table->foreignId('vehicle_id')->nullable()->unsigned()->constrained('vehicles');

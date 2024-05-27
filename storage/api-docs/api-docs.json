@@ -122,16 +122,11 @@
                                     },
                                     "fuelLevel": {
                                         "type": "string",
-                                        "example": "Empty"
+                                        "example": "10"
                                     },
                                     "km": {
                                         "type": "string",
                                         "example": "0.00"
-                                    },
-                                    "routeImage": {
-                                        "description": "Image file",
-                                        "type": "string",
-                                        "format": "binary"
                                     },
                                     "vehicle_id": {
                                         "type": "integer",
@@ -9693,6 +9688,22 @@
                     "routeImage": {
                         "type": "string",
                         "example": "/image.jpg"
+                    },
+                    "totalService": {
+                        "type": "number",
+                        "example": "100.00"
+                    },
+                    "totalProducts": {
+                        "type": "number",
+                        "example": "200.00"
+                    },
+                    "total": {
+                        "type": "number",
+                        "example": "300.00"
+                    },
+                    "debtAmount": {
+                        "type": "number",
+                        "example": "100.00"
                     },
                     "created_at": {
                         "type": "string",

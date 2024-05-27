@@ -18,6 +18,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     @OA\Property(property="fuelLevel", type="integer", example="80"),
  *     @OA\Property(property="km", type="integer", example="15000"),
  *     @OA\Property(property="routeImage", type="string", example="/image.jpg"),
+ * @OA\Property(property="totalService", type="number", example="100.00"),
+ * @OA\Property(property="totalProducts", type="number", example="200.00"),
+ * @OA\Property(property="total", type="number", example="300.00"),
+ * @OA\Property(property="debtAmount", type="number", example="100.00"),
+
+ *
  *     @OA\Property(property="created_at", type="string", format="date-time", example="2024-05-21 04:09:25"),
  *         @OA\Property(
  *         property="worker",
@@ -44,6 +50,11 @@ class Attention extends Model
         'fuelLevel',
         'km',
         'routeImage',
+        'totalService',
+        'totalProducts',
+        'total',
+        'debtAmount',
+
         'worker_id',
         'vehicle_id',
 

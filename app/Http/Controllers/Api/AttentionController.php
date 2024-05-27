@@ -121,14 +121,9 @@ class AttentionController extends Controller
      *             @OA\Property(property="arrivalDate", type="string", format="date-time", example="2024-03-13", description="Date Attention"),
      *             @OA\Property(property="deliveryDate", type="string", format="date-time", example="2024-03-13", description="Date Attention"),
      *             @OA\Property(property="observations", type="string", example="-"),
-     *             @OA\Property(property="fuelLevel", type="string", example="Empty"),
+     *             @OA\Property(property="fuelLevel", type="string", example="10"),
      *             @OA\Property(property="km", type="string", example="0.00"),
-     *             @OA\Property(
-     *                 property="routeImage",
-     *                 type="string",
-     *                 format="binary",
-     *                 description="Image file"
-     *             ),
+
      *             @OA\Property(property="vehicle_id", type="integer", example=1),
      *             @OA\Property(property="worker_id", type="integer", example=1),
      *             @OA\Property(
@@ -182,7 +177,7 @@ class AttentionController extends Controller
             'deliveryDate' => 'required',
             'observations' => 'required',
 
-            'fuelLevel' => 'required',
+            'fuelLevel' => 'required|in:0,2,4,6,8,10',
             'km' => 'required',
             'routeImage' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'vehicle_id' => 'required|exists:vehicles,id',
@@ -219,20 +214,17 @@ class AttentionController extends Controller
         if ($object) {
             //ASIGNAR ELEMENTS
             $elements = $request->input('elements')[0] ?? [];
-
             foreach ($elements as $element) {
-
                 $objectData = [
                     'element_id' => $element,
                     'attention_id' => $object->id,
                 ];
                 ElementForAttention::create($objectData);
-
             }
 
             //ASIGNAR PRODUCTS
             $detailsProducts = $request->input('detailsProducts')[0] ?? [];
-
+            $sumProducts = 0;
             foreach ($detailsProducts as $idProduct) {
 
                 $product = Product::find($idProduct);
@@ -248,13 +240,15 @@ class AttentionController extends Controller
                     'service_id' => null,
                     'attention_id' => $object->id,
                 ];
-                DetailAttention::create($objectData);
+                $detailProd = DetailAttention::create($objectData);
+                $sumProducts += $detailProd->saleprice;
 
             }
+            $object->totalProducts = $sumProducts;
 
             //ASIGNAR DETAILS
             $detailsAttentions = $request->input('details') ?? [];
-
+            $sumServices = 0;
             foreach ($detailsAttentions as $detail) {
 
                 $service = Service::find($detail['service_id']);
@@ -270,10 +264,15 @@ class AttentionController extends Controller
                     'service_id' => $detail['service_id'],
                     'attention_id' => $object->id,
                 ];
-                DetailAttention::create($objectData);
+                $detailService = DetailAttention::create($objectData);
+                $sumServices += $detailService->saleprice;
             }
 
+            $object->totalService = $sumServices;
+
         }
+        $object->total = $object->totalService+$object->totalProducts;
+        $object->save();
 
         //IMAGEN
 

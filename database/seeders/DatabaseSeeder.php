@@ -37,6 +37,10 @@ class DatabaseSeeder extends Seeder
                 'documentNumber' => '89754321', 'names' => 'Renatto',
                 'fatherSurname' => 'Perleche', 'motherSurname' =>
                 '-'],
+            ['id' => '6', 'typeofDocument' => 'DNI',
+                'documentNumber' => '19754321', 'names' => 'Alex',
+                'fatherSurname' => 'Samamé', 'motherSurname' =>
+                '-'],
         ];
 
         foreach ($array as $object) {

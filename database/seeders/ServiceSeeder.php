@@ -23,16 +23,16 @@ class ServiceSeeder extends Seeder
          * 'time'
          */
         $array = [
-            ['name' => 'Service 1', 'quantity' => 1, 'saleprice' => 100.00, 'time' => 2.5, 'specialty_id' => 1],
-            ['name' => 'Service 2', 'quantity' => 2, 'saleprice' => 200.00, 'time' => 3.5, 'specialty_id' => 1],
-            ['name' => 'Service 3', 'quantity' => 3, 'saleprice' => 300.00, 'time' => 4.5, 'specialty_id' => 2],
-            ['name' => 'Service 4', 'quantity' => 4, 'saleprice' => 400.00, 'time' => 5.5, 'specialty_id' => 2],
-            ['name' => 'Service 5', 'quantity' => 5, 'saleprice' => 500.00, 'time' => 6.5, 'specialty_id' => 1],
-            ['name' => 'Service 6', 'quantity' => 6, 'saleprice' => 600.00, 'time' => 7.5, 'specialty_id' => 2],
-            ['name' => 'Service 7', 'quantity' => 7, 'saleprice' => 700.00, 'time' => 8.5, 'specialty_id' => 3],
-            ['name' => 'Service 8', 'quantity' => 8, 'saleprice' => 800.00, 'time' => 9.5, 'specialty_id' => 1],
-            ['name' => 'Service 9', 'quantity' => 9, 'saleprice' => 900.00, 'time' => 10.5, 'specialty_id' => 3],
-            ['name' => 'Service 10', 'quantity' => 10, 'saleprice' => 1000.00, 'time' => 11.5, 'specialty_id' => 3],
+            ['name' => 'Cambio de Aceite', 'quantity' => 1, 'saleprice' => 50.00, 'time' => 0.5, 'specialty_id' => 1],
+            ['name' => 'Alineación y Balanceo', 'quantity' => 1, 'saleprice' => 70.00, 'time' => 1.0, 'specialty_id' => 2],
+            ['name' => 'Revisión de Frenos', 'quantity' => 1, 'saleprice' => 90.00, 'time' => 1.5, 'specialty_id' => 1],
+            ['name' => 'Cambio de Bujías', 'quantity' => 4, 'saleprice' => 120.00, 'time' => 1.0, 'specialty_id' => 2],
+            ['name' => 'Diagnóstico de Motor', 'quantity' => 1, 'saleprice' => 150.00, 'time' => 2.0, 'specialty_id' => 3],
+            ['name' => 'Cambio de Batería', 'quantity' => 1, 'saleprice' => 100.00, 'time' => 0.5, 'specialty_id' => 1],
+            ['name' => 'Reparación de Transmisión', 'quantity' => 1, 'saleprice' => 600.00, 'time' => 10.0, 'specialty_id' => 3],
+            ['name' => 'Reparación del Sistema de Escape', 'quantity' => 1, 'saleprice' => 300.00, 'time' => 3.0, 'specialty_id' => 2],
+            ['name' => 'Revisión del Sistema de Enfriamiento', 'quantity' => 1, 'saleprice' => 200.00, 'time' => 2.0, 'specialty_id' => 3],
+            ['name' => 'Reemplazo de Filtro de Aire', 'quantity' => 1, 'saleprice' => 30.00, 'time' => 0.5, 'specialty_id' => 1],
         ];
 
         foreach ($array as $item) {
