@@ -192,7 +192,7 @@ class AttentionController extends Controller
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
-        $tipo = 'ATTC';
+        $tipo = 'NRO';
         $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM attentions a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
         $siguienteNum = (int) $resultado;
 
@@ -271,7 +271,7 @@ class AttentionController extends Controller
             $object->totalService = $sumServices;
 
         }
-        $object->total = $object->totalService+$object->totalProducts;
+        $object->total = $object->totalService + $object->totalProducts;
         $object->save();
 
         //IMAGEN

@@ -156,4 +156,9 @@ class Attention extends Model
     {
         return $this->hasMany(DetailAttention::class);
     }
+
+    public function elements()
+    {
+        return $this->belongsToMany(Element::class, 'element_for_attentions');
+    }
 }
