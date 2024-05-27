@@ -104,6 +104,8 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::resource('vehicle', VehicleController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'vehicle.index', 'store' => 'vehicle.store', 'show' => 'vehicle.show', 'update' => 'vehicle.update', 'destroy' => 'vehicle.destroy']);
 
+    Route::get('vehicleByPerson/{id}', [VehicleController::class, 'getVehiclesByPerson']);
+
 //  ATTENTION
     Route::resource('attention', AttentionController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'attention.index', 'store' => 'attention.store', 'show' => 'attention.show', 'update' => 'attention.update', 'destroy' => 'attention.destroy']);

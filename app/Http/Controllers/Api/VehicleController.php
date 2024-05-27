@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Person;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -312,5 +313,53 @@ class VehicleController extends Controller
         $vehicle->delete();
 
         return response()->json(['message' => 'Vehicle deleted']);
+    }
+
+
+    /**
+     * Get all Vehicles by Person
+     * @OA\Get (
+     *     path="/tecnimotors-backend/public/api/vehicleByPerson/{id}",
+     *     tags={"Vehicle"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Person ID",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of active Vehicles by Person",
+     *         @OA\JsonContent(ref="#/components/schemas/Vehicle")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Person not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Person not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     )
+     * )
+     *
+     */
+    public function getVehiclesByPerson(int $id)
+    {
+        $person = Person::find($id);
+
+        if (!$person) {
+            return response()->json(['message' => 'Person not found'], 404);
+        }
+
+        $vehicles = Vehicle::where('person_id', $id)->with('person', 'typeVehicle', 'brand')->get();
+        return response()->json($vehicles);
     }
 }
