@@ -34,6 +34,13 @@ class WorkerController extends Controller
      *             example=1
      *         )
      *     ),
+     *       @OA\Parameter(
+     *         name="occupation",
+     *         in="query",
+     *         description="Occupation of the Workers",
+     *         required=false,
+     *               example="Mecanico"
+     *     ),
      *     @OA\Response(
      *         response=401,
      *         description="Unauthorized",
@@ -51,8 +58,11 @@ class WorkerController extends Controller
     public function index(Request $request)
     {
         $speciality_id = $request->input('speciality_id');
+        $occupation = $request->input('occupation');
+
         if (!$speciality_id) {
-            return response()->json(Worker::with(['person'])->simplePaginate(15));
+            return response()->json(Worker::whereRaw('LOWER(occupation) = ?', [strtolower($occupation)])
+                    ->with(['person'])->simplePaginate(25));
         } else {
             $object = Specialty::find($speciality_id);
             if (!$object) {
@@ -60,13 +70,16 @@ class WorkerController extends Controller
                     ['message' => 'Specialty not found'], 404
                 );
             }
-            $workers = Worker::whereHas('specialties', function ($query) use ($speciality_id) {
+
+            $workers = Worker::whereHas('specialties', function ($query) use ($occupation, $speciality_id) {
                 $query->where('specialties.id', $speciality_id);
-            })->with(['person'])->simplePaginate(15);
+                if ($occupation) {
+                    $query->whereRaw('LOWER(occupation) = ?', [strtolower($occupation)]);
+                }
+            })->with(['person'])->simplePaginate(25);
 
             return response()->json($workers);
         }
-
     }
 
     /**

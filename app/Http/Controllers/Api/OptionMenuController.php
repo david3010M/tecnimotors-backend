@@ -39,7 +39,7 @@ class OptionMenuController extends Controller
 
     public function index()
     {
-        return response()->json(Optionmenu::with(['groupmenu'])->simplePaginate(15));
+        return response()->json(Optionmenu::simplePaginate(15));
     }
 
     /**
@@ -114,7 +114,7 @@ class OptionMenuController extends Controller
         ];
 
         $object = Optionmenu::create($data);
-        $object = Optionmenu::with(['groupmenu'])->find($object->id);
+        $object = Optionmenu::find($object->id);
         return response()->json($object, 200);
     }
 
@@ -219,7 +219,7 @@ class OptionMenuController extends Controller
         ];
 
         $object->update($data);
-        $object =Optionmenu::with(['groupmenu'])->find($object->id);
+        $object =Optionmenu::find($object->id);
         return response()->json($object, 200);
 
     }
@@ -272,7 +272,7 @@ class OptionMenuController extends Controller
     public function show(int $id)
     {
 
-        $object = Optionmenu::with(['groupmenu'])->find($id);
+        $object = Optionmenu::find($id);
         if ($object) {
             return response()->json($object, 200);
         }
@@ -336,7 +336,7 @@ class OptionMenuController extends Controller
      */
     public function destroy(int $id)
     {
-        $object = Optionmenu::with(['groupmenu'])->find($id);
+        $object = Optionmenu::find($id);
         if (!$object) {
             return response()->json(
                 ['message' => 'Option Menu not found'], 404

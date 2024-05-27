@@ -14,6 +14,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     @OA\Property(property="name", type="string", example="Admin"),
  *     @OA\Property(property="icon", type="string", example="fas fa-user"),
  *     @OA\Property(property="created_at", type="string", example="2024-03-27 01:42:21"),
+ *   @OA\Property(
+ *         property="option_menus",
+ *         ref="#/components/schemas/OptionMenu"
+ *     ),
  * )
  */
 class GroupMenu extends Model

@@ -15,11 +15,14 @@ class OptionMenuSeeder extends Seeder
     public function run()
     {
         $array = [
-            ['id' => '1', 'name' => 'Option 1', 'route' => 'option1', 'icon' => 'fa-solid fa-house', 'groupmenu_id' => 1],
-            ['id' => '2', 'name' => 'Option 2', 'route' => 'option2', 'icon' => 'fa-solid fa-house', 'groupmenu_id' => 2],
-            ['id' => '3', 'name' => 'Option 3', 'route' => 'option3', 'icon' => 'fa-solid fa-house', 'groupmenu_id' => 3],
-            ['id' => '4', 'name' => 'Option 4', 'route' => 'option4', 'icon' => 'fa-solid fa-house', 'groupmenu_id' => 4],
-            ['id' => '5', 'name' => 'Option 5', 'route' => 'option5', 'icon' => 'fa-solid fa-house', 'groupmenu_id' => 5],
+            ['id' => '1', 'name' => 'Hoja de Servicio', 'route' => 'hojaServicio', 'icon' => 'fa-solid fa-house', 'groupmenu_id' => 1],
+            ['id' => '2', 'name' => 'Presupuesto', 'route' => 'presupuesto', 'icon' => 'fa-solid fa-house', 'groupmenu_id' => 1],
+            ['id' => '3', 'name' => 'Servicio', 'route' => 'servicio', 'icon' => 'fa-solid fa-house', 'groupmenu_id' => 2],
+            ['id' => '4', 'name' => 'Almacen', 'route' => 'almacen', 'icon' => 'fa-solid fa-house', 'groupmenu_id' => 1],
+            ['id' => '5', 'name' => 'Concepto', 'route' => 'concepto', 'icon' => 'fa-solid fa-house', 'groupmenu_id' => 2],
+            ['id' => '6', 'name' => 'Compromiso', 'route' => 'compromiso', 'icon' => 'fa-solid fa-house', 'groupmenu_id' => 2],
+            ['id' => '7', 'name' => 'Caja', 'route' => 'caja', 'icon' => 'fa-solid fa-house', 'groupmenu_id' => 1],
+
         ];
 
         foreach ($array as $object) {

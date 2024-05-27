@@ -40,7 +40,7 @@ class GroupMenuController extends Controller
 
     public function index()
     {
-        return response()->json(GroupMenu::simplePaginate(15));
+        return response()->json(GroupMenu::with(['optionMenus'])->simplePaginate(15));
     }
 
     /**
@@ -105,7 +105,7 @@ class GroupMenuController extends Controller
         ];
 
         $object = GroupMenu::create($data);
-        $object = GroupMenu::find($object->id);
+        $object = GroupMenu::with(['optionMenus'])->find($object->id);
         return response()->json($object, 200);
     }
 
@@ -157,7 +157,7 @@ class GroupMenuController extends Controller
     public function show(int $id)
     {
 
-        $object = GroupMenu::find($id);
+        $object = GroupMenu::with(['optionMenus'])->find($id);
         if ($object) {
             return response()->json($object, 200);
         }
@@ -256,7 +256,7 @@ class GroupMenuController extends Controller
         ];
 
         $object->update($data);
-        $object = GroupMenu::find($object->id);
+        $object = GroupMenu::with(['optionMenus'])->find($object->id);
         return response()->json($object, 200);
 
     }

@@ -15,11 +15,11 @@ class GroupMenuSeeder extends Seeder
     public function run()
     {
         $array = [
-            ['id' => '1', 'name' => 'Grupo 1', 'icon' => 'fa-solid fa-house'],
-            ['id' => '2', 'name' => 'Grupo 2', 'icon' => 'fa-solid fa-house'],
-            ['id' => '3', 'name' => 'Grupo 3', 'icon' => 'fa-solid fa-house'],
-            ['id' => '4', 'name' => 'Grupo 4', 'icon' => 'fa-solid fa-house'],
-            ['id' => '5', 'name' => 'Grupo 5', 'icon' => 'fa-solid fa-house'],
+            ['id' => '1', 'name' => 'Principal', 'icon' => 'fa-solid fa-house'],
+            ['id' => '2', 'name' => 'Bases', 'icon' => 'fa-solid fa-building'],
+            ['id' => '3', 'name' => 'Personas', 'icon' => 'fa-solid fa-user'],
+            ['id' => '4', 'name' => 'Vehiculos', 'icon' => 'fa-solid fa-house'],
+            ['id' => '5', 'name' => 'Repuestos', 'icon' => 'fa-solid fa-screwdriver-wrench'],
         ];
 
         foreach ($array as $object) {

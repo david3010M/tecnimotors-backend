@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -74,6 +75,12 @@ class Attention extends Model
         return ($list);
     }
 
+    public function getDetails($id)
+    {
+        $list = DetailAttention::where('attention_id', $id)->with(['worker', 'service'])->get();
+        return $list;
+    }
+
     public function setElements($id, $elementsId)
     {
         $attention = Attention::find($id);
@@ -94,6 +101,40 @@ class Attention extends Model
                     'attention_id' => $id,
                     'element_id' => $optionMenuId,
                 ]);
+            }
+        }
+    }
+
+    public function setDetails($id, $detailsAtId)
+    {
+        $attention = Attention::find($id);
+        $currentDetailsAtds = $attention->details()->pluck('id')->toArray();
+
+        $toAdd = array_diff($detailsAtId, $currentDetailsAtds);
+        $toRemove = array_diff($currentDetailsAtds, $detailsAtId);
+
+        if (!empty($toRemove)) {
+            $attention->details()->whereIn('id', $toRemove)->forceDelete();
+        }
+
+        // Añadir los nuevos accesos que no existen actualmente
+        foreach ($toAdd as $detailNew) {
+
+            if (!in_array($detailNew, $currentDetailsAtds)) {
+                $service = Service::find($detailNew['service_id']);
+                $objectData = [
+                    'saleprice' => $service->saleprice ?? '0.00',
+                    'type' => 'Service',
+                    'comment' => $detailNew['comment'] ?? '-',
+                    'status' => $detailNew['status'] ?? 'Generada',
+                    'dateRegister' => Carbon::now(),
+                    'dateMax' => $detailNew['dateMax'] ?? null,
+                    'worker_id' => $detailNew['worker_id'],
+                    'product_id' => $detailNew['product_id'] ?? null,
+                    'service_id' => $detailNew['service_id'],
+                    'attention_id' => $attention->id,
+                ];
+                DetailAttention::create($objectData);
             }
         }
     }

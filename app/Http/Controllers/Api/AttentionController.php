@@ -7,6 +7,7 @@ use App\Models\Attention;
 use App\Models\DetailAttention;
 use App\Models\Element;
 use App\Models\ElementForAttention;
+use App\Models\Product;
 use App\Models\Service;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -51,6 +52,7 @@ class AttentionController extends Controller
         $object = Attention::simplePaginate(15);
         $object->getCollection()->transform(function ($typeUser) {
             $typeUser->elements = $typeUser->getElements($typeUser->id);
+            $typeUser->details = $typeUser->getDetails($typeUser->id);
             return $typeUser;
         });
         return response()->json($object);
@@ -97,6 +99,7 @@ class AttentionController extends Controller
     {
         $object = Attention::with(['worker.person', 'vehicle', 'details'])->find($id);
         $object->elements = $object->getElements($object->id);
+        $object->details = $object->getDetails($object->id);
         if (!$object) {
             return response()->json(['message' => 'Attention not found'], 404);
         }
@@ -105,41 +108,48 @@ class AttentionController extends Controller
     }
 
     /**
-     * Create a new Element
-     * @OA\Post (
+     * Create a new ATTENTION
+     * @OA\Post(
      *     path="/tecnimotors-backend/public/api/attention",
      *     tags={"Attention"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
+     *         description="Attention data",
      *         @OA\JsonContent(
-     *             required={"vehicle_id","worker_id"},
-     *      @OA\Property(property="arrivalDate", type="string", format="date-time", example="2024-03-13", description="Date Attention"),
-     *      @OA\Property(property="deliveryDate", type="string", format="date-time", example="2024-03-13", description="Date Attention"),
-     *      @OA\Property(property="observations", type="string", example="-"),
-
-     *     @OA\Property(property="fuelLevel", type="string", example="Empty"),
-     *     @OA\Property(property="km", type="string", example="0.00"),
-     *     @OA\Property(property="routeImage", type="string", example="-"),
-     *     @OA\Property(property="vehicle_id", type="string", example=1),
-     *     @OA\Property(property="worker_id", type="string", example=1),
-     *     @OA\Property(
+     *             required={"vehicle_id", "worker_id"},
+     *             @OA\Property(property="arrivalDate", type="string", format="date-time", example="2024-03-13", description="Date Attention"),
+     *             @OA\Property(property="deliveryDate", type="string", format="date-time", example="2024-03-13", description="Date Attention"),
+     *             @OA\Property(property="observations", type="string", example="-"),
+     *             @OA\Property(property="fuelLevel", type="string", example="Empty"),
+     *             @OA\Property(property="km", type="string", example="0.00"),
+     *             @OA\Property(
+     *                 property="routeImage",
+     *                 type="string",
+     *                 format="binary",
+     *                 description="Image file"
+     *             ),
+     *             @OA\Property(property="vehicle_id", type="integer", example=1),
+     *             @OA\Property(property="worker_id", type="integer", example=1),
+     *             @OA\Property(
      *                 property="details",
      *                 type="array",
      *                 @OA\Items(
      *                     type="object",
-     *       @OA\Property(property="service_id", type="integer", example=1),
-     * @OA\Property(property="worker_id", type="integer", example=1),
-     *                  ),
-     *     ),
-     *     @OA\Property(
+     *                     @OA\Property(property="service_id", type="integer", example=1),
+     *                     @OA\Property(property="worker_id", type="integer", example=1)
+     *                 )
+     *             ),
+     *             @OA\Property(
      *                 property="elements",
      *                 type="array",
-     *                 @OA\Items(
-     *                     type="object",
-     *                     @OA\Property(property="id", type="integer", example=1),
-     *                  ),
-     *     ),
+     *                 @OA\Items(type="integer", example={1, 2, 3})
+     *             ),
+     *             @OA\Property(
+     *                 property="detailsProducts",
+     *                 type="array",
+     *                 @OA\Items(type="integer", example={1, 2, 3})
+     *             )
      *         )
      *     ),
      *     @OA\Response(
@@ -158,13 +168,12 @@ class AttentionController extends Controller
      *         response=401,
      *         description="Unauthorized",
      *         @OA\JsonContent(
-     *             @OA\Property(
-     *                 property="message", type="string", example="Unauthenticated"
-     *             )
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
      *         )
      *     )
      * )
      */
+
     public function store(Request $request)
     {
 
@@ -175,13 +184,13 @@ class AttentionController extends Controller
 
             'fuelLevel' => 'required',
             'km' => 'required',
-            'routeImage' => 'required',
+            'routeImage' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'vehicle_id' => 'required|exists:vehicles,id',
             'worker_id' => 'required|exists:workers,id',
-            'elements' => 'nullable|array',
+            'elements' => 'nullable',
             'elements.*' => 'exists:elements,id',
-            'details' => 'required|array|min:1',
-  
+            'details' => 'nullable|array',
+            'detailsProducts' => 'nullable|array',
 
         ]);
 
@@ -209,20 +218,42 @@ class AttentionController extends Controller
 
         if ($object) {
             //ASIGNAR ELEMENTS
-            $elements = $request->input('elements');
+            $elements = $request->input('elements')[0] ?? [];
 
             foreach ($elements as $element) {
 
                 $objectData = [
-                    'element_id' => $element['id'],
+                    'element_id' => $element,
                     'attention_id' => $object->id,
                 ];
-                ElementForAttention::create($objectData)->id;
+                ElementForAttention::create($objectData);
+
+            }
+
+            //ASIGNAR PRODUCTS
+            $detailsProducts = $request->input('detailsProducts')[0] ?? [];
+
+            foreach ($detailsProducts as $idProduct) {
+
+                $product = Product::find($idProduct);
+                $objectData = [
+                    'saleprice' => $product->sale_price ?? '0.00',
+                    'type' => 'Product',
+                    'comment' => '-',
+                    'status' => 'Generada',
+                    'dateRegister' => Carbon::now(),
+                    'dateMax' => null,
+                    'worker_id' => null,
+                    'product_id' => $product->id ?? null,
+                    'service_id' => null,
+                    'attention_id' => $object->id,
+                ];
+                DetailAttention::create($objectData);
 
             }
 
             //ASIGNAR DETAILS
-            $detailsAttentions = $request->input('details');
+            $detailsAttentions = $request->input('details') ?? [];
 
             foreach ($detailsAttentions as $detail) {
 
@@ -233,19 +264,31 @@ class AttentionController extends Controller
                     'comment' => $detail['comment'] ?? '-',
                     'status' => $detail['status'] ?? 'Generada',
                     'dateRegister' => Carbon::now(),
-                    'dateMax' => $detail['dateMax']??null,
+                    'dateMax' => $detail['dateMax'] ?? null,
                     'worker_id' => $detail['worker_id'],
                     'product_id' => $detail['product_id'] ?? null,
                     'service_id' => $detail['service_id'],
                     'attention_id' => $object->id,
                 ];
-                DetailAttention::create($objectData)->id;
+                DetailAttention::create($objectData);
             }
 
         }
 
-        $object = Attention::with(['worker.person', 'vehicle','details'])->find($object->id);
+        //IMAGEN
+
+        if ($request->file('routeImage')) {
+            $file = $request->file('routeImage');
+            $currentTime = now();
+            $filename = $currentTime->format('YmdHis') . '_' . $file->getClientOriginalName();
+            $file->storeAs('public/photosSheetService', $filename);
+            $object->routeImage = $filename;
+            $object->save();
+        }
+
+        $object = Attention::with(['worker.person', 'vehicle', 'details'])->find($object->id);
         $object->elements = $object->getElements($object->id);
+        $object->details = $object->getDetails($object->id);
 
         return response()->json($object);
     }
@@ -276,6 +319,15 @@ class AttentionController extends Controller
      *     @OA\Property(property="routeImage", type="string", example="-"),
      *     @OA\Property(property="vehicle_id", type="string", example=1),
      *     @OA\Property(property="worker_id", type="string", example=1),
+     *     @OA\Property(
+     *                 property="details",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *       @OA\Property(property="service_id", type="integer", example=1),
+     * @OA\Property(property="worker_id", type="integer", example=1),
+     *                  ),
+     *     ),
      *    @OA\Property(
      *                  property="elements",
      *                  type="array",
@@ -332,6 +384,7 @@ class AttentionController extends Controller
 
             'elements' => 'nullable|array',
             'elements.*' => 'exists:elements,id',
+            'details' => 'required|array|min:1',
         ]);
 
         if ($validator->fails()) {
@@ -353,12 +406,14 @@ class AttentionController extends Controller
         $object->update($data);
 
         $details = $request->input('elements', []);
-
         $object->setElements($object->id, $details);
+
+        $detailsAt = $request->input('details', []);
+        $object->setDetails($object->id, $detailsAt);
 
         $object = Attention::with(['worker.person', 'vehicle', 'details'])->find($object->id);
         $object->elements = $object->getElements($object->id);
-
+        $object->details = $object->getDetails($object->id);
         return response()->json($object);
     }
 

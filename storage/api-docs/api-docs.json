@@ -91,9 +91,10 @@
                 "tags": [
                     "Attention"
                 ],
-                "summary": "Create a new Element",
+                "summary": "Create a new ATTENTION",
                 "operationId": "81d1fdc3b832238f1e85a493d69e9077",
                 "requestBody": {
+                    "description": "Attention data",
                     "required": true,
                     "content": {
                         "application/json": {
@@ -128,15 +129,16 @@
                                         "example": "0.00"
                                     },
                                     "routeImage": {
+                                        "description": "Image file",
                                         "type": "string",
-                                        "example": "-"
+                                        "format": "binary"
                                     },
                                     "vehicle_id": {
-                                        "type": "string",
+                                        "type": "integer",
                                         "example": 1
                                     },
                                     "worker_id": {
-                                        "type": "string",
+                                        "type": "integer",
                                         "example": 1
                                     },
                                     "details": {
@@ -158,13 +160,23 @@
                                     "elements": {
                                         "type": "array",
                                         "items": {
-                                            "properties": {
-                                                "id": {
-                                                    "type": "integer",
-                                                    "example": 1
-                                                }
-                                            },
-                                            "type": "object"
+                                            "type": "integer",
+                                            "example": [
+                                                1,
+                                                2,
+                                                3
+                                            ]
+                                        }
+                                    },
+                                    "detailsProducts": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer",
+                                            "example": [
+                                                1,
+                                                2,
+                                                3
+                                            ]
                                         }
                                     }
                                 },
@@ -355,6 +367,22 @@
                                     "worker_id": {
                                         "type": "string",
                                         "example": 1
+                                    },
+                                    "details": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "service_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "worker_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
                                     },
                                     "elements": {
                                         "type": "array",
@@ -7512,6 +7540,13 @@
                             "type": "integer",
                             "example": 1
                         }
+                    },
+                    {
+                        "name": "occupation",
+                        "in": "query",
+                        "description": "Occupation of the Workers",
+                        "required": false,
+                        "example": "Mecanico"
                     }
                 ],
                 "responses": {
@@ -8390,6 +8425,9 @@
                     "created_at": {
                         "type": "string",
                         "example": "2024-03-27 01:42:21"
+                    },
+                    "option_menus": {
+                        "$ref": "#/components/schemas/OptionMenu"
                     }
                 },
                 "type": "object"
@@ -8426,9 +8464,6 @@
                     "created_at": {
                         "type": "string",
                         "example": "2024-03-27 01:42:21"
-                    },
-                    "group_menu": {
-                        "$ref": "#/components/schemas/GroupMenu"
                     }
                 },
                 "type": "object"
