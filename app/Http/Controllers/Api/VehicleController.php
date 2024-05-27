@@ -61,7 +61,7 @@ class VehicleController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Vehicle created",
-     *         @OA\JsonContent(ref="#/components/schemas/Vehicle")
+     *         @OA\JsonContent(ref="#/components/schemas/VehicleCollection")
      *     ),
      *     @OA\Response(
      *         response=401,
@@ -114,7 +114,7 @@ class VehicleController extends Controller
         ];
 
         $vehicle = Vehicle::create($data);
-        $vehicle = Vehicle::find($vehicle->id);
+        $vehicle = Vehicle::find($vehicle->id)->with('person', 'typeVehicle', 'brand')->first();
 
         return response()->json($vehicle);
     }
@@ -186,7 +186,7 @@ class VehicleController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Vehicle updated",
-     *         @OA\JsonContent(ref="#/components/schemas/Vehicle")
+     *         @OA\JsonContent(ref="#/components/schemas/VehicleCollection")
      *     ),
      *     @OA\Response(
      *         response=401,
@@ -251,7 +251,7 @@ class VehicleController extends Controller
         ];
 
         $vehicle->update($data);
-        $vehicle = Vehicle::find($vehicle->id);
+        $vehicle = Vehicle::find($vehicle->id)->with('person', 'typeVehicle', 'brand')->first();
 
         return response()->json($vehicle);
     }
@@ -332,7 +332,7 @@ class VehicleController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="List of active Vehicles by Person",
-     *         @OA\JsonContent(ref="#/components/schemas/Vehicle")
+     *         @OA\JsonContent(ref="#/components/schemas/VehicleCollection")
      *     ),
      *     @OA\Response(
      *         response=404,
