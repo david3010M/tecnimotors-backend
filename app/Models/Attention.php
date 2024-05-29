@@ -162,7 +162,6 @@ class Attention extends Model
         return $this->hasMany(ElementForAttention::class);
     }
 
-
 //    PDF
 
     public static function getAttention($id)
@@ -172,7 +171,7 @@ class Attention extends Model
             'vehicle.person',
             'vehicle.brand',
             'details',
-            'elements.element'
+            'elements.element',
         ])->find($id);
 
         if (!$object) {

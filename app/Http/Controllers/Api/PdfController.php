@@ -24,7 +24,7 @@ class PdfController extends Controller
 
 //        HORIZONTAL
         $pdf = Pdf::loadView('orden-servicio', [
-            'order' => $object
+            'order' => $object,
         ]);
 //        $pdf->setPaper('a3', 'landscape');
 

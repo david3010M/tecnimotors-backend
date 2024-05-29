@@ -30,8 +30,8 @@ class DatabaseSeeder extends Seeder
          * ocupation
          */
         $array = [
-            ['id' => '1', 'typeofDocument' => 'DNI', 'documentNumber' => '31648134', 'names' => 'John', 'fatherSurname' => 'Doe',
-                'motherSurname' => 'Smith', 'businessName' => 'Doe Enterprises', 'representativeDni' => '87654321',
+            ['id' => '1', 'typeofDocument' => 'DNI', 'documentNumber' => '31648134', 'names' => 'Miguel Angel', 'fatherSurname' => 'Guevara',
+                'motherSurname' => 'Cajusol', 'businessName' => 'Doe Enterprises', 'representativeDni' => '87654321',
                 'representativeNames' => 'Jane Doe', 'address' => '123 Main St', 'phone' => '+1234567890',
                 'email' => 'johndoe@gmail.com', 'origin' => 'City', 'ocupation' => 'Engineer'],
             ['id' => '2', 'typeofDocument' => 'DNI', 'documentNumber' => '16456616', 'names' => 'Jane', 'fatherSurname' => 'Doe',

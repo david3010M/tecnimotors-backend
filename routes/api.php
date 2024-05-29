@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\PdfController;
 use App\Http\Controllers\Api\PersonController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\SearchController;
+use App\Http\Controllers\Api\SendWhatsappController;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\SpecialtyController;
 use App\Http\Controllers\Api\SpecialtyPersonController;
@@ -160,4 +161,7 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
 
 //    ORDER SERVICE
 //    Route::get('getServiceOrder', [PdfController::class, 'index']);
+
+Route::post('sendSheetByWhatsapp', [SendWhatsappController::class, 'sendSheetServiceByWhatsapp']);
+
 });
