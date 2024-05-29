@@ -108,74 +108,74 @@ class AttentionController extends Controller
         return response()->json($object);
     }
 
-   /**
- * Create a new ATTENTION
- * @OA\Post(
- *     path="/tecnimotors-backend/public/api/attention",
- *     tags={"Attention"},
- *     security={{"bearerAuth":{}}},
- *     @OA\RequestBody(
- *         required=true,
- *         description="Attention data",
- *         @OA\MediaType(
- *             mediaType="multipart/form-data",
- *             @OA\Schema(
- *                 @OA\Property(property="arrivalDate", type="string", format="date-time", example="2024-03-13", description="Date Attention"),
- *                 @OA\Property(property="deliveryDate", type="string", format="date-time", example="2024-03-13", description="Date Attention"),
- *                 @OA\Property(property="observations", type="string", example="-"),
- *                 @OA\Property(property="fuelLevel", type="string", example="10"),
- *                 @OA\Property(property="km", type="string", example="0.00"),
- *                 @OA\Property(property="vehicle_id", type="integer", example=1),
- *                 @OA\Property(property="worker_id", type="integer", example=1),
- *                 @OA\Property(
- *                     property="details",
- *                     type="array",
- *                     @OA\Items(
- *                         type="object",
- *                         @OA\Property(property="service_id", type="integer", example=1),
- *                         @OA\Property(property="worker_id", type="integer", example=1)
- *                     )
- *                 ),
- *                 @OA\Property(
- *                     property="elements",
- *                     type="array",
- *                     @OA\Items(type="integer", example=1)
- *                 ),
- *                 @OA\Property(
- *                     property="detailsProducts",
- *                     type="array",
- *                     @OA\Items(type="integer", example=1)
- *                 ),
- *                 @OA\Property(
- *                     property="routeImage",
- *                     type="string",
- *                     format="binary",
- *                     description="Image file"
- *                 )
- *             )
- *         )
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Element created",
- *         @OA\JsonContent(ref="#/components/schemas/Attention")
- *     ),
- *     @OA\Response(
- *         response=422,
- *         description="Validation error",
- *         @OA\JsonContent(
- *             @OA\Property(property="error", type="string", example="The name has already been taken.")
- *         )
- *     ),
- *     @OA\Response(
- *         response=401,
- *         description="Unauthorized",
- *         @OA\JsonContent(
- *             @OA\Property(property="message", type="string", example="Unauthenticated")
- *         )
- *     )
- * )
- */
+    /**
+     * Create a new ATTENTION
+     * @OA\Post(
+     *     path="/tecnimotors-backend/public/api/attention",
+     *     tags={"Attention"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Attention data",
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(property="arrivalDate", type="string", format="date-time", example="2024-03-13", description="Date Attention"),
+     *                 @OA\Property(property="deliveryDate", type="string", format="date-time", example="2024-03-13", description="Date Attention"),
+     *                 @OA\Property(property="observations", type="string", example="-"),
+     *                 @OA\Property(property="fuelLevel", type="string", example="10"),
+     *                 @OA\Property(property="km", type="string", example="0.00"),
+     *                 @OA\Property(property="vehicle_id", type="integer", example=1),
+     *                 @OA\Property(property="worker_id", type="integer", example=1),
+     *                 @OA\Property(
+     *                     property="details",
+     *                     type="array",
+     *                     @OA\Items(
+     *                         type="object",
+     *                         @OA\Property(property="service_id", type="integer", example=1),
+     *                         @OA\Property(property="worker_id", type="integer", example=1)
+     *                     )
+     *                 ),
+     *                 @OA\Property(
+     *                     property="elements",
+     *                     type="array",
+     *                     @OA\Items(type="integer", example=1)
+     *                 ),
+     *                 @OA\Property(
+     *                     property="detailsProducts",
+     *                     type="array",
+     *                     @OA\Items(type="integer", example=1)
+     *                 ),
+     *                 @OA\Property(
+     *                     property="routeImage",
+     *                     type="string",
+     *                     format="binary",
+     *                     description="Image file"
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Element created",
+     *         @OA\JsonContent(ref="#/components/schemas/Attention")
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="The name has already been taken.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     )
+     * )
+     */
 
     public function store(Request $request)
     {
@@ -184,7 +184,6 @@ class AttentionController extends Controller
             'arrivalDate' => 'required',
             'deliveryDate' => 'required',
             'observations' => 'required',
-
             'fuelLevel' => 'required|in:0,2,4,6,8,10',
             'km' => 'required',
             'routeImage' => 'nullable|image|mimes:jpeg,png,jpg,gif',
@@ -202,7 +201,7 @@ class AttentionController extends Controller
         }
         $tipo = 'OTRS';
         $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM attentions a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-        $siguienteNum = (int) $resultado;
+        $siguienteNum = (int)$resultado;
 
         $data = [
             'number' => $tipo . "-" . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT),
@@ -285,11 +284,11 @@ class AttentionController extends Controller
         //IMAGEN
 
         if ($request->file('routeImage')) {
-       
+
             $file = $request->file('routeImage');
             $currentTime = now();
             $filename = $currentTime->format('YmdHis') . '_' . $file->getClientOriginalName();
-            $path= $file->storeAs('public/photosSheetService', $filename);
+            $path = $file->storeAs('public/photosSheetService', $filename);
             $object->routeImage = Storage::url($path);;
             $object->save();
         }
@@ -321,7 +320,6 @@ class AttentionController extends Controller
      *      @OA\Property(property="arrivalDate", type="string", format="date-time", example="2024-03-13", description="Date Attention"),
      *      @OA\Property(property="deliveryDate", type="string", format="date-time", example="2024-03-13", description="Date Attention"),
      *      @OA\Property(property="observations", type="string", example="-"),
-
      *     @OA\Property(property="fuelLevel", type="string", example="Empty"),
      *     @OA\Property(property="km", type="string", example="0.00"),
      *     @OA\Property(property="routeImage", type="string", example="-"),

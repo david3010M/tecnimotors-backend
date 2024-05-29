@@ -18,4 +18,5 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+//Route::get('ordenservicio', [PdfController::class, 'index']);
 Route::get('ordenservicio', [PdfController::class, 'index']);

@@ -22,7 +22,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @OA\Property(property="totalProducts", type="number", example="200.00"),
  * @OA\Property(property="total", type="number", example="300.00"),
  * @OA\Property(property="debtAmount", type="number", example="100.00"),
-
  *
  *     @OA\Property(property="created_at", type="string", format="date-time", example="2024-05-21 04:09:25"),
  *         @OA\Property(
@@ -34,7 +33,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     ),
  * )
  */
-
 class Attention extends Model
 {
     use HasFactory;
@@ -70,6 +68,7 @@ class Attention extends Model
     {
         return $this->belongsTo(Worker::class, 'worker_id');
     }
+
     public function vehicle()
     {
         return $this->belongsTo(Vehicle::class, 'vehicle_id');
@@ -88,7 +87,7 @@ class Attention extends Model
 
     public function getDetails($id)
     {
-        $list = DetailAttention::where('attention_id', $id)->with(['worker', 'service'])->get();
+        $list = DetailAttention::where('attention_id', $id)->with(['worker', 'service', 'product'])->get();
         return $list;
     }
 
@@ -154,7 +153,7 @@ class Attention extends Model
 
     public function details()
     {
-        return $this->hasMany(DetailAttention::class);
+        return $this->hasMany(DetailAttention::class)->orderBy('type', 'desc')->with(['worker', 'service', 'product']);
     }
 
     public function elements()

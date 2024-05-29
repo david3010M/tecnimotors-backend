@@ -38,6 +38,10 @@
             background-color: #f2f2f2;
         }
 
+        .content {
+            font-size: 12px;
+        }
+
         .content .observaciones {
             margin-top: 20px;
         }
@@ -50,145 +54,140 @@
 </head>
 
 <body>
-    <h1 style="text-align: center">TECNI MOTOR'S DEL PERÚ</h1>
-    <p style="text-align: center"><b>Orden de Trabajo:</b> N° 009160</p>
+<h1 style="text-align: center">TECNI MOTOR'S DEL PERÚ</h1>
+<p style="text-align: center"><b>Orden de Trabajo:</b> {{$order->number}}</p>
 
-    <div class="content">
-        <table>
-            <tr>
-                <th>Cliente</th>
-                <td colspan="3">Miguel Guevara</td>
-                <th>DNI</th>
-                <td>75859636</td>
-            </tr>
-            <tr>
-                <th>Dirección</th>
-                <td colspan="3">Ayacucho #1520</td>
-                <th>Teléfono</th>
-                <td>903017426</td>
-            </tr>
-            <tr>
-                <th>RUC</th>
-                <td>-</td>
-                <th>Email</th>
-                <td colspan="3">guevaracajusolmiguel@gmail.com</td>
-            </tr>
-        </table>
+<div class="content">
+    <table style="margin-bottom: 8px;">
+        <tr>
+            <th>Cliente</th>
+            <td colspan="3">{{$order->vehicle->person->names . ' ' . $order->vehicle->person->fatherSurname . ' ' . $order->vehicle->person->motherSurname}}</td>
+            <th>DNI</th>
+            <td>{{$order->vehicle->person->typeofDocument == 'DNI' ? $order->vehicle->person->documentNumber : ''}}</td>
+        </tr>
+        <tr>
+            <th>Dirección</th>
+            <td colspan="3">{{$order->vehicle->person->address}}</td>
+            <th>Teléfono</th>
+            <td>{{$order->vehicle->person->phone}}</td>
+        </tr>
+        <tr>
+            <th>RUC</th>
+            <td>{{$order->vehicle->person->typeofDocument == 'RUC' ? $order->vehicle->person->documentNumber : ''}}</td>
+            <th>Email</th>
+            <td colspan="3">{{$order->vehicle->person->email}}</td>
+        </tr>
+    </table>
 
-        <table>
-            <tr>
-                <th>Marca</th>
-                <td>Toyota</td>
-                <th>Modelo</th>
-                <td>Corolla</td>
-                <th>Año Fab.</th>
-                <td>2018</td>
-                <th>Chasis</th>
-                <td>ABC123456789</td>
-                <th>Motor</th>
-                <td>1.8L</td>
-                <th>Km.</th>
-                <td>50000</td>
-                <th>Placa</th>
-                <td>XYZ-789</td>
+    <table style="margin-bottom: 8px;">
+        <tr>
+            <th>Marca</th>
+            <td>{{$order->vehicle->brand->name}}</td>
 
-            </tr>
-        </table>
-        <table>
-            <thead>
+            <th>Modelo</th>
+            <td>{{$order->vehicle->model}}</td>
+
+            <th>Chasis</th>
+            <td colspan="3">{{$order->vehicle->chasis}}</td>
+
+        </tr>
+
+        <tr>
+
+            <th>Placa</th>
+            <td>{{$order->vehicle->plate}}</td>
+
+            <th>Motor</th>
+            <td>{{$order->vehicle->motor}}</td>
+
+            <th>Km.</th>
+            <td>{{$order->vehicle->km}}</td>
+
+            <th>Año Fab.</th>
+            <td>{{$order->vehicle->year}}</td>
+
+        </tr>
+    </table>
+    <table>
+        <thead>
+        <tr>
+            <th>Nro.</th>
+            <th>Servicio / Producto o Repuesto</th>
+            <th>Cantidad</th>
+        </tr>
+        </thead>
+        <tbody>
+        @if($order->details)
+            @foreach($order->details as $detail)
                 <tr>
-                    <th>Nro.</th>
-                    <th>Servicio / Producto o Repuesto</th>
-                    <th>Cantidad</th>
+                    <td>{{$loop->iteration}}</td>
+                    @if($detail->service && $detail->product == null)
+                        <td>{{$detail->service->name}}</td>
+                        <td>{{ round($detail->service->quantity) }}</td>
+                    @elseif($detail->service == null && $detail->product)
+                        <td>{{$detail->product->name}}</td>
+                        <td>{{ round($detail->product->quantity) }}</td>
+                    @endif
                 </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>Cambio de aceite</td>
-                    <td>1</td>
-
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Alineación y balanceo</td>
-                    <td>1</td>
-
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>Reparación de frenos</td>
-                    <td>2</td>
-
-                </tr>
-                <tr>
-                    <td>4</td>
-                    <td>Kit de Alineación</td>
-                    <td>2</td>
-
-                </tr>
-            </tbody>
-        </table>
+            @endforeach
+        @endif
+        </tbody>
+    </table>
 
 
-
-
-
-
-
-        <div class="footer-section">
-            <div>
-                <h1></h1>
-                <table>
-                    <tr>
-                        <th>Observaciones</th>
-                        <td>Se observó desgaste excesivo en las pastillas de freno delanteras. Se recomienda
-                            reemplazarlas en el próximo servicio para evitar problemas de frenado y garantizar la
-                            seguridad del vehículo.</td>
-                        <th>Elementos</th>
-                        <td>Manual de Serv., Ruedas, Asientos, Bocinas, Encendedor, Emblemas, Tapa Gasolina,
-                            Radioffocasete, Sun rool, Alfombras, Plumilla Post, Botiquín, Cambiador CD, Discos</td>
-                    </tr>
-                </table>
-            </div>
-
-
-        </div>
-        <h1></h1>
+    <div class="footer-section">
         <div>
+            <h1></h1>
             <table>
                 <tr>
-                    <th>Fecha Ingreso</th>
-                    <td>2024-05-28</td>
-                    <th>Hora</th>
-                    <td>09:00 AM</td>
-                    <th>Fecha Entrega</th>
-                    <td>2024-05-29</td>
-                    <th>Hora</th>
-                    <td>10:30 AM</td>
-                </tr>
-                <tr>
-                    <th>Nivel De Combustible</th>
-                    <td colspan="3">3/4 Tanque</td>
-                    <th>Asesor de Servicio</th>
-                    <td colspan="3">Juan Pérez</td>
-      
+                    <th>Observaciones</th>
+                    <td>
+                        {{$order->observations}}
+                    </td>
+                    <th>Elementos</th>
+                    <td>
+                        {{$order->elements}}
+                    </td>
                 </tr>
             </table>
         </div>
-        
 
 
     </div>
-    <div class="footer">
-        <p>POR LA PRESENTE AUTORIZO LAS REPARACIONES AQUI DESCRITAS CONJUNTAMENTE CON EL MATERIAL QUE SEA NECESARIO
-            USAR EN ELLAS, TAMBIEN AUTORIZO A USTEDES Y A SUS EMPLEADOS PARA QUE AFIEREN ESTE VEHICULO POR LAS CALLES.
-            CARRETERAS U OTROS SITIOS A FIN DE ASEGURAR LAS PRUEBAS O INSPECCIONES PERTINENTES QUE GARANTIZEN EL
-            TRABAJO.
-            NOTA: SE COBRARA DERECHO DE GUARDANIA SI EL VEHICULO NO ES RETIRADO EN LAS 48 HORAS DESPUES DE
-            TERMINADO EL TRABAJO.
-        </p>
+    <h1></h1>
+    <div>
+        <table>
+            <tr>
+                <th>Fecha Ingreso</th>
+                <td>2024-05-28</td>
+                <th>Hora</th>
+                <td>09:00 AM</td>
+                <th>Fecha Entrega</th>
+                <td>2024-05-29</td>
+                <th>Hora</th>
+                <td>10:30 AM</td>
+            </tr>
+            <tr>
+                <th>Nivel De Combustible</th>
+                <td colspan="3">3/4 Tanque</td>
+                <th>Asesor de Servicio</th>
+                <td colspan="3">Juan Pérez</td>
+
+            </tr>
+        </table>
     </div>
+
+
+</div>
+<div class="footer">
+    <p>POR LA PRESENTE AUTORIZO LAS REPARACIONES AQUI DESCRITAS CONJUNTAMENTE CON EL MATERIAL QUE SEA NECESARIO
+        USAR EN ELLAS, TAMBIEN AUTORIZO A USTEDES Y A SUS EMPLEADOS PARA QUE AFIEREN ESTE VEHICULO POR LAS CALLES.
+        CARRETERAS U OTROS SITIOS A FIN DE ASEGURAR LAS PRUEBAS O INSPECCIONES PERTINENTES QUE GARANTIZEN EL
+        TRABAJO.
+        NOTA: SE COBRARA DERECHO DE GUARDANIA SI EL VEHICULO NO ES RETIRADO EN LAS 48 HORAS DESPUES DE
+        TERMINADO EL TRABAJO.
+    </p>
+</div>
 </body>
 
 </html>

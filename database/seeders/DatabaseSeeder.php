@@ -14,33 +14,46 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        /**
+         * typeofDocument
+         * documentNumber
+         * names
+         * fatherSurname
+         * motherSurname
+         * businessName
+         * representativeDni
+         * representativeNames
+         * address
+         * phone
+         * email
+         * origin
+         * ocupation
+         */
         $array = [
-            ['id' => '1', 'typeofDocument' => 'DNI',
-                'documentNumber' => '12345678', 'names' => 'admin',
-                'fatherSurname' => 'apellido P', 'motherSurname' =>
-                'apeliddo M'],
-            ['id' => '2', 'typeofDocument' => 'DNI',
-                'documentNumber' => '72345678', 'names' => 'varios',
-                'fatherSurname' => '-', 'motherSurname' =>
-                '-'],
-
-            ['id' => '3', 'typeofDocument' => 'RUC',
-                'documentNumber' => '10123456789',
-                'businessName' => 'company SAC'],
-
-            ['id' => '4', 'typeofDocument' => 'DNI',
-                'documentNumber' => '89765431', 'names' => 'Miguel Angel',
-                'fatherSurname' => 'Guevara', 'motherSurname' =>
-                'Cajusol'],
-
-            ['id' => '5', 'typeofDocument' => 'DNI',
-                'documentNumber' => '89754321', 'names' => 'Renatto',
-                'fatherSurname' => 'Perleche', 'motherSurname' =>
-                '-'],
-            ['id' => '6', 'typeofDocument' => 'DNI',
-                'documentNumber' => '19754321', 'names' => 'Alex',
-                'fatherSurname' => 'Samamé', 'motherSurname' =>
-                '-'],
+            ['id' => '1', 'typeofDocument' => 'DNI', 'documentNumber' => '31648134', 'names' => 'John', 'fatherSurname' => 'Doe',
+                'motherSurname' => 'Smith', 'businessName' => 'Doe Enterprises', 'representativeDni' => '87654321',
+                'representativeNames' => 'Jane Doe', 'address' => '123 Main St', 'phone' => '+1234567890',
+                'email' => 'johndoe@gmail.com', 'origin' => 'City', 'ocupation' => 'Engineer'],
+            ['id' => '2', 'typeofDocument' => 'DNI', 'documentNumber' => '16456616', 'names' => 'Jane', 'fatherSurname' => 'Doe',
+                'motherSurname' => 'Smith', 'businessName' => 'Doe Enterprises', 'representativeDni' => '87654321',
+                'representativeNames' => 'Jane Doe', 'address' => '123 Main St', 'phone' => '+1234567890',
+                'email' => 'janedoe@gmail.com', 'origin' => 'City', 'ocupation' => 'Engineer'],
+            ['id' => '3', 'typeofDocument' => 'DNI', 'documentNumber' => '94314462', 'names' => 'Tyler', 'fatherSurname' => 'Doe',
+                'motherSurname' => 'Smith', 'businessName' => 'Doe Enterprises', 'representativeDni' => '87654321',
+                'representativeNames' => 'Jane Doe', 'address' => '123 Main St', 'phone' => '+1234567890',
+                'email' => 'tyler@gmail.com', 'origin' => 'City', 'ocupation' => 'Engineer'],
+            ['id' => '4', 'typeofDocument' => 'DNI', 'documentNumber' => '64134613', 'names' => 'James', 'fatherSurname' => 'Doe',
+                'motherSurname' => 'Smith', 'businessName' => 'Doe Enterprises', 'representativeDni' => '87654321',
+                'representativeNames' => 'Jane Doe', 'address' => '123 Main St', 'phone' => '+1234567890',
+                'email' => 'james@gmail.com', 'origin' => 'City', 'ocupation' => 'Engineer'],
+            ['id' => '5', 'typeofDocument' => 'DNI', 'documentNumber' => '54781645', 'names' => 'George', 'fatherSurname' => 'Doe',
+                'motherSurname' => 'Smith', 'businessName' => 'Doe Enterprises', 'representativeDni' => '87654321',
+                'representativeNames' => 'Jane Doe', 'address' => '123 Main St', 'phone' => '+1234567890',
+                'email' => 'geoorge@gmail.com', 'origin' => 'City', 'ocupation' => 'Engineer'],
+            ['id' => '6', 'typeofDocument' => 'DNI', 'documentNumber' => '32145879', 'names' => 'Michael', 'fatherSurname' => 'Doe',
+                'motherSurname' => 'Smith', 'businessName' => 'Doe Enterprises', 'representativeDni' => '87654321',
+                'representativeNames' => 'Jane Doe', 'address' => '123 Main St', 'phone' => '+1234567890',
+                'email' => 'michael@gmail.com', 'origin' => 'City', 'ocupation' => 'Engineer']
         ];
 
         foreach ($array as $object) {
@@ -64,7 +77,7 @@ class DatabaseSeeder extends Seeder
         $this->call(BrandSeeder::class);
         $this->call(ElementSeeder::class);
         $this->call(VehicleSeeder::class);
-        
+
         $this->call(UnitSeeder::class);
         $this->call(CategorySeeder::class);
         $this->call(ProductSeeder::class);
@@ -77,5 +90,8 @@ class DatabaseSeeder extends Seeder
         $this->call(SpecialtyByPersonSeeder::class);
         $this->call(ServiceSeeder::class);
 
+        $this->call(AttentionSeeder::class);
+        $this->call(ElementForAttentionSeeder::class);
+        $this->call(DetailAttentionSeeder::class);
     }
 }

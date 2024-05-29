@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\ElementController;
 use App\Http\Controllers\Api\ElementForAttentionController;
 use App\Http\Controllers\Api\GroupMenuController;
 use App\Http\Controllers\Api\OptionMenuController;
+use App\Http\Controllers\Api\PdfController;
 use App\Http\Controllers\Api\PersonController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\SearchController;
@@ -110,6 +111,7 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::resource('attention', AttentionController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'attention.index', 'store' => 'attention.store', 'show' => 'attention.show', 'update' => 'attention.update', 'destroy' => 'attention.destroy']);
 
+
 // ELEMENTFORATTENTION
     Route::resource('elementForAttention', ElementForAttentionController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'elementForAttention.index', 'store' => 'elementForAttention.store', 'show' => 'elementForAttention.show', 'update' => 'elementForAttention.update', 'destroy' => 'elementForAttention.destroy']);
@@ -156,4 +158,6 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::resource('specialtyPerson', SpecialtyPersonController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'specialtyPerson.index', 'store' => 'specialtyPerson.store', 'show' => 'specialtyPerson.show', 'update' => 'specialtyPerson.update', 'destroy' => 'specialtyPerson.destroy']);
 
+//    ORDER SERVICE
+//    Route::get('getServiceOrder', [PdfController::class, 'index']);
 });
