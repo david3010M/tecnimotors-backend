@@ -936,6 +936,20 @@
                 ],
                 "summary": "Get all Brands",
                 "operationId": "03abecc89bf5f81091aff45060d4be23",
+                "parameters": [
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Type of the Brand",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "vehicle",
+                                "product"
+                            ]
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "List of active Brands",

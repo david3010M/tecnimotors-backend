@@ -16,6 +16,12 @@ class BrandController extends Controller
      *     path="/tecnimotors-backend/public/api/brand",
      *     tags={"Brand"},
      *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="type",
+     *         in="query",
+     *         description="Type of the Brand",
+     *         @OA\Schema(type="string", enum={"vehicle", "product"})
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="List of active Brands",
@@ -42,9 +48,18 @@ class BrandController extends Controller
      *     )
      * )
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(Brand::simplePaginate(15));
+        $validator = validator()->make($request->all(), [
+            'type' => 'string|in:vehicle,product'
+        ]);
+
+        $typeVehicle = $request->input('type');
+
+        if ($validator->fails() || $typeVehicle == null) {
+            return response()->json(Brand::simplePaginate(15));
+        }
+        return response()->json(Brand::where('type', $typeVehicle)->simplePaginate(15));
     }
 
 
@@ -295,4 +310,5 @@ class BrandController extends Controller
 
         return response()->json(['message' => 'Brand deleted successfully']);
     }
+
 }
