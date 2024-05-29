@@ -1,4 +1,19 @@
-<!DOCTYPE html>
+@php use Carbon\Carbon; @endphp
+@php
+    function fuelLevelToFraction($fuelLevel) {
+        $fractions = [
+            0 => '0',
+            2 => '1/5',
+            4 => '2/5',
+            6 => '3/5',
+            8 => '4/5',
+            10 => '1',
+        ];
+
+        return $fractions[$fuelLevel] ?? 'N/A';
+    }
+@endphp
+    <!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -50,6 +65,11 @@
             display: flex;
             justify-content: space-between;
         }
+
+        .center {
+            text-align: center;
+        }
+
     </style>
 </head>
 
@@ -111,22 +131,22 @@
     <table>
         <thead>
         <tr>
-            <th>Nro.</th>
-            <th>Servicio / Producto o Repuesto</th>
-            <th>Cantidad</th>
+            <th style="text-align: center">Nro.</th>
+            <th style="text-align: center">Servicio / Producto o Repuesto</th>
+            <th style="text-align: center">Cantidad</th>
         </tr>
         </thead>
         <tbody>
         @if($order->details)
             @foreach($order->details as $detail)
                 <tr>
-                    <td>{{$loop->iteration}}</td>
+                    <td style="text-align: center">{{$loop->iteration}}</td>
                     @if($detail->service && $detail->product == null)
                         <td>{{$detail->service->name}}</td>
-                        <td>{{ round($detail->service->quantity) }}</td>
+                        <td style="text-align: center">{{ round($detail->service->quantity) }}</td>
                     @elseif($detail->service == null && $detail->product)
                         <td>{{$detail->product->name}}</td>
-                        <td>{{ round($detail->product->quantity) }}</td>
+                        <td style="text-align: center">{{ round($detail->product->quantity) }}</td>
                     @endif
                 </tr>
             @endforeach
@@ -144,9 +164,15 @@
                     <td>
                         {{$order->observations}}
                     </td>
+                </tr>
+                <tr>
                     <th>Elementos</th>
                     <td>
-                        {{$order->elements}}
+                        {{
+                            $order->elements->map(function($element){
+                                return $element->element->name;
+                            })->implode(', ')
+                        }}
                     </td>
                 </tr>
             </table>
@@ -159,19 +185,22 @@
         <table>
             <tr>
                 <th>Fecha Ingreso</th>
-                <td>2024-05-28</td>
+                <td>{{ Carbon::parse($order->arrivalDate)->format('Y-m-d') }}</td>
+
                 <th>Hora</th>
-                <td>09:00 AM</td>
+                <td>{{ Carbon::parse($order->arrivalDate)->format('h:i A') }}</td>
+
                 <th>Fecha Entrega</th>
-                <td>2024-05-29</td>
+                <td>{{ Carbon::parse($order->deliveryDate)->format('Y-m-d') }}</td>
+
                 <th>Hora</th>
-                <td>10:30 AM</td>
+                <td>{{ Carbon::parse($order->deliveryDate)->format('h:i A') }}</td>
             </tr>
             <tr>
                 <th>Nivel De Combustible</th>
-                <td colspan="3">3/4 Tanque</td>
+                <td colspan="3">{{ fuelLevelToFraction($order->fuelLevel) }}</td>
                 <th>Asesor de Servicio</th>
-                <td colspan="3">Juan Pérez</td>
+                <td colspan="3">{{ $order->worker->person->names . ' ' . $order->worker->person->fatherSurname . ' ' . $order->worker->person->motherSurname }}</td>
 
             </tr>
         </table>
@@ -179,15 +208,15 @@
 
 
 </div>
-<div class="footer">
-    <p>POR LA PRESENTE AUTORIZO LAS REPARACIONES AQUI DESCRITAS CONJUNTAMENTE CON EL MATERIAL QUE SEA NECESARIO
-        USAR EN ELLAS, TAMBIEN AUTORIZO A USTEDES Y A SUS EMPLEADOS PARA QUE AFIEREN ESTE VEHICULO POR LAS CALLES.
-        CARRETERAS U OTROS SITIOS A FIN DE ASEGURAR LAS PRUEBAS O INSPECCIONES PERTINENTES QUE GARANTIZEN EL
-        TRABAJO.
-        NOTA: SE COBRARA DERECHO DE GUARDANIA SI EL VEHICULO NO ES RETIRADO EN LAS 48 HORAS DESPUES DE
-        TERMINADO EL TRABAJO.
-    </p>
-</div>
+{{--<div class="footer">--}}
+{{--    <p>POR LA PRESENTE AUTORIZO LAS REPARACIONES AQUI DESCRITAS CONJUNTAMENTE CON EL MATERIAL QUE SEA NECESARIO--}}
+{{--        USAR EN ELLAS, TAMBIEN AUTORIZO A USTEDES Y A SUS EMPLEADOS PARA QUE AFIEREN ESTE VEHICULO POR LAS CALLES.--}}
+{{--        CARRETERAS U OTROS SITIOS A FIN DE ASEGURAR LAS PRUEBAS O INSPECCIONES PERTINENTES QUE GARANTIZEN EL--}}
+{{--        TRABAJO.--}}
+{{--        NOTA: SE COBRARA DERECHO DE GUARDANIA SI EL VEHICULO NO ES RETIRADO EN LAS 48 HORAS DESPUES DE--}}
+{{--        TERMINADO EL TRABAJO.--}}
+{{--    </p>--}}
+{{--</div>--}}
 </body>
 
 </html>

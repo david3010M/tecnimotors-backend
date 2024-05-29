@@ -18,20 +18,9 @@ class PdfController extends Controller
 //        return view('orden-servicio', compact('object'))->render();
 //    }
 
-    public function index()
+    public function getServiceOrder($id)
     {
-        $objectId = 1;
-
-        $object = Attention::with([
-            'worker.person',
-            'vehicle.person',
-            'vehicle.brand',
-            'details',
-            'elements'
-        ])->find($objectId);
-
-
-//        return view('orden-servicio', compact('object'))->render();
+        $object = Attention::getAttention($id);
 
 //        HORIZONTAL
         $pdf = Pdf::loadView('orden-servicio', [

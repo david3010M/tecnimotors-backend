@@ -2,11 +2,14 @@
 
 namespace Database\Seeders;
 
+use App\Models\ElementForAttention;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class ElementForAttentionSeeder extends Seeder
 {
+    protected $model = ElementForAttention::class;
+
     /**
      * Run the database seeds.
      *
@@ -14,6 +17,38 @@ class ElementForAttentionSeeder extends Seeder
      */
     public function run()
     {
-        //
+        
+        $array = [
+            ['element_id' => 1, 'attention_id' => 1],
+            ['element_id' => 2, 'attention_id' => 1],
+            ['element_id' => 3, 'attention_id' => 1],
+            ['element_id' => 4, 'attention_id' => 1],
+
+            ['element_id' => 1, 'attention_id' => 2],
+            ['element_id' => 2, 'attention_id' => 2],
+            ['element_id' => 3, 'attention_id' => 2],
+            ['element_id' => 4, 'attention_id' => 2],
+
+            ['element_id' => 1, 'attention_id' => 3],
+            ['element_id' => 2, 'attention_id' => 3],
+            ['element_id' => 3, 'attention_id' => 3],
+            ['element_id' => 4, 'attention_id' => 3],
+
+            ['element_id' => 1, 'attention_id' => 4],
+            ['element_id' => 2, 'attention_id' => 4],
+            ['element_id' => 3, 'attention_id' => 4],
+            ['element_id' => 4, 'attention_id' => 4],
+
+            ['element_id' => 1, 'attention_id' => 5],
+            ['element_id' => 2, 'attention_id' => 5],
+            ['element_id' => 3, 'attention_id' => 5],
+            ['element_id' => 4, 'attention_id' => 5],
+        ];
+
+        foreach ($array as $item) {
+            $this->model::create($item);
+        }
+
+
     }
 }

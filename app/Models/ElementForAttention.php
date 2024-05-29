@@ -24,7 +24,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     ),
  * )
  */
-
 class ElementForAttention extends Model
 {
     use HasFactory;
@@ -45,8 +44,9 @@ class ElementForAttention extends Model
 
     public function element()
     {
-        return $this->belongsTo(Person::class, 'element_id');
+        return $this->belongsTo(Element::class, 'element_id');
     }
+
     public function attention()
     {
         return $this->belongsTo(Person::class, 'attention_id');

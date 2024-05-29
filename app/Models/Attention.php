@@ -158,6 +158,27 @@ class Attention extends Model
 
     public function elements()
     {
-        return $this->belongsToMany(Element::class, 'element_for_attentions');
+//        return $this->belongsToMany(Element::class, 'element_for_attentions');
+        return $this->hasMany(ElementForAttention::class);
+    }
+
+
+//    PDF
+
+    public static function getAttention($id)
+    {
+        $object = Attention::with([
+            'worker.person',
+            'vehicle.person',
+            'vehicle.brand',
+            'details',
+            'elements.element'
+        ])->find($id);
+
+        if (!$object) {
+            abort(404, 'Attention not found');
+        }
+
+        return $object;
     }
 }

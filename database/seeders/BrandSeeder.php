@@ -19,11 +19,11 @@ class BrandSeeder extends Seeder
     {
         $array = [
 //        ARRAY OF BRANDS
-            ['name' => 'Brand 1', 'type' => 'vehicle'],
-            ['name' => 'Brand 2', 'type' => 'vehicle'],
-            ['name' => 'Brand 3', 'type' => 'vehicle'],
-            ['name' => 'Brand 4', 'type' => 'vehicle'],
-            ['name' => 'Brand 5', 'type' => 'vehicle'],
+            ['name' => 'Mercedes-Benz', 'type' => 'vehicle'],
+            ['name' => 'Land Rover', 'type' => 'vehicle'],
+            ['name' => 'Porsche', 'type' => 'vehicle'],
+            ['name' => 'Chevrolet', 'type' => 'vehicle'],
+            ['name' => 'Jeep', 'type' => 'vehicle'],
             ['name' => 'Brand 6', 'type' => 'vehicle'],
             ['name' => 'Brand 7', 'type' => 'vehicle'],
             ['name' => 'Brand 8', 'type' => 'vehicle'],

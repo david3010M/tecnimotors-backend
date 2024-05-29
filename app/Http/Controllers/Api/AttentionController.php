@@ -98,7 +98,7 @@ class AttentionController extends Controller
      */
     public function show(int $id)
     {
-        $object = Attention::with(['worker.person', 'vehicle', 'details'])->find($id);
+        $object = Attention::with(['worker.person', 'vehicle', 'details', 'elements'])->find($id);
         $object->elements = $object->getElements($object->id);
         $object->details = $object->getDetails($object->id);
         if (!$object) {

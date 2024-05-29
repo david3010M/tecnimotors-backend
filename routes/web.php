@@ -19,4 +19,4 @@ Route::get('/', function () {
 });
 
 //Route::get('ordenservicio', [PdfController::class, 'index']);
-Route::get('ordenservicio', [PdfController::class, 'index']);
+Route::get('ordenservicio/{id}', [PdfController::class, 'getServiceOrder'])->name('ordenservicio');
