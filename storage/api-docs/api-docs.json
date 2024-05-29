@@ -97,7 +97,7 @@
                     "description": "Attention data",
                     "required": true,
                     "content": {
-                        "multipart/form-data": {
+                        "application/json": {
                             "schema": {
                                 "properties": {
                                     "arrivalDate": {
@@ -161,11 +161,6 @@
                                             "type": "integer",
                                             "example": 1
                                         }
-                                    },
-                                    "routeImage": {
-                                        "description": "Image file",
-                                        "type": "string",
-                                        "format": "binary"
                                     }
                                 },
                                 "type": "object"
@@ -5135,6 +5130,96 @@
                                         "error": {
                                             "type": "string",
                                             "example": "The given data was invalid."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/sendSheetByWhatsapp": {
+            "post": {
+                "tags": [
+                    "WhatsApp"
+                ],
+                "summary": "Send sheet service information via WhatsApp",
+                "operationId": "f8662fb138b1621ef27bfd93bb1efd7d",
+                "requestBody": {
+                    "description": "Data for sending sheet service information via WhatsApp",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "idAttention",
+                                    "phone_number"
+                                ],
+                                "properties": {
+                                    "idAttention": {
+                                        "description": "The ID of the attention.",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "phone_number": {
+                                        "description": "The phone number to send the message to.",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Message sent successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "WhatsApp message sent successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Validation failed: The idAttention field is required."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Internal server error occurred."
                                         }
                                     },
                                     "type": "object"
