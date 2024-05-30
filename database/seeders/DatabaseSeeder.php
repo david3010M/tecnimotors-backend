@@ -50,10 +50,10 @@ class DatabaseSeeder extends Seeder
                 'motherSurname' => 'Smith', 'businessName' => 'Doe Enterprises', 'representativeDni' => '87654321',
                 'representativeNames' => 'Jane Doe', 'address' => '123 Main St', 'phone' => '+1234567890',
                 'email' => 'geoorge@gmail.com', 'origin' => 'City', 'ocupation' => 'Engineer'],
-            ['id' => '6', 'typeofDocument' => 'DNI', 'documentNumber' => '32145879', 'names' => 'Michael', 'fatherSurname' => 'Doe',
-                'motherSurname' => 'Smith', 'businessName' => 'Doe Enterprises', 'representativeDni' => '87654321',
+            ['id' => '6', 'typeofDocument' => 'RUC', 'documentNumber' => '20600417461', 'names' => 'Michael', 'fatherSurname' => 'Doe',
+                'motherSurname' => 'Smith', 'businessName' => 'INVERSIONES LACTEAS DEL NORTE S.A.C.', 'representativeDni' => '87654321',
                 'representativeNames' => 'Jane Doe', 'address' => '123 Main St', 'phone' => '+1234567890',
-                'email' => 'michael@gmail.com', 'origin' => 'City', 'ocupation' => 'Engineer']
+                'email' => 'inversionelacteas@gmail.com', 'origin' => 'City', 'ocupation' => 'Engineer']
         ];
 
         foreach ($array as $object) {

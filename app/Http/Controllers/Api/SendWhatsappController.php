@@ -108,19 +108,19 @@ class SendWhatsappController extends Controller
         }
         $attention = Attention::with(['vehicle.person'])->find($request->input('idAttention'));
         $client = $attention->vehicle->person;
-     
+
         $url = 'https://sistema.gesrest.net/api/send-document-by-whatsapp';
 
         $response = Http::withHeaders([
             'Authorization' => '}*rA3>#pyM<dITk]]DFP2,/wc)1md_Y/',
         ])->post($url, [
             "nombre_plantilla" => "tecnimotors",
-            "ruc" => "20602871119",
-            "razon_social" => "GARZASOFT EIRL",
-            "nombre_comercial" => "MR. SOFT",
+            "ruc" => "20487467139",
+            "razon_social" => "TECNI MOTORS DEL PERU E.I.R.L.",
+            "nombre_comercial" => "TECNI MOTORS DEL PERU E.I.R.L.",
             "cliente" => $client->typeofDocument == 'DNI' ? $client->names . ' ' . $client->fatherSurname : $client->businessName,
             "celular" => $request->input('phone_number'),
-            "tipo_documento" => "ORDEN DE SERVICIO ".$attention->number,
+            "tipo_documento" => "ORDEN DE SERVICIO " . $attention->number,
             "tipo_documento_url" => "ordenservicio",
             "documento_id_url" => $attention->id,
         ]);
