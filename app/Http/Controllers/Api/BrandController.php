@@ -51,17 +51,16 @@ class BrandController extends Controller
     public function index(Request $request)
     {
         $validator = validator()->make($request->all(), [
-            'type' => 'string|in:vehicle,product'
+            'type' => 'string|in:vehicle,product',
         ]);
 
         $typeVehicle = $request->input('type');
 
         if ($validator->fails() || $typeVehicle == null) {
-            return response()->json(Brand::simplePaginate(15));
+            return response()->json(Brand::simplePaginate(50));
         }
-        return response()->json(Brand::where('type', $typeVehicle)->simplePaginate(15));
+        return response()->json(Brand::where('type', $typeVehicle)->simplePaginate(50));
     }
-
 
     /**
      * Create a new Brand
@@ -104,9 +103,9 @@ class BrandController extends Controller
             'name' => [
                 'required',
                 'string',
-                Rule::unique('brands')->whereNull('deleted_at')
+                Rule::unique('brands')->whereNull('deleted_at'),
             ],
-            'type' => 'required|string|in:vehicle,product'
+            'type' => 'required|string|in:vehicle,product',
         ]);
 
         if ($validator->fails()) {
@@ -115,7 +114,7 @@ class BrandController extends Controller
 
         $data = [
             'name' => $request->input('name'),
-            'type' => $request->input('type')
+            'type' => $request->input('type'),
         ];
 
         $brand = Brand::create($data);
@@ -227,9 +226,9 @@ class BrandController extends Controller
             'name' => [
                 'required',
                 'string',
-                Rule::unique('brands')->ignore($id)->whereNull('deleted_at')
+                Rule::unique('brands')->ignore($id)->whereNull('deleted_at'),
             ],
-            'type' => 'required|string|in:vehicle,product'
+            'type' => 'required|string|in:vehicle,product',
         ]);
 
         if ($validator->fails()) {
@@ -238,7 +237,7 @@ class BrandController extends Controller
 
         $data = [
             'name' => $request->input('name'),
-            'type' => $request->input('type')
+            'type' => $request->input('type'),
         ];
 
         $brand->update($data);

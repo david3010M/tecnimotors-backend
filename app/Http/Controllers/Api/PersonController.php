@@ -39,7 +39,8 @@ class PersonController extends Controller
 
     public function index()
     {
-        return response()->json(Person::simplePaginate(15));
+        //REVISAR LO DE LA PAGINACIÓN
+        return response()->json(Person::simplePaginate(100));
     }
 
     /**

@@ -9,7 +9,7 @@ use Illuminate\Routing\Controller as BaseController;
 
 /**
  * @OA\Info(
- *             title="API's TecniMotors",
+ *             title="API's Tecni Motors",
  *             version="1.0",
  *             description="API's for TecniMotors",
  * )

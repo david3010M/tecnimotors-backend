@@ -1,7 +1,7 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "API's TecniMotors",
+        "title": "API's Tecni Motors",
         "description": "API's for TecniMotors",
         "version": "1.0"
     },
@@ -158,8 +158,17 @@
                                     "detailsProducts": {
                                         "type": "array",
                                         "items": {
-                                            "type": "integer",
-                                            "example": 1
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "quantity": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     }
                                 },
@@ -10001,6 +10010,10 @@
                     "salePrice": {
                         "type": "decimal",
                         "example": "0.00"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "example": "1"
                     },
                     "type": {
                         "type": "string",

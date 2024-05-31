@@ -62,7 +62,7 @@ class WorkerController extends Controller
 
         if (!$speciality_id) {
             return response()->json(Worker::whereRaw('LOWER(occupation) = ?', [strtolower($occupation)])
-                    ->with(['person'])->simplePaginate(25));
+                    ->with(['person'])->simplePaginate(50));
         } else {
             $object = Specialty::find($speciality_id);
             if (!$object) {
@@ -76,7 +76,7 @@ class WorkerController extends Controller
                 if ($occupation) {
                     $query->whereRaw('LOWER(occupation) = ?', [strtolower($occupation)]);
                 }
-            })->with(['person'])->simplePaginate(25);
+            })->with(['person'])->simplePaginate(50);
 
             return response()->json($workers);
         }

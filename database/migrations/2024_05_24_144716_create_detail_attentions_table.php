@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
 
             $table->decimal('saleprice', 10, 2);
+            $table->integer('quantity')->nullable()->default(1);
             $table->string('type');
             $table->text('comment')->nullable();
             $table->string('status');

@@ -203,16 +203,29 @@ class AttentionController extends Controller
      *                     @OA\Property(property="worker_id", type="integer", example=1)
      *                 )
      *             ),
+
      *             @OA\Property(
      *                 property="elements",
      *                 type="array",
      *                 @OA\Items(type="integer", example=1)
      *             ),
-     *             @OA\Property(
-     *                 property="detailsProducts",
-     *                 type="array",
-     *                 @OA\Items(type="integer", example=1)
-     *             )
+     * @OA\Property(
+     *     property="detailsProducts",
+     *     type="array",
+     *     @OA\Items(
+     *         type="object",
+     *         @OA\Property(
+     *             property="id",
+     *             type="integer",
+     *             example=1
+     *         ),
+     *         @OA\Property(
+     *             property="quantity",
+     *             type="integer",
+     *             example=2
+     *         )
+     *     )
+     * )
      *         )
      *     ),
      *     @OA\Response(
@@ -246,7 +259,7 @@ class AttentionController extends Controller
             'observations' => 'required',
             'fuelLevel' => 'required|in:0,2,4,6,8,10',
             'km' => 'required',
-            'routeImage' => 'nullable|image|mimes:jpeg,png,jpg,gif',
+            'routeImage.*' => 'nullable|image|mimes:jpeg,png,jpg,gif',
             'vehicle_id' => 'required|exists:vehicles,id',
             'worker_id' => 'required|exists:workers,id',
             'elements' => 'nullable',
@@ -296,12 +309,15 @@ class AttentionController extends Controller
             //ASIGNAR PRODUCTS
             $detailsProducts = $request->input('detailsProducts') ?? [];
             $sumProducts = 0;
-            foreach ($detailsProducts as $idProduct) {
+            foreach ($detailsProducts as $productDetail) {
+                $idProduct = $productDetail['id'];
+                $quantity = $productDetail['quantity'];
 
                 $product = Product::find($idProduct);
                 $objectData = [
                     'saleprice' => $product->sale_price ?? '0.00',
                     'type' => 'Product',
+                    'quantity' => $quantity,
                     'comment' => '-',
                     'status' => 'Generada',
                     'dateRegister' => Carbon::now(),
@@ -346,15 +362,17 @@ class AttentionController extends Controller
         $object->save();
 
         //IMAGEN
+        $images = $request->file('routeImage') ?? [];
+        $index = 1;
+        foreach ($images as $image) {
 
-        if ($request->file('routeImage')) {
-
-            $file = $request->file('routeImage');
+            $file = $image;
             $currentTime = now();
-            $filename = $currentTime->format('YmdHis') . '_' . $file->getClientOriginalName();
+            $filename = $currentTime->format('YmdHis') . '_' . $file->getClientOriginalName() . '_' . $index;
             $path = $file->storeAs('public/photosSheetService', $filename);
             $object->routeImage = Storage::url($path);
             $object->save();
+            $index++;
         }
 
         $object = Attention::with(['worker.person', 'vehicle', 'details'])->find($object->id);
