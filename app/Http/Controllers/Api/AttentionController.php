@@ -256,6 +256,10 @@ class AttentionController extends Controller
 
         ]);
 
+        if (!$request->input('details')) {
+            return response()->json(['error' => 'Atención sin Servicios'], 409);
+        }
+
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
