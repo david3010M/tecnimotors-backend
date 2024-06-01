@@ -9816,6 +9816,12 @@
                     },
                     "vehicle": {
                         "$ref": "#/components/schemas/Vehicle"
+                    },
+                    "RouteImages": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/RouteImages"
+                        }
                     }
                 },
                 "type": "object"
@@ -10416,6 +10422,29 @@
                     "brand_id": {
                         "type": "integer",
                         "example": "1"
+                    }
+                },
+                "type": "object"
+            },
+            "RouteImages": {
+                "title": "RouteImages",
+                "description": "Route Image model",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "route": {
+                        "type": "string",
+                        "example": "Image route"
+                    },
+                    "attention_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
                     }
                 },
                 "type": "object"

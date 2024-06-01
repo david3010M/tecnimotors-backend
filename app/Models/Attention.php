@@ -31,6 +31,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *         property="vehicle",
  *         ref="#/components/schemas/Vehicle"
  *     ),
+ * @OA\Property(
+ *     property="RouteImages",
+ *     type="array",
+ *     @OA\Items(ref="#/components/schemas/RouteImages")
+ * ),
+
  * )
  */
 class Attention extends Model
@@ -154,6 +160,11 @@ class Attention extends Model
     public function details()
     {
         return $this->hasMany(DetailAttention::class)->orderBy('type', 'desc')->with(['worker', 'service', 'product']);
+    }
+    public function routeImages()
+    {
+//        return $this->belongsToMany(Element::class, 'element_for_attentions');
+        return $this->hasMany(RouteImages::class);
     }
 
     public function elements()

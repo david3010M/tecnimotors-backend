@@ -8,6 +8,7 @@ use App\Models\DetailAttention;
 use App\Models\Element;
 use App\Models\ElementForAttention;
 use App\Models\Product;
+use App\Models\RouteImages;
 use App\Models\Service;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -54,6 +55,7 @@ class AttentionController extends Controller
         $object->getCollection()->transform(function ($typeUser) {
             $typeUser->elements = $typeUser->getElements($typeUser->id);
             $typeUser->details = $typeUser->getDetails($typeUser->id);
+            $typeUser->routeImages = $typeUser->routeImages();
             return $typeUser;
         });
         return response()->json($object);
@@ -98,7 +100,7 @@ class AttentionController extends Controller
      */
     public function show(int $id)
     {
-        $object = Attention::with(['worker.person', 'vehicle', 'details', 'elements'])->find($id);
+        $object = Attention::with(['worker.person', 'vehicle', 'details', 'routeImages', 'elements'])->find($id);
         $object->elements = $object->getElements($object->id);
         $object->details = $object->getDetails($object->id);
         if (!$object) {
@@ -368,14 +370,20 @@ class AttentionController extends Controller
 
             $file = $image;
             $currentTime = now();
-            $filename = $currentTime->format('YmdHis') . '_' . $file->getClientOriginalName() . '_' . $index;
+            $filename = $index . '-' . $currentTime->format('YmdHis') . '_' . $file->getClientOriginalName();
             $path = $file->storeAs('public/photosSheetService', $filename);
-            $object->routeImage = Storage::url($path);
+            $rutaImagen = Storage::url($path);
+            $object->routeImage = $rutaImagen;
             $object->save();
             $index++;
+            $dataImage = [
+                'route' => $rutaImagen,
+                'attention_id' => $object->id,
+            ];
+            RouteImages::create($dataImage);
         }
 
-        $object = Attention::with(['worker.person', 'vehicle', 'details'])->find($object->id);
+        $object = Attention::with(['worker.person', 'vehicle', 'details', 'routeImages'])->find($object->id);
         $object->elements = $object->getElements($object->id);
         $object->details = $object->getDetails($object->id);
 
@@ -499,7 +507,7 @@ class AttentionController extends Controller
         $detailsAt = $request->input('details', []);
         $object->setDetails($object->id, $detailsAt);
 
-        $object = Attention::with(['worker.person', 'vehicle', 'details'])->find($object->id);
+        $object = Attention::with(['worker.person', 'vehicle', 'details', 'routeImages'])->find($object->id);
         $object->elements = $object->getElements($object->id);
         $object->details = $object->getDetails($object->id);
         return response()->json($object);
