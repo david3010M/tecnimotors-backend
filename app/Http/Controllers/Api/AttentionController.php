@@ -266,8 +266,8 @@ class AttentionController extends Controller
             'worker_id' => 'required|exists:workers,id',
             'elements' => 'nullable',
             'elements.*' => 'exists:elements,id',
-            'details' => 'nullable|array',
-            'detailsProducts' => 'nullable|array',
+            'details' => 'nullable',
+            'detailsProducts' => 'nullable',
 
         ]);
 
@@ -278,6 +278,7 @@ class AttentionController extends Controller
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
+
         $tipo = 'OTRS';
         $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM attentions a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
         $siguienteNum = (int) $resultado;
@@ -410,9 +411,9 @@ class AttentionController extends Controller
      *      @OA\Property(property="arrivalDate", type="string", format="date-time", example="2024-03-13", description="Date Attention"),
      *      @OA\Property(property="deliveryDate", type="string", format="date-time", example="2024-03-13", description="Date Attention"),
      *      @OA\Property(property="observations", type="string", example="-"),
-     *     @OA\Property(property="fuelLevel", type="string", example="Empty"),
+     *     @OA\Property(property="fuelLevel", type="string", example="2"),
      *     @OA\Property(property="km", type="string", example="0.00"),
-     *     @OA\Property(property="routeImage", type="string", example="-"),
+
      *     @OA\Property(property="vehicle_id", type="string", example=1),
      *     @OA\Property(property="worker_id", type="string", example=1),
      *     @OA\Property(
@@ -420,15 +421,31 @@ class AttentionController extends Controller
      *                 type="array",
      *                 @OA\Items(
      *                     type="object",
-     *       @OA\Property(property="service_id", type="integer", example=1),
-     * @OA\Property(property="worker_id", type="integer", example=1),
+     *                      @OA\Property(property="idDetail", type="string", example="1"),
+     *                      @OA\Property(property="service_id", type="integer", example=1),
+     *                       @OA\Property(property="worker_id", type="integer", example=1),
      *                  ),
      *     ),
+     *    @OA\Property(
+     *     property="detailsProducts",
+     *     type="array",
+     *     @OA\Items(
+     *         type="object",
+     *         @OA\Property(property="idDetail", type="string", example="1"),
+     * @OA\Property(property="idProduct", type="integer", example=1),
+     *         @OA\Property(
+     *             property="quantity",
+     *             type="integer",
+     *             example=2
+     *         )
+     *      )
+     *     ),
+     *
      *    @OA\Property(
      *                  property="elements",
      *                  type="array",
      *                  @OA\Items(type="integer"),
-     *                  example={1, 2, 3}
+     *                  example=1
      *              )
      *         )
      *     ),
@@ -471,16 +488,15 @@ class AttentionController extends Controller
             'arrivalDate' => 'required',
             'deliveryDate' => 'required',
             'observations' => 'required',
-
             'fuelLevel' => 'required',
             'km' => 'required',
-            'routeImage' => 'required',
+
             'vehicle_id' => 'required|exists:vehicles,id',
             'worker_id' => 'required|exists:workers,id',
-
             'elements' => 'nullable|array',
             'elements.*' => 'exists:elements,id',
-            'details' => 'required|array|min:1',
+            'details' => 'nullable',
+            'detailsProducts' => 'nullable',
         ]);
 
         if ($validator->fails()) {
@@ -494,7 +510,7 @@ class AttentionController extends Controller
             'typeofDocument' => $request->input('typeofDocument') ?? null,
             'fuelLevel' => $request->input('fuelLevel') ?? null,
             'km' => $request->input('km') ?? null,
-            'routeImage' => $request->input('routeImage') ?? null,
+            'routeImage' => 'ruta.jpg',
             'vehicle_id' => $request->input('vehicle_id') ?? null,
             'worker_id' => $request->input('worker_id') ?? null,
         ];
@@ -506,6 +522,15 @@ class AttentionController extends Controller
 
         $detailsAt = $request->input('details', []);
         $object->setDetails($object->id, $detailsAt);
+
+        $detailsProducts = $request->input('detailsProducts') ?? [];
+        $object->setDetailProducts($object->id, $detailsProducts);
+
+        $images = $request->file('routeImage') ?? [];
+        $object->setImages($object->id, $images);
+
+        $object->total = $object->totalService + $object->totalProducts;
+        $object->save();
 
         $object = Attention::with(['worker.person', 'vehicle', 'details', 'routeImages'])->find($object->id);
         $object->elements = $object->getElements($object->id);

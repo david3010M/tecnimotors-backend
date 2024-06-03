@@ -342,15 +342,11 @@
                                     },
                                     "fuelLevel": {
                                         "type": "string",
-                                        "example": "Empty"
+                                        "example": "2"
                                     },
                                     "km": {
                                         "type": "string",
                                         "example": "0.00"
-                                    },
-                                    "routeImage": {
-                                        "type": "string",
-                                        "example": "-"
                                     },
                                     "vehicle_id": {
                                         "type": "string",
@@ -364,6 +360,10 @@
                                         "type": "array",
                                         "items": {
                                             "properties": {
+                                                "idDetail": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
                                                 "service_id": {
                                                     "type": "integer",
                                                     "example": 1
@@ -376,16 +376,32 @@
                                             "type": "object"
                                         }
                                     },
+                                    "detailsProducts": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "idDetail": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "idProduct": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "quantity": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
                                     "elements": {
                                         "type": "array",
                                         "items": {
                                             "type": "integer"
                                         },
-                                        "example": [
-                                            1,
-                                            2,
-                                            3
-                                        ]
+                                        "example": 1
                                     }
                                 },
                                 "type": "object"

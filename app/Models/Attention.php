@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * @OA\Schema (
@@ -97,83 +98,19 @@ class Attention extends Model
         return $list;
     }
 
-    public function setElements($id, $elementsId)
-    {
-        $attention = Attention::find($id);
-        $currentOptionMenuIds = $attention->elementForAttention()->pluck('element_id')->toArray();
-
-        $toAdd = array_diff($elementsId, $currentOptionMenuIds);
-        $toRemove = array_diff($currentOptionMenuIds, $elementsId);
-
-        if (!empty($toRemove)) {
-            $attention->elementForAttention()->whereIn('element_id', $toRemove)->forceDelete();
-        }
-
-        // Añadir los nuevos accesos que no existen actualmente
-        foreach ($toAdd as $optionMenuId) {
-
-            if (!in_array($optionMenuId, $currentOptionMenuIds)) {
-                ElementForAttention::create([
-                    'attention_id' => $id,
-                    'element_id' => $optionMenuId,
-                ]);
-            }
-        }
-    }
-
-    public function setDetails($id, $detailsAtId)
-    {
-        $attention = Attention::find($id);
-        $currentDetailsAtds = $attention->details()->pluck('id')->toArray();
-
-        $toAdd = array_diff($detailsAtId, $currentDetailsAtds);
-        $toRemove = array_diff($currentDetailsAtds, $detailsAtId);
-
-        if (!empty($toRemove)) {
-            $attention->details()->whereIn('id', $toRemove)->forceDelete();
-        }
-
-        // Añadir los nuevos accesos que no existen actualmente
-        foreach ($toAdd as $detailNew) {
-
-            if (!in_array($detailNew, $currentDetailsAtds)) {
-                $service = Service::find($detailNew['service_id']);
-                $objectData = [
-                    'saleprice' => $service->saleprice ?? '0.00',
-                    'type' => 'Service',
-                    'comment' => $detailNew['comment'] ?? '-',
-                    'status' => $detailNew['status'] ?? 'Generada',
-                    'dateRegister' => Carbon::now(),
-                    'dateMax' => $detailNew['dateMax'] ?? null,
-                    'worker_id' => $detailNew['worker_id'],
-                    'product_id' => $detailNew['product_id'] ?? null,
-                    'service_id' => $detailNew['service_id'],
-                    'attention_id' => $attention->id,
-                ];
-                DetailAttention::create($objectData);
-            }
-        }
-    }
-
-    //REVISAR QUE NO TENGA RELACIONES
-
     public function details()
     {
         return $this->hasMany(DetailAttention::class)->orderBy('type', 'desc')->with(['worker', 'service', 'product']);
     }
     public function routeImages()
     {
-//        return $this->belongsToMany(Element::class, 'element_for_attentions');
         return $this->hasMany(RouteImages::class);
     }
 
     public function elements()
     {
-//        return $this->belongsToMany(Element::class, 'element_for_attentions');
         return $this->hasMany(ElementForAttention::class);
     }
-
-//    PDF
 
     public static function getAttention($id)
     {
@@ -191,4 +128,159 @@ class Attention extends Model
 
         return $object;
     }
+
+    public function setElements($id, $elementsId)
+    {
+        $attention = Attention::find($id);
+        $currentOptionMenuIds = $attention->elementForAttention()->pluck('element_id')->toArray();
+
+        $toAdd = array_diff($elementsId, $currentOptionMenuIds);
+        $toRemove = array_diff($currentOptionMenuIds, $elementsId);
+
+        foreach ($toAdd as $optionMenuId) {
+
+            if (!in_array($optionMenuId, $currentOptionMenuIds)) {
+                ElementForAttention::create([
+                    'attention_id' => $id,
+                    'element_id' => $optionMenuId,
+                ]);
+            }
+        }
+        if (!empty($toRemove)) {
+            $attention->elementForAttention()->whereIn('element_id', $toRemove)->delete();
+        }
+    }
+
+    public function setDetails($id, $detailServices)
+    {
+        $attention = Attention::find($id);
+        $currentDetailsIds = $attention->details()->where('type', 'Service')->pluck('id')->toArray();
+        $detailsUpdate = $detailServices;
+
+        $newDetailIds = [];
+
+        foreach ($detailsUpdate as $detailData) {
+            if (($detailData['idDetail'] != 'null')) {
+                $newDetailIds[] = $detailData['idDetail'];
+                $detail = DetailAttention::find($detailData['idDetail']);
+                if ($detail) {
+                    $data = [
+                        'service_id' => $detailData['service_id'],
+                        'worker_id' => $detailData['worker_id'],
+                    ];
+                    $detail->update($data);
+                }
+            } else {
+                $detail = $detailData;
+                $service = Service::find($detail['service_id']);
+                $objectData = [
+                    'saleprice' => $service->saleprice ?? '0.00',
+                    'type' => 'Service',
+                    'comment' => $detail['comment'] ?? '-',
+                    'status' => $detail['status'] ?? 'Generada',
+                    'dateRegister' => Carbon::now(),
+                    'dateMax' => $detail['dateMax'] ?? null,
+                    'worker_id' => $detail['worker_id'],
+                    'product_id' => $detail['product_id'] ?? null,
+                    'service_id' => $detail['service_id'],
+                    'attention_id' => $attention->id,
+                ];
+                $detailService = DetailAttention::create($objectData);
+                $newDetailIds[] = $detailService->id;
+            }
+        }
+
+        $detailsToDelete = array_diff($currentDetailsIds, $newDetailIds);
+        $attention->details()->where('type', 'Service')->whereIn('id', $detailsToDelete)->delete();
+
+        $attention->totalService = $attention->details()->where('type', 'Service')->sum('saleprice');
+        $attention->save();
+    }
+
+    public function setDetailProducts($id, $detailsAtId)
+    {
+        $attention = Attention::find($id);
+        $currentDetailsIds = $attention->details()->where('type', 'Product')->pluck('id')->toArray();
+        $detailsUpdate = $detailsAtId;
+
+        $newDetailIds = [];
+
+        foreach ($detailsUpdate as $detailData) {
+            if (($detailData['idDetail'] != 'null')) {
+                $newDetailIds[] = $detailData['idDetail'];
+                $detail = DetailAttention::find($detailData['idDetail']);
+                if ($detail) {
+                    $data = [
+                        'quantity' => $detailData['quantity'],
+                        'product_id' => $detailData['idProduct'],
+                    ];
+                    $detail->update($data);
+                }
+            } else {
+                $detail = $detailData;
+                $idProduct = $detail['idProduct'];
+                $quantity = $detail['quantity'];
+
+                $product = Product::find($idProduct);
+                $objectData = [
+                    'saleprice' => $product->sale_price ?? '0.00',
+                    'type' => 'Product',
+                    'quantity' => $quantity,
+                    'comment' => '-',
+                    'status' => 'Generada',
+                    'dateRegister' => Carbon::now(),
+                    'dateMax' => null,
+                    'worker_id' => null,
+                    'product_id' => $product->id ?? null,
+                    'service_id' => null,
+                    'attention_id' => $attention->id,
+                ];
+                $detailProd = DetailAttention::create($objectData);
+                $newDetailIds[] = $detailProd->id;
+            }
+        }
+
+        $detailsToDelete = array_diff($currentDetailsIds, $newDetailIds);
+        $attention->details()->where('type', 'Product')->whereIn('id', $detailsToDelete)->delete();
+
+        $attention->totalProducts = $attention->details()->where('type', 'Product')->sum('sale_price');
+        $attention->save();
+    }
+
+    public function setImages($id, $images)
+    {
+        $attention = Attention::find($id);
+
+        foreach ($attention->routeImages() as $routeImage) {
+            $RouteImage = RouteImages::find($routeImage->id);
+            $path = $RouteImage->route;
+            if (Storage::exists($path)) {
+                Storage::delete($path);
+
+            }
+        }
+
+        $attention->routeImages()->delete();
+        $index = 1;
+        foreach ($images as $image) {
+
+            $file = $image;
+            $currentTime = now();
+            $filename = $index . '-' . $currentTime->format('YmdHis') . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('public/photosSheetService', $filename);
+            $rutaImagen = Storage::url($path);
+            $attention->routeImage = $rutaImagen;
+            $attention->save();
+
+            $dataImage = [
+                'route' => $rutaImagen,
+                'attention_id' => $attention->id,
+            ];
+
+            RouteImages::create($dataImage);
+            $index++;
+        }
+
+    }
+
 }
