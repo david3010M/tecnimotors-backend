@@ -10,81 +10,81 @@ use Illuminate\Support\Facades\DB;
 
 class BudgetSheetController extends Controller
 {
-/**
- * Get all BudgetSheets
- *
- * @OA\Get(
- *     path="/tecnimotors-backend/public/api/budgetSheet",
- *     tags={"BudgetSheet"},
- *     security={{"bearerAuth":{}}},
- *     @OA\Response(
- *         response=200,
- *         description="List of active BudgetSheets",
- *         @OA\JsonContent(
- *             @OA\Property(property="current_page", type="integer", example=1),
- *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/BudgetSheet")),
- *             @OA\Property(property="first_page_url", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/budgetSheet?page=1"),
- *             @OA\Property(property="from", type="integer", example=1),
- *             @OA\Property(property="next_page_url", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/budgetSheet?page=2"),
- *             @OA\Property(property="path", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/budgetSheet"),
- *             @OA\Property(property="per_page", type="integer", example=15),
- *             @OA\Property(property="prev_page_url", type="string", example="null"),
- *             @OA\Property(property="to", type="integer", example=15)
- *         )
- *     ),
- *     @OA\Response(
- *         response=401,
- *         description="Unauthorized",
- *         @OA\JsonContent(
- *             @OA\Property(
- *                 property="message", type="string", example="Unauthenticated"
- *             )
- *         )
- *     )
- * )
- */
+    /**
+     * Get all BudgetSheets
+     *
+     * @OA\Get(
+     *     path="/tecnimotors-backend/public/api/budgetSheet",
+     *     tags={"BudgetSheet"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of active BudgetSheets",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="current_page", type="integer", example=1),
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/BudgetSheet")),
+     *             @OA\Property(property="first_page_url", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/budgetSheet?page=1"),
+     *             @OA\Property(property="from", type="integer", example=1),
+     *             @OA\Property(property="next_page_url", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/budgetSheet?page=2"),
+     *             @OA\Property(property="path", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/budgetSheet"),
+     *             @OA\Property(property="per_page", type="integer", example=15),
+     *             @OA\Property(property="prev_page_url", type="string", example="null"),
+     *             @OA\Property(property="to", type="integer", example=15)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="message", type="string", example="Unauthenticated"
+     *             )
+     *         )
+     *     )
+     * )
+     */
 
     public function index()
     {
         return response()->json(budgetSheet::with(['attention'])->simplePaginate(15));
     }
 
-/**
- * Get a single BudgetSheet
- * @OA\Get (
- *     path="/tecnimotors-backend/public/api/budgetSheet/{id}",
- *     tags={"BudgetSheet"},
- *     security={{"bearerAuth":{}}},
- *     @OA\Parameter(
- *         name="id",
- *         in="path",
- *         required=true,
- *         description="BudgetSheet ID",
- *         @OA\Schema(type="integer", example=1)
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="BudgetSheet data",
- *         @OA\JsonContent(ref="#/components/schemas/BudgetSheet")
- *     ),
- *     @OA\Response(
- *         response=404,
- *         description="BudgetSheet not found",
- *         @OA\JsonContent(
- *             @OA\Property(property="message", type="string", example="BudgetSheet not found")
- *         )
- *     ),
- *     @OA\Response(
- *         response=401,
- *         description="Unauthorized",
- *         @OA\JsonContent(
- *             @OA\Property(
- *                 property="message", type="string", example="Unauthenticated"
- *             )
- *         )
- *     )
- * )
- */
+    /**
+     * Get a single BudgetSheet
+     * @OA\Get (
+     *     path="/tecnimotors-backend/public/api/budgetSheet/{id}",
+     *     tags={"BudgetSheet"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="BudgetSheet ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="BudgetSheet data",
+     *         @OA\JsonContent(ref="#/components/schemas/BudgetSheet")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="BudgetSheet not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="BudgetSheet not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="message", type="string", example="Unauthenticated"
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function show(int $id)
     {
         $budgetSheet = budgetSheet::with(['attention'])->find($id);
@@ -147,7 +147,7 @@ class BudgetSheetController extends Controller
 
         $tipo = 'PRES';
         $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM budget_sheets a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-        $siguienteNum = (int) $resultado;
+        $siguienteNum = (int)$resultado;
 
         $data = [
             'number' => $tipo . "-" . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT),
@@ -159,7 +159,7 @@ class BudgetSheetController extends Controller
             'discount' => $request->input('discount') ?? 0.0,
             'subtotal' => $request->input('subtotal') ?? 0.0,
             'igv' => $request->input('igv') ?? 0.0,
-            'attention_id' => $attention->id,
+            'attention_id' => $request->input('attention_id'),
         ];
 
         $object = budgetSheet::create($data);
@@ -168,9 +168,9 @@ class BudgetSheetController extends Controller
     }
 
     /**
-     * Update a budgetSheet
+     * Update a budgedSheet
      * @OA\Put (
-     *     path="/tecnimotors-backend/public/api/budgetSheet/{id}",
+     *     path="/tecnimotors-backend/public/api/budgedSheet/{id}",
      *     tags={"BudgetSheet"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
@@ -246,7 +246,6 @@ class BudgetSheetController extends Controller
             'discount' => $request->input('discount') ?? 0.0,
             'subtotal' => $request->input('subtotal') ?? 0.0,
             'igv' => $request->input('igv') ?? 0.0,
-            'attention_id' => $attention->id,
         ];
 
         $object->update($data);

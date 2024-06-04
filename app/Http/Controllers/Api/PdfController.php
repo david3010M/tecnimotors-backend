@@ -4,19 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attention;
+use App\Models\budgetSheet;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class PdfController extends Controller
 {
-//    public function index()
-//    {
-//
-//        $objectId = 1;
-//
-//        $object = Attention::with(['worker.person', 'vehicle', 'details', 'elements'])->find($objectId);
-//
-//        return view('orden-servicio', compact('object'))->render();
-//    }
 
     public function getServiceOrder($id)
     {
@@ -31,5 +23,24 @@ class PdfController extends Controller
 //        return $object;
         return $pdf->stream('orden-servicio.pdf');
 //        return $pdf->download('orden-servicio.pdf');
+    }
+
+    public function getBudgetSheet($id)
+    {
+        $object = budgetSheet::getBudgetSheet($id);
+
+        $pdf = Pdf::loadView('presupuesto', [
+            'budgetsheet' => $object,
+        ]);
+
+        return $pdf->stream('presupuesto' . $object->id . '.pdf');
+//        return $pdf->download('orden-servicio.pdf');
+    }
+
+    public function getBudgetSheetInfo($id)
+    {
+        $object = budgetSheet::with(['attention.worker.person', 'attention.vehicle.person', 'attention.vehicle.brand',
+            'attention.details', 'attention.routeImages', 'attention.elements'])->find($id);
+        return $object;
     }
 }

@@ -26,7 +26,6 @@ use Illuminate\Database\Eloquent\Model;
  *     )
  * )
  */
-
 class budgetSheet extends Model
 {
     protected $fillable = [
@@ -39,8 +38,8 @@ class budgetSheet extends Model
         'discount',
         'subtotal',
         'igv',
-        'igv',
         'attention_id',
+        'created_at',
     ];
 
     protected $hidden = [
@@ -52,4 +51,23 @@ class budgetSheet extends Model
     {
         return $this->belongsTo(Attention::class, 'attention_id');
     }
+
+    public static function getBudgetSheet($id)
+    {
+        $object = budgetSheet::with([
+            'attention.worker.person',
+            'attention.vehicle.person',
+            'attention.vehicle.brand',
+            'attention.details',
+            'attention.routeImages',
+            'attention.elements',
+        ])->find($id);
+
+        if (!$object) {
+            abort(404, 'BudgetSheet not found');
+        }
+
+        return $object;
+    }
+
 }
