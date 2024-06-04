@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AttentionController;
 use App\Http\Controllers\Api\BankController;
 use App\Http\Controllers\Api\BrandController;
+use App\Http\Controllers\Api\BudgetSheetController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ConceptMovController;
 use App\Http\Controllers\Api\ConceptPayController;
@@ -10,7 +11,6 @@ use App\Http\Controllers\Api\ElementController;
 use App\Http\Controllers\Api\ElementForAttentionController;
 use App\Http\Controllers\Api\GroupMenuController;
 use App\Http\Controllers\Api\OptionMenuController;
-use App\Http\Controllers\Api\PdfController;
 use App\Http\Controllers\Api\PersonController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\SearchController;
@@ -18,7 +18,6 @@ use App\Http\Controllers\Api\SendWhatsappController;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\SpecialtyController;
 use App\Http\Controllers\Api\SpecialtyPersonController;
-
 use App\Http\Controllers\Api\SupplierController;
 use App\Http\Controllers\Api\TypeAttentionController;
 use App\Http\Controllers\Api\TypeUserController;
@@ -110,8 +109,9 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
 
 //  ATTENTION
     Route::resource('attention', AttentionController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
-        ->names(['index' => 'attention.index', 'store' => 'attention.store', 'show' => 'attention.show', 'update' => 'attention.update', 'destroy' => 'attention.destroy']);
-
+        ->names(['index' => 'attention.index', 'store' => 'attention.store',
+            'show' => 'attention.show', 'update' => 'attention.update',
+            'destroy' => 'attention.destroy', 'searchByNumber' => 'attention.searchByNumber']);
 
 // ELEMENTFORATTENTION
     Route::resource('elementForAttention', ElementForAttentionController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
@@ -162,6 +162,9 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
 //    ORDER SERVICE
 //    Route::get('getServiceOrder', [PdfController::class, 'index']);
 
-Route::post('sendSheetByWhatsapp', [SendWhatsappController::class, 'sendSheetServiceByWhatsapp']);
+    Route::post('sendSheetByWhatsapp', [SendWhatsappController::class, 'sendSheetServiceByWhatsapp']);
+
+    Route::resource('budgetSheet', BudgetSheetController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'budgetSheet.index', 'store' => 'budgetSheet.store', 'show' => 'budgetSheet.show', 'update' => 'budgetSheet.update', 'destroy' => 'budgetSheet.destroy']);
 
 });

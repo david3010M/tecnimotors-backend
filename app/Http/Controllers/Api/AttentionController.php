@@ -110,6 +110,60 @@ class AttentionController extends Controller
         return response()->json($object);
     }
 
+/**
+ * Get a single Attention by number
+ * @OA\Get (
+ *     path="/tecnimotors-backend/public/api/attention/number/{number}",
+ *     tags={"Attention"},
+ *     security={{"bearerAuth":{}}},
+ *     @OA\Parameter(
+ *         name="number",
+ *         in="path",
+ *         required=true,
+ *         description="Attention number in the format OTRS-00000001",
+ *         @OA\Schema(type="string", example="OTRS-00000001")
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Attention data",
+ *         @OA\JsonContent(ref="#/components/schemas/Attention")
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Attention not found",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Attention not found")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Unauthorized",
+ *         @OA\JsonContent(
+ *             @OA\Property(
+ *                 property="message", type="string", example="Unauthenticated"
+ *             )
+ *         )
+ *     )
+ * )
+ */
+
+    public function searchByNumber($number)
+    {
+
+        $attention = Attention::where('number', $number)->first();
+
+        if (!$attention) {
+            return response()->json(['message' => 'Attention not found'], 404);
+        }
+
+        $object = Attention::with(['worker.person', 'vehicle', 'details', 'routeImages', 'elements'])
+            ->where('number', $number)->first();
+        $object->elements = $object->getElements($object->id);
+        $object->details = $object->getDetails($object->id);
+
+        return response()->json($object);
+    }
+
     // /**
     //  * Create a new ATTENTION
     //  * @OA\Post(

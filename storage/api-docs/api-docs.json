@@ -361,8 +361,8 @@
                                         "items": {
                                             "properties": {
                                                 "idDetail": {
-                                                    "type": "integer",
-                                                    "example": 1
+                                                    "type": "string",
+                                                    "example": "1"
                                                 },
                                                 "service_id": {
                                                     "type": "integer",
@@ -381,8 +381,8 @@
                                         "items": {
                                             "properties": {
                                                 "idDetail": {
-                                                    "type": "integer",
-                                                    "example": 1
+                                                    "type": "string",
+                                                    "example": "1"
                                                 },
                                                 "idProduct": {
                                                     "type": "integer",
@@ -535,6 +535,76 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Attention has attentions for attention"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/attention/number/{number}": {
+            "get": {
+                "tags": [
+                    "Attention"
+                ],
+                "summary": "Get a single Attention by number",
+                "operationId": "bea38196e96bf426d5096f1f11e65798",
+                "parameters": [
+                    {
+                        "name": "number",
+                        "in": "path",
+                        "description": "Attention number in the format OTRS-00000001",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "OTRS-00000001"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Attention data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Attention"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Attention not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Attention not found"
                                         }
                                     },
                                     "type": "object"
@@ -1375,6 +1445,459 @@
                                         "error": {
                                             "type": "string",
                                             "example": "Brand has vehicles"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/budgetSheet": {
+            "get": {
+                "tags": [
+                    "BudgetSheet"
+                ],
+                "summary": "Get all BudgetSheets",
+                "operationId": "d941e2364484cf52c950d8b945b338fb",
+                "responses": {
+                    "200": {
+                        "description": "List of active BudgetSheets",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "current_page": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/BudgetSheet"
+                                            }
+                                        },
+                                        "first_page_url": {
+                                            "type": "string",
+                                            "example": "http://develop.garzasoft.com/tecnimotors-backend/public/api/budgetSheet?page=1"
+                                        },
+                                        "from": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "next_page_url": {
+                                            "type": "string",
+                                            "example": "http://develop.garzasoft.com/tecnimotors-backend/public/api/budgetSheet?page=2"
+                                        },
+                                        "path": {
+                                            "type": "string",
+                                            "example": "http://develop.garzasoft.com/tecnimotors-backend/public/api/budgetSheet"
+                                        },
+                                        "per_page": {
+                                            "type": "integer",
+                                            "example": 15
+                                        },
+                                        "prev_page_url": {
+                                            "type": "string",
+                                            "example": "null"
+                                        },
+                                        "to": {
+                                            "type": "integer",
+                                            "example": 15
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "BudgetSheet"
+                ],
+                "summary": "Create a new BudgetSheet",
+                "operationId": "9d81e7fca6604a4ab137141eee1e5c5f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "attention_id"
+                                ],
+                                "properties": {
+                                    "attention_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "paymentType": {
+                                        "type": "string",
+                                        "example": "Al Contado"
+                                    },
+                                    "discount": {
+                                        "type": "decimal",
+                                        "example": 0
+                                    },
+                                    "subtotal": {
+                                        "type": "decimal",
+                                        "example": 0
+                                    },
+                                    "igv": {
+                                        "type": "decimal",
+                                        "example": 0
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "BudgetSheet created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BudgetSheet"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The name field is required."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/budgetSheet/{id}": {
+            "get": {
+                "tags": [
+                    "BudgetSheet"
+                ],
+                "summary": "Get a single BudgetSheet",
+                "operationId": "85b4f0c0adb97ab9e9a69ed6f88a7157",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "BudgetSheet ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "BudgetSheet data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BudgetSheet"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "BudgetSheet not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "BudgetSheet not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "BudgetSheet"
+                ],
+                "summary": "Delete an BudgetSheet",
+                "operationId": "dbb82aa7e4e2b5dadc969572414e9536",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "BudgetSheet ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "BudgetSheet deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "BudgetSheet deleted"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "BudgetSheet not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "BudgetSheet not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "BudgetSheet has budgetSheets for attention",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "BudgetSheet has budgetSheets for attention"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/budgedSheet/{id}": {
+            "put": {
+                "tags": [
+                    "BudgetSheet"
+                ],
+                "summary": "Update a budgedSheet",
+                "operationId": "4a772e119fa9854414416e44747b69c5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the budgetSheet",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "attention_id"
+                                ],
+                                "properties": {
+                                    "attention_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "paymentType": {
+                                        "type": "string",
+                                        "example": "Al Contado"
+                                    },
+                                    "discount": {
+                                        "type": "decimal",
+                                        "example": 0
+                                    },
+                                    "subtotal": {
+                                        "type": "decimal",
+                                        "example": 0
+                                    },
+                                    "igv": {
+                                        "type": "decimal",
+                                        "example": 0
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "attention updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TypeAttention"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "attention not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "attention not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The name field is required."
                                         }
                                     },
                                     "type": "object"
@@ -9776,6 +10299,10 @@
             },
             "Attention": {
                 "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
                     "number": {
                         "type": "string",
                         "example": "12345"
@@ -10962,6 +11489,65 @@
                     },
                     "person": {
                         "$ref": "#/components/schemas/Person"
+                    }
+                },
+                "type": "object"
+            },
+            "BudgetSheet": {
+                "title": "BudgetSheet",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "number": {
+                        "type": "string",
+                        "example": "PRES-00000001"
+                    },
+                    "paymentType": {
+                        "type": "string",
+                        "example": "Al Contado"
+                    },
+                    "totalService": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 0
+                    },
+                    "totalProducts": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 0
+                    },
+                    "debtAmount": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 0
+                    },
+                    "total": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 0
+                    },
+                    "discount": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 0
+                    },
+                    "subtotal": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 0
+                    },
+                    "igv": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 0
+                    },
+                    "Attention": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Attention"
+                        }
                     }
                 },
                 "type": "object"

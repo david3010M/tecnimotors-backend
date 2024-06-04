@@ -43,7 +43,7 @@ class ElementController extends Controller
      */
     public function index()
     {
-        return response()->json(Element::simplePaginate(15));
+        return response()->json(Element::simplePaginate(30));
     }
 
     /**
@@ -278,10 +278,6 @@ class ElementController extends Controller
         if (!$element) {
             return response()->json(['message' => 'Element not found'], 404);
         }
-
-//        if ($element->elementsForAttention()->count() > 0) {
-//            return response()->json(['message' => 'Element has elements for attention'], 409);
-//        }
 
         $element->delete();
 

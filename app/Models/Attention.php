@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Storage;
  * @OA\Schema (
  *     schema="Attention",
  *     type="object",
+ *     @OA\Property(property="id", type="integer", example="1"),
  *     @OA\Property(property="number", type="string", example="12345"),
  *     @OA\Property(property="arrivalDate", type="string", format="date", example="2024-05-21"),
  *     @OA\Property(property="deliveryDate", type="string", format="date", example="2024-05-22"),
@@ -19,10 +20,10 @@ use Illuminate\Support\Facades\Storage;
  *     @OA\Property(property="fuelLevel", type="integer", example="80"),
  *     @OA\Property(property="km", type="integer", example="15000"),
  *     @OA\Property(property="routeImage", type="string", example="/image.jpg"),
- * @OA\Property(property="totalService", type="number", example="100.00"),
- * @OA\Property(property="totalProducts", type="number", example="200.00"),
- * @OA\Property(property="total", type="number", example="300.00"),
- * @OA\Property(property="debtAmount", type="number", example="100.00"),
+ *      @OA\Property(property="totalService", type="number", example="100.00"),
+ *      @OA\Property(property="totalProducts", type="number", example="200.00"),
+ *      @OA\Property(property="total", type="number", example="300.00"),
+ *      @OA\Property(property="debtAmount", type="number", example="100.00"),
  *
  *     @OA\Property(property="created_at", type="string", format="date-time", example="2024-05-21 04:09:25"),
  *         @OA\Property(
