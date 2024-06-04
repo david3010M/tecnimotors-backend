@@ -566,13 +566,13 @@
                 ]
             }
         },
-        "/tecnimotors-backend/public/api/attention/number/{number}": {
+        "/tecnimotors-backend/public/api/searchByNumber/{number}": {
             "get": {
                 "tags": [
                     "Attention"
                 ],
                 "summary": "Get a single Attention by number",
-                "operationId": "bea38196e96bf426d5096f1f11e65798",
+                "operationId": "4d226b51eb1f080a5545a92ef537f101",
                 "parameters": [
                     {
                         "name": "number",
@@ -1702,104 +1702,12 @@
                     }
                 ]
             },
-            "delete": {
-                "tags": [
-                    "BudgetSheet"
-                ],
-                "summary": "Delete an BudgetSheet",
-                "operationId": "dbb82aa7e4e2b5dadc969572414e9536",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "BudgetSheet ID",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "example": 1
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "BudgetSheet deleted",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "BudgetSheet deleted"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "BudgetSheet not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "BudgetSheet not found"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "409": {
-                        "description": "BudgetSheet has budgetSheets for attention",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "BudgetSheet has budgetSheets for attention"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Unauthenticated"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/tecnimotors-backend/public/api/budgedSheet/{id}": {
             "put": {
                 "tags": [
                     "BudgetSheet"
                 ],
-                "summary": "Update a budgedSheet",
-                "operationId": "4a772e119fa9854414416e44747b69c5",
+                "summary": "Update a budgetSheet",
+                "operationId": "fefbcc357601cd8d5c1448caa7e780f0",
                 "parameters": [
                     {
                         "name": "id",
@@ -1898,6 +1806,96 @@
                                         "message": {
                                             "type": "string",
                                             "example": "The name field is required."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "BudgetSheet"
+                ],
+                "summary": "Delete an BudgetSheet",
+                "operationId": "dbb82aa7e4e2b5dadc969572414e9536",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "BudgetSheet ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "BudgetSheet deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "BudgetSheet deleted"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "BudgetSheet not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "BudgetSheet not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "BudgetSheet has budgetSheets for attention",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "BudgetSheet has budgetSheets for attention"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
                                         }
                                     },
                                     "type": "object"

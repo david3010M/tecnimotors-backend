@@ -39,7 +39,8 @@ class budgetSheet extends Model
         'discount',
         'subtotal',
         'igv',
-        'created_at',
+        'igv',
+        'attention_id',
     ];
 
     protected $hidden = [

@@ -113,7 +113,7 @@ class AttentionController extends Controller
 /**
  * Get a single Attention by number
  * @OA\Get (
- *     path="/tecnimotors-backend/public/api/attention/number/{number}",
+ *     path="/tecnimotors-backend/public/api/searchByNumber/{number}",
  *     tags={"Attention"},
  *     security={{"bearerAuth":{}}},
  *     @OA\Parameter(

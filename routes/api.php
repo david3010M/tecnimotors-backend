@@ -111,8 +111,9 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::resource('attention', AttentionController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'attention.index', 'store' => 'attention.store',
             'show' => 'attention.show', 'update' => 'attention.update',
-            'destroy' => 'attention.destroy', 'searchByNumber' => 'attention.searchByNumber']);
-
+            'destroy' => 'attention.destroy']);
+    Route::get('searchByNumber/{number}', [AttentionController::class, 'searchByNumber']);
+           
 // ELEMENTFORATTENTION
     Route::resource('elementForAttention', ElementForAttentionController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'elementForAttention.index', 'store' => 'elementForAttention.store', 'show' => 'elementForAttention.show', 'update' => 'elementForAttention.update', 'destroy' => 'elementForAttention.destroy']);
@@ -165,6 +166,7 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::post('sendSheetByWhatsapp', [SendWhatsappController::class, 'sendSheetServiceByWhatsapp']);
 
     Route::resource('budgetSheet', BudgetSheetController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
-        ->names(['index' => 'budgetSheet.index', 'store' => 'budgetSheet.store', 'show' => 'budgetSheet.show', 'update' => 'budgetSheet.update', 'destroy' => 'budgetSheet.destroy']);
+        ->names(['index' => 'budgetSheet.index', 'store' => 'budgetSheet.store', 'show' => 'budgetSheet.show', 
+        'update' => 'budgetSheet.update', 'destroy' => 'budgetSheet.destroy']);
 
 });

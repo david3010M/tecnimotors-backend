@@ -159,6 +159,7 @@ class BudgetSheetController extends Controller
             'discount' => $request->input('discount') ?? 0.0,
             'subtotal' => $request->input('subtotal') ?? 0.0,
             'igv' => $request->input('igv') ?? 0.0,
+            'attention_id' => $attention->id,
         ];
 
         $object = budgetSheet::create($data);
@@ -167,9 +168,9 @@ class BudgetSheetController extends Controller
     }
 
     /**
-     * Update a budgedSheet
+     * Update a budgetSheet
      * @OA\Put (
-     *     path="/tecnimotors-backend/public/api/budgedSheet/{id}",
+     *     path="/tecnimotors-backend/public/api/budgetSheet/{id}",
      *     tags={"BudgetSheet"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
@@ -245,6 +246,7 @@ class BudgetSheetController extends Controller
             'discount' => $request->input('discount') ?? 0.0,
             'subtotal' => $request->input('subtotal') ?? 0.0,
             'igv' => $request->input('igv') ?? 0.0,
+            'attention_id' => $attention->id,
         ];
 
         $object->update($data);
