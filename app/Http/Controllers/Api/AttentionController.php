@@ -51,15 +51,19 @@ class AttentionController extends Controller
      */
     public function index()
     {
-        $object = Attention::simplePaginate(15);
-        $object->getCollection()->transform(function ($typeUser) {
-            $typeUser->elements = $typeUser->getElements($typeUser->id);
-            $typeUser->details = $typeUser->getDetails($typeUser->id);
-            $typeUser->routeImages = $typeUser->routeImages();
-            return $typeUser;
-        });
-        return response()->json($object);
+        // Obtenemos la paginación simple de 15 registros con las relaciones necesarias
+        $objects = Attention::with(['worker.person', 'vehicle', 'vehicle.person', 'details', 'routeImages', 'elements'])->simplePaginate(15);
 
+        // Transformamos cada elemento de la colección paginada
+        $objects->getCollection()->transform(function ($attention) {
+            $attention->elements = $attention->getElements($attention->id);
+            $attention->details = $attention->getDetails($attention->id);
+
+            return $attention;
+        });
+
+        // Devolvemos la colección transformada como respuesta JSON
+        return response()->json($objects);
     }
 
     /**
@@ -100,9 +104,10 @@ class AttentionController extends Controller
      */
     public function show(int $id)
     {
-        $object = Attention::with(['worker.person', 'vehicle', 'details', 'routeImages', 'elements'])->find($id);
+        $object = Attention::with(['worker.person', 'vehicle', 'vehicle.person', 'details', 'routeImages', 'elements'])->find($id);
         $object->elements = $object->getElements($object->id);
         $object->details = $object->getDetails($object->id);
+
         if (!$object) {
             return response()->json(['message' => 'Attention not found'], 404);
         }
@@ -156,7 +161,7 @@ class AttentionController extends Controller
             return response()->json(['message' => 'Attention not found'], 404);
         }
 
-        $object = Attention::with(['worker.person', 'vehicle', 'details', 'routeImages', 'elements'])
+        $object = Attention::with(['worker.person', 'vehicle', 'vehicle.person', 'details', 'routeImages', 'elements'])
             ->where('number', $number)->first();
         $object->elements = $object->getElements($object->id);
         $object->details = $object->getDetails($object->id);
@@ -589,6 +594,7 @@ class AttentionController extends Controller
         $object = Attention::with(['worker.person', 'vehicle', 'details', 'routeImages'])->find($object->id);
         $object->elements = $object->getElements($object->id);
         $object->details = $object->getDetails($object->id);
+
         return response()->json($object);
     }
 

@@ -1,5 +1,5 @@
 @php use Carbon\Carbon; @endphp
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -9,7 +9,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <style>
-
         * {
             margin: 0;
             padding: 0;
@@ -18,7 +17,8 @@
             letter-spacing: 0.5px;
         }
 
-        html, body {
+        html,
+        body {
             width: 100%;
             height: 100%;
         }
@@ -206,139 +206,140 @@
         .borderTop {
             border-top: 1px solid #3b3b3b;
         }
-
-
     </style>
 </head>
 
 <body>
 
-<img class="headerImage" src="{{ asset('img/degraded.png') }}" alt="degraded">
+    <img class="headerImage" src="{{ asset('img/degraded.png') }}" alt="degraded">
 
-<div class="content">
-    <div class="contentImage">
-        <img class="logoImage" src="{{ asset('img/logoTecnimotors.png') }}" alt="logoTecnimotors">
-    </div>
+    <div class="content">
+        <div class="contentImage">
+            <img class="logoImage" src="{{ asset('img/logoTecnimotors.png') }}" alt="logoTecnimotors">
+        </div>
 
-    <table class="tableInfo">
-        <tr>
-            <td class="left">
-                <p>N° {{$budgetsheet->number}}</p>
-                <p><strong>{{ Carbon::parse($budgetsheet->created_at)->format('d-m-Y') }}</strong></p>
-            </td>
-            <td>
-                <div class="titlePresupuesto right">PRESUPUESTO</div>
-            </td>
-        </tr>
-    </table>
-
-    <table class="tablePeople font-14">
-        <tr>
-            <td class="left w50 font-12 gris">
-                <strong>EMPRESA</strong>
-            </td>
-            <td class="right w50 font-12 gris">
-                <strong>CLIENTE</strong>
-            </td>
-        </tr>
-
-        <tr>
-            <td class="left w50 blue bolder"><strong>TECNIMOTORS DEL PERÚ</strong></td>
-            <td class="right w50 blue bolder"><strong>NOMBRE DEL CLIENTE</strong></td>
-        </tr>
-
-        <tr>
-            <td class="left w50">{{ $budgetsheet->attention->vehicle->person->address }}</td>
-            <td class="right w50">
-                {{ $budgetsheet->attention->vehicle->person->documentNumber }}
-            </td>
-        </tr>
-
-        <tr>
-            <td class="left w50">{{ $budgetsheet->attention->vehicle->person->phone }}</td>
-            <td class="right w50">Vehículo</td>
-        </tr>
-
-        <tr>
-            <td class="left w50">Fecha de entrega</td>
-            <td class="right w50">{{ $budgetsheet->attention->vehicle->plate }}</td>
-        </tr>
-
-        <tr>
-            <td class="left w50">{{ Carbon::parse($budgetsheet->attention->deliveryDate)->format('d/m/Y') ?? 'Sin fecha' }}</td>
-            <td class="right w50">{{ $budgetsheet->attention->vehicle->brand->name }} {{ $budgetsheet->attention->vehicle->model }}</td>
-        </tr>
-    </table>
-
-    <table class="tableDetail">
-        <tr>
-            <th class="description">Descripción</th>
-            <th class="quantity">Cantidad</th>
-            <th class="price">Precio</th>
-        </tr>
-
-        @foreach($budgetsheet->attention->details as $detail)
+        <table class="tableInfo">
             <tr>
-                @if($detail->type == 'Service')
-                    <td class="description">{{ $detail->service->name }}</td>
-                @elseif ($detail->type == 'Product')
-                    <td class="description">{{ $detail->product->name }}</td>
-                @endif
-                <td class="quantity">{{ $detail->quantity }}</td>
-                <td class="price">S/ {{ $detail->saleprice }}</td>
+                <td class="left">
+                    <p>N° {{ $budgetsheet->number }}</p>
+                    <p><strong>{{ Carbon::parse($budgetsheet->created_at)->format('d-m-Y') }}</strong></p>
+                </td>
+                <td>
+                    <div class="titlePresupuesto right">PRESUPUESTO</div>
+                </td>
             </tr>
-        @endforeach
-    </table>
+        </table>
 
-    <table class="tableTotal">
-        <tr>
-            <td class="w50 left"></td>
-            <td class="w50 right totalInfo">
-                <table>
-                    <tr>
-                        <td>
-                            <p class="p10 right"><strong>Subtotal</strong></p>
-                            <p class="p10 right"><strong>IGV (18%)</strong></p>
-                            <p class="p10 right"><strong>Total</strong></p>
-                        </td>
-                        <td>
-                            <p class="p10 right">{{ $budgetsheet->subtotal }}</p>
-                            <p class="p10 right">{{ $budgetsheet->igv }}</p>
-                            <p class="p10 right">{{ $budgetsheet->total }}</p>
+        <table class="tablePeople font-14">
+            <tr>
+                <td class="left w50 font-12 gris">
+                    <strong>EMPRESA</strong>
+                </td>
+                <td class="right w50 font-12 gris">
+                    <strong>CLIENTE</strong>
+                </td>
+            </tr>
 
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+            <tr>
+                <td class="left w50 blue bolder"><strong>TECNIMOTORS DEL PERÚ</strong></td>
+                <td class="right w50 blue bolder"><strong>NOMBRE DEL CLIENTE</strong></td>
+            </tr>
 
-    <div class="observaciones">
-        <p class="p10 bolder gris font-14">OBSERVACIONES</p>
-        <ul class="listaObservaciones font-12">
-            <li>El presente presupuesto tiene una validez de 2 días.</li>
-            <li>Cualquier servicio adicional será notificado y cotizado por separado.</li>
-            <li>El tiempo estimado de entrega está sujeto a disponibilidad de repuestos y aprobación del cliente.</li>
-        </ul>
+            <tr>
+                <td class="left w50">{{ $budgetsheet->attention->vehicle->person->address }}</td>
+                <td class="right w50">
+                    {{ $budgetsheet->attention->vehicle->person->documentNumber }}
+                </td>
+            </tr>
+
+            <tr>
+                <td class="left w50">{{ $budgetsheet->attention->vehicle->person->phone }}</td>
+                <td class="right w50">Vehículo</td>
+            </tr>
+
+            <tr>
+                <td class="left w50">Fecha de entrega</td>
+                <td class="right w50">{{ $budgetsheet->attention->vehicle->plate }}</td>
+            </tr>
+
+            <tr>
+                <td class="left w50">
+                    {{ Carbon::parse($budgetsheet->attention->deliveryDate)->format('d/m/Y') ?? 'Sin fecha' }}</td>
+                <td class="right w50">{{ $budgetsheet->attention->vehicle->brand->name }}
+                    {{ $budgetsheet->attention->vehicle->model }}</td>
+            </tr>
+        </table>
+
+        <table class="tableDetail">
+            <tr>
+                <th class="description">Descripción</th>
+                <th class="quantity">Cantidad</th>
+                <th class="price">Precio</th>
+            </tr>
+
+            @foreach ($budgetsheet->attention->details as $detail)
+                <tr>
+                    @if ($detail->type == 'Service')
+                        <td class="description">{{ $detail->service->name }}</td>
+                    @elseif ($detail->type == 'Product')
+                        <td class="description">{{ $detail->product->name }}</td>
+                    @endif
+                    <td class="quantity">{{ $detail->quantity }}</td>
+                    <td class="price">S/ {{ $detail->saleprice }}</td>
+                </tr>
+            @endforeach
+        </table>
+
+        <table class="tableTotal">
+            <tr>
+                <td class="w50 left"></td>
+                <td class="w50 right totalInfo">
+                    <table>
+                        <tr>
+                            <td>
+                                <p class="p10 right"><strong>Subtotal</strong></p>
+                                <p class="p10 right"><strong>IGV (18%)</strong></p>
+                                <p class="p10 right"><strong>Total</strong></p>
+                            </td>
+                            <td>
+                                <p class="p10 right">{{ $budgetsheet->subtotal }}</p>
+                                <p class="p10 right">{{ $budgetsheet->igv }}</p>
+                                <p class="p10 right">{{ $budgetsheet->total }}</p>
+
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+        <div class="observaciones">
+            <p class="p10 bolder gris font-14">OBSERVACIONES</p>
+            <ul class="listaObservaciones font-12">
+                <li>El presente presupuesto tiene una validez de 2 días.</li>
+                <li>Cualquier servicio adicional será notificado y cotizado por separado.</li>
+                <li>El tiempo estimado de entrega está sujeto a disponibilidad de repuestos y aprobación del cliente.
+                </li>
+            </ul>
+        </div>
+
+        {{--    FIRMAS --}}
+        <table class="tableFirmas">
+            <tr>
+                <td class="center borderTop w40">
+                    Firma del Cliente
+                </td>
+                <td class="w20"></td>
+                <td class="center borderTop w40">
+                    Firma del Mecánico
+                </td>
+            </tr>
+        </table>
+
     </div>
 
-    {{--    FIRMAS--}}
-    <table class="tableFirmas">
-        <tr>
-            <td class="center borderTop w40">
-                Firma del Cliente
-            </td>
-            <td class="w20"></td>
-            <td class="center borderTop w40">
-                Firma del Mecánico
-            </td>
-        </tr>
-    </table>
 
-</div>
-
-
-<img class="footerImage" src="{{ asset('img/degraded.png') }}" alt="degraded">
+    <img class="footerImage" src="{{ asset('img/degraded.png') }}" alt="degraded">
 </body>
 
 </html>
