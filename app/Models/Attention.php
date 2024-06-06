@@ -161,9 +161,11 @@ class Attention extends Model
         $newDetailIds = [];
 
         foreach ($detailsUpdate as $detailData) {
-            if (($detailData['idDetail'] != 'null')) {
-                $newDetailIds[] = $detailData['idDetail'];
-                $detail = DetailAttention::find($detailData['idDetail']);
+            $idDetail= $detailData['idDetail']??'null';
+
+            if (($idDetail != 'null')) {
+                $newDetailIds[] = $idDetail;
+                $detail = DetailAttention::find($idDetail);
                 if ($detail) {
                     $data = [
                         'service_id' => $detailData['service_id'],
@@ -207,9 +209,10 @@ class Attention extends Model
         $newDetailIds = [];
 
         foreach ($detailsUpdate as $detailData) {
-            if (($detailData['idDetail'] != 'null')) {
-                $newDetailIds[] = $detailData['idDetail'];
-                $detail = DetailAttention::find($detailData['idDetail']);
+            $idDetail= $detailData['idDetail']??'null';
+            if (($idDetail != 'null')) {
+                $newDetailIds[] = $idDetail;
+                $detail = DetailAttention::find($idDetail);
                 if ($detail) {
                     $data = [
                         'quantity' => $detailData['quantity'],
@@ -244,7 +247,7 @@ class Attention extends Model
         $detailsToDelete = array_diff($currentDetailsIds, $newDetailIds);
         $attention->details()->where('type', 'Product')->whereIn('id', $detailsToDelete)->delete();
 
-        $attention->totalProducts = $attention->details()->where('type', 'Product')->sum('sale_price');
+        $attention->totalProducts = $attention->details()->where('type', 'Product')->sum('saleprice');
         $attention->save();
     }
 

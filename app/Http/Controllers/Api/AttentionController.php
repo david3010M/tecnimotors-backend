@@ -317,7 +317,7 @@ class AttentionController extends Controller
         $validator = validator()->make($request->all(), [
             'arrivalDate' => 'required',
             'deliveryDate' => 'required',
-            'observations' => 'required',
+            'observations' => 'nullable',
             'fuelLevel' => 'required|in:0,2,4,6,8,10',
             'km' => 'required',
             'routeImage.*' => 'nullable|image|mimes:jpeg,png,jpg,gif',
@@ -546,7 +546,7 @@ class AttentionController extends Controller
         $validator = validator()->make($request->all(), [
             'arrivalDate' => 'required',
             'deliveryDate' => 'required',
-            'observations' => 'required',
+            'observations' => 'nullable',
             'fuelLevel' => 'required',
             'km' => 'required',
 
@@ -645,12 +645,12 @@ class AttentionController extends Controller
     {
         // VALIDAR AUN ESTA ELIMINACIÓN
 
-//         $object = Attention::find($id);
-//         if (!$object) {
-//             return response()->json(['message' => 'Attention not found'], 404);
-//         }
+        $object = Attention::find($id);
+        if (!$object) {
+            return response()->json(['message' => 'Attention not found'], 404);
+        }
 
-//         $object->delete();
+        $object->delete();
 
         return response()->json(['message' => 'Attention deleted']);
     }
