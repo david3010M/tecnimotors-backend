@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attention;
+use App\Models\budgetSheet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -133,6 +134,80 @@ class SendWhatsappController extends Controller
     }
 
 
-    
+    /**
+     * Send budget sheet information via WhatsApp
+     * @OA\Post(
+     *     path="/tecnimotors-backend/public/api/sendBudgetSheetByWhatsapp",
+     *     tags={"WhatsApp"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Data for sending budget sheet information via WhatsApp",
+     *         @OA\JsonContent(
+     *             required={"idAttention", "phone_number"},
+     *             @OA\Property(property="idBudgetSheet", type="integer", example=1, description="The ID of the budget sheet."),
+     *             @OA\Property(property="phone_number", type="string", description="The phone number to send the message to.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Message sent successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="WhatsApp message sent successfully.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Validation failed: The idAttention field is required.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Internal server error occurred.")
+     *         )
+     *     )
+     * )
+     */
+
+    public function sendBudgetSheetByWhatsapp(Request $request)
+    {
+        $validator = validator()->make($request->all(), [
+            'idBudgetSheet' => 'required|exists:budget_sheets,id',
+            'phone_number' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+        $budgetSheet = budgetSheet::getBudgetSheet($request->input('idBudgetSheet'));
+        $client = $budgetSheet->attention->vehicle->person;
+
+        $url = 'https://sistema.gesrest.net/api/send-document-by-whatsapp';
+
+        $response = Http::withHeaders([
+            'Authorization' => '}*rA3>#pyM<dITk]]DFP2,/wc)1md_Y/',
+        ])->post($url, [
+            "nombre_plantilla" => "tecnimotors",
+            "ruc" => "20487467139",
+            "razon_social" => "TECNI MOTORS DEL PERU E.I.R.L.",
+            "nombre_comercial" => "TECNI MOTORS DEL PERU E.I.R.L.",
+            "cliente" => $client->typeofDocument == 'DNI' ? $client->names . ' ' . $client->fatherSurname : $client->businessName,
+            "celular" => $request->input('phone_number'),
+            "tipo_documento" => "PRESUPUESTO DE ORDEN DE SERVICIO " . $budgetSheet->number,
+            "tipo_documento_url" => "presupuesto",
+            "documento_id_url" => $budgetSheet->id
+        ]);
+
+        if ($response->successful()) {
+            return response()->json(['message' => 'El mensaje de WhatsApp se ha enviado correctamente'], 200);
+        } else {
+            return response()->json(['error' => 'Hubo un error al enviar el mensaje de WhatsApp'], 500);
+        }
+    }
+
 
 }

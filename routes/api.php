@@ -113,7 +113,7 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
             'show' => 'attention.show', 'update' => 'attention.update',
             'destroy' => 'attention.destroy']);
     Route::get('searchByNumber/{number}', [AttentionController::class, 'searchByNumber']);
-           
+
 // ELEMENTFORATTENTION
     Route::resource('elementForAttention', ElementForAttentionController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'elementForAttention.index', 'store' => 'elementForAttention.store', 'show' => 'elementForAttention.show', 'update' => 'elementForAttention.update', 'destroy' => 'elementForAttention.destroy']);
@@ -164,9 +164,10 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
 //    Route::get('getServiceOrder', [PdfController::class, 'index']);
 
     Route::post('sendSheetByWhatsapp', [SendWhatsappController::class, 'sendSheetServiceByWhatsapp']);
+    Route::post('sendBudgetSheetByWhatsapp', [SendWhatsappController::class, 'sendBudgetSheetByWhatsapp']);
 
     Route::resource('budgetSheet', BudgetSheetController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
-        ->names(['index' => 'budgetSheet.index', 'store' => 'budgetSheet.store', 'show' => 'budgetSheet.show', 
-        'update' => 'budgetSheet.update', 'destroy' => 'budgetSheet.destroy']);
+        ->names(['index' => 'budgetSheet.index', 'store' => 'budgetSheet.store', 'show' => 'budgetSheet.show',
+            'update' => 'budgetSheet.update', 'destroy' => 'budgetSheet.destroy']);
 
 });
