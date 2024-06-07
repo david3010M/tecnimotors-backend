@@ -1564,15 +1564,7 @@
                                         "type": "string",
                                         "example": "Al Contado"
                                     },
-                                    "discount": {
-                                        "type": "decimal",
-                                        "example": 0
-                                    },
-                                    "subtotal": {
-                                        "type": "decimal",
-                                        "example": 0
-                                    },
-                                    "igv": {
+                                    "percentageDiscount": {
                                         "type": "decimal",
                                         "example": 0
                                     }
@@ -1820,23 +1812,11 @@
                                     "attention_id"
                                 ],
                                 "properties": {
-                                    "attention_id": {
-                                        "type": "integer",
-                                        "example": 1
-                                    },
                                     "paymentType": {
                                         "type": "string",
                                         "example": "Al Contado"
                                     },
-                                    "discount": {
-                                        "type": "decimal",
-                                        "example": 0
-                                    },
-                                    "subtotal": {
-                                        "type": "decimal",
-                                        "example": 0
-                                    },
-                                    "igv": {
+                                    "percentageDiscount": {
                                         "type": "decimal",
                                         "example": 0
                                     }
@@ -5713,6 +5693,96 @@
                                 "properties": {
                                     "idAttention": {
                                         "description": "The ID of the attention.",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "phone_number": {
+                                        "description": "The phone number to send the message to.",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Message sent successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "WhatsApp message sent successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Validation failed: The idAttention field is required."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Internal server error occurred."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/sendBudgetSheetByWhatsapp": {
+            "post": {
+                "tags": [
+                    "WhatsApp"
+                ],
+                "summary": "Send budget sheet information via WhatsApp",
+                "operationId": "4f0dd6fdc7d00efbeb23acd7582c8b72",
+                "requestBody": {
+                    "description": "Data for sending budget sheet information via WhatsApp",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "idAttention",
+                                    "phone_number"
+                                ],
+                                "properties": {
+                                    "idBudgetSheet": {
+                                        "description": "The ID of the budget sheet.",
                                         "type": "integer",
                                         "example": 1
                                     },
@@ -10349,6 +10419,10 @@
                         "type": "number",
                         "example": "100.00"
                     },
+                    "percentage": {
+                        "type": "integer",
+                        "example": "1"
+                    },
                     "created_at": {
                         "type": "string",
                         "format": "date-time",
@@ -10590,6 +10664,10 @@
                         "type": "string",
                         "format": "date",
                         "example": "2024-04-24"
+                    },
+                    "percentage": {
+                        "type": "integer",
+                        "example": "1"
                     },
                     "created_at": {
                         "type": "string",

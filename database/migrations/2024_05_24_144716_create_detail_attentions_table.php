@@ -24,6 +24,7 @@ return new class extends Migration
             $table->date('dateRegister')->nullable();
             $table->date('dateMax')->nullable();
             $table->date('dateCurrent')->nullable();
+            $table->integer('percentage')->nullable()->default(0);
 
             $table->foreignId('attention_id')->nullable()->unsigned()->constrained('attentions');
             $table->foreignId('worker_id')->nullable()->unsigned()->constrained('workers');

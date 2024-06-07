@@ -649,6 +649,12 @@ class AttentionController extends Controller
         if (!$object) {
             return response()->json(['message' => 'Attention not found'], 404);
         }
+        $detailsNotGenerated = $object->details()->where('type', 'Service')
+            ->where('status', '!=', 'Generada')->exists();
+
+        if ($detailsNotGenerated) {
+            return response()->json(['message' => 'Exiten Servicios que ya estan siendo Procesados'], 409);
+        }
 
         $object->delete();
 

@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
@@ -25,6 +26,7 @@ return new class extends Migration {
             $table->decimal('totalProducts')->nullable();
             $table->decimal('total')->nullable();
             $table->decimal('debtAmount')->nullable()->default(0.00);
+            $table->integer('percentage')->nullable()->default(0);
 
             $table->string('routeImage')->nullable();
             $table->foreignId('worker_id')->nullable()->unsigned()->constrained('workers');

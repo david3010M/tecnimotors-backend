@@ -106,10 +106,9 @@ class BudgetSheetController extends Controller
      *          @OA\JsonContent(
      *              required={"attention_id"},
      *              @OA\Property(property="attention_id", type="integer", example=1),
-     * @OA\Property(property="paymentType", type="string", example="Al Contado"),
-     * @OA\Property(property="discount", type="decimal", example=0),
-     * @OA\Property(property="subtotal", type="decimal", example=0),
-     * @OA\Property(property="igv", type="decimal", example=0),
+     *              @OA\Property(property="paymentType", type="string", example="Al Contado"),
+     *              @OA\Property(property="percentageDiscount", type="decimal", example=0),
+
      *
      *          )
      *     ),
@@ -147,7 +146,14 @@ class BudgetSheetController extends Controller
 
         $tipo = 'PRES';
         $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM budget_sheets a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-        $siguienteNum = (int)$resultado;
+        $siguienteNum = (int) $resultado;
+
+        $percentageDiscount = floatval($request->input('percentageDiscount', 0));
+        $subtotal = floatval($attention->total);
+        $discount = $subtotal * $percentageDiscount;
+
+        $igv = ($subtotal - $discount) * 0.18;
+        $total = ($subtotal - $discount) * 1.18;
 
         $data = [
             'number' => $tipo . "-" . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT),
@@ -155,10 +161,10 @@ class BudgetSheetController extends Controller
             'totalService' => $attention->totalService ?? 0.0,
             'totalProducts' => $attention->totalProducts ?? 0.0,
             'debtAmount' => $attention->debtAmount,
-            'total' => $attention->total ?? 0.0,
-            'discount' => $request->input('discount') ?? 0.0,
-            'subtotal' => $request->input('subtotal') ?? 0.0,
-            'igv' => $request->input('igv') ?? 0.0,
+            'total' => $total ?? 0.0,
+            'discount' => $discount ?? 0.0,
+            'subtotal' => $subtotal ?? 0.0,
+            'igv' => $igv ?? 0.0,
             'attention_id' => $request->input('attention_id'),
         ];
 
@@ -184,11 +190,10 @@ class BudgetSheetController extends Controller
      *          required=true,
      *          @OA\JsonContent(
      *              required={"attention_id"},
-     *              @OA\Property(property="attention_id", type="integer", example=1),
-     * @OA\Property(property="paymentType", type="string", example="Al Contado"),
-     * @OA\Property(property="discount", type="decimal", example=0),
-     * @OA\Property(property="subtotal", type="decimal", example=0),
-     * @OA\Property(property="igv", type="decimal", example=0),
+
+     *              @OA\Property(property="paymentType", type="string", example="Al Contado"),
+     *              @OA\Property(property="percentageDiscount", type="decimal", example=0),
+
      *
      *          )
      *     ),
@@ -235,17 +240,25 @@ class BudgetSheetController extends Controller
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
-        $attention = Attention::find($request->input('attention_id'));
+        $attention = Attention::find($object->attention_id);
+
+        $percentageDiscount = floatval($request->input('percentageDiscount', 0));
+        $subtotal = floatval($attention->total);
+        $discount = $subtotal * $percentageDiscount;
+
+        $igv = ($subtotal - $discount) * 0.18;
+        $total = ($subtotal - $discount) * 1.18;
 
         $data = [
             'paymentType' => $request->input('paymentType'),
             'totalService' => $attention->totalService ?? 0.0,
             'totalProducts' => $attention->totalProducts ?? 0.0,
             'debtAmount' => $attention->debtAmount,
-            'total' => $attention->total ?? 0.0,
-            'discount' => $request->input('discount') ?? 0.0,
-            'subtotal' => $request->input('subtotal') ?? 0.0,
+            'total' => $total ?? 0.0,
+            'discount' => $discount ?? 0.0,
+            'subtotal' => $subtotal ?? 0.0,
             'igv' => $request->input('igv') ?? 0.0,
+
         ];
 
         $object->update($data);
