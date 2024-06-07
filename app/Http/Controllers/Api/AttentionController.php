@@ -501,11 +501,13 @@ class AttentionController extends Controller
      *      )
      *     ),
      *
-     *@OA\Property(
+     *          @OA\Property(
      *                 property="elements",
      *                 type="array",
      *                 @OA\Items(type="integer", example=1)
      *             ),
+     *         )
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="attention updated successfully",

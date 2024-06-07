@@ -249,7 +249,7 @@ class Attention extends Model
         }
 
         $detailsToDelete = array_diff($currentDetailsIds, $newDetailIds);
-        $attention->details()->where('type', 'Product')->where('status', 'Generada')->whereIn('id', $detailsToDelete)->delete();
+        $attention->details()->where('type', 'Product')->whereIn('id', $detailsToDelete)->delete();
 
         $attention->totalProducts = $attention->details()->where('type', 'Product')->sum('saleprice');
         $attention->save();
