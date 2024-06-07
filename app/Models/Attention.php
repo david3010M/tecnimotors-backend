@@ -161,7 +161,7 @@ class Attention extends Model
         $newDetailIds = [];
 
         foreach ($detailsUpdate as $detailData) {
-            $idDetail= $detailData['idDetail']??'null';
+            $idDetail = isset($detailData['idDetail']) == false ? 'null' : $detailData['idDetail'];
 
             if (($idDetail != 'null')) {
                 $newDetailIds[] = $idDetail;
@@ -194,7 +194,7 @@ class Attention extends Model
         }
 
         $detailsToDelete = array_diff($currentDetailsIds, $newDetailIds);
-        $attention->details()->where('type', 'Service')->whereIn('id', $detailsToDelete)->delete();
+        $attention->details()->where('type', 'Service')->where('status', 'Generada')->whereIn('id', $detailsToDelete)->delete();
 
         $attention->totalService = $attention->details()->where('type', 'Service')->sum('saleprice');
         $attention->save();
@@ -209,16 +209,20 @@ class Attention extends Model
         $newDetailIds = [];
 
         foreach ($detailsUpdate as $detailData) {
-            $idDetail= $detailData['idDetail']??'null';
+            $idDetail = isset($detailData['idDetail']) == false ? 'null' : $detailData['idDetail'];
+
             if (($idDetail != 'null')) {
                 $newDetailIds[] = $idDetail;
+
                 $detail = DetailAttention::find($idDetail);
+
                 if ($detail) {
                     $data = [
                         'quantity' => $detailData['quantity'],
                         'product_id' => $detailData['idProduct'],
                     ];
                     $detail->update($data);
+
                 }
             } else {
                 $detail = $detailData;
@@ -245,7 +249,7 @@ class Attention extends Model
         }
 
         $detailsToDelete = array_diff($currentDetailsIds, $newDetailIds);
-        $attention->details()->where('type', 'Product')->whereIn('id', $detailsToDelete)->delete();
+        $attention->details()->where('type', 'Product')->where('status', 'Generada')->whereIn('id', $detailsToDelete)->delete();
 
         $attention->totalProducts = $attention->details()->where('type', 'Product')->sum('saleprice');
         $attention->save();
