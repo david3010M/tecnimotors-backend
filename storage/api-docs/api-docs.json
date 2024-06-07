@@ -159,7 +159,7 @@
                                         "type": "array",
                                         "items": {
                                             "properties": {
-                                                "id": {
+                                                "idProduct": {
                                                     "type": "integer",
                                                     "example": 1
                                                 },

@@ -104,13 +104,14 @@ class AttentionController extends Controller
      */
     public function show(int $id)
     {
-        $object = Attention::with(['worker.person', 'vehicle', 'vehicle.person', 'details', 'routeImages', 'elements'])->find($id);
-        $object->elements = $object->getElements($object->id);
-        $object->details = $object->getDetails($object->id);
-
+        $object = Attention::find($id);
         if (!$object) {
             return response()->json(['message' => 'Attention not found'], 404);
         }
+
+        $object = Attention::with(['worker.person', 'vehicle', 'vehicle.person', 'details', 'routeImages', 'elements'])->find($id);
+        $object->elements = $object->getElements($object->id);
+        $object->details = $object->getDetails($object->id);
 
         return response()->json($object);
     }
@@ -276,7 +277,7 @@ class AttentionController extends Controller
      *     @OA\Items(
      *         type="object",
      *         @OA\Property(
-     *             property="id",
+     *             property="idProduct",
      *             type="integer",
      *             example=1
      *         ),
@@ -372,7 +373,7 @@ class AttentionController extends Controller
             $detailsProducts = $request->input('detailsProducts') ?? [];
             $sumProducts = 0;
             foreach ($detailsProducts as $productDetail) {
-                $idProduct = $productDetail['id'];
+                $idProduct = $productDetail['idProduct'];
                 $quantity = $productDetail['quantity'];
 
                 $product = Product::find($idProduct);
@@ -500,14 +501,11 @@ class AttentionController extends Controller
      *      )
      *     ),
      *
-     *    @OA\Property(
-     *                  property="elements",
-     *                  type="array",
-     *                  @OA\Items(type="integer"),
-     *                  example=1
-     *              )
-     *         )
-     *     ),
+     *@OA\Property(
+     *                 property="elements",
+     *                 type="array",
+     *                 @OA\Items(type="integer", example=1)
+     *             ),
      *     @OA\Response(
      *         response=200,
      *         description="attention updated successfully",
