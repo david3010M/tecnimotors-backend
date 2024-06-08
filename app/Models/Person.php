@@ -56,4 +56,6 @@ class Person extends Model
         'updated_at',
         'deleted_at',
     ];
+
+
 }

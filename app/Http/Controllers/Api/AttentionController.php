@@ -166,6 +166,7 @@ class AttentionController extends Controller
             ->where('number', $number)->first();
         $object->elements = $object->getElements($object->id);
         $object->details = $object->getDetails($object->id);
+        $object->technicians = $object->technicians($object->id);
 
         return response()->json($object);
     }

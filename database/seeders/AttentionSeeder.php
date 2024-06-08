@@ -43,9 +43,9 @@ class AttentionSeeder extends Seeder
                 'observations' => 'Se reemplazarán las bujías y el filtro de aire, se ajustará la alineación y balanceo de las ruedas, y se revisará el sistema de escape. Además, se realizará un cambio de aceite y filtro.',
                 'fuelLevel' => 6,
                 'km' => 500,
-                'totalService' => 300.00,
-                'totalProducts' => 200.00,
-                'total' => 500.00,
+                'totalService' => 200.00,
+                'totalProducts' => 100.00,
+                'total' => 300.00,
                 'debtAmount' => 0.00,
 
                 'routeImage' => 'image.jpg',

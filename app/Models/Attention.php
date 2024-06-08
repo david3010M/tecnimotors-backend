@@ -85,6 +85,20 @@ class Attention extends Model
         return $this->belongsTo(Vehicle::class, 'vehicle_id');
     }
 
+    public function technicians($id)
+    {
+        $attention = Attention::find($id);
+        if (!$attention) {
+            return response()->json(['message' => 'Attention not found'], 404);
+        }
+        $technicians = $attention->details()
+            ->where('type', 'Service')
+            ->with(['worker.person'])
+            ->get()
+            ->pluck('worker.person');
+        return $technicians;
+    }
+
     public function elementForAttention()
     {
         return $this->hasMany(ElementForAttention::class);
