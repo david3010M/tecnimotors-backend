@@ -86,7 +86,7 @@ class ProductController extends Controller
             'name' => [
                 'required',
                 'string',
-                Rule::unique('products')->whereNull('deleted_at')
+                Rule::unique('products')->whereNull('deleted_at'),
             ],
             'purchase_price' => 'required|numeric',
             'percentage' => 'required|numeric',
@@ -117,7 +117,7 @@ class ProductController extends Controller
         ];
 
         $product = Product::create($data);
-        $product = Product::find($product->id)->with('category', 'unit', 'brand');
+        $product = Product::with('category', 'unit', 'brand')->find($product->id);
 
         return response()->json($product);
     }
@@ -158,12 +158,12 @@ class ProductController extends Controller
      */
     public function show(int $id)
     {
-        $product = Product::find($id)->with('category', 'unit', 'brand');
 
+        $product = Product::find($id);
         if ($product) {
             return response()->json($product);
         }
-
+        $product = Product::with('category', 'unit', 'brand')->find($id);
         return response()->json(['message' => 'Product not found'], 404);
     }
 
@@ -224,7 +224,7 @@ class ProductController extends Controller
             'name' => [
                 'required',
                 'string',
-                Rule::unique('products')->ignore($id)->whereNull('deleted_at')
+                Rule::unique('products')->ignore($id)->whereNull('deleted_at'),
             ],
             'purchase_price' => 'required|numeric',
             'percentage' => 'required|numeric',
@@ -255,7 +255,7 @@ class ProductController extends Controller
         ];
 
         $product->update($data);
-        $product = Product::find($id)->with('category', 'unit', 'brand');
+        $product = Product::with('category', 'unit', 'brand')->find($id);
 
         return response()->json($product);
 
@@ -315,7 +315,6 @@ class ProductController extends Controller
 //        if ($product->stock > 0) {
 //            return response()->json(['message' => 'Product has stock'], 422);
 //        }
-
 
         $product->delete();
         return response()->json(['message' => 'Product deleted']);

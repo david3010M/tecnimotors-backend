@@ -101,7 +101,7 @@ class SupplierController extends Controller
         ];
 
         $supplier = Supplier::create($data);
-        $supplier = Supplier::find($supplier->id)->with('person');
+        $supplier = Supplier::with('person')->find($supplier->id);
 
         return response()->json($supplier);
     }
@@ -145,11 +145,12 @@ class SupplierController extends Controller
      */
     public function show(int $id)
     {
-        $supplier = Supplier::find($id)->with('person');
+        $supplier = Supplier::find($id);
 
         if (!$supplier) {
             return response()->json(['message' => 'Supplier not found'], 404);
         }
+        $supplier = Supplier::with('person')->find($id);
 
         return response()->json($supplier);
     }
@@ -232,7 +233,7 @@ class SupplierController extends Controller
         ];
 
         $supplier->update($data);
-        $supplier = Supplier::find($supplier->id)->with('person');
+        $supplier = Supplier::with('person')->find($supplier->id);
 
         return response()->json($supplier);
     }
