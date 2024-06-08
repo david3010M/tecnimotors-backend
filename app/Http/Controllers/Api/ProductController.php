@@ -117,7 +117,7 @@ class ProductController extends Controller
         ];
 
         $product = Product::create($data);
-        $product = Product::find($product->id)->with('category', 'unit', 'brand')->first();
+        $product = Product::find($product->id)->with('category', 'unit', 'brand');
 
         return response()->json($product);
     }
@@ -158,7 +158,7 @@ class ProductController extends Controller
      */
     public function show(int $id)
     {
-        $product = Product::find($id)->with('category', 'unit', 'brand')->first();
+        $product = Product::find($id)->with('category', 'unit', 'brand');
 
         if ($product) {
             return response()->json($product);
@@ -255,7 +255,7 @@ class ProductController extends Controller
         ];
 
         $product->update($data);
-        $product = Product::find($id)->with('category', 'unit', 'brand')->first();
+        $product = Product::find($id)->with('category', 'unit', 'brand');
 
         return response()->json($product);
 

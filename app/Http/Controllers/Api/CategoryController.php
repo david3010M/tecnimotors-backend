@@ -83,7 +83,7 @@ class CategoryController extends Controller
             'name' => [
                 'required',
                 'string',
-                Rule::unique('categories')->whereNull('deleted_at')
+                Rule::unique('categories')->whereNull('deleted_at'),
             ],
         ]);
 
@@ -201,7 +201,7 @@ class CategoryController extends Controller
             'name' => [
                 'required',
                 'string',
-                Rule::unique('categories')->ignore($id)->whereNull('deleted_at')
+                Rule::unique('categories')->ignore($id)->whereNull('deleted_at'),
             ],
         ]);
 

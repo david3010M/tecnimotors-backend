@@ -162,10 +162,11 @@ class AttentionController extends Controller
             return response()->json(['message' => 'Attention not found'], 404);
         }
 
-        $object = Attention::with(['worker.person', 'vehicle', 'vehicle.person', 'details', 'routeImages', 'elements'])
+        $object = Attention::with(['worker.person', 'vehicle', 'vehicle.person', 
+        'details','details.product.unit', 'routeImages', 'elements'])
             ->where('number', $number)->first();
         $object->elements = $object->getElements($object->id);
-        $object->details = $object->getDetails($object->id);
+      
         $object->technicians = $object->technicians($object->id);
 
         return response()->json($object);

@@ -114,7 +114,7 @@ class VehicleController extends Controller
         ];
 
         $vehicle = Vehicle::create($data);
-        $vehicle = Vehicle::find($vehicle->id)->with('person', 'typeVehicle', 'brand')->first();
+        $vehicle = Vehicle::find($vehicle->id)->with('person', 'typeVehicle', 'brand');
 
         return response()->json($vehicle);
     }
@@ -251,7 +251,7 @@ class VehicleController extends Controller
         ];
 
         $vehicle->update($data);
-        $vehicle = Vehicle::find($vehicle->id)->with('person', 'typeVehicle', 'brand')->first();
+        $vehicle = Vehicle::find($vehicle->id)->with('person', 'typeVehicle', 'brand');
 
         return response()->json($vehicle);
     }

@@ -95,7 +95,7 @@ class Attention extends Model
             ->where('type', 'Service')
             ->with(['worker.person'])
             ->get()
-            ->pluck('worker.person');
+            ->pluck('worker.person')->unique('id');
         return $technicians;
     }
 
