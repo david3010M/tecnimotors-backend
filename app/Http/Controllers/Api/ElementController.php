@@ -43,7 +43,7 @@ class ElementController extends Controller
      */
     public function index()
     {
-        return response()->json(Element::simplePaginate(30));
+        return response()->json(Element::simplePaginate(45));
     }
 
     /**

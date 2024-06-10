@@ -36,7 +36,14 @@ class PdfController extends Controller
         return $pdf->stream('presupuesto' . $object->id . '.pdf');
 //        return $pdf->download('orden-servicio.pdf');
     }
-
+    public function getServiceOrder2($id)
+    {
+        $object = Attention::getAttention($id);
+        $pdf = Pdf::loadView('orden-servicio2', [
+            'attention' => $object,
+        ]);
+        return $pdf->stream('orden-servicio2.pdf');
+    }
     public function getBudgetSheetInfo($id)
     {
         $object = budgetSheet::with(['attention.worker.person', 'attention.vehicle.person', 'attention.vehicle.brand',
