@@ -307,7 +307,7 @@
                             <td>
                                 <p class="p10 right"><strong>Subtotal</strong></p>
                                 <p class="p10 right"><strong>IGV (18%)</strong></p>
-                                <p class="p10 right"><strong>DESCUENTO</strong></p>
+                                <p class="p10 right"><strong>Descuento</strong></p>
                                 <p class="p10 right"><strong>Total</strong></p>
                             </td>
                             <td>
