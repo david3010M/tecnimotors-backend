@@ -187,6 +187,7 @@ class Attention extends Model
                     $data = [
                         'service_id' => $detailData['service_id'],
                         'worker_id' => $detailData['worker_id'],
+                        'product_id' => null,
                     ];
                     $detail->update($data);
                 }
@@ -237,6 +238,7 @@ class Attention extends Model
                     $data = [
                         'quantity' => $detailData['quantity'],
                         'product_id' => $detailData['idProduct'],
+                        'service_id' => null,
                     ];
                     $detail->update($data);
 

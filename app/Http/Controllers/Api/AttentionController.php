@@ -393,7 +393,7 @@ class AttentionController extends Controller
                     'attention_id' => $object->id,
                 ];
                 $detailProd = DetailAttention::create($objectData);
-                $sumProducts += $detailProd->saleprice*$quantity;
+                $sumProducts += $detailProd->saleprice * $quantity;
 
             }
             $object->totalProducts = $sumProducts;

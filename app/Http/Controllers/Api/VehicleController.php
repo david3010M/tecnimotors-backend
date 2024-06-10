@@ -45,7 +45,7 @@ class VehicleController extends Controller
     public function index()
     {
         return response()->json(Vehicle::with('person', 'typeVehicle', 'brand')
-            ->simplePaginate(15));
+                ->simplePaginate(15));
     }
 
     /**
@@ -85,7 +85,12 @@ class VehicleController extends Controller
             'plate' => [
                 'required',
                 'string',
-                Rule::unique('vehicles')->whereNull('deleted_at')
+                Rule::unique('vehicles')->whereNull('deleted_at'),
+            ],
+            'codeBin' => [
+                'required',
+                'string',
+                Rule::unique('vehicles')->whereNull('deleted_at'),
             ],
             'km' => 'required|numeric',
             'year' => 'required|numeric',
@@ -106,6 +111,8 @@ class VehicleController extends Controller
             'km' => $request->input('km'),
             'year' => $request->input('year'),
             'model' => $request->input('model'),
+            'codeBin' => $request->input('codeBin'),
+
             'chasis' => $request->input('chasis'),
             'motor' => $request->input('motor'),
             'person_id' => $request->input('person_id'),
@@ -222,7 +229,12 @@ class VehicleController extends Controller
             'plate' => [
                 'required',
                 'string',
-                Rule::unique('vehicles')->ignore($id)->whereNull('deleted_at')
+                Rule::unique('vehicles')->ignore($id)->whereNull('deleted_at'),
+            ],
+            'codeBin' => [
+                'required',
+                'string',
+                Rule::unique('vehicles')->ignore($id)->whereNull('deleted_at'),
             ],
             'km' => 'required|numeric',
             'year' => 'required|numeric',
@@ -243,6 +255,7 @@ class VehicleController extends Controller
             'km' => $request->input('km'),
             'year' => $request->input('year'),
             'model' => $request->input('model'),
+            'codeBin' => $request->input('codeBin'),
             'chasis' => $request->input('chasis'),
             'motor' => $request->input('motor'),
             'person_id' => $request->input('person_id'),
@@ -314,7 +327,6 @@ class VehicleController extends Controller
 
         return response()->json(['message' => 'Vehicle deleted']);
     }
-
 
     /**
      * Get all Vehicles by Person
