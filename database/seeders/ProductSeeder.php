@@ -18,7 +18,7 @@ class ProductSeeder extends Seeder
     {
         $array =  [
             ['name' => 'Filtro de aire', 'purchase_price' => '50.00', 'percentage' => '20.00', 'sale_price' => '60.00', 'stock' => '150', 'quantity' => '10', 'type' => 'Repuesto', 'category_id' => '1', 'unit_id' => '1', 'brand_id' => '1'],
-            ['name' => 'Aceite de motor', 'purchase_price' => '70.00', 'percentage' => '15.00', 'sale_price' => '80.50', 'stock' => '200', 'quantity' => '15', 'type' => 'Lubricante', 'category_id' => '2', 'unit_id' => '1', 'brand_id' => '2'],
+            ['name' => 'Aceite de motor', 'purchase_price' => '70.00', 'percentage' => '15.00', 'sale_price' => '100', 'stock' => '200', 'quantity' => '15', 'type' => 'Lubricante', 'category_id' => '2', 'unit_id' => '1', 'brand_id' => '2'],
             ['name' => 'Pastillas de freno', 'purchase_price' => '120.00', 'percentage' => '25.00', 'sale_price' => '150.00', 'stock' => '100', 'quantity' => '20', 'type' => 'Repuesto', 'category_id' => '3', 'unit_id' => '1', 'brand_id' => '3'],
             ['name' => 'Bujías', 'purchase_price' => '35.00', 'percentage' => '30.00', 'sale_price' => '45.50', 'stock' => '300', 'quantity' => '50', 'type' => 'Repuesto', 'category_id' => '4', 'unit_id' => '1', 'brand_id' => '4'],
             ['name' => 'Filtro de aceite', 'purchase_price' => '25.00', 'percentage' => '20.00', 'sale_price' => '30.00', 'stock' => '250', 'quantity' => '40', 'type' => 'Repuesto', 'category_id' => '5', 'unit_id' => '1', 'brand_id' => '5'],
