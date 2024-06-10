@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Bank;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class BankSeeder extends Seeder
@@ -18,9 +17,18 @@ class BankSeeder extends Seeder
     public function run()
     {
         $array = [
-            ['name' => 'Bank 1'],
-            ['name' => 'Bank 2'],
-            ['name' => 'Bank 3'],
+            ['name' => 'Banco de Crédito del Perú (BCP)'],
+            ['name' => 'Interbank'],
+            ['name' => 'Scotiabank Perú'],
+            ['name' => 'BBVA Continental'],
+            ['name' => 'Banco Pichincha Perú'],
+            ['name' => 'MiBanco'],
+            ['name' => 'Banco Financiero del Perú'],
+            ['name' => 'Caja Huancayo'],
+            ['name' => 'Caja Arequipa'],
+            ['name' => 'Caja Sullana'],
+            ['name' => 'Caja Piura'],
+            ['name' => 'Caja Trujillo'],
         ];
 
         foreach ($array as $item) {

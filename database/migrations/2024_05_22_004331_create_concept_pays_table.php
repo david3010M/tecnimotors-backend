@@ -14,7 +14,7 @@ return new class extends Migration {
     {
         Schema::create('concept_pays', function (Blueprint $table) {
             $table->id();
-            $table->decimal('number');
+            $table->string('number');
             $table->string('name');
             $table->string('type');
             $table->timestamps();

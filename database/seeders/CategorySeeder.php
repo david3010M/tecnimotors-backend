@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class CategorySeeder extends Seeder
@@ -18,9 +17,21 @@ class CategorySeeder extends Seeder
     public function run()
     {
         $array = [
-            ['name' => 'Category 1'],
-            ['name' => 'Category 2'],
-            ['name' => 'Category 3']
+            ['name' => 'Filtros'],
+            ['name' => 'Lubricantes'],
+            ['name' => 'Frenos'],
+            ['name' => 'Encendido'],
+            ['name' => 'Motor'],
+            ['name' => 'Transmisión'],
+            ['name' => 'Suspensión'],
+            ['name' => 'Sistema de Enfriamiento'],
+            ['name' => 'Eléctrico'],
+            ['name' => 'Iluminación'],
+            ['name' => 'Cristales y Espejos'],
+            ['name' => 'Escape'],
+            ['name' => 'Combustible'],
+            ['name' => 'Sensores'],
+            ['name' => 'Catalizadores'],
         ];
 
         foreach ($array as $item) {

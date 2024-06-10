@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\ConceptMov;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class ConceptMovSeeder extends Seeder
@@ -18,9 +17,10 @@ class ConceptMovSeeder extends Seeder
     public function run()
     {
         $array = [
-            ['name' => 'Ingreso'],
-            ['name' => 'Egreso'],
-            ['name' => 'Transferencia'],
+            ['name' => 'Venta'],
+            ['name' => 'Compra'],
+            ['name' => 'Documento Almacen'],
+
         ];
 
         foreach ($array as $item) {
