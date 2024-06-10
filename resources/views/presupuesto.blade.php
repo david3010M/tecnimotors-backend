@@ -242,7 +242,15 @@
 
             <tr>
                 <td class="left w50 blue bolder"><strong>TECNIMOTORS DEL PERÚ</strong></td>
-                <td class="right w50 blue bolder"><strong>NOMBRE DEL CLIENTE</strong></td>
+                <td style="text-transform: uppercase;" class="right w50 blue bolder"><strong>@if ($budgetsheet->attention->vehicle->person->typeofDocument == 'DNI')
+                    {{ $budgetsheet->attention->vehicle->person->names .
+                        ' ' .
+                        $budgetsheet->attention->vehicle->person->fatherSurname .
+                        ' ' .
+                        $budgetsheet->attention->vehicle->person->motherSurname }}
+                @elseif($budgetsheet->attention->vehicle->person->typeofDocument == 'RUC')
+                    {{ $budgetsheet->attention->vehicle->person->businessName }}
+                @endif</strong></td>
             </tr>
 
             <tr>
@@ -299,11 +307,13 @@
                             <td>
                                 <p class="p10 right"><strong>Subtotal</strong></p>
                                 <p class="p10 right"><strong>IGV (18%)</strong></p>
+                                <p class="p10 right"><strong>DESCUENTO</strong></p>
                                 <p class="p10 right"><strong>Total</strong></p>
                             </td>
                             <td>
                                 <p class="p10 right">{{ $budgetsheet->subtotal }}</p>
                                 <p class="p10 right">{{ $budgetsheet->igv }}</p>
+                                <p class="p10 right">{{ $budgetsheet->discount }}</p>
                                 <p class="p10 right">{{ $budgetsheet->total }}</p>
 
                             </td>
