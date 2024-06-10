@@ -257,7 +257,7 @@
 
             <tr>
                 <td class="left w50 blue bolder">
-                    <strong>
+                    <strong style="text-transform: uppercase;">
                         @if ($attention->vehicle->person->typeofDocument == 'DNI')
                             {{ $attention->vehicle->person->names .
                                 ' ' .
@@ -269,7 +269,7 @@
                         @endif
                     </strong>
                 </td>
-                <td class="right w50 blue bolder"><strong>{{ $attention->vehicle->brand->name }}</strong></td>
+                <td style="text-transform: uppercase;" class="right w50 blue bolder"><strong>{{ $attention->vehicle->brand->name }}</strong></td>
             </tr>
             <br>
             <tr>
