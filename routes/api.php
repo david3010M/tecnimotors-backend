@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\BudgetSheetController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ConceptMovController;
 use App\Http\Controllers\Api\ConceptPayController;
+use App\Http\Controllers\Api\DetailAttentionController;
 use App\Http\Controllers\Api\ElementController;
 use App\Http\Controllers\Api\ElementForAttentionController;
 use App\Http\Controllers\Api\GroupMenuController;
@@ -19,6 +20,7 @@ use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\SpecialtyController;
 use App\Http\Controllers\Api\SpecialtyPersonController;
 use App\Http\Controllers\Api\SupplierController;
+use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\TypeAttentionController;
 use App\Http\Controllers\Api\TypeUserController;
 use App\Http\Controllers\Api\TypeVehicleController;
@@ -166,8 +168,15 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::post('sendSheetByWhatsapp', [SendWhatsappController::class, 'sendSheetServiceByWhatsapp']);
     Route::post('sendBudgetSheetByWhatsapp', [SendWhatsappController::class, 'sendBudgetSheetByWhatsapp']);
 
+    Route::get('detailAttention/{id}', [DetailAttentionController::class, 'show'])->name('detailAttention.show');
+
     Route::resource('budgetSheet', BudgetSheetController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'budgetSheet.index', 'store' => 'budgetSheet.store', 'show' => 'budgetSheet.show',
             'update' => 'budgetSheet.update', 'destroy' => 'budgetSheet.destroy']);
+
+    Route::get('taskByDetailAttention/{id}', [TaskController::class, 'getTaskByDetailAttention']);
+    Route::post('taskEvidence/{id}', [TaskController::class, 'storeEvidence']);
+    Route::resource('task', TaskController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'task.index', 'store' => 'task.store', 'show' => 'task.show', 'update' => 'task.update', 'destroy' => 'task.destroy']);
 
 });

@@ -105,5 +105,7 @@ class DatabaseSeeder extends Seeder
         $this->call(DetailAttentionSeeder::class);
         $this->call(BudgetSheetSeeder::class);
         $this->call(BudgetSheetSeeder::class);
+        $this->call(TaskSeeder::class);
+
     }
 }

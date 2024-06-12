@@ -25,7 +25,6 @@ use Illuminate\Support\Facades\Storage;
  *      @OA\Property(property="total", type="number", example="300.00"),
  *      @OA\Property(property="debtAmount", type="number", example="100.00"),
  *     @OA\Property(property="percentage", type="integer", example="1"),
-
  *
  *     @OA\Property(property="created_at", type="string", format="date-time", example="2024-05-21 04:09:25"),
  *         @OA\Property(
@@ -40,7 +39,6 @@ use Illuminate\Support\Facades\Storage;
  *     type="array",
  *     @OA\Items(ref="#/components/schemas/RouteImages")
  * ),
-
  * )
  */
 class Attention extends Model
@@ -118,8 +116,11 @@ class Attention extends Model
 
     public function details()
     {
-        return $this->hasMany(DetailAttention::class)->orderBy('type', 'desc')->with(['worker', 'service', 'product']);
+        return $this->hasMany(DetailAttention::class)->
+        orderBy('type', 'desc')
+            ->with(['worker', 'service', 'product']);
     }
+
     public function routeImages()
     {
         return $this->hasMany(RouteImages::class);

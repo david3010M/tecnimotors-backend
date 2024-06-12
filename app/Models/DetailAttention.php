@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *  @OA\Property(property="dateRegister", type="string", format="date", example="2024-04-24"),
  *  @OA\Property(property="dateMax", type="string", format="date", example="2024-04-24"),
  *  @OA\Property(property="dateCurrent", type="string", format="date", example="2024-04-24"),
-  *     @OA\Property(property="percentage", type="integer", example="1"),
+ *     @OA\Property(property="percentage", type="integer", example="1"),
  *     @OA\Property(property="created_at", type="string", format="date-time", example="2024-04-24 12:27:41"),
  * @OA\Property(property="attention_id", type="integer", example="Attention 1"),
  * @OA\Property(property="service_id", type="integer", example="service 1"),
@@ -104,6 +104,11 @@ class DetailAttention extends Model
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id');
+    }
+
+    public function task()
+    {
+        return $this->hasMany(Task::class);
     }
 
 }
