@@ -15,17 +15,17 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     @OA\Property(property="salePrice", type="decimal", example="0.00"),
  *     @OA\Property(property="quantity", type="integer", example="1"),
  *     @OA\Property(property="type", type="string", example="Producto"),
- *      @OA\Property(property="comment", type="string", example="comment"),
- *      @OA\Property(property="status", type="string", example="Generada"),
- *  @OA\Property(property="dateRegister", type="string", format="date", example="2024-04-24"),
- *  @OA\Property(property="dateMax", type="string", format="date", example="2024-04-24"),
- *  @OA\Property(property="dateCurrent", type="string", format="date", example="2024-04-24"),
+ *     @OA\Property(property="comment", type="string", example="comment"),
+ *     @OA\Property(property="status", type="string", example="Generada"),
+ *     @OA\Property(property="dateRegister", type="string", format="date", example="2024-04-24"),
+ *     @OA\Property(property="dateMax", type="string", format="date", example="2024-04-24"),
+ *     @OA\Property(property="dateCurrent", type="string", format="date", example="2024-04-24"),
  *     @OA\Property(property="percentage", type="integer", example="1"),
  *     @OA\Property(property="created_at", type="string", format="date-time", example="2024-04-24 12:27:41"),
- * @OA\Property(property="attention_id", type="integer", example="Attention 1"),
- * @OA\Property(property="service_id", type="integer", example="service 1"),
- * @OA\Property(property="product_id", type="integer", example="product 1"),
- * @OA\Property(property="worker_id", type="integer", example="worker 1"),
+ *     @OA\Property(property="attention_id", type="integer", example="Attention 1"),
+ *     @OA\Property(property="service_id", type="integer", example="service 1"),
+ *     @OA\Property(property="product_id", type="integer", example="product 1"),
+ *     @OA\Property(property="worker_id", type="integer", example="worker 1"),
  *       @OA\Property(
  *         property="attention",
  *         ref="#/components/schemas/Attention"
@@ -45,18 +45,71 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * )
  *
  * @OA\Schema(
+ *      schema="DetailAttentionNoRelations",
+ *      type="object",
+ *      required={"salePrice","attention_id"},
+ *      @OA\Property(property="id", type="integer", example="1"),
+ *      @OA\Property(property="salePrice", type="decimal", example="0.00"),
+ *      @OA\Property(property="quantity", type="integer", example="1"),
+ *      @OA\Property(property="type", type="string", example="Producto"),
+ *      @OA\Property(property="comment", type="string", example="comment"),
+ *      @OA\Property(property="status", type="string", example="Generada"),
+ *      @OA\Property(property="dateRegister", type="string", format="date", example="2024-04-24"),
+ *      @OA\Property(property="dateMax", type="string", format="date", example="2024-04-24"),
+ *      @OA\Property(property="dateCurrent", type="string", format="date", example="2024-04-24"),
+ *      @OA\Property(property="percentage", type="integer", example="1"),
+ *      @OA\Property(property="created_at", type="string", format="date-time", example="2024-04-24 12:27:41"),
+ *      @OA\Property(property="attention_id", type="integer", example="Attention 1"),
+ *      @OA\Property(property="service_id", type="integer", example="service 1"),
+ *      @OA\Property(property="product_id", type="integer", example="product 1"),
+ *      @OA\Property(property="worker_id", type="integer", example="worker 1")
+ *  )
+ *
+ * @OA\Schema(
  *     schema="DetailAttentionRequest",
  *     type="object",
  *     required={"salePrice","attention_id"},
- *      @OA\Property(property="salePrice", type="decimal", example="0.00"),
+ *     @OA\Property(property="salePrice", type="decimal", example="0.00"),
  *     @OA\Property(property="type", type="string", example="Producto"),
+ *     @OA\Property(property="comment", type="string", example="comment"),
+ *     @OA\Property(property="attention_id", type="integer", example="Attention 1"),
+ *     @OA\Property(property="service_id", type="integer", example="service 1"),
+ *     @OA\Property(property="product_id", type="integer", example="product 1"),
+ *     @OA\Property(property="worker_id", type="integer", example="worker 1"),
+ *     @OA\Property(property="dateRegister", type="string", format="date", example="2024-04-24"),
+ *     @OA\Property(property="dateMax", type="string", format="date", example="2024-04-24"),
+ * )
+ *
+ * @OA\Schema(
+ *      schema="DetailAttentionService",
+ *      type="object",
+ *      @OA\Property(property="id", type="integer", example="1"),
+ *      @OA\Property(property="salePrice", type="decimal", example="0.00"),
+ *      @OA\Property(property="quantity", type="integer", example="1"),
+ *      @OA\Property(property="type", type="string", example="Producto"),
  *      @OA\Property(property="comment", type="string", example="comment"),
- *   @OA\Property(property="attention_id", type="integer", example="Attention 1"),
- * @OA\Property(property="service_id", type="integer", example="service 1"),
- * @OA\Property(property="product_id", type="integer", example="product 1"),
- * @OA\Property(property="worker_id", type="integer", example="worker 1"),
- *  @OA\Property(property="dateRegister", type="string", format="date", example="2024-04-24"),
- *  @OA\Property(property="dateMax", type="string", format="date", example="2024-04-24"),
+ *      @OA\Property(property="status", type="string", example="Generada"),
+ *      @OA\Property(property="dateRegister", type="string", format="date", example="2024-04-24"),
+ *      @OA\Property(property="dateMax", type="string", format="date", example="2024-04-24"),
+ *      @OA\Property(property="dateCurrent", type="string", format="date", example="2024-04-24"),
+ *      @OA\Property(property="percentage", type="integer", example="1"),
+ *      @OA\Property(property="created_at", type="string", format="date-time", example="2024-04-24 12:27:41"),
+ *      @OA\Property(property="service_id", type="integer", example="service 1"),
+ *      @OA\Property(property="service", type="object", ref="#/components/schemas/Service")
+ *  )
+ *
+ * @OA\Schema(
+ *      schema="DetailAttentionServicePaginate",
+ *      type="object",
+ *      @OA\Property(property="current_page", type="integer", example="1"),
+ *      @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/DetailAttentionService")),
+ *      @OA\Property(property="first_page_url", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/detailAttention?page=1"),
+ *      @OA\Property(property="from", type="integer", example="1"),
+ *      @OA\Property(property="next_page_url", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/detailAttention?page=2"),
+ *      @OA\Property(property="path", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/detailAttention"),
+ *      @OA\Property(property="per_page", type="integer", example="15"),
+ *      @OA\Property(property="prev_page_url", type="string", example="null"),
+ *      @OA\Property(property="to", type="integer", example="15")
  * )
  *
  */

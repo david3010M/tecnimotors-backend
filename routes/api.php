@@ -168,6 +168,12 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::post('sendSheetByWhatsapp', [SendWhatsappController::class, 'sendSheetServiceByWhatsapp']);
     Route::post('sendBudgetSheetByWhatsapp', [SendWhatsappController::class, 'sendBudgetSheetByWhatsapp']);
 
+    Route::get('detailAttentionByWorker/{id}', [DetailAttentionController::class, 'detailAttentionByWorker'])
+        ->name('detailAttention.getDetailAttentionByWorkerId');
+    Route::post('detailAttentionStart/{id}', [DetailAttentionController::class, 'start'])
+        ->name('detailAttention.start');
+    Route::post('detailAttentionFinish/{id}', [DetailAttentionController::class, 'finish'])
+        ->name('detailAttention.finish');
     Route::get('detailAttention/{id}', [DetailAttentionController::class, 'show'])->name('detailAttention.show');
 
     Route::resource('budgetSheet', BudgetSheetController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
@@ -176,7 +182,7 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
 
     Route::get('taskByDetailAttention/{id}', [TaskController::class, 'getTaskByDetailAttention']);
     Route::post('taskEvidence/{id}', [TaskController::class, 'storeEvidence']);
-    Route::resource('task', TaskController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
-        ->names(['index' => 'task.index', 'store' => 'task.store', 'show' => 'task.show', 'update' => 'task.update', 'destroy' => 'task.destroy']);
+    Route::resource('task', TaskController::class)->only(['show', 'store', 'update', 'destroy'])
+        ->names(['store' => 'task.store', 'show' => 'task.show', 'update' => 'task.update', 'destroy' => 'task.destroy']);
 
 });

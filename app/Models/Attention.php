@@ -170,6 +170,12 @@ class Attention extends Model
         }
     }
 
+    public function getDetailsProducts()
+    {
+        return $this->details()->where('type', 'Product')->get()
+            ->pluck('product');
+    }
+
     public function setDetails($id, $detailServices)
     {
         $attention = Attention::find($id);

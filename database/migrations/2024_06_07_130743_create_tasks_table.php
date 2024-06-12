@@ -15,11 +15,11 @@ return new class extends Migration {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
             $table->string('description');
-            $table->boolean('status')->default(false);
-            $table->integer('percentage')->default(0);
-            $table->date('dateRegister')->nullable();
-            $table->date('dateStart')->nullable();
-            $table->date('dateEnd')->nullable();
+            $table->string('status')->default('hacer')->comment('hacer, curso, listo');
+//            $table->integer('percentage')->default(0);
+            $table->date('registerDate')->default(now());
+//            $table->date('dateStart')->nullable();
+            $table->date('limitDate')->nullable();
             $table->foreignId('worker_id')->constrained('workers');
             $table->foreignId('detail_attentions_id')->constrained('detail_attentions');
             $table->timestamps();

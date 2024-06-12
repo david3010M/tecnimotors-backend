@@ -28,6 +28,24 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     @OA\Property(property="brand", type="object", ref="#/components/schemas/Brand"),
  * )
  *
+ * @OA\Schema(
+ *      schema="ProductNoRelations",
+ *      title="Product",
+ *      description="Product model",
+ *      @OA\Property(property="id", type="integer", example="1"),
+ *      @OA\Property(property="name", type="string", example="product name"),
+ *      @OA\Property(property="purchase_price", type="number", example="100.00"),
+ *      @OA\Property(property="percentage", type="number", example="10.00"),
+ *      @OA\Property(property="sale_price", type="number", example="110.00"),
+ *      @OA\Property(property="stock", type="number", example="100"),
+ *      @OA\Property(property="quantity", type="number", example="10"),
+ *      @OA\Property(property="type", type="string", example="product type"),
+ *      @OA\Property(property="category_id", type="integer", example="2"),
+ *      @OA\Property(property="unit_id", type="integer", example="1"),
+ *      @OA\Property(property="brand_id", type="integer", example="1"),
+ *      @OA\Property(property="created_at", type="string", format="date-time")
+ *  )
+ *
  *
  * @OA\Schema(
  *     schema="ProductRequest",
