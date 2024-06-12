@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  *     @OA\Property(property="id", type="integer", example="1"),
  *     @OA\Property(property="route", type="string", example="Image route"),
  *     @OA\Property(property="attention_id", type="integer", example="1"),
+ *     @OA\Property(property="task_id", type="integer", example="1"),
  *     @OA\Property(property="created_at", type="string", format="date-time"),
  * )
  *
@@ -26,6 +27,7 @@ class RouteImages extends Model
     protected $fillable = [
         'route',
         'attention_id',
+        'task_id',
         'created_at',
     ];
 
@@ -36,5 +38,9 @@ class RouteImages extends Model
     public function attention()
     {
         return $this->belongsTo(Attention::class);
+    }
+    public function task()
+    {
+        return $this->belongsTo(Task::class);
     }
 }

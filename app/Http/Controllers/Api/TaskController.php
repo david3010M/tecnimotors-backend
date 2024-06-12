@@ -3,10 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Supplier;
 use App\Models\Task;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class TaskController extends Controller
 {
@@ -25,7 +23,7 @@ class TaskController extends Controller
             'dateStart' => 'required|date',
             'dateEnd' => 'required|date',
             'worker_id' => 'required|exists:workers,id',
-            'detail_attentions_id' => 'required|exists:detail_attentions,id'
+            'detail_attentions_id' => 'required|exists:detail_attentions,id',
         ]);
 
         if ($validator->fails()) {
@@ -40,7 +38,7 @@ class TaskController extends Controller
             'dateStart' => $request->input('dateStart'),
             'dateEnd' => $request->input('dateEnd'),
             'worker_id' => $request->input('worker_id'),
-            'detail_attentions_id' => $request->input('detail_attentions_id')
+            'detail_attentions_id' => $request->input('detail_attentions_id'),
         ];
 
         $task = Task::create($data);
@@ -76,7 +74,7 @@ class TaskController extends Controller
             'dateStart' => 'required|date',
             'dateEnd' => 'required|date',
             'worker_id' => 'required|exists:workers,id',
-            'detailAttention_id' => 'required|exists:detail_attentions,id'
+            'detailAttention_id' => 'required|exists:detail_attentions,id',
         ]);
 
         if ($validator->fails()) {
@@ -91,7 +89,7 @@ class TaskController extends Controller
             'dateStart' => $request->input('dateStart'),
             'dateEnd' => $request->input('dateEnd'),
             'worker_id' => $request->input('worker_id'),
-            'detailAttention_id' => $request->input('detailAttention_id')
+            'detailAttention_id' => $request->input('detailAttention_id'),
         ];
 
         $task->update($data);
@@ -134,7 +132,7 @@ class TaskController extends Controller
 
         $validator = validator()->make($request->all(), [
             'images64' => 'array',
-            'images64.*' => 'string'
+            'images64.*' => 'string',
         ]);
 
         if ($validator->fails()) {

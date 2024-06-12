@@ -18,6 +18,7 @@ return new class extends Migration
             $table->id();
             $table->string('route');
             $table->foreignId('attention_id')->nullable()->unsigned()->constrained('attentions');
+            $table->foreignId('task_id')->nullable()->unsigned()->constrained('tasks');
             $table->timestamps();
         });
     }

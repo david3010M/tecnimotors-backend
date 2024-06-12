@@ -11514,6 +11514,10 @@
                         "type": "string",
                         "example": "Motor 1"
                     },
+                    "codeBin": {
+                        "type": "string",
+                        "example": "123"
+                    },
                     "person_id": {
                         "type": "integer",
                         "example": "1"
