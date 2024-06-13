@@ -319,11 +319,7 @@ class TaskController extends Controller
     {
 //        $tasks = Task::with('worker', 'detailAttentions')->where('detail_attentions_id', $id)->get();
         $tasks = Task::where('detail_attentions_id', $id)->get();
-
-        if ($tasks->isEmpty()) {
-            return response()->json(['message' => 'Tasks not found'], 404);
-        }
-
+        
         return response()->json($tasks);
     }
 
