@@ -33,9 +33,18 @@ class PdfController extends Controller
             'budgetsheet' => $object,
         ]);
 
+
+//        $pdf->setPaper('a4', 'landscape');
+
+//        return view not pdf
+//        return view('presupuesto', [
+//            'budgetsheet' => $object,
+//        ]);
+
         return $pdf->stream('presupuesto' . $object->id . '.pdf');
 //        return $pdf->download('orden-servicio.pdf');
     }
+
     public function getServiceOrder2($id)
     {
         $object = Attention::getAttention($id);
@@ -44,6 +53,7 @@ class PdfController extends Controller
         ]);
         return $pdf->stream('orden-servicio2.pdf');
     }
+
     public function getBudgetSheetInfo($id)
     {
         $object = budgetSheet::with(['attention.worker.person', 'attention.vehicle.person', 'attention.vehicle.brand',

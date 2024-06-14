@@ -58,7 +58,7 @@ class budgetSheet extends Model
             'attention.worker.person',
             'attention.vehicle.person',
             'attention.vehicle.brand',
-            'attention.details',
+            'attention.details.product.unit',
             'attention.routeImages',
             'attention.elements',
         ])->find($id);
