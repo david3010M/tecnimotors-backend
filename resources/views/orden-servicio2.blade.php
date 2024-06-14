@@ -14,7 +14,7 @@
         return $fractions[$fuelLevel] ?? 'N/A';
     }
 @endphp
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -160,7 +160,7 @@
         }
 
         .tableDetail td {
-            padding: 12px;
+            padding: 4px;
             border-bottom: 1px solid #3b3b3b;
         }
 
@@ -226,140 +226,138 @@
 
 <body>
 
-    <img class="headerImage" src="{{ asset('img/degraded.png') }}" alt="degraded">
+<img class="headerImage" src="{{ asset('img/degraded.png') }}" alt="degraded">
 
-    <div class="content">
-        <div class="contentImage">
-            <img class="logoImage" src="{{ asset('img/logoTecnimotors.png') }}" alt="logoTecnimotors">
-        </div>
+<div class="content">
+    <div class="contentImage">
+        <img class="logoImage" src="{{ asset('img/logoTecnimotors.png') }}" alt="logoTecnimotors">
+    </div>
 
-        <table class="tableInfo">
-            <tr>
-                <td class="left">
-                    <p>N° {{ $attention->number }}</p>
-                    <p><strong>{{ Carbon::parse($attention->created_at)->format('d-m-Y') }}</strong></p>
-                </td>
-                <td>
-                    <div class="titlePresupuesto right">ORDEN DE TRABAJO</div>
-                </td>
-            </tr>
-        </table>
+    <table class="tableInfo">
+        <tr>
+            <td class="left">
+                <p>N° {{ $attention->number }}</p>
+                <p><strong>{{ Carbon::parse($attention->created_at)->format('d-m-Y') }}</strong></p>
+            </td>
+            <td>
+                <div class="titlePresupuesto right">ORDEN DE TRABAJO</div>
+            </td>
+        </tr>
+    </table>
 
-        <table class="tablePeople font-14">
-            <tr>
-                <td class="left w50 font-12 gris">
-                    <strong>CLIENTE</strong>
-                </td>
-                <td class="right w50 font-12 gris">
-                    <strong>AUTOMOVIL</strong>
-                </td>
-            </tr>
+    <table class="tablePeople font-14">
+        <tr>
+            <td class="left w50 font-12 gris">
+                <strong>CLIENTE</strong>
+            </td>
+            <td class="right w50 font-12 gris">
+                <strong>AUTOMOVIL</strong>
+            </td>
+        </tr>
 
-            <tr>
-                <td class="left w50 blue bolder">
-                    <strong style="text-transform: uppercase;">
-                        @if ($attention->vehicle->person->typeofDocument == 'DNI')
-                            {{ $attention->vehicle->person->names .
-                                ' ' .
-                                $attention->vehicle->person->fatherSurname .
-                                ' ' .
-                                $attention->vehicle->person->motherSurname }}
-                        @elseif($attention->vehicle->person->typeofDocument == 'RUC')
-                            {{ $attention->vehicle->person->businessName }}
-                        @endif
-                    </strong>
-                </td>
-                <td style="text-transform: uppercase;" class="right w50 blue bolder"><strong>{{ $attention->vehicle->brand->name }}</strong></td>
-            </tr>
-            <br>
-            <tr>
-                <td class="left w50">{{ $attention->vehicle->person->documentNumber }}</td>
-                <td class="right w50">
-                    {{ $attention->vehicle->plate }}
-                </td>
-            </tr>
+        <tr>
+            <td class="left w50 blue bolder">
+                <strong style="text-transform: uppercase;">
+                    @if ($attention->vehicle->person->typeofDocument == 'DNI')
+                        {{ $attention->vehicle->person->names .
+                            ' ' .
+                            $attention->vehicle->person->fatherSurname .
+                            ' ' .
+                            $attention->vehicle->person->motherSurname }}
+                    @elseif($attention->vehicle->person->typeofDocument == 'RUC')
+                        {{ $attention->vehicle->person->businessName }}
+                    @endif
+                </strong>
+            </td>
+            <td style="text-transform: uppercase;" class="right w50 blue bolder">
+                <strong>{{ $attention->vehicle->brand->name }}</strong></td>
+        </tr>
+        <br>
+        <tr>
+            <td class="left w50">{{ $attention->vehicle->person->documentNumber }}</td>
+            <td class="right w50">
+                {{ $attention->vehicle->plate }}
+            </td>
+        </tr>
 
-            <tr>
-                <td class="left w50">{{ $attention->vehicle->person->address }}</td>
-                <td class="right w50">{{ $attention->vehicle->model }}</td>
-            </tr>
+        <tr>
+            <td class="left w50">{{ $attention->vehicle->person->address }}</td>
+            <td class="right w50">{{ $attention->vehicle->model }}</td>
+        </tr>
 
-            <tr>
-                <td class="left w50">{{ $attention->vehicle->person->phone }}</td>
-                <td class="right w50">{{ $attention->vehicle->chasis }}</td>
-            </tr>
+        <tr>
+            <td class="left w50">{{ $attention->vehicle->person->phone }}</td>
+            <td class="right w50">{{ $attention->vehicle->chasis }}</td>
+        </tr>
 
-            <tr>
-                <td class="left w50">
+        <tr>
+            <td class="left w50">
                 @if ($attention->vehicle->person->typeofDocument == 'DNI')
                     {{ $attention->vehicle->person->email }}
                 @elseif($attention->vehicle->person->typeofDocument == 'RUC')
                     {{ $attention->vehicle->person->representativeNames .' '.$attention->vehicle->person->representativeDni }}
                 @endif
-                </td>
-                <td class="right w50">{{ $attention->vehicle->motor }}</td>
-            </tr>
-            <tr>
-                <<td class="left w50">{{ $attention->arrivalDate }}</td>
-                    <td class="right w50">{{ $attention->vehicle->km }}</td>
-            </tr>
-            <tr>
-                <td class="left w50">{{ $attention->deliveryDate }}</td>
-                <td class="right w50">{{ $attention->vehicle->year }}</td>
-            </tr>
-        </table>
+            </td>
+            <td class="right w50">{{ $attention->vehicle->motor }}</td>
+        </tr>
+        <tr>
+            <
+            <td class="left w50">{{ $attention->arrivalDate }}</td>
+            <td class="right w50">{{ $attention->vehicle->km }}</td>
+        </tr>
+        <tr>
+            <td class="left w50">{{ $attention->deliveryDate }}</td>
+            <td class="right w50">{{ $attention->vehicle->year }}</td>
+        </tr>
+    </table>
 
-        <table class="tableDetail">
-            <tr>
-                <th class="description">Descripción</th>
-                <th class="quantity">Cantidad</th>
-                <th class="price">Precio</th>
-            </tr>
+    <table class="tableDetail">
+        <tr>
+            <th class="description">Descripción</th>
+            <th class="quantity">Cantidad</th>
+        </tr>
 
-            @foreach ($attention->details as $detail)
-                <tr>
-                    @if ($detail->type == 'Service')
-                        <td class="description">{{ $detail->service->name }}</td>
-                    @elseif ($detail->type == 'Product')
-                        <td class="description">{{ $detail->product->name }}</td>
-                    @endif
-                    <td class="quantity">{{ $detail->quantity }}</td>
-                    <td class="price">S/ {{ $detail->saleprice }}</td>
-                </tr>
+        @foreach ($attention->details as $detail)
+            <tr>
+                @if ($detail->type == 'Service')
+                    <td class="description">{{ $detail->service->name }}</td>
+                @elseif ($detail->type == 'Product')
+                    <td class="description">{{ $detail->product->name }}</td>
+                @endif
+                <td class="quantity">{{ $detail->quantity }}</td>
+            </tr>
+        @endforeach
+    </table>
+
+
+    <div class="observaciones">
+        <p class="p10 bolder gris font-14">OBSERVACIONES</p>
+        <ul class="listaObservaciones font-12">
+            <li> {{ $attention->observations }}</li>
+
+        </ul>
+    </div>
+    <div class="observaciones">
+        <p class="p10 bolder gris font-14">ELEMENTOS</p>
+        <ul class="listaObservaciones font-12">
+            @foreach ($attention->elements as $element)
+                <li>{{ $element->element->name }}</li>
             @endforeach
-        </table>
+        </ul>
+    </div>
 
-
-
-        <div class="observaciones">
-            <p class="p10 bolder gris font-14">OBSERVACIONES</p>
-            <ul class="listaObservaciones font-12">
-                <li> {{ $attention->observations }}</li>
-
-            </ul>
-        </div>
-        <div class="observaciones">
-            <p class="p10 bolder gris font-14">ELEMENTOS</p>
-            <ul class="listaObservaciones font-12">
-                @foreach ($attention->elements as $element)
-                    <li>{{ $element->element->name }}</li>
-                @endforeach
-            </ul>
-        </div>
-
-        <div class="observaciones">
-            <p class="p10 gris font-14"> <span style="font-weight:bold;">NIVEL DE COMBUSTIBLE:
+    <div class="observaciones">
+        <p class="p10 gris font-14"> <span style="font-weight:bold;">NIVEL DE COMBUSTIBLE:
                 </span> {{ fuelLevelToFraction($attention->fuelLevel) }}</p>
-            <p class="p10 gris font-14"> <span style="font-weight:bold;">ASESOR DE SERVICIO:
+        <p class="p10 gris font-14"> <span style="font-weight:bold;">ASESOR DE SERVICIO:
                 </span> {{ $attention->worker->person->names . ' ' . $attention->worker->person->fatherSurname }}</p>
-        </div>
-
-
-
     </div>
 
 
-    <img class="footerImage" src="{{ asset('img/degraded.png') }}" alt="degraded">
+</div>
+
+
+<img class="footerImage" src="{{ asset('img/degraded.png') }}" alt="degraded">
 </body>
 
 </html>
