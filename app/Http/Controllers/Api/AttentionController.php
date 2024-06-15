@@ -587,11 +587,13 @@ class AttentionController extends Controller
         $detailsProducts = $request->input('detailsProducts') ?? [];
         $object->setDetailProducts($object->id, $detailsProducts);
 
+        $object->total = $object->details()->get()->sum(function ($detail) {
+            return $detail->saleprice * $detail->quantity;
+        });
+        $object->save();
+
         $images = $request->file('routeImage') ?? [];
         $object->setImages($object->id, $images);
-
-        $object->total = $object->totalService + $object->totalProducts;
-        $object->save();
 
         $object = Attention::with(['worker.person', 'vehicle', 'details', 'routeImages'])->find($object->id);
         $object->elements = $object->getElements($object->id);
