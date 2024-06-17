@@ -259,4 +259,78 @@ class DetailAttentionController extends Controller
         );
     }
 
+    /**
+     * Update the specified detailAttention in storage.
+     * @OA\Put (
+     *      path="/tecnimotors-backend/public/api/detailAttention/{id}",
+     *      tags={"DetailAttention"},
+     *      security={{"bearerAuth":{}}},
+     *      @OA\Parameter(
+     *          name="id",
+     *          in="path",
+     *          required=true,
+     *          description="DetailAttention ID",
+     *          @OA\Schema(type="integer")
+     *      ),
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref="#/components/schemas/DetailAttentionRequestUpdate")
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="DetailAttention updated successfully",
+     *          @OA\JsonContent(ref="#/components/schemas/DetailAttentionNoRelations")
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="DetailAttention not found",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="DetailAttention not found")
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=422,
+     *          description="Invalid data",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="error", type="string", example="The name has already been taken.")
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthorized",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Unauthenticated")
+     *          )
+     *      )
+     * )
+     */
+
+    public function update(Request $request, int $id)
+    {
+        $detail = DetailAttention::find($id);
+
+        if ($detail === null) {
+            return response()->json(['message' => 'Detail not found'], 404);
+        }
+
+        $validator = validator()->make($request->all(), [
+            'quantity' => 'required|numeric',
+            'salePrice' => 'required|numeric',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $data = [
+            'quantity' => $request->input('quantity'),
+            'saleprice' => $request->input('salePrice'),
+        ];
+
+        $detail->update($data);
+        $detail = DetailAttention::find($detail->id);
+
+        return response()->json($detail);
+    }
+
 }

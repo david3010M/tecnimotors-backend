@@ -175,6 +175,7 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::post('detailAttentionFinish/{id}', [DetailAttentionController::class, 'finish'])
         ->name('detailAttention.finish');
     Route::get('detailAttention/{id}', [DetailAttentionController::class, 'show'])->name('detailAttention.show');
+    Route::put('detailAttention/{id}', [DetailAttentionController::class, 'update'])->name('detailAttention.update');
 
     Route::resource('budgetSheet', BudgetSheetController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'budgetSheet.index', 'store' => 'budgetSheet.store', 'show' => 'budgetSheet.show',

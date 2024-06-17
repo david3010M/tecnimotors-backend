@@ -66,9 +66,16 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *  )
  *
  * @OA\Schema(
- *     schema="DetailAttentionRequest",
+ *     schema="DetailAttentionRequestUpdate",
  *     type="object",
  *     required={"salePrice","attention_id"},
+ *     @OA\Property(property="salePrice", type="decimal", example="100.00"),
+ *     @OA\Property(property="quantity", type="integer", example="1"),
+ * )
+ *   @OA\Schema(
+ *     schema="DetailAttentionRequest",
+ *     type="object",
+ *     required={"salePrice","quantity"},
  *     @OA\Property(property="salePrice", type="decimal", example="0.00"),
  *     @OA\Property(property="type", type="string", example="Producto"),
  *     @OA\Property(property="comment", type="string", example="comment"),

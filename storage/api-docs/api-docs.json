@@ -3141,6 +3141,99 @@
                         "bearerAuth": []
                     }
                 ]
+            },
+            "put": {
+                "tags": [
+                    "DetailAttention"
+                ],
+                "summary": "Update the specified detailAttention in storage.",
+                "operationId": "4cb1401367c140204a373eda3b8f7719",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "DetailAttention ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DetailAttentionRequestUpdate"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "DetailAttention updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DetailAttentionNoRelations"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "DetailAttention not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "DetailAttention not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "The name has already been taken."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/tecnimotors-backend/public/api/detailAttentionByWorker/{id}": {
@@ -11562,10 +11655,27 @@
                 },
                 "type": "object"
             },
-            "DetailAttentionRequest": {
+            "DetailAttentionRequestUpdate": {
                 "required": [
                     "salePrice",
                     "attention_id"
+                ],
+                "properties": {
+                    "salePrice": {
+                        "type": "decimal",
+                        "example": "100.00"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "example": "1"
+                    }
+                },
+                "type": "object"
+            },
+            "DetailAttentionRequest": {
+                "required": [
+                    "salePrice",
+                    "quantity"
                 ],
                 "properties": {
                     "salePrice": {
