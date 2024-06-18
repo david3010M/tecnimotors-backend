@@ -20,6 +20,12 @@ class UserSeeder extends Seeder
             ['id' => '1', 'username' => 'admin', 'password' => 'adminTecnimotors', 'worker_id' => '1', 'typeofUser_id' => '1'],
             ['id' => '2', 'username' => 'PRUEBA-DEMO', 'password' => 'PRUEBA-DEMO', 'worker_id' => '1', 'typeofUser_id' => '2'],
 
+            ['id' => '3', 'username' => 'JuanPerez', 'password' => 'JuanPerez', 'worker_id' => '3', 'typeofUser_id' => '3'],
+
+            ['id' => '4', 'username' => 'CarlosRamirez', 'password' => 'CarlosRamirez', 'worker_id' => '4', 'typeofUser_id' => '3'],
+
+            ['id' => '4', 'username' => 'LuisHernandez', 'password' => 'LuisHernandez', 'worker_id' => '5', 'typeofUser_id' => '3'],
+
         ];
 
         foreach ($users as $user) {

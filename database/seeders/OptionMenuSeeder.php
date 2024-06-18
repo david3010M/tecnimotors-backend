@@ -22,7 +22,7 @@ class OptionMenuSeeder extends Seeder
             ['id' => '5', 'name' => 'Concepto', 'route' => 'concepto', 'icon' => 'fa-solid fa-house', 'groupmenu_id' => 2],
             ['id' => '6', 'name' => 'Compromiso', 'route' => 'compromiso', 'icon' => 'fa-solid fa-house', 'groupmenu_id' => 2],
             ['id' => '7', 'name' => 'Caja', 'route' => 'caja', 'icon' => 'fa-solid fa-house', 'groupmenu_id' => 1],
-            ['id' => '8', 'name' => 'Mecánico', 'route' => 'mecanico', 'icon' => 'fa-solid fa-house', 'groupmenu_id' => 3],
+            ['id' => '8', 'name' => 'Seguimiento', 'route' => 'seguimiento', 'icon' => 'fa-solid fa-house', 'groupmenu_id' => 3],
 
         ];
 

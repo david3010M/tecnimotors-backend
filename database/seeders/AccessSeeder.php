@@ -16,7 +16,7 @@ class AccessSeeder extends Seeder
     {
         TypeUser::find(1)->setAccess(1, [1, 2, 3, 4, 5]);
         TypeUser::find(2)->setAccess(2, [1]);
-        TypeUser::find(3)->setAccess(3, [1]);
+        TypeUser::find(3)->setAccess(3, [1, 2, 3, 4, 5, 8]);
         TypeUser::find(4)->setAccess(4, [1, 2, 3, 4, 5]);
     }
 }

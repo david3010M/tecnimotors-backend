@@ -205,6 +205,11 @@
             text-align: right;
         }
 
+        .sailTotal {
+            width: 15%;
+            text-align: right;
+        }
+
         .tableTotal {
             margin-top: 30px;
         }
@@ -389,8 +394,13 @@
             @if ($detail->type == 'Service')
                 <tr>
                     <td class="id">{{ $detail->service->id }}</td>
-                    <td class="description" colspan="4">{{ $detail->service->name }}</td>
+                    <td class="description" colspan="2">{{ $detail->service->name }}</td>
+                
+               
+                    <td class="quantity">{{ $detail->quantity }}</td>
                     <td class="sailPrice">S/ {{ $detail->saleprice }}</td>
+                    <td class="sailTotal">S/ {{ number_format($detail->saleprice * $detail->quantity, 2) }}</td>
+
                 </tr>
             @endif
         @endforeach
@@ -407,8 +417,9 @@
                     <td class="description">{{ $detail->product->name }}</td>
                     <td class="unit">{{ $detail->product->unit->code }}</td>
                     <td class="quantity">{{ $detail->quantity }}</td>
-                    <td class="unitPrice">S/ {{ $detail->product->sale_price }}</td>
-                    <td class="sailPrice">S/ {{ $detail->saleprice }}</td>
+                    <td class="unitPrice">S/ {{ $detail->saleprice }}</td>
+                    <td class="sailTotal">S/ {{ number_format($detail->saleprice * $detail->quantity, 2) }}</td>
+
                 </tr>
             @endif
         @endforeach
