@@ -20,7 +20,7 @@ class TaskSeeder extends Seeder
 //                'dateStart' => '2024-06-07',
 //                'dateEnd' => '2024-06-07',
                 'limitDate' => '2024-06-07',
-                'worker_id' => 1,
+                'worker_id' => 3,
                 'detail_attentions_id' => 1
             ],
             [
@@ -31,7 +31,7 @@ class TaskSeeder extends Seeder
 //                'dateStart' => '2024-06-07',
 //                'dateEnd' => '2024-06-07',
                 'limitDate' => '2024-06-07',
-                'worker_id' => 1,
+                'worker_id' => 3,
                 'detail_attentions_id' => 1
             ],
             [
@@ -42,7 +42,7 @@ class TaskSeeder extends Seeder
 //                'dateStart' => '2024-06-07',
 //                'dateEnd' => '2024-06-07',
                 'limitDate' => '2024-06-07',
-                'worker_id' => 1,
+                'worker_id' => 3,
                 'detail_attentions_id' => 1
             ],
             [
@@ -53,7 +53,7 @@ class TaskSeeder extends Seeder
 //                'dateStart' => '2024-06-07',
 //                'dateEnd' => '2024-06-07',
                 'limitDate' => '2024-06-07',
-                'worker_id' => 1,
+                'worker_id' => 3,
                 'detail_attentions_id' => 1
             ]
         ];

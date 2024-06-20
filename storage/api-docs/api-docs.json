@@ -4853,7 +4853,7 @@
                                     "paymentConcept_id": {
                                         "description": "ID del concepto de pago",
                                         "type": "integer",
-                                        "example": 1,
+                                        "example": 3,
                                         "nullable": true
                                     },
                                     "yape": {

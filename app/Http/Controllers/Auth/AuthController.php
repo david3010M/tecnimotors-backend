@@ -170,6 +170,7 @@ class AuthController extends Controller
         try {
 
             $user = auth('sanctum')->user();
+            $user = User::with(['typeUser', 'worker'])->find($user->id);
             $token = $request->bearerToken();
 
             $groupMenu = GroupMenu::getFilteredGroupMenus($user->typeofUser_id);

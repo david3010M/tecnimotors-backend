@@ -9,7 +9,6 @@ use App\Models\RouteImages;
 use App\Models\Task;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class TaskController extends Controller
@@ -82,7 +81,6 @@ class TaskController extends Controller
 
         return response()->json($task);
     }
-
 
     /**
      * @OA\Get (
@@ -180,7 +178,8 @@ class TaskController extends Controller
     public function update(Request $request, int $id)
     {
         $task = Task::find($id);
-        $idWorker = auth()->user()->id;
+
+        $idWorker = auth()->user()->worker->id;
 
         if (!$task || $task->worker_id !== $idWorker) {
             return response()->json(['message' => 'Task not found'], 404);
@@ -267,7 +266,7 @@ class TaskController extends Controller
      */
     public function destroy(int $id)
     {
-        $idWorker = auth()->user()->id;
+        $idWorker = auth()->user()->worker->id;
         $task = Task::find($id);
 
         if (!$task || $task->worker_id !== $idWorker) {
@@ -319,7 +318,7 @@ class TaskController extends Controller
     {
 //        $tasks = Task::with('worker', 'detailAttentions')->where('detail_attentions_id', $id)->get();
         $tasks = Task::where('detail_attentions_id', $id)->get();
-        
+
         return response()->json($tasks);
     }
 

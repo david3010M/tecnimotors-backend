@@ -19,11 +19,11 @@ class DetailAttentionSeeder extends Seeder
         $array = [
             [
                 'saleprice' => 100.00, 'quantity' => 1, 'type' => 'Service', 'comment' => 'Some comment here.', 'status' => 'Generada',
-                'dateRegister' => '2024-05-21', 'dateMax' => '2024-06-22', 'worker_id' => 1, 'product_id' => null, 'service_id' => 1, 'attention_id' => 1,
+                'dateRegister' => '2024-05-21', 'dateMax' => '2024-06-22', 'worker_id' => 3, 'product_id' => null, 'service_id' => 1, 'attention_id' => 1,
             ],
             [
                 'saleprice' => 100.00, 'quantity' => 1, 'type' => 'Service', 'comment' => 'Some comment here.', 'status' => 'Generada',
-                'dateRegister' => '2024-05-21', 'dateMax' => '2024-06-22', 'worker_id' => 1, 'product_id' => null, 'service_id' => 2, 'attention_id' => 1,
+                'dateRegister' => '2024-05-21', 'dateMax' => '2024-06-22', 'worker_id' => 3, 'product_id' => null, 'service_id' => 2, 'attention_id' => 1,
             ],
 
             [
