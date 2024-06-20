@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Moviment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class MovimentController extends Controller
 {
@@ -15,13 +16,6 @@ class MovimentController extends Controller
      *     path="/tecnimotors-backend/public/api/moviment",
      *     tags={"Moviment"},
      *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(
-     *         name="box_id",
-     *         in="query",
-     *         required=false,
-     *         @OA\Schema(type="integer"),
-     *         description="ID of the box to filter the Movimentes"
-     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="List of active Movimentes",
@@ -75,15 +69,15 @@ class MovimentController extends Controller
             ->first();
         $data = [];
         if ($movCaja) {
-            // $data = $this->detalleCajaAperturada($movCaja->id)->original;
-            $data = [];
+            $data = $this->detalleCajaAperturada($movCaja->id)->original;
+            // $data = [];
         }
         return response()->json($data, 200);
     }
 
     /**
      * @OA\Post(
-     *     path="/transporte/public/api/movimentAperturaCierre",
+     *     path="/tecnimotors-backend/public/api/movimentAperturaCierre",
      *     summary="Store a new moviment",
      *     tags={"Moviment"},
      *     description="Create a new moviment Apertura/Cierre",
@@ -157,24 +151,16 @@ class MovimentController extends Controller
      *             ),
 
      *             @OA\Property(
-     *                 property="box_id",
-     *                 type="integer",
-     *                 description="ID de la caja",
-     *                 nullable=true,
-     *                 example=1
-     *             ),
-     *             @OA\Property(
-     *                 property="branchOffice_id",
-     *                 type="integer",
-     *                 description="ID de la sucursal",
-     *                 nullable=true,
-     *                 example=1
-     *             ),
-
-     *             @OA\Property(
      *                 property="person_id",
      *                 type="integer",
-     *                 description="ID de la persona",
+     *                 description="ID de persona",
+     *                 nullable=true,
+     *                 example=1
+     *             ),
+     *             @OA\Property(
+     *                 property="bank_id",
+     *                 type="integer",
+     *                 description="ID del banko",
      *                 nullable=true,
      *                 example=1
      *             ),
@@ -209,11 +195,11 @@ class MovimentController extends Controller
             'paymentDate' => 'required|date',
             'routeVoucher.*' => 'nullable|image|mimes:jpeg,png,jpg,gif',
             'numberVoucher' => 'nullable|string',
-            'yape' => 'required|numeric',
-            'deposit' => 'required|numeric',
-            'cash' => 'required|numeric',
-            'plin' => 'required|numeric',
-            'card' => 'required|numeric',
+            'yape' => 'nullable|numeric',
+            'deposit' => 'nullable|numeric',
+            'cash' => 'nullable|numeric',
+            'plin' => 'nullable|numeric',
+            'card' => 'nullable|numeric',
             'comment' => 'nullable|string',
             'isBankPayment' => 'requeride|in:0,1',
 
@@ -225,8 +211,24 @@ class MovimentController extends Controller
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
-        $branch_office_id = $request->input('branchOffice_id');
 
+        $movCaja = Moviment::where('status', 'Activa')->where('paymentConcept_id', 1)->first();
+
+        if (!$movCaja) {
+            if ($request->input('paymentConcept_id') != 1) {
+                return response()->json([
+                    "message" => "Debe Aperturar Caja",
+                ], 422);
+            }
+        } else {
+            if ($request->input('paymentConcept_id') == 1) {
+                return response()->json([
+                    "message" => "Caja Ya Aperturada",
+                ], 422);
+            }
+        }
+        $letra = 'M';
+        $status = '';
         if ($request->input('paymentConcept_id') == 1) {
             $letra = 'A';
             $status = 'Activa';
@@ -238,13 +240,11 @@ class MovimentController extends Controller
             $movCaja = Moviment::where('status', 'Activa')
                 ->where('paymentConcept_id', 1)
                 ->first();
-
             $movCaja->status = 'Inactiva';
             $movCaja->save();
-
         }
 
-        $tipo = $letra . str_pad($branch_office_id, 3, '0', STR_PAD_LEFT);
+        $tipo = $letra . '001';
 
         $tipo = str_pad($tipo, 4, '0', STR_PAD_RIGHT);
 
@@ -259,12 +259,14 @@ class MovimentController extends Controller
 
         $total = $efectivo + $yape + $plin + $tarjeta + $deposito;
 
-        $routeVoucher=null;
-        $numberVoucher=null;
-        $bank_id=null;
+        $routeVoucher = null;
+        $numberVoucher = null;
+        $bank_id = null;
 
         if ($request->input('isBankPayment') == 1) {
-
+            $routeVoucher = 'ruta.jpg';
+            $numberVoucher = $request->input('numberVoucher');
+            $bank_id = $request->input('bank_id');
         }
 
         $data = [
@@ -293,8 +295,427 @@ class MovimentController extends Controller
 
         $object = Moviment::create($data);
 
+        $image = $request->file('routeVoucher');
+
+        if ($image) {
+            $file = $image;
+            $currentTime = now();
+            $filename = $currentTime->format('YmdHis') . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('public/photosVouchers', $filename);
+            $rutaImagen = Storage::url($path);
+            $object->routeVoucher = $rutaImagen;
+            $object->save();
+        }
+
         $object = Moviment::with(['bank', 'paymentConcept',
             'person', 'user.worker.person'])->find($object->id);
+        return response()->json($object, 200);
+
+    }
+
+    public function detalleCajaAperturada($id)
+    {
+        $movCajaAperturada = Moviment::where('id', $id)->where('paymentConcept_id', 1)
+            ->first();
+
+        if (!$movCajaAperturada) {
+            return response()->json([
+                "message" => "Movimiento de Apertura no encontrado",
+            ], 404);
+        }
+
+        $movCajaCierre = Moviment::where('id', '>', $movCajaAperturada->id)
+            ->where('paymentConcept_id', 2)
+            ->orderBy('id', 'asc')->first();
+
+        if ($movCajaCierre == null) {
+            //CAJA ACTIVA
+            $movimientosCaja = Moviment::select(['*', DB::raw('(SELECT obtenerFormaPagoPorCaja(moviments.id)) AS formaPago')])
+                ->where('id', '>=', $movCajaAperturada->id)
+                ->orderBy('id', 'desc')
+                ->with(['paymentConcept', 'person', 'user.worker.person'])
+                ->simplePaginate();
+
+            $resumenCaja = Moviment::selectRaw('
+            COALESCE(SUM(CASE WHEN cp.type = "Ingreso" THEN moviments.total ELSE 0 END), 0.00) as total_ingresos,
+            COALESCE(SUM(CASE WHEN cp.type = "Egreso" THEN moviments.total ELSE 0 END), 0.00) as total_egresos,
+            COALESCE(SUM(CASE WHEN cp.type = "Ingreso" THEN moviments.cash ELSE 0 END), 0.00) as efectivo_ingresos,
+            COALESCE(SUM(CASE WHEN cp.type = "Egreso" THEN moviments.cash ELSE 0 END), 0.00) as efectivo_egresos,
+            COALESCE(SUM(CASE WHEN cp.type = "Ingreso" THEN moviments.yape ELSE 0 END), 0.00) as yape_ingresos,
+            COALESCE(SUM(CASE WHEN cp.type = "Egreso" THEN moviments.yape ELSE 0 END), 0.00) as yape_egresos,
+            COALESCE(SUM(CASE WHEN cp.type = "Ingreso" THEN moviments.plin ELSE 0 END), 0.00) as plin_ingresos,
+            COALESCE(SUM(CASE WHEN cp.type = "Egreso" THEN moviments.plin ELSE 0 END), 0.00) as plin_egresos,
+            COALESCE(SUM(CASE WHEN cp.type = "Ingreso" THEN moviments.card ELSE 0 END), 0.00) as tarjeta_ingresos,
+            COALESCE(SUM(CASE WHEN cp.type = "Egreso" THEN moviments.card ELSE 0 END), 0.00) as tarjeta_egresos,
+            COALESCE(SUM(CASE WHEN cp.type = "Ingreso" THEN moviments.deposit ELSE 0 END), 0.00) as deposito_ingresos,
+            COALESCE(SUM(CASE WHEN cp.type = "Egreso" THEN moviments.deposit ELSE 0 END), 0.00) as deposito_egresos')
+                ->leftJoin('concept_pays as cp', 'moviments.paymentConcept_id', '=', 'cp.id')
+                ->where('moviments.id', '>=', $movCajaAperturada->id)
+                ->first();
+
+            $movCajaCierreArray = null;
+        } else {
+            $movimientosCaja = Moviment::select(['*', DB::raw('(SELECT obtenerFormaPagoPorCaja(moviments.id)) AS formaPago')])
+                ->where('id', '>=', $movCajaAperturada->id)
+                ->where('branchOffice_id', $movCajaAperturada->branchOffice_id)
+                ->where('id', '<', $movCajaCierre->id)
+                ->orderBy('id', 'desc')
+                ->with(['paymentConcept', 'person', 'user.worker.person'])
+                ->simplePaginate();
+
+            $resumenCaja = Moviment::selectRaw('
+                COALESCE(SUM(CASE WHEN cp.type = "Ingreso" THEN moviments.total ELSE 0 END), 0.00) as total_ingresos,
+                COALESCE(SUM(CASE WHEN cp.type = "Egreso" THEN moviments.total ELSE 0 END), 0.00) as total_egresos,
+                COALESCE(SUM(CASE WHEN cp.type = "Ingreso" THEN moviments.cash ELSE 0 END), 0.00) as efectivo_ingresos,
+                COALESCE(SUM(CASE WHEN cp.type = "Egreso" THEN moviments.cash ELSE 0 END), 0.00) as efectivo_egresos,
+                COALESCE(SUM(CASE WHEN cp.type = "Ingreso" THEN moviments.yape ELSE 0 END), 0.00) as yape_ingresos,
+                COALESCE(SUM(CASE WHEN cp.type = "Egreso" THEN moviments.yape ELSE 0 END), 0.00) as yape_egresos,
+                COALESCE(SUM(CASE WHEN cp.type = "Ingreso" THEN moviments.plin ELSE 0 END), 0.00) as plin_ingresos,
+                COALESCE(SUM(CASE WHEN cp.type = "Egreso" THEN moviments.plin ELSE 0 END), 0.00) as plin_egresos,
+                COALESCE(SUM(CASE WHEN cp.type = "Ingreso" THEN moviments.card ELSE 0 END), 0.00) as tarjeta_ingresos,
+                COALESCE(SUM(CASE WHEN cp.type = "Egreso" THEN moviments.card ELSE 0 END), 0.00) as tarjeta_egresos,
+                COALESCE(SUM(CASE WHEN cp.type = "Ingreso" THEN moviments.deposit ELSE 0 END), 0.00) as deposito_ingresos,
+                COALESCE(SUM(CASE WHEN cp.type = "Egreso" THEN moviments.deposit ELSE 0 END), 0.00) as deposito_egresos')
+                ->leftJoin('concept_pays as cp', 'moviments.paymentConcept_id', '=', 'cp.id')
+
+                ->where('moviments.id', '>=', $movCajaAperturada->id)
+                ->where('moviments.id', '<', $movCajaCierre->id)
+
+                ->first();
+
+            $forma_pago = DB::select('SELECT obtenerFormaPagoPorCaja(:id) AS forma_pago', ['id' => $movCajaCierre->id]);
+
+        }
+
+        return response()->json([
+
+            'MovCajaApertura' => $movCajaAperturada,
+            'MovCajaCierre' => $movCajaCierre,
+            'MovCajaInternos' => $movimientosCaja,
+
+            "resumenCaja" => $resumenCaja ?? null,
+        ]);
+
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/tecnimotors-backend/public/api/moviment/{id}",
+     *     summary="Get a moviment by ID",
+     *     tags={"Moviment"},
+     *     description="Retrieve a moviment by its ID",
+     * security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID of the moviment to retrieve",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Moviment found",
+     *        @OA\JsonContent(
+     *              type="object",
+     *              ref="#/components/schemas/MovimentRequest"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="The given data was invalid.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="msg", type="string", example="Unauthenticated.")
+     *         )
+     *     ),
+     * )
+     */
+    public function show($id)
+    {
+        $object = Moviment::with(['paymentConcept', 'person', 'user.worker.person'])->find($id);
+
+        if (!$object) {
+            return response()->json(['message' => 'Moviment not found'], 422);
+        }
+
+        return response()->json($object, 200);
+    }
+
+    /**
+     * @OA\Delete(
+     *     path="/tecnimotors-backend/public/api/moviment/{id}",
+     *     summary="Delete a Moviment",
+     *     tags={"Moviment"},
+     *     description="Delete a Moviment by ID",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID of the Moviment to delete",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Moviment deleted successfully",
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="The given data was invalid.")
+     *         )
+     *     ),
+     *        @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="msg", type="string", example="Unauthenticated.")
+     *         )
+     *     ),
+     * )
+     */
+
+    public function destroy($id)
+    {
+        $object = Moviment::find($id);
+        if (!$object) {
+            return response()->json(['message' => 'Moviment not found'], 422);
+        }
+        $object->delete();
+        $object->save();
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/tecnimotors-backend/public/api/moviment",
+     *     summary="Store a new moviment",
+     *     tags={"Moviment"},
+     *     description="Create a new moviment",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Moviment data",
+     *         @OA\JsonContent(
+
+     *             @OA\Property(
+     *                 property="paymentDate",
+     *                 type="string",
+     *                 format="date-time",
+     *                 description="Fecha de pago",
+     *                 nullable=true,
+     *                 example="2023-06-17"
+     *             ),
+     *             @OA\Property(
+     *                 property="paymentConcept_id",
+     *                 type="integer",
+     *                 description="ID del concepto de pago",
+     *                 nullable=true,
+     *                 example=3
+     *             ),
+     *             @OA\Property(
+     *                 property="yape",
+     *                 type="number",
+     *                 format="decimal",
+     *                 description="Pago por Yape",
+     *                 nullable=true,
+     *                 example=20.00
+     *             ),
+     *             @OA\Property(
+     *                 property="deposit",
+     *                 type="number",
+     *                 format="decimal",
+     *                 description="Depósito",
+     *                 nullable=true,
+     *                 example=30.00
+     *             ),
+     *             @OA\Property(
+     *                 property="cash",
+     *                 type="number",
+     *                 format="decimal",
+     *                 description="Efectivo",
+     *                 nullable=true,
+     *                 example=50.00
+     *             ),
+     *             @OA\Property(
+     *                 property="plin",
+     *                 type="number",
+     *                 format="decimal",
+     *                 description="Efectivo",
+     *                 nullable=true,
+     *                 example=50.00
+     *             ),
+     *             @OA\Property(
+     *                 property="card",
+     *                 type="number",
+     *                 format="decimal",
+     *                 description="Pago por tarjeta",
+     *                 nullable=true,
+     *                 example=0.50
+     *             ),
+     *             @OA\Property(
+     *                 property="comment",
+     *                 type="string",
+     *                 description="Comentario",
+     *                 nullable=true,
+     *                 example="Pago parcial"
+     *             ),
+
+     *             @OA\Property(
+     *                 property="person_id",
+     *                 type="integer",
+     *                 description="ID de persona",
+     *                 nullable=true,
+     *                 example=1
+     *             ),
+     *             @OA\Property(
+     *                 property="bank_id",
+     *                 type="integer",
+     *                 description="ID del banko",
+     *                 nullable=true,
+     *                 example=1
+     *             ),
+
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Moviment created successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/MovimentRequest")
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Some fields are required.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="msg", type="string", example="Unauthenticated.")
+     *         )
+     *     )
+     * )
+     */
+    public function store(Request $request)
+    {
+
+        $validator = validator()->make($request->all(), [
+            'paymentDate' => 'required|date',
+            'routeVoucher.*' => 'nullable|image|mimes:jpeg,png,jpg,gif',
+            'numberVoucher' => 'nullable|string',
+            'yape' => 'nullable|numeric',
+            'deposit' => 'nullable|numeric',
+            'cash' => 'nullable|numeric',
+            'plin' => 'nullable|numeric',
+            'card' => 'nullable|numeric',
+            'comment' => 'nullable|string',
+            'isBankPayment' => 'requeride|in:0,1',
+
+            'paymentConcept_id' => 'required|exists:concept_pays,id',
+            'bank_id' => 'nullable|exists:banks,id',
+            'person_id' => 'required|exists:people,id',
+
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $movCaja = Moviment::where('status', 'Activa')->where('paymentConcept_id', 1)->first();
+
+        if (!$movCaja) {
+            if ($request->input('paymentConcept_id') != 1) {
+                return response()->json([
+                    "message" => "Debe Aperturar Caja",
+                ], 422);
+            }
+        } else {
+            if ($request->input('paymentConcept_id') == 1) {
+                return response()->json([
+                    "message" => "Caja Ya Aperturada",
+                ], 422);
+            }
+        }
+
+        $tipo = 'M001';
+
+        $tipo = str_pad($tipo, 4, '0', STR_PAD_RIGHT);
+
+        $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(sequentialNumber, LOCATE("-", sequentialNumber) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM moviments WHERE SUBSTRING(sequentialNumber, 1, 4) = ?', [$tipo])[0]->siguienteNum;
+        $siguienteNum = (int) $resultado;
+
+        $efectivo = $request->input('cash') ?? 0;
+        $yape = $request->input('yape') ?? 0;
+        $plin = $request->input('plin') ?? 0;
+        $tarjeta = $request->input('card') ?? 0;
+        $deposito = $request->input('deposit') ?? 0;
+
+        $total = $efectivo + $yape + $plin + $tarjeta + $deposito;
+
+        $routeVoucher = null;
+        $numberVoucher = null;
+        $bank_id = null;
+
+        if ($request->input('isBankPayment') == 1) {
+            $routeVoucher = 'ruta.jpg';
+            $numberVoucher = $request->input('numberVoucher');
+            $bank_id = $request->input('bank_id');
+        }
+
+        $data = [
+
+            'sequentialNumber' => $tipo . '-' . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT),
+            'paymentDate' => $request->input('paymentDate'),
+            'total' => $total ?? 0,
+            'yape' => $request->input('yape') ?? 0,
+            'deposit' => $request->input('deposit') ?? 0,
+            'cash' => $request->input('cash') ?? 0,
+            'card' => $request->input('card') ?? 0,
+            'plin' => $request->input('plin') ?? 0,
+
+            'isBankPayment' => $request->input('isBankPayment'),
+            'routeVoucher' => $routeVoucher,
+            'numberVoucher' => $numberVoucher,
+
+            'comment' => $request->input('comment') ?? '-',
+            'status' => 'Generada',
+            'paymentConcept_id' => $request->input('paymentConcept_id'),
+
+            'person_id' => $request->input('person_id'),
+            'user_id' => auth()->id(),
+            'bank_id' => $bank_id,
+        ];
+
+        $object = Moviment::create($data);
+
+        $image = $request->file('routeVoucher');
+
+        if ($image) {
+            $file = $image;
+            $currentTime = now();
+            $filename = $currentTime->format('YmdHis') . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('public/photosVouchers', $filename);
+            $rutaImagen = Storage::url($path);
+            $object->routeVoucher = $rutaImagen;
+            $object->save();
+        }
+
+        $object = Moviment::with(['paymentConcept', 'user.worker.person'])->find($object->id);
+
+        $object->detalle = $this->detalleCajaAperturada($movCaja->id)->original;
+
         return response()->json($object, 200);
 
     }

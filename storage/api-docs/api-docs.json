@@ -4686,17 +4686,6 @@
                 ],
                 "summary": "Get all Movimentes",
                 "operationId": "6155ae876b70b9cd6bcbb788ad3840c4",
-                "parameters": [
-                    {
-                        "name": "box_id",
-                        "in": "query",
-                        "description": "ID of the box to filter the Movimentes",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "List of active Movimentes",
@@ -4839,16 +4828,14 @@
                         "bearerAuth": []
                     }
                 ]
-            }
-        },
-        "/transporte/public/api/movimentAperturaCierre": {
+            },
             "post": {
                 "tags": [
                     "Moviment"
                 ],
                 "summary": "Store a new moviment",
-                "description": "Create a new moviment Apertura/Cierre",
-                "operationId": "c4cfe9ea438b00c02aab9d98844bbc25",
+                "description": "Create a new moviment",
+                "operationId": "ac5f90e3c46cf848617d3f0ce9c15f17",
                 "requestBody": {
                     "description": "Moviment data",
                     "required": true,
@@ -4910,20 +4897,14 @@
                                         "example": "Pago parcial",
                                         "nullable": true
                                     },
-                                    "box_id": {
-                                        "description": "ID de la caja",
-                                        "type": "integer",
-                                        "example": 1,
-                                        "nullable": true
-                                    },
-                                    "branchOffice_id": {
-                                        "description": "ID de la sucursal",
-                                        "type": "integer",
-                                        "example": 1,
-                                        "nullable": true
-                                    },
                                     "person_id": {
-                                        "description": "ID de la persona",
+                                        "description": "ID de persona",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "bank_id": {
+                                        "description": "ID del banko",
                                         "type": "integer",
                                         "example": 1,
                                         "nullable": true
@@ -4954,6 +4935,275 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Some fields are required."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/movimentAperturaCierre": {
+            "post": {
+                "tags": [
+                    "Moviment"
+                ],
+                "summary": "Store a new moviment",
+                "description": "Create a new moviment Apertura/Cierre",
+                "operationId": "5298c46c464fce7445c367677953cb48",
+                "requestBody": {
+                    "description": "Moviment data",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "paymentDate": {
+                                        "description": "Fecha de pago",
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2023-06-17",
+                                        "nullable": true
+                                    },
+                                    "paymentConcept_id": {
+                                        "description": "ID del concepto de pago",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "yape": {
+                                        "description": "Pago por Yape",
+                                        "type": "number",
+                                        "format": "decimal",
+                                        "example": 20,
+                                        "nullable": true
+                                    },
+                                    "deposit": {
+                                        "description": "Depósito",
+                                        "type": "number",
+                                        "format": "decimal",
+                                        "example": 30,
+                                        "nullable": true
+                                    },
+                                    "cash": {
+                                        "description": "Efectivo",
+                                        "type": "number",
+                                        "format": "decimal",
+                                        "example": 50,
+                                        "nullable": true
+                                    },
+                                    "plin": {
+                                        "description": "Efectivo",
+                                        "type": "number",
+                                        "format": "decimal",
+                                        "example": 50,
+                                        "nullable": true
+                                    },
+                                    "card": {
+                                        "description": "Pago por tarjeta",
+                                        "type": "number",
+                                        "format": "decimal",
+                                        "example": 0.5,
+                                        "nullable": true
+                                    },
+                                    "comment": {
+                                        "description": "Comentario",
+                                        "type": "string",
+                                        "example": "Pago parcial",
+                                        "nullable": true
+                                    },
+                                    "person_id": {
+                                        "description": "ID de persona",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "bank_id": {
+                                        "description": "ID del banko",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Moviment created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MovimentRequest"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Some fields are required."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/moviment/{id}": {
+            "get": {
+                "tags": [
+                    "Moviment"
+                ],
+                "summary": "Get a moviment by ID",
+                "description": "Retrieve a moviment by its ID",
+                "operationId": "75ecdb6371ef132f583b8bee60caadca",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the moviment to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Moviment found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MovimentRequest"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Moviment"
+                ],
+                "summary": "Delete a Moviment",
+                "description": "Delete a Moviment by ID",
+                "operationId": "800365dae8da4541ca35e0969cc73dc0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Moviment to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Moviment deleted successfully"
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
                                         }
                                     },
                                     "type": "object"
@@ -8022,7 +8272,7 @@
                                     "properties": {
                                         "error": {
                                             "type": "string",
-                                            "example": "The limit date must be less than the attention date"
+                                            "example": "La fecha Límite de la Tarea debe ser menor que la Fecha de entrega del Vehículo"
                                         }
                                     },
                                     "type": "object"
@@ -8156,7 +8406,7 @@
                                     "properties": {
                                         "error": {
                                             "type": "string",
-                                            "example": "The limit date must be less than the attention date"
+                                            "example": "La fecha Límite de la Tarea debe ser menor que la Fecha de entrega del Vehículo"
                                         }
                                     },
                                     "type": "object"

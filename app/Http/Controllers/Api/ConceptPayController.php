@@ -42,7 +42,7 @@ class ConceptPayController extends Controller
      */
     public function index()
     {
-        return response()->json(ConceptPay::simplePaginate(15));
+        return response()->json(ConceptPay::whereNotIn('id', [1, 2])->simplePaginate(30));
     }
 
     /**
@@ -84,7 +84,7 @@ class ConceptPayController extends Controller
                 'string',
                 Rule::unique('concept_pays', 'name')->whereNull('deleted_at'),
             ],
-            'type' => 'required|string',
+            'type' => 'required|string|in:Ingreso,Egreso',
         ]);
 
         if ($validator->fails()) {

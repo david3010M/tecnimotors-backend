@@ -168,4 +168,21 @@ class Moviment extends Model
         'updated_at',
         'deleted_at',
     ];
+    public function paymentConcept()
+    {
+        return $this->belongsTo(ConceptPay::class, 'paymentConcept_id');
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+    public function person()
+    {
+        return $this->belongsTo(Person::class, 'person_id');
+    }
+    public function bank()
+    {
+        return $this->belongsTo(Bank::class, 'bank_id');
+    }
+
 }

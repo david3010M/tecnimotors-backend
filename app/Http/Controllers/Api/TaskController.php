@@ -35,7 +35,7 @@ class TaskController extends Controller
      *         response=422,
      *         description="Invalid data",
      *         @OA\JsonContent(
-     *             @OA\Property(property="error", type="string", example="The limit date must be less than the attention date")
+     *             @OA\Property(property="error", type="string", example="La fecha Límite de la Tarea debe ser menor que la Fecha de entrega del Vehículo")
      *         )
      *     ),
      *     @OA\Response(
@@ -61,7 +61,7 @@ class TaskController extends Controller
         $limitDate = ($request->input('limitDate')) ? strtotime($request->input('limitDate')) : null;
 
         if ($limitDate && $limitDate > strtotime($attentionDate)) {
-            return response()->json(['error' => 'The limit date must be less than the attention date'], 422);
+            return response()->json(['error' => 'La fecha Límite de la Tarea debe ser menor que la Fecha de entrega del Vehículo'], 422);
         }
 
         if ($validator->fails()) {
@@ -158,7 +158,7 @@ class TaskController extends Controller
      *         response=422,
      *         description="Invalid data",
      *         @OA\JsonContent(
-     *             @OA\Property(property="error", type="string", example="The limit date must be less than the attention date")
+     *             @OA\Property(property="error", type="string", example="La fecha Límite de la Tarea debe ser menor que la Fecha de entrega del Vehículo")
      *         )
      *     ),
      *     @OA\Response(
@@ -198,7 +198,7 @@ class TaskController extends Controller
             $attentionRegisterDate = strtotime($task->detailAttentions->dateRegister);
 
             if ($limitDate > $attentionDate) {
-                return response()->json(['error' => 'The limit date must be less than the attention date '
+                return response()->json(['error' => 'La fecha Límite de la Tarea debe ser menor que la Fecha de entrega del Vehículo '
                     . Carbon::parse($attentionDate)->format('Y-m-d')], 422);
             }
 

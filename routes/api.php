@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\DetailAttentionController;
 use App\Http\Controllers\Api\ElementController;
 use App\Http\Controllers\Api\ElementForAttentionController;
 use App\Http\Controllers\Api\GroupMenuController;
+use App\Http\Controllers\Api\MovimentController;
 use App\Http\Controllers\Api\OptionMenuController;
 use App\Http\Controllers\Api\PersonController;
 use App\Http\Controllers\Api\ProductController;
@@ -185,5 +186,12 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::post('taskEvidence/{id}', [TaskController::class, 'storeEvidence']);
     Route::resource('task', TaskController::class)->only(['show', 'store', 'update', 'destroy'])
         ->names(['store' => 'task.store', 'show' => 'task.show', 'update' => 'task.update', 'destroy' => 'task.destroy']);
-
+    
+        // MOVIMENT
+    Route::get('moviment', [MovimentController::class, 'index']);
+    Route::get('moviment/{id}', [MovimentController::class, 'show']);
+    Route::post('moviment', [MovimentController::class, 'store']);
+    Route::post('movimentAperturaCierre', [MovimentController::class, 'aperturaCierre']);
+    Route::delete('moviment/{id}', [MovimentController::class, 'destroy']);
+    Route::put('moviment/{id}', [MovimentController::class, 'update']);
 });

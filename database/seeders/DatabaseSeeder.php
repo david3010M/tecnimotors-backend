@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
          * origin
          * ocupation
          */
+
         $array = [
             ['id' => '1', 'typeofDocument' => 'DNI', 'documentNumber' => '11111111',
                 'names' => 'Administrador', 'fatherSurname' => '-', 'motherSurname' => '-',
@@ -74,6 +75,7 @@ class DatabaseSeeder extends Seeder
                 Person::create($object);
             }
         }
+        $this->call(FuncitionFormaPagoSeeder::class);
 
         $this->call(GroupMenuSeeder::class);
         $this->call(TypeUserSeeder::class);
