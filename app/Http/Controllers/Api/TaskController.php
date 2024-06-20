@@ -179,9 +179,7 @@ class TaskController extends Controller
     {
         $task = Task::find($id);
 
-        $idWorker = auth()->user()->worker->id;
-
-        if (!$task || $task->worker_id !== $idWorker) {
+        if (!$task) {
             return response()->json(['message' => 'Task not found'], 404);
         }
 
