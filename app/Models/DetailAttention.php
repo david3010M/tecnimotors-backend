@@ -72,7 +72,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     @OA\Property(property="salePrice", type="decimal", example="100.00"),
  *     @OA\Property(property="quantity", type="integer", example="1"),
  * )
- *   @OA\Schema(
+ * @OA\Schema(
  *     schema="DetailAttentionRequest",
  *     type="object",
  *     required={"salePrice","quantity"},
@@ -169,6 +169,17 @@ class DetailAttention extends Model
     public function task()
     {
         return $this->hasMany(Task::class);
+    }
+
+    public static function updatePercentage($detailAttentionId)
+    {
+        $totalTasks = Task::where('detail_attentions_id', $detailAttentionId)->count();
+        $completedTasks = Task::where('detail_attentions_id', $detailAttentionId)->where('status', 'listo')->count();
+        $percentage = ($completedTasks / $totalTasks) * 100;
+
+        $detailAttention = DetailAttention::find($detailAttentionId);
+        $detailAttention->percentage = $percentage;
+        $detailAttention->save();
     }
 
 }

@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     @OA\Property(property="name", type="string", example="Admin"),
  *     @OA\Property(property="icon", type="string", example="fas fa-user"),
  *     @OA\Property(property="created_at", type="string", example="2024-03-27 01:42:21"),
- *   @OA\Property(
+ *     @OA\Property(
  *         property="option_menus",
  *         ref="#/components/schemas/OptionMenu"
  *     ),
@@ -40,4 +40,24 @@ class GroupMenu extends Model
     {
         return $this->hasMany(Optionmenu::class, 'groupmenu_id');
     }
+
+    public static function getFilteredGroupMenus($userTypeId)
+    {
+        return self::with(['optionMenus' => function ($query) use ($userTypeId) {
+            $query->whereHas('accesses', function ($query) use ($userTypeId) {
+                $query->where('typeuser_id', $userTypeId);
+            });
+        }])
+            ->whereHas('optionMenus.accesses', function ($query) use ($userTypeId) {
+                $query->where('typeuser_id', $userTypeId);
+            })
+            ->get()
+            ->each(function ($groupMenu) {
+                $groupMenu->optionMenus->each(function ($optionMenu) {
+                    unset($optionMenu->accesses);
+                });
+            });
+    }
+
+
 }

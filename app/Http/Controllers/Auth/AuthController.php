@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\GroupMenu;
 use App\Models\Optionmenu;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -32,6 +33,15 @@ class AuthController extends Controller
      *                 type="string",
      *                 example="123456"
      *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="User authenticated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property( property="access_token", type="string", example="1|1a2b3c4d5e6f7g8h9i0j" ),
+     *             @OA\Property( property="user", type="object", ref="#/components/schemas/User" ),
+     *             @OA\Property( property="group_menus", type="array", @OA\Items( type="object", ref="#/components/schemas/GroupMenu" ) ),
      *         )
      *     ),
      *
@@ -89,14 +99,17 @@ class AuthController extends Controller
             $token = $user->createToken('auth_token', ['expires' => now()->addHours(2)])->plainTextToken;
             $user = User::with(['typeUser', 'worker'])->find($user->id);
 
-            $tipeUser = $user->typeUser;
+            $typeUser = $user->typeUser;
+
+            $groupMenu = GroupMenu::getFilteredGroupMenus($typeUser->id);
 
             // -------------------------------------------------
             return response()->json([
                 'access_token' => $token,
                 'user' => $user,
-                'optionMenuAccess' => $user->typeUser->getAccess($user->id),
-                'permissions' => Optionmenu::pluck('id'),
+                'group_menus' => $groupMenu,
+//                'optionMenuAccess' => $user->typeUser->getAccess($user->id),
+//                'permissions' => Optionmenu::pluck('id'),
 
             ]);
         } else {
@@ -159,11 +172,14 @@ class AuthController extends Controller
             $user = auth('sanctum')->user();
             $token = $request->bearerToken();
 
+            $groupMenu = GroupMenu::getFilteredGroupMenus($user->typeofUser_id);
+
             return response()->json([
                 'access_token' => $token,
                 'user' => $user,
-                'optionMenuAccess' => $user->typeUser->getAccess($user->id),
-                'permissions' => Optionmenu::pluck('id'),
+                'groupMenu' => $groupMenu,
+//                'optionMenuAccess' => $user->typeUser->getAccess($user->id),
+//                'permissions' => Optionmenu::pluck('id'),
 
             ]);
 

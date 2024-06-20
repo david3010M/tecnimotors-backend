@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -17,9 +16,9 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->string('route')->unique();
-            $table->string('icon');
+//            $table->string('icon');
             $table->foreignId('groupmenu_id')->nullable()->unsigned()->constrained('group_menus');
-            
+
             $table->timestamps();
             $table->softDeletes();
         });

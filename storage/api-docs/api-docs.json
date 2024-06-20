@@ -11058,6 +11058,31 @@
                     }
                 },
                 "responses": {
+                    "200": {
+                        "description": "User authenticated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "access_token": {
+                                            "type": "string",
+                                            "example": "1|1a2b3c4d5e6f7g8h9i0j"
+                                        },
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        },
+                                        "group_menus": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/GroupMenu"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
                     "401": {
                         "description": "User not authenticated",
                         "content": {

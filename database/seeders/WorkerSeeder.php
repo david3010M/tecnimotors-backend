@@ -54,7 +54,7 @@ class WorkerSeeder extends Seeder
                 'id' => 6,
                 'startDate' => null,
                 'birthDate' => null,
-                'occupation' => 'Asesor',
+                'occupation' => 'Cajero',
                 'person_id' => 7,
             ],
             [

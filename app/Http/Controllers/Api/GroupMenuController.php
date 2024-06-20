@@ -40,8 +40,13 @@ class GroupMenuController extends Controller
 
     public function index()
     {
-        return response()->json(GroupMenu::with(['optionMenus'])->simplePaginate(15));
+        $userTypeId = auth()->user()->typeofUser_id;
+
+        $groupMenus = GroupMenu::getFilteredGroupMenus($userTypeId);
+
+        return response()->json($groupMenus);
     }
+
 
     /**
      * Create a new Group menu
