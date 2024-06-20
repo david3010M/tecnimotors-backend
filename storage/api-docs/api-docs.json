@@ -4679,6 +4679,312 @@
                 ]
             }
         },
+        "/tecnimotors-backend/public/api/moviment": {
+            "get": {
+                "tags": [
+                    "Moviment"
+                ],
+                "summary": "Get all Movimentes",
+                "operationId": "6155ae876b70b9cd6bcbb788ad3840c4",
+                "parameters": [
+                    {
+                        "name": "box_id",
+                        "in": "query",
+                        "description": "ID of the box to filter the Movimentes",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of active Movimentes",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "detalle": {
+                                            "properties": {
+                                                "MovCajaApertura": {
+                                                    "$ref": "#/components/schemas/MovimentRequest"
+                                                },
+                                                "MovCajaCierre": {
+                                                    "$ref": "#/components/schemas/MovimentRequest"
+                                                },
+                                                "MovCajaInternos": {
+                                                    "properties": {
+                                                        "current_page": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "data": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/components/schemas/MovimentRequest"
+                                                            }
+                                                        },
+                                                        "first_page_url": {
+                                                            "type": "string",
+                                                            "example": "http://localhost/tecnimotors-backend/public/api/moviment?page=1"
+                                                        },
+                                                        "from": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "next_page_url": {
+                                                            "type": "string",
+                                                            "example": "null"
+                                                        },
+                                                        "path": {
+                                                            "type": "string",
+                                                            "example": "http://localhost/tecnimotors-backend/public/api/moviment"
+                                                        },
+                                                        "per_page": {
+                                                            "type": "integer",
+                                                            "example": 15
+                                                        },
+                                                        "prev_page_url": {
+                                                            "type": "string",
+                                                            "example": "null"
+                                                        },
+                                                        "to": {
+                                                            "type": "integer",
+                                                            "example": 2
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "resumenCaja": {
+                                                    "properties": {
+                                                        "total_ingresos": {
+                                                            "type": "string",
+                                                            "example": "150.50"
+                                                        },
+                                                        "total_egresos": {
+                                                            "type": "string",
+                                                            "example": "150.50"
+                                                        },
+                                                        "efectivo_ingresos": {
+                                                            "type": "string",
+                                                            "example": "50.00"
+                                                        },
+                                                        "efectivo_egresos": {
+                                                            "type": "string",
+                                                            "example": "50.00"
+                                                        },
+                                                        "yape_ingresos": {
+                                                            "type": "string",
+                                                            "example": "20.00"
+                                                        },
+                                                        "yape_egresos": {
+                                                            "type": "string",
+                                                            "example": "20.00"
+                                                        },
+                                                        "plin_ingresos": {
+                                                            "type": "string",
+                                                            "example": "0.00"
+                                                        },
+                                                        "plin_egresos": {
+                                                            "type": "string",
+                                                            "example": "50.00"
+                                                        },
+                                                        "tarjeta_ingresos": {
+                                                            "type": "string",
+                                                            "example": "0.50"
+                                                        },
+                                                        "tarjeta_egresos": {
+                                                            "type": "string",
+                                                            "example": "0.50"
+                                                        },
+                                                        "deposito_ingresos": {
+                                                            "type": "string",
+                                                            "example": "30.00"
+                                                        },
+                                                        "deposito_egresos": {
+                                                            "type": "string",
+                                                            "example": "30.00"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/transporte/public/api/movimentAperturaCierre": {
+            "post": {
+                "tags": [
+                    "Moviment"
+                ],
+                "summary": "Store a new moviment",
+                "description": "Create a new moviment Apertura/Cierre",
+                "operationId": "c4cfe9ea438b00c02aab9d98844bbc25",
+                "requestBody": {
+                    "description": "Moviment data",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "paymentDate": {
+                                        "description": "Fecha de pago",
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2023-06-17",
+                                        "nullable": true
+                                    },
+                                    "paymentConcept_id": {
+                                        "description": "ID del concepto de pago",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "yape": {
+                                        "description": "Pago por Yape",
+                                        "type": "number",
+                                        "format": "decimal",
+                                        "example": 20,
+                                        "nullable": true
+                                    },
+                                    "deposit": {
+                                        "description": "Depósito",
+                                        "type": "number",
+                                        "format": "decimal",
+                                        "example": 30,
+                                        "nullable": true
+                                    },
+                                    "cash": {
+                                        "description": "Efectivo",
+                                        "type": "number",
+                                        "format": "decimal",
+                                        "example": 50,
+                                        "nullable": true
+                                    },
+                                    "plin": {
+                                        "description": "Efectivo",
+                                        "type": "number",
+                                        "format": "decimal",
+                                        "example": 50,
+                                        "nullable": true
+                                    },
+                                    "card": {
+                                        "description": "Pago por tarjeta",
+                                        "type": "number",
+                                        "format": "decimal",
+                                        "example": 0.5,
+                                        "nullable": true
+                                    },
+                                    "comment": {
+                                        "description": "Comentario",
+                                        "type": "string",
+                                        "example": "Pago parcial",
+                                        "nullable": true
+                                    },
+                                    "box_id": {
+                                        "description": "ID de la caja",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "branchOffice_id": {
+                                        "description": "ID de la sucursal",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "person_id": {
+                                        "description": "ID de la persona",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Moviment created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MovimentRequest"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Some fields are required."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/tecnimotors-backend/public/api/optionMenu": {
             "get": {
                 "tags": [
@@ -11919,6 +12225,117 @@
                     },
                     "option_menus": {
                         "$ref": "#/components/schemas/OptionMenu"
+                    }
+                },
+                "type": "object"
+            },
+            "MovimentRequest": {
+                "title": "moviment",
+                "description": "Movimiento",
+                "required": [
+                    "id"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "ID del moviment",
+                        "type": "integer"
+                    },
+                    "sequentialNumber": {
+                        "description": "Número secuencial",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "paymentDate": {
+                        "description": "Fecha de pago",
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "total": {
+                        "description": "Total",
+                        "type": "number",
+                        "format": "decimal",
+                        "nullable": true
+                    },
+                    "yape": {
+                        "description": "Pago por Yape",
+                        "type": "number",
+                        "format": "decimal",
+                        "nullable": true
+                    },
+                    "deposit": {
+                        "description": "Depósito",
+                        "type": "number",
+                        "format": "decimal",
+                        "nullable": true
+                    },
+                    "cash": {
+                        "description": "Efectivo",
+                        "type": "number",
+                        "format": "decimal",
+                        "nullable": true
+                    },
+                    "card": {
+                        "description": "Pago por tarjeta",
+                        "type": "number",
+                        "format": "decimal",
+                        "nullable": true
+                    },
+                    "plin": {
+                        "description": "Pago por tarjeta",
+                        "type": "number",
+                        "format": "decimal",
+                        "nullable": true
+                    },
+                    "typeDocument": {
+                        "description": "Tipo de documento",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "isBankPayment": {
+                        "description": "Tipo de documento",
+                        "type": "boolean",
+                        "nullable": true
+                    },
+                    "numberVoucher": {
+                        "description": "Tipo de documento",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "routeVoucher": {
+                        "description": "Tipo de documento",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "comment": {
+                        "description": "Comentario",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "status": {
+                        "description": "Estado",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "conceptMov_id": {
+                        "description": "ID del concepto de movimiento",
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "user_id": {
+                        "description": "ID del usuario",
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "person_id": {
+                        "description": "ID de persona",
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "bank_id": {
+                        "description": "ID del banco",
+                        "type": "integer",
+                        "nullable": true
                     }
                 },
                 "type": "object"

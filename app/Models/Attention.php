@@ -117,7 +117,7 @@ class Attention extends Model
     public function details()
     {
         return $this->hasMany(DetailAttention::class)->
-        orderBy('type', 'desc')
+            orderBy('type', 'desc')
             ->with(['worker', 'service', 'product']);
     }
 
@@ -176,7 +176,7 @@ class Attention extends Model
             ->pluck('product');
     }
 
-    public function setDetails($id, $detailServices)
+    public function setDetails($id, $detailServices, $deliveryDate)
     {
         $attention = Attention::find($id);
         $currentDetailsIds = $attention->details()->where('type', 'Service')->pluck('id')->toArray();
@@ -194,6 +194,7 @@ class Attention extends Model
                     $data = [
                         'service_id' => $detailData['service_id'],
                         'worker_id' => $detailData['worker_id'],
+                        'dateMax' => $deliveryDate,
                         'product_id' => null,
                     ];
                     $detail->update($data);
@@ -207,7 +208,7 @@ class Attention extends Model
                     'comment' => $detail['comment'] ?? '-',
                     'status' => $detail['status'] ?? 'Generada',
                     'dateRegister' => Carbon::now(),
-                    'dateMax' => $detail['dateMax'] ?? null,
+                    'dateMax' => $deliveryDate ?? null,
                     'worker_id' => $detail['worker_id'],
                     'product_id' => $detail['product_id'] ?? null,
                     'service_id' => $detail['service_id'],

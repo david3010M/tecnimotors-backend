@@ -328,6 +328,23 @@ class DetailAttentionController extends Controller
         ];
 
         $detail->update($data);
+
+        $object = Attention::find($detail->attention_id);
+
+        $object->totalProducts = $object->details()->where('type', 'Product')->get()->sum(function ($detail) {
+            return $detail->saleprice * $detail->quantity;
+        });
+
+
+        $object->totalService=  $object->details()->where('type', 'Service')->get()->sum(function ($detail) {
+            return $detail->saleprice * $detail->quantity;
+        });
+
+        $object->total = $object->details()->get()->sum(function ($detail) {
+            return $detail->saleprice * $detail->quantity;
+        });
+        $object->save();
+
         $detail = DetailAttention::find($detail->id);
 
         return response()->json($detail);

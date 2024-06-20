@@ -410,7 +410,8 @@ class AttentionController extends Controller
                     'comment' => $detail['comment'] ?? '-',
                     'status' => $detail['status'] ?? 'Generada',
                     'dateRegister' => Carbon::now(),
-                    'dateMax' => $detail['dateMax'] ?? null,
+                    'dateMax' => $request->input('deliveryDate') ?? null,
+
                     'worker_id' => $detail['worker_id'],
                     'product_id' => $detail['product_id'] ?? null,
                     'service_id' => $detail['service_id'],
@@ -582,7 +583,7 @@ class AttentionController extends Controller
         $object->setElements($object->id, $details);
 
         $detailsAt = $request->input('details', []);
-        $object->setDetails($object->id, $detailsAt);
+        $object->setDetails($object->id, $detailsAt, $request->input('deliveryDate'));
 
         $detailsProducts = $request->input('detailsProducts') ?? [];
         $object->setDetailProducts($object->id, $detailsProducts);

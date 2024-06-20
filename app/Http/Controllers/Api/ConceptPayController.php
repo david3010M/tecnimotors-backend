@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\ConceptPay;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class ConceptPayController extends Controller
@@ -77,11 +78,11 @@ class ConceptPayController extends Controller
     public function store(Request $request)
     {
         $validator = validator()->make($request->all(), [
-            'number' => 'required|integer',
+
             'name' => [
                 'required',
                 'string',
-                Rule::unique('concept_pays', 'name')->whereNull('deleted_at')
+                Rule::unique('concept_pays', 'name')->whereNull('deleted_at'),
             ],
             'type' => 'required|string',
         ]);
@@ -90,8 +91,12 @@ class ConceptPayController extends Controller
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
+        $tipo = 'CONC';
+        $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM attentions a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
+        $siguienteNum = (int) $resultado;
+
         $data = [
-            'number' => $request->input('number'),
+            'number' => $tipo . "-" . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT),
             'name' => $request->input('name'),
             'type' => $request->input('type'),
         ];
@@ -208,7 +213,7 @@ class ConceptPayController extends Controller
             'name' => [
                 'required',
                 'string',
-                Rule::unique('concept_pays', 'name')->whereNull('deleted_at')->ignore($conceptPay->id)
+                Rule::unique('concept_pays', 'name')->whereNull('deleted_at')->ignore($conceptPay->id),
             ],
             'type' => 'required|string',
         ]);
