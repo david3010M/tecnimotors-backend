@@ -107,7 +107,7 @@ class AuthController extends Controller
             return response()->json([
                 'access_token' => $token,
                 'user' => $user,
-                'group_menus' => $groupMenu,
+                'groupMenu' => $groupMenu,
 //                'optionMenuAccess' => $user->typeUser->getAccess($user->id),
 //                'permissions' => Optionmenu::pluck('id'),
 

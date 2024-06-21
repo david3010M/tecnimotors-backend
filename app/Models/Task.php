@@ -124,6 +124,7 @@ class Task extends Model
 
         static::saved(function ($task) {
             DetailAttention::updatePercentage($task->detail_attentions_id);
+            DetailAttention::updateStatus($task->detail_attentions_id);
         });
 
     }

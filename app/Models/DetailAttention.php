@@ -182,4 +182,26 @@ class DetailAttention extends Model
         $detailAttention->save();
     }
 
+    public static function updateStatus($detailAttentionId)
+    {
+        $taskDoing = Task::where('detail_attentions_id', $detailAttentionId)->where('status', 'hacer')->count();
+        $taskCourse = Task::where('detail_attentions_id', $detailAttentionId)->where('status', 'curso')->count();
+        $taskReady = Task::where('detail_attentions_id', $detailAttentionId)->where('status', 'listo')->count();
+        $totalTasks = Task::where('detail_attentions_id', $detailAttentionId)->count();
+
+        $detailAttention = DetailAttention::find($detailAttentionId);
+
+        if ($totalTasks == 0) {
+            $detailAttention->status = 'Generada';
+        } else if ($totalTasks == $taskReady) {
+            $detailAttention->status = 'Lista';
+        } else if ($taskCourse > 0) {
+            $detailAttention->status = 'Curso';
+        } else if ($taskDoing > 0) {
+            $detailAttention->status = 'Iniciada';
+        }
+
+        $detailAttention->save();
+    }
+
 }

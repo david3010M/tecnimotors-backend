@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -20,7 +19,7 @@ return new class extends Migration
             $table->integer('quantity')->nullable()->default(1);
             $table->string('type');
             $table->text('comment')->nullable();
-            $table->string('status');
+            $table->string('status')->default('Generada');
             $table->date('dateRegister')->nullable();
             $table->date('dateMax')->nullable();
             $table->date('dateCurrent')->nullable();

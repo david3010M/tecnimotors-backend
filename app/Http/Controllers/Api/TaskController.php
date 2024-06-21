@@ -116,7 +116,7 @@ class TaskController extends Controller
      */
     public function show(int $id)
     {
-        $task = Task::with('worker', 'detailAttentions')->find($id);
+        $task = Task::with('worker', 'detailAttentions', 'routeImages')->find($id);
 
         if (!$task) {
             return response()->json(['message' => 'Task not found'], 404);
@@ -315,7 +315,7 @@ class TaskController extends Controller
     public function getTaskByDetailAttention(int $id)
     {
 //        $tasks = Task::with('worker', 'detailAttentions')->where('detail_attentions_id', $id)->get();
-        $tasks = Task::where('detail_attentions_id', $id)->get();
+        $tasks = Task::with('routeImages')->where('detail_attentions_id', $id)->get();
 
         return response()->json($tasks);
     }

@@ -48,14 +48,19 @@ class GroupMenu extends Model
                 $query->where('typeuser_id', $userTypeId);
             });
         }])
-            ->whereHas('optionMenus.accesses', function ($query) use ($userTypeId) {
-                $query->where('typeuser_id', $userTypeId);
-            })
             ->get()
-            ->each(function ($groupMenu) {
-                $groupMenu->optionMenus->each(function ($optionMenu) {
+            ->map(function ($groupMenu) use ($userTypeId) {
+                // Filtrar optionMenus según el acceso del usuario
+                $groupMenu->option_menus = $groupMenu->optionMenus->filter(function ($optionMenu) use ($userTypeId) {
+                    return $optionMenu->accesses->contains('typeuser_id', $userTypeId);
+                })->values();
+                // Eliminar 'accesses' de los optionMenus filtrados
+                $groupMenu->option_menus->each(function ($optionMenu) {
                     unset($optionMenu->accesses);
                 });
+                // Ocultar el atributo 'optionMenus' original
+                unset($groupMenu->optionMenus);
+                return $groupMenu;
             });
     }
 
