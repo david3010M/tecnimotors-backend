@@ -4686,6 +4686,26 @@
                 ],
                 "summary": "Get all Movimentes",
                 "operationId": "6155ae876b70b9cd6bcbb788ad3840c4",
+                "parameters": [
+                    {
+                        "name": "paymentConcept_id",
+                        "in": "query",
+                        "description": "Nombre Concepto Pago",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "numberBudget",
+                        "in": "query",
+                        "description": "Numero Presupuesto",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "List of active Movimentes",
@@ -4856,6 +4876,17 @@
                                         "example": 3,
                                         "nullable": true
                                     },
+                                    "routeVoucher": {
+                                        "description": "Imagen File",
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": false
+                                    },
+                                    "isBankPayment": {
+                                        "description": "0 Desactivado / 1 Activado",
+                                        "type": "integer",
+                                        "nullable": true
+                                    },
                                     "yape": {
                                         "description": "Pago por Yape",
                                         "type": "number",
@@ -4992,6 +5023,17 @@
                                         "description": "ID del concepto de pago",
                                         "type": "integer",
                                         "example": 1,
+                                        "nullable": true
+                                    },
+                                    "routeVoucher": {
+                                        "description": "Imagen File",
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": false
+                                    },
+                                    "isBankPayment": {
+                                        "description": "0 Desactivado / 1 Activado",
+                                        "type": "integer",
                                         "nullable": true
                                     },
                                     "yape": {

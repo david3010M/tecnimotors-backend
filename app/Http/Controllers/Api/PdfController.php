@@ -54,6 +54,15 @@ class PdfController extends Controller
         return $pdf->stream('orden-servicio2.pdf');
     }
 
+    public function reportCaja($id)
+    {
+        
+        $pdf = Pdf::loadView('reportCaja', [
+            'attention' => '',
+        ]);
+        return $pdf->stream('reportCaja.pdf');
+    }
+
     public function getBudgetSheetInfo($id)
     {
         $object = budgetSheet::with(['attention.worker.person', 'attention.vehicle.person', 'attention.vehicle.brand',

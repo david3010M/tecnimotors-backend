@@ -16,6 +16,20 @@ class MovimentController extends Controller
      *     path="/tecnimotors-backend/public/api/moviment",
      *     tags={"Moviment"},
      *     security={{"bearerAuth":{}}},
+     *        @OA\Parameter(
+     *         name="paymentConcept_id",
+     *         in="query",
+     *         description="Nombre Concepto Pago",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="numberBudget",
+     *         in="query",
+     *         description="Numero Presupuesto",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="List of active Movimentes",
@@ -64,12 +78,16 @@ class MovimentController extends Controller
      */
     public function index(Request $request)
     {
+        $paymentConcept = $request->input('paymentConcept_id') ?? '';
+        $numberBudget = $request->input('numberBudget') ?? '';
+
         $movCaja = Moviment::where('status', 'Activa')
             ->where('paymentConcept_id', 1)
             ->first();
+
         $data = [];
         if ($movCaja) {
-            $data = $this->detalleCajaAperturada($movCaja->id)->original;
+            $data = $this->detalleCajaAperturada($movCaja->id, $paymentConcept, $numberBudget)->original;
             // $data = [];
         }
         return response()->json($data, 200);
@@ -101,6 +119,19 @@ class MovimentController extends Controller
      *                 description="ID del concepto de pago",
      *                 nullable=true,
      *                 example=1
+     *             ),
+     *                   @OA\Property(
+     *                 property="routeVoucher",
+     *                  type="string",
+     *                 format="binary",
+     *                 description="Imagen File",
+     *                 nullable=false
+     *             ),
+     *             @OA\Property(
+     *                 property="isBankPayment",
+     *                 type="integer",
+     *                 description="0 Desactivado / 1 Activado",
+     *                 nullable=true
      *             ),
      *             @OA\Property(
      *                 property="yape",
@@ -201,7 +232,7 @@ class MovimentController extends Controller
             'plin' => 'nullable|numeric',
             'card' => 'nullable|numeric',
             'comment' => 'nullable|string',
-            'isBankPayment' => 'requeride|in:0,1',
+            'isBankPayment' => 'required|in:0,1',
 
             'paymentConcept_id' => 'required|in:1,2|exists:concept_pays,id',
             'bank_id' => 'nullable|exists:banks,id',
@@ -251,23 +282,25 @@ class MovimentController extends Controller
         $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(sequentialNumber, LOCATE("-", sequentialNumber) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM moviments WHERE SUBSTRING(sequentialNumber, 1, 4) = ?', [$tipo])[0]->siguienteNum;
         $siguienteNum = (int) $resultado;
 
-        $efectivo = $request->input('cash') ?? 0;
-        $yape = $request->input('yape') ?? 0;
-        $plin = $request->input('plin') ?? 0;
-        $tarjeta = $request->input('card') ?? 0;
-        $deposito = $request->input('deposit') ?? 0;
-
-        $total = $efectivo + $yape + $plin + $tarjeta + $deposito;
-
         $routeVoucher = null;
         $numberVoucher = null;
         $bank_id = null;
+        $depositAmount = 0;
 
         if ($request->input('isBankPayment') == 1) {
             $routeVoucher = 'ruta.jpg';
             $numberVoucher = $request->input('numberVoucher');
             $bank_id = $request->input('bank_id');
+            $depositAmount = $request->input('deposit') ?? 0;
         }
+
+        $efectivo = $request->input('cash') ?? 0;
+        $yape = $request->input('yape') ?? 0;
+        $plin = $request->input('plin') ?? 0;
+        $tarjeta = $request->input('card') ?? 0;
+        $deposito = $depositAmount ?? 0;
+
+        $total = $efectivo + $yape + $plin + $tarjeta + $deposito;
 
         $data = [
 
@@ -275,7 +308,7 @@ class MovimentController extends Controller
             'paymentDate' => $request->input('paymentDate'),
             'total' => $total ?? 0,
             'yape' => $request->input('yape') ?? 0,
-            'deposit' => $request->input('deposit') ?? 0,
+            'deposit' => $depositAmount ?? 0,
             'cash' => $request->input('cash') ?? 0,
             'card' => $request->input('card') ?? 0,
             'plin' => $request->input('plin') ?? 0,
@@ -313,7 +346,7 @@ class MovimentController extends Controller
 
     }
 
-    public function detalleCajaAperturada($id)
+    public function detalleCajaAperturada($id, $paymentConcept, $numberBudget)
     {
         $movCajaAperturada = Moviment::where('id', $id)->where('paymentConcept_id', 1)
             ->first();
@@ -330,11 +363,41 @@ class MovimentController extends Controller
 
         if ($movCajaCierre == null) {
             //CAJA ACTIVA
-            $movimientosCaja = Moviment::select(['*', DB::raw('(SELECT obtenerFormaPagoPorCaja(moviments.id)) AS formaPago')])
+            $query = Moviment::select(['*', DB::raw('(SELECT obtenerFormaPagoPorCaja(moviments.id)) AS formaPago')])
                 ->where('id', '>=', $movCajaAperturada->id)
                 ->orderBy('id', 'desc')
-                ->with(['paymentConcept', 'person', 'user.worker.person'])
-                ->simplePaginate();
+                ->with(['paymentConcept', 'person', 'user.worker.person', 'budgetSheet']);
+
+            $query->where(function ($query) use ($paymentConcept, $numberBudget) {
+
+                if ($paymentConcept !== '') {
+                    $query->whereHas('paymentConcept', function ($query) use ($paymentConcept) {
+                        $query->where('name', 'like', "%$paymentConcept%");
+                    });
+                }
+                if ($numberBudget !== '') {
+                    $query->whereHas('budgetSheet', function ($query) use ($numberBudget) {
+                        $query->where('number', 'like', "%$numberBudget%");
+                    });
+                }
+
+            });
+
+            // Ejecutar la consulta paginada
+            $movimientosCaja = $query->paginate(15);
+
+            $movimientosCaja = [
+                'current_page' => $movimientosCaja->currentPage(),
+                'data' => $movimientosCaja->items(), // Los datos paginados
+                'total' => $movimientosCaja->total(), // El total de registros
+                'first_page_url' => $movimientosCaja->url(1),
+                'from' => $movimientosCaja->firstItem(),
+                'next_page_url' => $movimientosCaja->nextPageUrl(),
+                'path' => $movimientosCaja->path(),
+                'per_page' => $movimientosCaja->perPage(),
+                'prev_page_url' => $movimientosCaja->previousPageUrl(),
+                'to' => $movimientosCaja->lastItem(),
+            ];
 
             $resumenCaja = Moviment::selectRaw('
             COALESCE(SUM(CASE WHEN cp.type = "Ingreso" THEN moviments.total ELSE 0 END), 0.00) as total_ingresos,
@@ -360,7 +423,7 @@ class MovimentController extends Controller
                 ->where('branchOffice_id', $movCajaAperturada->branchOffice_id)
                 ->where('id', '<', $movCajaCierre->id)
                 ->orderBy('id', 'desc')
-                ->with(['paymentConcept', 'person', 'user.worker.person'])
+                ->with(['paymentConcept', 'person', 'user.worker.person', 'budgetSheet'])
                 ->simplePaginate();
 
             $resumenCaja = Moviment::selectRaw('
@@ -440,7 +503,7 @@ class MovimentController extends Controller
      */
     public function show($id)
     {
-        $object = Moviment::with(['paymentConcept', 'person', 'user.worker.person'])->find($id);
+        $object = Moviment::with(['paymentConcept', 'person', 'user.worker.person', 'budgetSheet'])->find($id);
 
         if (!$object) {
             return response()->json(['message' => 'Moviment not found'], 422);
@@ -522,6 +585,19 @@ class MovimentController extends Controller
      *                 description="ID del concepto de pago",
      *                 nullable=true,
      *                 example=3
+     *             ),
+     *             @OA\Property(
+     *                 property="routeVoucher",
+     *                  type="string",
+     *                 format="binary",
+     *                 description="Imagen File",
+     *                 nullable=false
+     *             ),
+     *             @OA\Property(
+     *                 property="isBankPayment",
+     *                 type="integer",
+     *                 description="0 Desactivado / 1 Activado",
+     *                 nullable=true
      *             ),
      *             @OA\Property(
      *                 property="yape",
@@ -622,7 +698,7 @@ class MovimentController extends Controller
             'plin' => 'nullable|numeric',
             'card' => 'nullable|numeric',
             'comment' => 'nullable|string',
-            'isBankPayment' => 'requeride|in:0,1',
+            'isBankPayment' => 'required|in:0,1',
 
             'paymentConcept_id' => 'required|exists:concept_pays,id',
             'bank_id' => 'nullable|exists:banks,id',
@@ -656,31 +732,32 @@ class MovimentController extends Controller
         $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(sequentialNumber, LOCATE("-", sequentialNumber) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM moviments WHERE SUBSTRING(sequentialNumber, 1, 4) = ?', [$tipo])[0]->siguienteNum;
         $siguienteNum = (int) $resultado;
 
-        $efectivo = $request->input('cash') ?? 0;
-        $yape = $request->input('yape') ?? 0;
-        $plin = $request->input('plin') ?? 0;
-        $tarjeta = $request->input('card') ?? 0;
-        $deposito = $request->input('deposit') ?? 0;
-
-        $total = $efectivo + $yape + $plin + $tarjeta + $deposito;
-
         $routeVoucher = null;
         $numberVoucher = null;
         $bank_id = null;
+        $depositAmount = 0;
 
         if ($request->input('isBankPayment') == 1) {
             $routeVoucher = 'ruta.jpg';
             $numberVoucher = $request->input('numberVoucher');
             $bank_id = $request->input('bank_id');
+            $depositAmount = $request->input('deposit') ?? 0;
         }
 
+        $efectivo = $request->input('cash') ?? 0;
+        $yape = $request->input('yape') ?? 0;
+        $plin = $request->input('plin') ?? 0;
+        $tarjeta = $request->input('card') ?? 0;
+        $deposito = $depositAmount ?? 0;
+
+        $total = $efectivo + $yape + $plin + $tarjeta + $deposito;
         $data = [
 
             'sequentialNumber' => $tipo . '-' . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT),
             'paymentDate' => $request->input('paymentDate'),
             'total' => $total ?? 0,
             'yape' => $request->input('yape') ?? 0,
-            'deposit' => $request->input('deposit') ?? 0,
+            'deposit' => $depositAmount ?? 0,
             'cash' => $request->input('cash') ?? 0,
             'card' => $request->input('card') ?? 0,
             'plin' => $request->input('plin') ?? 0,
@@ -714,7 +791,7 @@ class MovimentController extends Controller
 
         $object = Moviment::with(['paymentConcept', 'user.worker.person'])->find($object->id);
 
-        $object->detalle = $this->detalleCajaAperturada($movCaja->id)->original;
+        $object->detalle = $this->detalleCajaAperturada($movCaja->id, '', '')->original;
 
         return response()->json($object, 200);
 

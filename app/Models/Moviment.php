@@ -163,6 +163,7 @@ class Moviment extends Model
         'user_id',
         'bank_id',
         'paymentConcept_id',
+        'budgetSheet_id',
     ];
     protected $hidden = [
         'updated_at',
@@ -183,6 +184,10 @@ class Moviment extends Model
     public function bank()
     {
         return $this->belongsTo(Bank::class, 'bank_id');
+    }
+    public function budgetSheet()
+    {
+        return $this->belongsTo(budgetSheet::class, 'budgetSheet_id');
     }
 
 }

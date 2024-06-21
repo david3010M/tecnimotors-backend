@@ -194,4 +194,5 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::post('movimentAperturaCierre', [MovimentController::class, 'aperturaCierre']);
     Route::delete('moviment/{id}', [MovimentController::class, 'destroy']);
     Route::put('moviment/{id}', [MovimentController::class, 'update']);
+    
 });
