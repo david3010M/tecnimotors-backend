@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\ConceptPay;
 use App\Models\Moviment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -120,12 +121,17 @@ class MovimentController extends Controller
      *                 nullable=true,
      *                 example=1
      *             ),
-     *                   @OA\Property(
+     *                 @OA\Property(
      *                 property="routeVoucher",
      *                  type="string",
      *                 format="binary",
      *                 description="Imagen File",
      *                 nullable=false
+     *             ),
+     *                 @OA\Property(
+     *                 property="numberVoucher",
+     *                  type="string",
+     *                  description="Numero del voucher",
      *             ),
      *             @OA\Property(
      *                 property="isBankPayment",
@@ -260,13 +266,16 @@ class MovimentController extends Controller
         }
         $letra = 'M';
         $status = '';
+        $typeDocument = 'Ingreso';
         if ($request->input('paymentConcept_id') == 1) {
             $letra = 'A';
             $status = 'Activa';
+            $typeDocument = 'Ingreso';
 
         } else if (($request->input('paymentConcept_id') == 2)) {
             $letra = 'C';
             $status = 'Inactiva';
+            $typeDocument = 'Egreso';
 
             $movCaja = Moviment::where('status', 'Activa')
                 ->where('paymentConcept_id', 1)
@@ -312,6 +321,7 @@ class MovimentController extends Controller
             'cash' => $request->input('cash') ?? 0,
             'card' => $request->input('card') ?? 0,
             'plin' => $request->input('plin') ?? 0,
+            'typeDocument' => $typeDocument,
 
             'isBankPayment' => $request->input('isBankPayment'),
             'routeVoucher' => $routeVoucher,
@@ -594,6 +604,11 @@ class MovimentController extends Controller
      *                 nullable=false
      *             ),
      *             @OA\Property(
+     *                 property="numberVoucher",
+     *                  type="string",
+     *                  description="Numero del voucher",
+     *             ),
+     *             @OA\Property(
      *                 property="isBankPayment",
      *                 type="integer",
      *                 description="0 Desactivado / 1 Activado",
@@ -751,6 +766,9 @@ class MovimentController extends Controller
         $deposito = $depositAmount ?? 0;
 
         $total = $efectivo + $yape + $plin + $tarjeta + $deposito;
+
+        $paymentConcetp = ConceptPay::find($request->input('paymentConcept_id'));
+
         $data = [
 
             'sequentialNumber' => $tipo . '-' . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT),
@@ -765,10 +783,11 @@ class MovimentController extends Controller
             'isBankPayment' => $request->input('isBankPayment'),
             'routeVoucher' => $routeVoucher,
             'numberVoucher' => $numberVoucher,
+            'typeDocument' => $paymentConcetp->type,
 
             'comment' => $request->input('comment') ?? '-',
             'status' => 'Generada',
-            'paymentConcept_id' => $request->input('paymentConcept_id'),
+            'paymentConcept_id' => $paymentConcetp->id,
 
             'person_id' => $request->input('person_id'),
             'user_id' => auth()->id(),

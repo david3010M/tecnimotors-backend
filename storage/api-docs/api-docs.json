@@ -4882,6 +4882,10 @@
                                         "format": "binary",
                                         "nullable": false
                                     },
+                                    "numberVoucher": {
+                                        "description": "Numero del voucher",
+                                        "type": "string"
+                                    },
                                     "isBankPayment": {
                                         "description": "0 Desactivado / 1 Activado",
                                         "type": "integer",
@@ -5030,6 +5034,10 @@
                                         "type": "string",
                                         "format": "binary",
                                         "nullable": false
+                                    },
+                                    "numberVoucher": {
+                                        "description": "Numero del voucher",
+                                        "type": "string"
                                     },
                                     "isBankPayment": {
                                         "description": "0 Desactivado / 1 Activado",
