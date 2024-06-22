@@ -23,5 +23,5 @@ Route::get('/', function () {
 Route::get('ordenservicio2/{id}', [PdfController::class, 'getServiceOrder'])->name('ordenservicio2');
 Route::get('presupuesto/{id}', [PdfController::class, 'getBudgetSheet'])->name('presupuesto');
 Route::get('ordenservicio/{id}', [PdfController::class, 'getServiceOrder2'])->name('ordenservicio');
-Route::get('reportCaja', [PdfController::class, 'reportCaja'])->name('reportCaja');
+// Route::get('reportCaja', [PdfController::class, 'reportCaja'])->name('reportCaja');
 // Route::get('presupuestoInfo/{id}', [PdfController::class, 'getBudgetSheetInfo'])->name('presupuesto.info');

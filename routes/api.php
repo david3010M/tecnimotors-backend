@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\ElementForAttentionController;
 use App\Http\Controllers\Api\GroupMenuController;
 use App\Http\Controllers\Api\MovimentController;
 use App\Http\Controllers\Api\OptionMenuController;
+use App\Http\Controllers\Api\PdfController;
 use App\Http\Controllers\Api\PersonController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\SearchController;
@@ -194,5 +195,6 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::post('movimentAperturaCierre', [MovimentController::class, 'aperturaCierre']);
     Route::delete('moviment/{id}', [MovimentController::class, 'destroy']);
     Route::put('moviment/{id}', [MovimentController::class, 'update']);
-    
+    Route::get('reportCaja', [PdfController::class, 'reportCaja'])->name('reportCaja');
+
 });

@@ -1,5 +1,5 @@
 @php use Carbon\Carbon; @endphp
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -28,7 +28,8 @@
             padding-bottom: 30px;
         }
 
-        td, th {
+        td,
+        th {
             padding: 2px;
         }
 
@@ -107,7 +108,8 @@
             border: 1px solid #007AC2;
         }
 
-        .tablePeople td, .tablePeople th {
+        .tablePeople td,
+        .tablePeople th {
             border: 1px solid #007AC2;
         }
 
@@ -177,7 +179,7 @@
         }
 
         .id {
-            width: 5%;
+
             text-align: center;
         }
 
@@ -187,12 +189,12 @@
 
         .unit {
             width: 10%;
-            text-align: center;
+            text-align: left;
         }
 
         .quantity {
             width: 10%;
-            text-align: center;
+            text-align: left;
         }
 
         .unitPrice {
@@ -273,210 +275,244 @@
         .w30 {
             width: 30%;
         }
-
     </style>
 </head>
 
 <body>
 
-<img class="headerImage" src="{{ asset('img/degraded.png') }}" alt="degraded">
+    <img class="headerImage" src="{{ asset('storage/img/degraded.png') }}" alt="degraded">
 
-<div class="content">
-
-    <table class="tableInfo">
-        <tr>
-            <td class="center">
-                <img class="logoImage" src="{{ asset('img/logoTecnimotors.png') }}" alt="logoTecnimotors">
-            </td>
-            <td class="right">
-                <div class="titlePresupuesto">PRESUPUESTO</div>
-                <div class="numberPresupuesto">N° {{ $budgetsheet->number }}</div>
-            </td>
-        </tr>
-        <tr>
-            <td class="center gray w40">
-                <div class="text-sm">RUC: 20546989656</div>
-                <div class="text-sm">Dir: Mz. A Lt. 7 Urb. San Manuel - Prolongación Bolognesi</div>
-                <div class="text-sm">Telfono: 986202388 - 941515301</div>
-            </td>
-            <td class="right">
-                <div><strong>{{ Carbon::parse($budgetsheet->created_at)->format('d-m-Y') }}</strong></div>
-            </td>
-        </tr>
-    </table>
-
-    <table class="tablePeople font-14">
-        <tr>
-            <th class="w10 blue">
-                Cliente
-            </th>
-            <td class="w50">
-                @if ($budgetsheet->attention->vehicle->person->typeofDocument == 'DNI')
-                    {{ $budgetsheet->attention->vehicle->person->names .
-                        ' ' .
-                        $budgetsheet->attention->vehicle->person->fatherSurname .
-                        ' ' .
-                        $budgetsheet->attention->vehicle->person->motherSurname }}
-                @elseif($budgetsheet->attention->vehicle->person->typeofDocument == 'RUC')
-                    {{ $budgetsheet->attention->vehicle->person->businessName }}
-                @endif
-            </td>
-            <th class="w20 blue">
-                Fecha de Entrada
-            </th>
-            <td class="w20">
-                {{ Carbon::parse($budgetsheet->attention->entryDate)->format('d/m/Y') }}
-            </td>
-        </tr>
-
-        <tr>
-            <th class="w10 blue">
-                Placa
-            </th>
-            <td class="w50">
-                {{ $budgetsheet->attention->vehicle->plate }}
-            </td>
-            <th class="w20 blue">
-                Fecha de Entrega
-            </th>
-            <td class="w20">
-                {{ Carbon::parse($budgetsheet->attention->deliveryDate)->format('d/m/Y') }}
-            </td>
-        </tr>
-
-        <tr>
-            <th class="w10 blue">
-                Marca
-            </th>
-            <td class="w50">
-                {{ $budgetsheet->attention->vehicle->brand->name }}
-            </td>
-            <th class="w20 blue">
-                Km
-            </th>
-            <td class="w20">
-                {{ $budgetsheet->attention->vehicle->km }}
-            </td>
-        </tr>
-
-        <tr>
-            <th class="w10 blue">
-                Modelo
-            </th>
-            <td class="w50">
-                {{ $budgetsheet->attention->vehicle->model }}
-            </td>
-            <th class="w20 blue">
-                Año
-            </th>
-            <td class="w20">
-                {{ $budgetsheet->attention->vehicle->year }}
-            </td>
-        </tr>
-
-    </table>
-
-    <table class="tableDetail font-12">
-        <tr>
-            <th class="id">ITEM</th>
-            <th class="description">DESCRIPCIÓN DE SERVICIOS Y REPUESTOS</th>
-            <th class="unit">UND</th>
-            <th class="quantity">CANT</th>
-            <th class="unitPrice">V. UNIT</th>
-            <th class="sailPrice">V. VENTA</th>
-        </tr>
-
-        <tr>
-            <td colspan="6" class="blue strong center">MANO DE OBRA Y FACTORÍA</td>
-        </tr>
-
-        @foreach ($budgetsheet->attention->details as $detail)
-            @if ($detail->type == 'Service')
-                <tr>
-                    <td class="id">{{ $detail->service->id }}</td>
-                    <td class="description" colspan="2">{{ $detail->service->name }}</td>
-                
-               
-                    <td class="quantity">{{ $detail->quantity }}</td>
-                    <td class="sailPrice">S/ {{ $detail->saleprice }}</td>
-                    <td class="sailTotal">S/ {{ number_format($detail->saleprice * $detail->quantity, 2) }}</td>
-
-                </tr>
-            @endif
-        @endforeach
-
-        <tr>
-            <td colspan="6" class="blue strong center">REPUESTOS E INSUMOS</td>
-        </tr>
+    <div class="content">
 
 
-        @foreach ($budgetsheet->attention->details as $detail)
-            @if ($detail->type == 'Product')
-                <tr>
-                    <td class="id">{{ $detail->product->id }}</td>
-                    <td class="description">{{ $detail->product->name }}</td>
-                    <td class="unit">{{ $detail->product->unit->code }}</td>
-                    <td class="quantity">{{ $detail->quantity }}</td>
-                    <td class="unitPrice">S/ {{ $detail->saleprice }}</td>
-                    <td class="sailTotal">S/ {{ number_format($detail->saleprice * $detail->quantity, 2) }}</td>
+        <table class="tableInfo">
+            <tr>
+                <td class="center">
+                    <img class="logoImage" src="{{ asset('storage/img/logoTecnimotors.png') }}" alt="logoTecnimotors">
+                </td>
+                <td class="right">
+                    <div class="titlePresupuesto">REPORTE DE CAJA</div>
+                    <div class="numberPresupuesto">{{ $data['MovCajaApertura']->sequentialNumber }}</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="center gray w40">
+                    <div class="text-sm">RUC: 20546989656</div>
+                    <div class="text-sm">Dir: Mz. A Lt. 7 Urb. San Manuel - Prolongación Bolognesi</div>
+                    <div class="text-sm">Telfono: 986202388 - 941515301</div>
+                </td>
+                <td class="right">
+                    <div><strong>{{ Carbon::parse($data['MovCajaApertura']->created_at)->format('d-m-Y') }}</strong>
+                    </div>
+                </td>
+            </tr>
+        </table>
 
-                </tr>
-            @endif
-        @endforeach
-    </table>
+        <table class="tablePeople font-14">
+            <tr>
+                <th class="w10 blue">
+                    Usuario
+                </th>
 
-    <table class="tableTotal">
-        <tr>
-            <td class="w100 left"></td>
-            <td class="w30 right totalInfo">
-                <table class="font-12">
+                <td class="w50">
+                    @if ($data['MovCajaApertura']->user->worker->person->typeofDocument == 'DNI')
+                        {{ $data['MovCajaApertura']->user->worker->person->names .
+                            ' ' .
+                            $data['MovCajaApertura']->user->worker->person->fatherSurname .
+                            ' ' .
+                            $data['MovCajaApertura']->user->worker->person->motherSurname }}
+                    @elseif($data['MovCajaApertura']->user->worker->person->typeofDocument == 'RUC')
+                        {{ $data['MovCajaApertura']->user->worker->person->businessName }}
+                    @endif
+                </td>
+                <th class="w20 blue">
+                    Fecha de Impresión
+                </th>
+                <td class="w20">
+                    {{ Carbon::parse(now()) }}
+                </td>
+            </tr>
+
+            <tr>
+                <th class="w20 blue">
+                    T. Apertura
+                </th>
+                <td class="w20">
+                    {{ $data['MovCajaApertura']->total }}
+                </td>
+                <th class="w10 blue">
+                    Fecha Apertura
+                </th>
+                <td class="w50">
+                    {{ $data['MovCajaApertura']->created_at }}
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <th class="w20 blue">
+                    T. Cierre
+                </th>
+                <td class="w20">
+                    {{ $data['MovCajaCierre'] ? $data['MovCajaCierre']->total : '-' }}
+                </td>
+                <th class="w10 blue">
+                    Fecha Cierre
+                </th>
+                <td class="w50">
+                    {{ $data['MovCajaCierre'] ? \Carbon\Carbon::parse($data['MovCajaCierre']->created_at)->format('d-m-Y') : '-' }}
+                </td>
+            </tr>
+
+
+
+        </table>
+
+
+        <table class="tableDetail font-12">
+            <tr>
+
+                <th class="description">Fecha</th>
+                <th class="quantity">Tipo</th>
+                <th class="unitPrice">Concepto</th>
+                <th class="sailPrice">Persona</th>
+                <th class="sailPrice">Efect.</th>
+                <th class="sailPrice">Yape</th>
+                <th class="sailPrice">Plin</th>
+                <th class="sailPrice">Tarj.</th>
+                <th class="sailPrice">Depós.</th>
+                <th class="sailPrice">Total</th>
+                <th class="sailPrice">Comentario</th>
+
+            </tr>
+
+
+            @if (isset($data['MovCajaInternos']) && is_array($data['MovCajaInternos']))
+
+                @foreach ($data['MovCajaInternos']['data'] as $movCajaInterno)
                     <tr>
-                        <td>
-                            <p class="right"><strong>Subtotal</strong></p>
-                            <p class="right"><strong>IGV (18%)</strong></p>
-                            <p class="right"><strong>Descuento</strong></p>
-                            <p class="right"><strong>Total</strong></p>
+                        <td class="id">
+                            {{ $movCajaInterno->paymentDate ? \Carbon\Carbon::parse($movCajaInterno->paymentDate)->format('d-m-Y') : '-' }}
                         </td>
-                        <td>
-                            <p class="right">{{ $budgetsheet->subtotal }}</p>
-                            <p class="right">{{ $budgetsheet->igv }}</p>
-                            <p class="right">{{ $budgetsheet->discount }}</p>
-                            <p class="right">{{ $budgetsheet->total }}</p>
+                        <td class="id">{{ $movCajaInterno->typeDocument ?? '-' }}</td>
 
+                        <td class="id">{{ $movCajaInterno->paymentConcept->name ?? '-' }}</td>
+                        <td class="w50">
+                            @if ($movCajaInterno->person->typeofDocument == 'DNI')
+                                {{ $movCajaInterno->person->names .
+                                    ' ' .
+                                    $movCajaInterno->person->fatherSurname .
+                                    ' ' .
+                                    $movCajaInterno->person->motherSurname }}
+                            @elseif($movCajaInterno->person->typeofDocument == 'RUC')
+                                {{ $movCajaInterno->person->businessName }}
+                            @endif
                         </td>
+                        <td class="id">{{ $movCajaInterno->cash ?? '0.00' }}</td>
+
+                        <td class="id">{{ $movCajaInterno->yape ?? '0.00' }}</td>
+                        <td class="id">{{ $movCajaInterno->plin ?? '0.00' }}</td>
+                        <td class="id">{{ $movCajaInterno->card ?? '0.00' }}</td>
+                        <td class="id">{{ $movCajaInterno->deposit ?? '0.00' }}</td>
+
+                        <td class="id">{{ $movCajaInterno->total ?? '-' }}</td>
+                        <td class="id">{{ $movCajaInterno->comment ?? '-' }}</td>
+
                     </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+                @endforeach
+            @else
+                <tr>
+                    <td colspan="1">No data available</td>
+                </tr>
+            @endif
 
-    <div class="observaciones">
-        <p class="p10 bolder gris font-14">OBSERVACIONES</p>
-        <ul class="listaObservaciones font-12">
-            <li>El presente presupuesto tiene una validez de 2 días.</li>
-            <li>Cualquier servicio adicional será notificado y cotizado por separado.</li>
-            <li>El tiempo estimado de entrega está sujeto a disponibilidad de repuestos y aprobación del cliente.
-            </li>
-        </ul>
+
+        </table>
+
+
+        <div style="page-break-before: always;" class="tableDetail font-12">
+            <h2>Resumen de Caja</h2>
+            <br>
+            @php
+                $resumenCaja = $data['resumenCaja'];
+                $totalIngresos =
+                    $resumenCaja['efectivo_ingresos'] +
+                    $resumenCaja['yape_ingresos'] +
+                    $resumenCaja['plin_ingresos'] +
+                    $resumenCaja['tarjeta_ingresos'] +
+                    $resumenCaja['deposito_ingresos'];
+                $totalEgresos =
+                    $resumenCaja['efectivo_egresos'] +
+                    $resumenCaja['yape_egresos'] +
+                    $resumenCaja['plin_egresos'] +
+                    $resumenCaja['tarjeta_egresos'] +
+                    $resumenCaja['deposito_egresos'];
+
+            @endphp
+            <table class="fondoNegro">
+                <tr>
+                    <th>Método de Pago</th>
+                    <th>Total Ingresos</th>
+                    <th>Total Egresos</th>
+                    <th>Saldo Final</th>
+                </tr>
+                <tr>
+                    <td>Efectivo</td>
+                    <td>S/. {{ number_format($resumenCaja['efectivo_ingresos'], 2) ?? '0.00' }}</td>
+                    <td>S/. {{ number_format($resumenCaja['efectivo_egresos'], 2) ?? '0.00' }}</td>
+                    <td><b>S/.
+                            {{ number_format($resumenCaja['efectivo_ingresos'] - $resumenCaja['efectivo_egresos'], 2) ?? '0.00' }}
+                        </b></td>
+                </tr>
+                <tr>
+                    <td>Yape</td>
+                    <td>S/. {{ number_format($resumenCaja['yape_ingresos'], 2) ?? '0.00' }}</td>
+                    <td>S/. {{ number_format($resumenCaja['yape_egresos'], 2) ?? '0.00' }}</td>
+                    <td><b>S/.
+                            {{ number_format($resumenCaja['yape_ingresos'] - $resumenCaja['yape_egresos'], 2) ?? '0.00' }}
+                        </b></td>
+                </tr>
+                <tr>
+                    <td>Plin</td>
+                    <td>S/. {{ number_format($resumenCaja['plin_ingresos'], 2) ?? '0.00' }}</td>
+                    <td>S/. {{ number_format($resumenCaja['plin_egresos'], 2) ?? '0.00' }}</td>
+                    <td><b>S/.
+                            {{ number_format($resumenCaja['plin_ingresos'] - $resumenCaja['plin_egresos'], 2) ?? '0.00' }}
+                        </b></td>
+                </tr>
+                <tr>
+                    <td>Tarjeta</td>
+                    <td>S/. {{ number_format($resumenCaja['tarjeta_ingresos'], 2) ?? '0.00' }}</td>
+                    <td>S/. {{ number_format($resumenCaja['tarjeta_egresos'], 2) ?? '0.00' }}</td>
+                    <td><b>S/.
+                            {{ number_format($resumenCaja['tarjeta_ingresos'] - $resumenCaja['tarjeta_egresos'], 2) ?? '0.00' }}
+                        </b></td>
+                </tr>
+                <tr>
+                    <td>Depósito</td>
+                    <td>S/. {{ number_format($resumenCaja['deposito_ingresos'], 2) ?? '0.00' }}</td>
+                    <td>S/. {{ number_format($resumenCaja['deposito_egresos'], 2) ?? '0.00' }}</td>
+                    <td><b>S/.
+                            {{ number_format($resumenCaja['deposito_ingresos'] - $resumenCaja['deposito_egresos'], 2) ?? '0.00' }}
+                        </b></td>
+                </tr>
+                <!-- Otros métodos de pago aquí -->
+
+                <!-- Fila de sumatoria -->
+                <tr>
+                    <td><b>Total General</b></td>
+                    <td><b>S/. {{ number_format($totalIngresos, 2) }}</b></td>
+                    <td><b>S/. {{ number_format($totalEgresos, 2) }}</b></td>
+                    <td><b>S/. {{ number_format($totalIngresos - $totalEgresos, 2) }}</b></td>
+                </tr>
+            </table>
+        </div>
+
     </div>
 
-    {{--    FIRMAS --}}
-    <table class="tableFirmas">
-        <tr>
-            <td class="center borderTop w40">
-                Firma del Cliente
-            </td>
-            <td class="w20"></td>
-            <td class="center borderTop w40">
-                Firma del Mecánico
-            </td>
-        </tr>
-    </table>
 
-</div>
-
-
-<img class="footerImage" src="{{ asset('img/degraded.png') }}" alt="degraded">
+    <img class="footerImage" src="{{ asset('storage/img/degraded.png') }}" alt="degraded">
 </body>
 
 </html>

@@ -346,7 +346,7 @@ class MovimentController extends Controller
 
     }
 
-    public function detalleCajaAperturada($id, $paymentConcept, $numberBudget)
+    public function detalleCajaAperturada($id, $paymentConcept = '', $numberBudget = '')
     {
         $movCajaAperturada = Moviment::where('id', $id)->where('paymentConcept_id', 1)
             ->first();

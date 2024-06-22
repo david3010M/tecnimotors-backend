@@ -5623,6 +5623,50 @@
                 ]
             }
         },
+        "/tecnimotors-backend/public/api/reportCaja": {
+            "get": {
+                "tags": [
+                    "Reporte"
+                ],
+                "summary": "Exportar Reporte Caja",
+                "description": "Genera y descarga una Reporte Caja Aperturada en formato PDF",
+                "operationId": "39720a474474f5faf9074b2a76bbcc33",
+                "responses": {
+                    "200": {
+                        "description": "Reporte Caja en formato PDF",
+                        "content": {
+                            "application/pdf": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error en los datos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error en los datos"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/tecnimotors-backend/public/api/person": {
             "get": {
                 "tags": [
