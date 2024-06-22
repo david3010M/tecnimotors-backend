@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Attention;
 use App\Models\budgetSheet;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class SendWhatsappController extends Controller
 {
@@ -101,7 +103,7 @@ class SendWhatsappController extends Controller
     {
         $validator = validator()->make($request->all(), [
             'idAttention' => 'required|exists:attentions,id',
-            'phone_number' => 'required',
+            'phone_number' => 'required|digits:9',
         ]);
 
         if ($validator->fails()) {
@@ -110,29 +112,30 @@ class SendWhatsappController extends Controller
         $attention = Attention::with(['vehicle.person'])->find($request->input('idAttention'));
         $client = $attention->vehicle->person;
 
-        $url = 'https://sistema.gesrest.net/api/send-document-by-whatsapp';
+        try {
+            $url = 'https://sistema.gesrest.net/api/send-document-by-whatsapp';
 
-        $response = Http::withHeaders([
-            'Authorization' => '}*rA3>#pyM<dITk]]DFP2,/wc)1md_Y/',
-        ])->post($url, [
-            "nombre_plantilla" => "tecnimotors",
-            "ruc" => "20487467139",
-            "razon_social" => "TECNI MOTORS DEL PERU E.I.R.L.",
-            "nombre_comercial" => "TECNI MOTORS DEL PERU E.I.R.L.",
-            "cliente" => $client->typeofDocument == 'DNI' ? $client->names . ' ' . $client->fatherSurname : $client->businessName,
-            "celular" => $request->input('phone_number'),
-            "tipo_documento" => "ORDEN DE SERVICIO " . $attention->number,
-            "tipo_documento_url" => "ordenservicio",
-            "documento_id_url" => $attention->id,
-        ]);
-
-        if ($response->successful()) {
+            $response = Http::withHeaders([
+                'Authorization' => '}*rA3>#pyM<dITk]]DFP2,/wc)1md_Y/',
+            ])->post($url, [
+                "nombre_plantilla" => "tecnimotors",
+                "ruc" => "20487467139",
+                "razon_social" => "TECNI MOTORS DEL PERU E.I.R.L.",
+                "nombre_comercial" => "TECNI MOTORS DEL PERU E.I.R.L.",
+                "cliente" => $client->typeofDocument == 'DNI' ? $client->names . ' ' . $client->fatherSurname : $client->businessName,
+                "celular" => $request->input('phone_number'),
+                "tipo_documento" => "ORDEN DE SERVICIO " . $attention->number,
+                "tipo_documento_url" => "ordenservicio",
+                "documento_id_url" => $attention->id,
+            ]);
             return response()->json(['message' => 'El mensaje de WhatsApp se ha enviado correctamente'], 200);
-        } else {
+        } catch (Exception $e) {
+
+            Log::error('Error to send Sheet Service by Whatsapp, ' . 'Id Attention: ' . $request->input('idAttention') . '=> ' . $e->getMessage());
             return response()->json(['error' => 'Hubo un error al enviar el mensaje de WhatsApp'], 500);
         }
-    }
 
+    }
 
     /**
      * Send budget sheet information via WhatsApp
@@ -177,7 +180,7 @@ class SendWhatsappController extends Controller
     {
         $validator = validator()->make($request->all(), [
             'idBudgetSheet' => 'required|exists:budget_sheets,id',
-            'phone_number' => 'required',
+            'phone_number' => 'required|digits:9',
         ]);
 
         if ($validator->fails()) {
@@ -186,28 +189,32 @@ class SendWhatsappController extends Controller
         $budgetSheet = budgetSheet::getBudgetSheet($request->input('idBudgetSheet'));
         $client = $budgetSheet->attention->vehicle->person;
 
-        $url = 'https://sistema.gesrest.net/api/send-document-by-whatsapp';
+        try
+        {
+            $url = 'https://sistema.gesrest.net/api/send-document-by-whatsapp';
 
-        $response = Http::withHeaders([
-            'Authorization' => '}*rA3>#pyM<dITk]]DFP2,/wc)1md_Y/',
-        ])->post($url, [
-            "nombre_plantilla" => "tecnimotors",
-            "ruc" => "20487467139",
-            "razon_social" => "TECNI MOTORS DEL PERU E.I.R.L.",
-            "nombre_comercial" => "TECNI MOTORS DEL PERU E.I.R.L.",
-            "cliente" => $client->typeofDocument == 'DNI' ? $client->names . ' ' . $client->fatherSurname : $client->businessName,
-            "celular" => $request->input('phone_number'),
-            "tipo_documento" => "PRESUPUESTO DE ORDEN DE SERVICIO " . $budgetSheet->number,
-            "tipo_documento_url" => "presupuesto",
-            "documento_id_url" => $budgetSheet->id
-        ]);
+            $response = Http::withHeaders([
+                'Authorization' => '}*rA3>#pyM<dITk]]DFP2,/wc)1md_Y/',
+            ])->post($url, [
+                "nombre_plantilla" => "tecnimotors",
+                "ruc" => "20487467139",
+                "razon_social" => "TECNI MOTORS DEL PERU E.I.R.L.",
+                "nombre_comercial" => "TECNI MOTORS DEL PERU E.I.R.L.",
+                "cliente" => $client->typeofDocument == 'DNI' ? $client->names . ' ' . $client->fatherSurname : $client->businessName,
+                "celular" => $request->input('phone_number'),
+                "tipo_documento" => "PRESUPUESTO DE ORDEN DE SERVICIO " . $budgetSheet->number,
+                "tipo_documento_url" => "presupuesto",
+                "documento_id_url" => $budgetSheet->id,
+            ]);
 
-        if ($response->successful()) {
             return response()->json(['message' => 'El mensaje de WhatsApp se ha enviado correctamente'], 200);
-        } else {
+
+        } catch (Exception $e) {
+
+            Log::error('Error to send Sheet Budget by Whatsapp, ' . 'Id Budget: ' . $request->input('idBudgetSheet') . '=> ' . $e->getMessage());
             return response()->json(['error' => 'Hubo un error al enviar el mensaje de WhatsApp'], 500);
         }
-    }
 
+    }
 
 }

@@ -395,7 +395,7 @@
                         <td class="id">
                             {{ $movCajaInterno->paymentDate ? \Carbon\Carbon::parse($movCajaInterno->paymentDate)->format('d-m-Y') : '-' }}
                         </td>
-                        <td class="id">{{ $movCajaInterno->typeDocument ?? '-' }}</td>
+                        <td class="id">{{ $movCajaInterno->paymentConcept->type ?? '-' }}</td>
 
                         <td class="id">{{ $movCajaInterno->paymentConcept->name ?? '-' }}</td>
                         <td class="w50">
