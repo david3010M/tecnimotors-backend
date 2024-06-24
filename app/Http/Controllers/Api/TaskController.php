@@ -77,7 +77,7 @@ class TaskController extends Controller
         ];
 
         $task = Task::create($data);
-        $task = Task::with('worker', 'detailAttentions')->find($task->id);
+        $task = Task::with('worker', 'detailAttentions', 'routeImages')->find($task->id);
 
         return response()->json($task);
     }
@@ -216,7 +216,7 @@ class TaskController extends Controller
         ];
 
         $task->update($data);
-        $task = Task::with('worker', 'detailAttentions')->find($task->id);
+        $task = Task::with('worker', 'detailAttentions', 'routeImages')->find($task->id);
 
         return response()->json($task);
     }
@@ -315,7 +315,7 @@ class TaskController extends Controller
     public function getTaskByDetailAttention(int $id)
     {
 //        $tasks = Task::with('worker', 'detailAttentions')->where('detail_attentions_id', $id)->get();
-        $tasks = Task::with('routeImages')->where('detail_attentions_id', $id)->get();
+        $tasks = Task::with('worker', 'detailAttentions', 'routeImages')->where('detail_attentions_id', $id)->get();
 
         return response()->json($tasks);
     }
