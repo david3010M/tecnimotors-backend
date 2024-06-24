@@ -1,4 +1,19 @@
-@php use Carbon\Carbon; @endphp
+@php
+    use Carbon\Carbon;
+    header('Access-Control-Allow-Origin: https://tecnimotors.vercel.app');
+    header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization');
+    header('Access-Control-Allow-Credentials: true');
+
+    if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+        exit();
+    }
+
+    // Aqu� contin�a tu l�gica para procesar la solicitud y generar la respuesta
+    // por ejemplo:
+    $data = ['mensaje' => 'Solicitud permitida por CORS'];
+    echo json_encode($data);
+@endphp
 <!DOCTYPE html>
 <html lang="es">
 
