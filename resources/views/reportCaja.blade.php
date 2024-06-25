@@ -8,11 +8,10 @@
     if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
         exit();
     }
+    // Aquí continúa tu lógica para procesar la solicitud y generar la respuesta
+    $data1 = ['mensaje' => 'Solicitud permitida por CORS'];
+    echo json_encode($data1);
 
-    // Aqu� contin�a tu l�gica para procesar la solicitud y generar la respuesta
-    // por ejemplo:
-    $data = ['mensaje' => 'Solicitud permitida por CORS'];
-    echo json_encode($data);
 @endphp
 <!DOCTYPE html>
 <html lang="es">

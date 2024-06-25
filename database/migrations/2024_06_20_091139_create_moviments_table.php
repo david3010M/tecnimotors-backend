@@ -33,7 +33,7 @@ return new class extends Migration
 
             $table->foreignId('person_id')->nullable()->unsigned()->constrained('people');
             $table->foreignId('user_id')->nullable()->unsigned()->constrained('users');
-            $table->foreignId('bank_id')->nullable()->unsigned()->constrained('suppliers');
+            $table->foreignId('bank_id')->nullable()->unsigned()->constrained('banks');
             $table->foreignId('paymentConcept_id')->nullable()->unsigned()->constrained('concept_pays');
             $table->foreignId('budgetSheet_id')->nullable()->unsigned()->constrained('budget_sheets');
 
