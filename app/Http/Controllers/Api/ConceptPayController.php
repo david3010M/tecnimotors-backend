@@ -78,7 +78,6 @@ class ConceptPayController extends Controller
     public function store(Request $request)
     {
         $validator = validator()->make($request->all(), [
-
             'name' => [
                 'required',
                 'string',
@@ -92,8 +91,8 @@ class ConceptPayController extends Controller
         }
 
         $tipo = 'CONC';
-        $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM attentions a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-        $siguienteNum = (int) $resultado;
+        $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM concept_pays WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
+        $siguienteNum = (int)$resultado;
 
         $data = [
             'number' => $tipo . "-" . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT),
@@ -209,7 +208,7 @@ class ConceptPayController extends Controller
         }
 
         $validator = validator()->make($request->all(), [
-            'number' => 'required|integer',
+            'number' => 'nullable|integer',
             'name' => [
                 'required',
                 'string',
@@ -223,7 +222,7 @@ class ConceptPayController extends Controller
         }
 
         $data = [
-            'number' => $request->input('number'),
+            'number' => $conceptPay->number,
             'name' => $request->input('name'),
             'type' => $request->input('type'),
         ];

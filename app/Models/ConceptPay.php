@@ -21,8 +21,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @OA\Schema(
  *     schema="ConceptPayRequest",
  *     title="ConceptPayRequest",
- *     required={"number", "name", "type"},
- *     @OA\Property(property="number", type="integer", example="1"),
+ *     required={"name", "type"},
  *     @OA\Property(property="name", type="string", example="ConceptPay 1"),
  *     @OA\Property(property="type", type="string", example="Ingreso")
  * )
