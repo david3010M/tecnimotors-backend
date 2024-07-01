@@ -59,7 +59,7 @@ class Commitment extends Model
 
     public function budgetSheet()
     {
-        return $this->belongsTo(BudgetSheet::class);
+        return $this->belongsTo(budgetSheet::class);
     }
 
 }
