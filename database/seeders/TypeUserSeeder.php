@@ -15,10 +15,10 @@ class TypeUserSeeder extends Seeder
     public function run()
     {
         $array = [
-            ['id' => '1', 'name' => 'Administrador'],
-            ['id' => '2', 'name' => 'PruebaDemo'],
-            ['id' => '3', 'name' => 'Worker'],
-            ['id' => '4', 'name' => 'Cajero'],
+            ['id' => '1', 'name' => 'Administrador Backend'],
+            ['id' => '2', 'name' => 'Administrador'],
+            ['id' => '3', 'name' => 'Cajero'],
+            ['id' => '4', 'name' => 'Mecanico'],
             ['id' => '5', 'name' => 'Asesor'],
         ];
 

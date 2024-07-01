@@ -19,7 +19,7 @@ class GroupMenuSeeder extends Seeder
             ['id' => '2', 'name' => 'Servicios', 'icon' => 'BuildIcon'],
             ['id' => '3', 'name' => 'Trabajador', 'icon' => 'UserIcon'],
             ['id' => '4', 'name' => 'Caja', 'icon' => 'VanIcon'],
-            ['id' => '5', 'name' => 'Compromiso', 'icon' => 'ScrewIcon'],
+            ['id' => '5', 'name' => 'Administración', 'icon' => 'ScrewIcon'],
         ];
 
         foreach ($array as $object) {
