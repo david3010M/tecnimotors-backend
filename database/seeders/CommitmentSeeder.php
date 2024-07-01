@@ -20,9 +20,8 @@ class CommitmentSeeder extends Seeder
         $budgetSheets->each(function ($budgetSheet) {
             $totalPrice = $budgetSheet->total;
             $initialPayment = $budgetSheet->debtAmount;
-            $dues = $totalPrice - $initialPayment;
             Commitment::factory()->create([
-                'dues' => $dues,
+                'dues' => 2,
                 'amount' => $initialPayment,
                 'balance' => $totalPrice - $initialPayment,
                 'budget_sheet_id' => $budgetSheet->id

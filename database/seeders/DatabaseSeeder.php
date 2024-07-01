@@ -108,7 +108,7 @@ class DatabaseSeeder extends Seeder
         $this->call(BudgetSheetSeeder::class);
         $this->call(TaskSeeder::class);
 
-//        $this->call(CommitmentSeeder::class);
+        $this->call(CommitmentSeeder::class);
 
     }
 }

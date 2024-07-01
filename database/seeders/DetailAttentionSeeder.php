@@ -51,6 +51,7 @@ class DetailAttentionSeeder extends Seeder
             $attention->totalService = $totalService;
             $attention->totalProducts = $totalProducts;
             $attention->total = $totalService + $totalProducts;
+            $attention->debtAmount = $attention->total * 0.5;
             $attention->save();
         }
 

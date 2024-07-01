@@ -17,13 +17,5 @@ class AttentionSeeder extends Seeder
     public function run()
     {
         Attention::factory()->count(10)->create();
-
-//        UPDATE ALL ATTENTION RECORDS
-        $attentions = Attention::all();
-        $attentions->each(function ($attention) {
-            $attention->debtAmount = $attention->total;
-            $attention->save();
-        });
-
     }
 }

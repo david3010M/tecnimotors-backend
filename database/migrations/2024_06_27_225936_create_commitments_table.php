@@ -18,8 +18,8 @@ return new class extends Migration {
             $table->decimal('amount'); // INITIAL PAYMENT
             $table->decimal('balance'); // REMAINING BALANCE
             $table->dateTime('payment_date'); // DATE OF PAYMENT
-            $table->string('payment_method'); // METHOD OF PAYMENT
-            $table->string('status'); // STATUS OF PAYMENT
+            $table->string('payment_type'); // TYPE OF PAYMENT
+            $table->string('status')->default('Pendiente'); // STATUS OF PAYMENT
             $table->foreignId('budget_sheet_id')->constrained('budget_sheets'); // BUDGET SHEET ID
             $table->timestamps();
             $table->softDeletes();

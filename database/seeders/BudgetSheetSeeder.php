@@ -19,15 +19,20 @@ class BudgetSheetSeeder extends Seeder
         $attentions = Attention::all();
 
         foreach ($attentions as $attention) {
-            $total = $attention->totalService + $attention->totalProducts;
+            $subtotal = $attention->total;
+            $total = ($subtotal * 1.18);
             $debtAmount = $total * 0.5;
             budgetSheet::factory()->create([
                 'totalService' => $attention->totalService,
                 'totalProducts' => $attention->totalProducts,
                 'total' => $total,
+                'discount' => 0,
                 'debtAmount' => $debtAmount,
                 'attention_id' => $attention->id,
             ]);
+
+            $attention->debtAmount = $debtAmount;
+            $attention->save();
         }
 
     }

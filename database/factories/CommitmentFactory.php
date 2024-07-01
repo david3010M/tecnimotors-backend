@@ -33,7 +33,8 @@ class CommitmentFactory extends Factory
             'amount' => $this->faker->randomFloat(2, 0, 1000),
             'balance' => $this->faker->randomFloat(2, 0, 1000),
             'payment_date' => $this->faker->dateTime(),
-            'payment_method' => $this->faker->randomElement(['yape', 'plin', 'efectivo', 'tarjeta']),
+//            'payment_method' => $this->faker->randomElement(['Yape', 'Plin', 'Efectivo', 'Tarjeta']),
+            'payment_type' => $this->faker->randomElement(['Semanal', 'Quincenal', 'Mensual']),
             'status' => $this->faker->randomElement(['pending', 'paid']),
             'budget_sheet_id' => $this->faker->randomNumber(),
         ];

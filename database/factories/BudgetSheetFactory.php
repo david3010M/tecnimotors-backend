@@ -25,7 +25,7 @@ class BudgetSheetFactory extends Factory
             'discount' => $this->faker->randomFloat(2, 0, 20),
             'debtAmount' => $this->faker->randomFloat(2, 0, 1000),
             'subtotal' => function (array $attributes) {
-                return $attributes['totalService'] + $attributes['totalProducts'] - $attributes['discount'];
+                return $attributes['totalService'] + $attributes['totalProducts'];
             },
             'igv' => function (array $attributes) {
                 return $attributes['subtotal'] * 0.18;
