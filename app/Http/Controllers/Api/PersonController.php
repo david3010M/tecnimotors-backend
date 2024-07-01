@@ -40,7 +40,7 @@ class PersonController extends Controller
     public function index()
     {
         //REVISAR LO DE LA PAGINACIÓN
-        return response()->json(Person::where('id', '!=', 2)->simplePaginate(100));
+        return response()->json(Person::where('id', '!=', 1)->simplePaginate(100));
 
     }
 

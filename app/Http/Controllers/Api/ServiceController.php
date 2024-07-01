@@ -81,7 +81,7 @@ class ServiceController extends Controller
             'name' => [
                 'required',
                 'string',
-                Rule::unique('services')->whereNull('deleted_at')
+                Rule::unique('services')->whereNull('deleted_at'),
             ],
             'quantity' => 'required|integer',
             'saleprice' => 'required|numeric',
@@ -96,7 +96,7 @@ class ServiceController extends Controller
             'name' => $request->input('name'),
             'quantity' => $request->input('quantity'),
             'saleprice' => $request->input('saleprice'),
-            'time' => $request->input('time')
+            'time' => $request->input('time'),
         ];
 
         $service = Service::create($data);
@@ -211,7 +211,7 @@ class ServiceController extends Controller
             'name' => [
                 'required',
                 'string',
-                Rule::unique('services')->ignore($id)->whereNull('deleted_at')
+                Rule::unique('services')->ignore($id)->whereNull('deleted_at'),
             ],
             'quantity' => 'required|integer',
             'saleprice' => 'required|numeric',
@@ -226,7 +226,7 @@ class ServiceController extends Controller
             'name' => $request->input('name'),
             'quantity' => $request->input('quantity'),
             'saleprice' => $request->input('saleprice'),
-            'time' => $request->input('time')
+            'time' => $request->input('time'),
         ];
 
         $service->update($data);

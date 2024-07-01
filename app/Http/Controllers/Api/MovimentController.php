@@ -7,6 +7,7 @@ use App\Models\ConceptPay;
 use App\Models\Moviment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class MovimentController extends Controller
@@ -348,6 +349,12 @@ class MovimentController extends Controller
             $rutaImagen = Storage::url($path);
             $object->routeVoucher = $rutaImagen;
             $object->save();
+        }
+
+        if (1) {
+            if (!$image) {
+                return response()->json(['error' => $validator->errors()->first()], 422);
+            }
         }
 
         $object = Moviment::with(['bank', 'paymentConcept',
@@ -799,13 +806,16 @@ class MovimentController extends Controller
         $image = $request->file('routeVoucher');
 
         if ($image) {
+            Log::info('Imagen recibida: ' . $image->getClientOriginalName());
             $file = $image;
             $currentTime = now();
             $filename = $currentTime->format('YmdHis') . '_' . $file->getClientOriginalName();
             $path = $file->storeAs('public/photosVouchers', $filename);
+            Log::info('Imagen almacenada en: ' . $path);
             $rutaImagen = Storage::url($path);
             $object->routeVoucher = $rutaImagen;
             $object->save();
+            Log::info('Imagen guardada en la base de datos con ruta: ' . $rutaImagen);
         }
 
         $object = Moviment::with(['paymentConcept', 'user.worker.person'])->find($object->id);
