@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\BudgetSheet>
  */
-class BudgetSheetFactory extends Factory
+class budgetSheetFactory extends Factory
 {
     /**
      * Define the model's default state.
