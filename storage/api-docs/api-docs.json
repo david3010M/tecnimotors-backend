@@ -2290,6 +2290,324 @@
                 ]
             }
         },
+        "/tecnimotors-backend/public/api/commitment": {
+            "get": {
+                "tags": [
+                    "Commitment"
+                ],
+                "summary": "Show all commitments",
+                "description": "SHOW ALL COMMITMENTS",
+                "operationId": "8bc1e6a0d967b01490631e8160f9bd56",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Show all commitments",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommitmentCollectionPagination"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error: Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Error: Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Unauthenticated"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Commitment"
+                ],
+                "summary": "Create a commitment",
+                "operationId": "d96863cce01551502662c41b8cb56554",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CommitmentRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Create a commitment",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Commitment"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error: Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Error: Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Unauthenticated"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Error: Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Budget sheet not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/commitment/{id}": {
+            "get": {
+                "tags": [
+                    "Commitment"
+                ],
+                "summary": "Show a commitment",
+                "operationId": "74e2be67899c5fb6377c6b32e7911fff",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Commitment ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Show a commitment",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Commitment"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Error: Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Commitment not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Commitment"
+                ],
+                "summary": "Update a commitment",
+                "operationId": "50c4f9d83dc70e3b679a105ea897a78a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Commitment ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CommitmentRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Update a commitment",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Commitment"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error: Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Error: Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Commitment not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Commitment"
+                ],
+                "summary": "Delete a commitment",
+                "operationId": "03bccc0fd88945d4dcb03f2aac86b6fb",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Commitment ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Delete a commitment",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Commitment deleted"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Error: Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Commitment not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/tecnimotors-backend/public/api/conceptMov": {
             "get": {
                 "tags": [
@@ -11894,6 +12212,122 @@
     },
     "components": {
         "schemas": {
+            "ValidationError": {
+                "properties": {
+                    "error": {
+                        "type": "string",
+                        "example": "The pagination must be an integer."
+                    }
+                },
+                "type": "object"
+            },
+            "Unauthenticated": {
+                "properties": {
+                    "error": {
+                        "type": "string",
+                        "example": "Unauthenticated."
+                    }
+                },
+                "type": "object"
+            },
+            "CommitmentResource": {
+                "title": "Commitment",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "number": {
+                        "type": "string",
+                        "example": "0001"
+                    },
+                    "client": {
+                        "type": "string",
+                        "example": "Juan Perez"
+                    },
+                    "payment_type": {
+                        "type": "string",
+                        "example": "Semanal"
+                    },
+                    "payment_date": {
+                        "type": "string",
+                        "example": "2024-06-27 22:59:36"
+                    },
+                    "price": {
+                        "type": "decimal",
+                        "example": "1000.00"
+                    },
+                    "amount_paid": {
+                        "type": "decimal",
+                        "example": "100.00"
+                    },
+                    "balance": {
+                        "type": "decimal",
+                        "example": "900.00"
+                    },
+                    "dues": {
+                        "type": "integer",
+                        "example": "10"
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "Pendiente"
+                    },
+                    "budget_sheet_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "example": "2024-06-27 22:59:36"
+                    }
+                },
+                "type": "object"
+            },
+            "CommitmentCollectionPagination": {
+                "title": "CommitmentCollectionPagination",
+                "properties": {
+                    "current_page": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CommitmentResource"
+                        }
+                    },
+                    "first_page_url": {
+                        "type": "string",
+                        "example": "https://develop.garzasoft.com/tecnimotors-backend/public/api/commitment?page=1"
+                    },
+                    "from": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "next_page_url": {
+                        "type": "string",
+                        "example": "null"
+                    },
+                    "path": {
+                        "type": "string",
+                        "example": "https://develop.garzasoft.com/tecnimotors-backend/public/api/commitment"
+                    },
+                    "per_page": {
+                        "type": "integer",
+                        "example": "5"
+                    },
+                    "prev_page_url": {
+                        "type": "string",
+                        "example": "null"
+                    },
+                    "to": {
+                        "type": "integer",
+                        "example": "5"
+                    }
+                },
+                "type": "object"
+            },
             "Access": {
                 "title": "Access",
                 "properties": {
@@ -12081,6 +12515,79 @@
                     "name": {
                         "type": "string",
                         "example": "Category 1"
+                    }
+                },
+                "type": "object"
+            },
+            "CommitmentRequest": {
+                "title": "CommitmentRequest",
+                "required": [
+                    "amount",
+                    "dues"
+                ],
+                "properties": {
+                    "amount": {
+                        "description": "REQUEST SCHEMA",
+                        "type": "decimal",
+                        "example": "1000.00"
+                    },
+                    "dues": {
+                        "type": "integer",
+                        "example": "10"
+                    },
+                    "payment_date": {
+                        "type": "string",
+                        "example": "2024-06-27 22:59:36"
+                    },
+                    "payment_type": {
+                        "type": "string",
+                        "example": "Semanal"
+                    },
+                    "budget_sheet_id": {
+                        "type": "integer",
+                        "example": "1"
+                    }
+                },
+                "type": "object"
+            },
+            "Commitment": {
+                "title": "Commitment",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "dues": {
+                        "type": "integer",
+                        "example": "10"
+                    },
+                    "amount": {
+                        "type": "decimal",
+                        "example": "1000.00"
+                    },
+                    "balance": {
+                        "type": "decimal",
+                        "example": "900.00"
+                    },
+                    "payment_date": {
+                        "type": "string",
+                        "example": "2024-06-27 22:59:36"
+                    },
+                    "payment_type": {
+                        "type": "string",
+                        "example": "Semanal"
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "Pendiente"
+                    },
+                    "budget_sheet_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "example": "2024-06-27 22:59:36"
                     }
                 },
                 "type": "object"

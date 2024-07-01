@@ -16,46 +16,6 @@ class AttentionSeeder extends Seeder
      */
     public function run()
     {
-        /**
-         *
-         * number
-         * arrivalDate
-         * deliveryDate
-         * observations
-         * fuelLevel
-         * km
-         *
-         * totalService
-         * totalProducts
-         * total
-         * debtAmount
-         *
-         * routeImage
-         * vehicle_id
-         * worker_id
-         *
-         */
-        $array = [
-            [
-                'number' => 'OTRS-00000001',
-                'arrivalDate' => '2024-06-20 04:09:25',
-                'deliveryDate' => '2024-06-22 04:09:25',
-                'observations' => 'Se reemplazarán las bujías y el filtro de aire, se ajustará la alineación y balanceo de las ruedas, y se revisará el sistema de escape. Además, se realizará un cambio de aceite y filtro.',
-                'fuelLevel' => 6,
-                'km' => 500,
-                'totalService' => 200.00,
-                'totalProducts' => 100.00,
-                'total' => 300.00,
-                'debtAmount' => 0.00,
-
-                'routeImage' => 'image.jpg',
-                'vehicle_id' => 1,
-                'worker_id' => 5,
-            ],
-        ];
-
-        foreach ($array as $item) {
-            Attention::create($item);
-        }
+        Attention::factory()->count(10)->create();
     }
 }
