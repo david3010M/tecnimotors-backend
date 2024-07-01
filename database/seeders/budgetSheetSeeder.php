@@ -7,7 +7,7 @@ use App\Models\budgetSheet;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class BudgetSheetSeeder extends Seeder
+class budgetSheetSeeder extends Seeder
 {
     /**
      * Run the database seeds.
