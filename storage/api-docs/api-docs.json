@@ -12152,15 +12152,10 @@
             "ConceptPayRequest": {
                 "title": "ConceptPayRequest",
                 "required": [
-                    "number",
                     "name",
                     "type"
                 ],
                 "properties": {
-                    "number": {
-                        "type": "integer",
-                        "example": "1"
-                    },
                     "name": {
                         "type": "string",
                         "example": "ConceptPay 1"

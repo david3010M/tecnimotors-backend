@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\BankController;
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\BudgetSheetController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\CommitmentController;
 use App\Http\Controllers\Api\ConceptMovController;
 use App\Http\Controllers\Api\ConceptPayController;
 use App\Http\Controllers\Api\DetailAttentionController;
@@ -187,8 +188,8 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::post('taskEvidence/{id}', [TaskController::class, 'storeEvidence']);
     Route::resource('task', TaskController::class)->only(['show', 'store', 'update', 'destroy'])
         ->names(['store' => 'task.store', 'show' => 'task.show', 'update' => 'task.update', 'destroy' => 'task.destroy']);
-    
-        // MOVIMENT
+
+    // MOVEMENT
     Route::get('moviment', [MovimentController::class, 'index']);
     Route::get('moviment/{id}', [MovimentController::class, 'show']);
     Route::post('moviment', [MovimentController::class, 'store']);
@@ -197,4 +198,8 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::put('moviment/{id}', [MovimentController::class, 'update']);
     Route::get('reportCaja', [PdfController::class, 'reportCaja'])->name('reportCaja');
 
+//    COMMITMENT
+    Route::resource('commitment', CommitmentController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'commitment.index', 'store' => 'commitment.store', 'show' => 'commitment.show',
+            'update' => 'commitment.update', 'destroy' => 'commitment.destroy']);
 });
