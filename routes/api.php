@@ -199,14 +199,14 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::put('moviment/{id}', [MovimentController::class, 'update']);
     Route::get('reportCaja', [PdfController::class, 'reportCaja'])->name('reportCaja');
 
-<<<<<<< HEAD
+
     Route::get('typeUser/{id}/access', [TypeUserController::class, 'getAccess']);
-=======
+
 //    VEHICLE MODEL
     Route::resource('vehicleModel', VehicleModelController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'vehicleModel.index', 'store' => 'vehicleModel.store', 'show' => 'vehicleModel.show',
             'update' => 'vehicleModel.update', 'destroy' => 'vehicleModel.destroy']);
->>>>>>> ec4a82da81a8751a67e3aeb7c367b1caafe3e6d6
+
 
 //    COMMITMENT
     Route::resource('commitment', CommitmentController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
