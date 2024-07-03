@@ -52,7 +52,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *      @OA\Property(property="model", type="string", example="Model 1"),
  *      @OA\Property(property="chasis", type="string", example="Chasis 1"),
  *      @OA\Property(property="motor", type="string", example="Motor 1"),
-  *      @OA\Property(property="codeBin", type="string", example="123"),
+ *      @OA\Property(property="codeBin", type="string", example="123"),
  *      @OA\Property(property="person_id", type="integer", example="1"),
  *      @OA\Property(property="typeVehicle_id", type="integer", example="1"),
  *      @OA\Property(property="brand_id", type="integer", example="1"),
@@ -75,7 +75,7 @@ class Vehicle extends Model
         'codeBin',
         'person_id',
         'typeVehicle_id',
-        'brand_id',
+        'vehicle_model_id',
         'created_at'
     ];
 
@@ -95,10 +95,15 @@ class Vehicle extends Model
         return $this->belongsTo(TypeVehicle::class, 'typeVehicle_id');
     }
 
-    public function brand()
+    public function vehicleModel()
     {
-        return $this->belongsTo(Brand::class);
+        return $this->belongsTo(VehicleModel::class, 'vehicle_model_id')->with('brand');
     }
+
+//    public function brand()
+//    {
+//        return $this->belongsTo(Brand::class);
+//    }
 
 //    public function attentions()
 //    {

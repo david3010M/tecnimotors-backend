@@ -44,8 +44,8 @@ class VehicleController extends Controller
      */
     public function index()
     {
-        return response()->json(Vehicle::with('person', 'typeVehicle', 'brand')
-                ->simplePaginate(15));
+        return response()->json(Vehicle::with('person', 'typeVehicle', 'vehicleModel')
+            ->simplePaginate(15));
     }
 
     /**
@@ -121,7 +121,7 @@ class VehicleController extends Controller
         ];
 
         $vehicle = Vehicle::create($data);
-        $vehicle = Vehicle::with('person', 'typeVehicle', 'brand')->find($vehicle->id);
+        $vehicle = Vehicle::with('person', 'typeVehicle', 'vehicleModel')->find($vehicle->id);
 
         return response()->json($vehicle);
     }
@@ -162,7 +162,7 @@ class VehicleController extends Controller
      */
     public function show(int $id)
     {
-        $vehicle = Vehicle::with('person', 'typeVehicle', 'brand')
+        $vehicle = Vehicle::with('person', 'typeVehicle', 'vehicleModel')
             ->where('id', $id)
             ->first();
 
@@ -264,7 +264,7 @@ class VehicleController extends Controller
         ];
 
         $vehicle->update($data);
-        $vehicle = Vehicle::with('person', 'typeVehicle', 'brand')->find($vehicle->id);
+        $vehicle = Vehicle::with('person', 'typeVehicle', 'vehicleModel')->find($vehicle->id);
 
         return response()->json($vehicle);
     }
@@ -371,7 +371,7 @@ class VehicleController extends Controller
             return response()->json(['message' => 'Person not found'], 404);
         }
 
-        $vehicles = Vehicle::where('person_id', $id)->with('person', 'typeVehicle', 'brand')->get();
+        $vehicles = Vehicle::where('person_id', $id)->with('person', 'typeVehicle', 'vehicleModel')->get();
         return response()->json($vehicles);
     }
 }
