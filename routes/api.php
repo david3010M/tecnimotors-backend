@@ -198,6 +198,8 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::put('moviment/{id}', [MovimentController::class, 'update']);
     Route::get('reportCaja', [PdfController::class, 'reportCaja'])->name('reportCaja');
 
+    Route::get('typeUser/{id}/access', [TypeUserController::class, 'getAccess']);
+
 //    COMMITMENT
     Route::resource('commitment', CommitmentController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'commitment.index', 'store' => 'commitment.store', 'show' => 'commitment.show',

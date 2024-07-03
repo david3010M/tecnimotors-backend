@@ -39,7 +39,7 @@ class TypeUserController extends Controller
 
     public function index()
     {
-        $typeUsers = TypeUser::whereNotIn('id', [1,2,3])->simplePaginate(15);
+        $typeUsers = TypeUser::whereNotIn('id', [1, 2, 3])->simplePaginate(15);
         $typeUsers->getCollection()->transform(function ($typeUser) {
             $typeUser->optionMenuAccess = $typeUser->getAccess($typeUser->id);
             return $typeUser;
@@ -240,6 +240,79 @@ class TypeUserController extends Controller
 
         $typeUser->optionMenuAccess = $typeUser->getAccess($typeUser->id);
         return response()->json($typeUser, 200);
+    }
+
+    /**
+     * Get Accesses for a Type User
+     * @OA\Get (
+     *     path="/tecnimotors-backend/public/api/typeUser/{id}/access",
+     *     tags={"TypeUser"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *          name="id",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer",
+     *              example=1
+     *          )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Accesses retrieved for Type User",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="typeUser",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="id",
+     *                     type="integer",
+     *                     example=1
+     *                 ),
+     *                 @OA\Property(
+     *                     property="accesses",
+     *                     type="array",
+     *                     @OA\Items(type="integer"),
+     *                     example={1, 2, 3}
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string",
+     *                 example="Unauthenticated"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="TypeUser not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string",
+     *                 example="TypeUser not found"
+     *             )
+     *         )
+     *     )
+     * )
+     */
+
+    public function getAccess($id)
+    {
+        $typeUser = TypeUser::find($id);
+
+        if (!$typeUser) {
+            return response()->json(['message' => 'Tipo de usuario no encontrado'], 404);
+        }
+
+        $accesses = $typeUser->getAccess($typeUser->id);
+        return response()->json(['typeUser' => ['id' => $typeUser->id, 'accesses' => $accesses]], 200);
     }
 
     /**
