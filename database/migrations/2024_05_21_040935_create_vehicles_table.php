@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -24,7 +23,8 @@ return new class extends Migration
             $table->string('codeBin')->unique()->nullable();
             $table->foreignId('person_id')->constrained('people');
             $table->foreignId('typeVehicle_id')->constrained('type_vehicles');
-            $table->foreignId('brand_id')->constrained('brands');
+//            $table->foreignId('brand_id')->constrained('brands');
+            $table->foreignId('vehicle_model_id')->constrained('vehicle_models');
             $table->timestamps();
             $table->softDeletes();
         });

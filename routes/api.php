@@ -30,6 +30,7 @@ use App\Http\Controllers\Api\TypeVehicleController;
 use App\Http\Controllers\Api\UnitController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VehicleController;
+use App\Http\Controllers\Api\VehicleModelController;
 use App\Http\Controllers\Api\WorkerController;
 use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Http\Request;
@@ -197,6 +198,11 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::delete('moviment/{id}', [MovimentController::class, 'destroy']);
     Route::put('moviment/{id}', [MovimentController::class, 'update']);
     Route::get('reportCaja', [PdfController::class, 'reportCaja'])->name('reportCaja');
+
+//    VEHICLE MODEL
+    Route::resource('vehicleModel', VehicleModelController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'vehicleModel.index', 'store' => 'vehicleModel.store', 'show' => 'vehicleModel.show',
+            'update' => 'vehicleModel.update', 'destroy' => 'vehicleModel.destroy']);
 
 //    COMMITMENT
     Route::resource('commitment', CommitmentController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
