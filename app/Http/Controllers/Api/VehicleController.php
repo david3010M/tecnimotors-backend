@@ -92,7 +92,7 @@ class VehicleController extends Controller
                 'string',
                 Rule::unique('vehicles')->whereNull('deleted_at'),
             ],
-            'km' => 'required|numeric',
+            'km' => 'nullable|numeric',
             'year' => 'required|numeric',
             'model' => 'required|string',
             'chasis' => 'required|string',
@@ -252,7 +252,7 @@ class VehicleController extends Controller
 
         $data = [
             'plate' => $request->input('plate'),
-            'km' => $request->input('km'),
+            'km' => 'nullable|numeric',
             'year' => $request->input('year'),
             'model' => $request->input('model'),
             'codeBin' => $request->input('codeBin'),
