@@ -12415,6 +12415,157 @@
                 ]
             }
         },
+        "/tecnimotors-backend/public/api/storeByOccupation": {
+            "post": {
+                "tags": [
+                    "Person"
+                ],
+                "summary": "Store a new person",
+                "operationId": "4db1dde380761cc76cff80a5f55bc49c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "typeofDocument",
+                                    "documentNumber"
+                                ],
+                                "properties": {
+                                    "typeofDocument": {
+                                        "description": "Type of Document",
+                                        "type": "string",
+                                        "example": "DNI"
+                                    },
+                                    "documentNumber": {
+                                        "description": "Document Number",
+                                        "type": "string",
+                                        "example": "12345678"
+                                    },
+                                    "names": {
+                                        "description": "Names",
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "fatherSurname": {
+                                        "description": "Father's Surname",
+                                        "type": "string",
+                                        "example": "Doe"
+                                    },
+                                    "motherSurname": {
+                                        "description": "Mother's Surname",
+                                        "type": "string",
+                                        "example": "Smith"
+                                    },
+                                    "businessName": {
+                                        "description": "Business Name",
+                                        "type": "string",
+                                        "example": "Doe Enterprises"
+                                    },
+                                    "representativeDni": {
+                                        "description": "Representative's DNI",
+                                        "type": "string",
+                                        "example": "87654321"
+                                    },
+                                    "representativeNames": {
+                                        "description": "Representative's Names",
+                                        "type": "string",
+                                        "example": "Jane Doe"
+                                    },
+                                    "address": {
+                                        "description": "Address",
+                                        "type": "string",
+                                        "example": "123 Main St"
+                                    },
+                                    "phone": {
+                                        "description": "Phone Number",
+                                        "type": "string",
+                                        "example": "+123456789"
+                                    },
+                                    "email": {
+                                        "description": "Email",
+                                        "type": "string",
+                                        "example": "example@example.com"
+                                    },
+                                    "origin": {
+                                        "description": "Origin",
+                                        "type": "string",
+                                        "example": "USA"
+                                    },
+                                    "occupation": {
+                                        "description": "Occupation",
+                                        "type": "string",
+                                        "example": "Engineer"
+                                    },
+                                    "startDate": {
+                                        "description": "Start Date",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2023-01-01"
+                                    },
+                                    "birthDate": {
+                                        "description": "Birth Date",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "1990-01-01"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Person created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Person"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Validation error message."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/tecnimotors-backend/public/api/login": {
             "post": {
                 "tags": [

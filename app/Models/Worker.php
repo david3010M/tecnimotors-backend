@@ -37,7 +37,7 @@ class Worker extends Model
         'id',
         'startDate',
         'birthDate',
-        'occupationn',
+        'occupation',
         'person_id',
         'created_at',
 

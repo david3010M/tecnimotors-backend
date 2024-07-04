@@ -202,6 +202,8 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
 
     Route::get('typeUser/{id}/access', [TypeUserController::class, 'getAccess']);
 
+    Route::post('storeByOccupation', [WorkerController::class, 'storeByOccupation']);
+
 //    VEHICLE MODEL
     Route::resource('vehicleModel', VehicleModelController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'vehicleModel.index', 'store' => 'vehicleModel.store', 'show' => 'vehicleModel.show',

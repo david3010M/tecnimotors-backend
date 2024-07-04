@@ -126,6 +126,7 @@ class VehicleController extends Controller
         return response()->json($vehicle);
     }
 
+
     /**
      * Get a Vehicle
      * @OA\Get (
