@@ -58,29 +58,33 @@ class WorkerController extends Controller
 
     public function index(Request $request)
     {
-        $speciality_id = $request->input('speciality_id');
-        $occupation = $request->input('occupation');
+        $speciality_id = $request->input('speciality_id') ?? '';
+        $occupation = $request->input('occupation') ?? '';
 
-        if (!$speciality_id) {
-            return response()->json(Worker::whereRaw('LOWER(occupation) = ?', [strtolower($occupation)])
-                    ->with(['person'])->simplePaginate(50));
-        } else {
-            $object = Specialty::find($speciality_id);
-            if (!$object) {
-                return response()->json(
-                    ['message' => 'Specialty not found'], 404
-                );
+        // Consulta base
+        $query = Worker::query();
+
+        // Filtro por occupation si se proporciona
+        if ($occupation != '') {
+            $query->whereRaw('LOWER(occupation) = ?', [strtolower($occupation)]);
+        }
+
+        // Filtro por specialty si se proporciona y existe
+        if ($speciality_id != '') {
+            $specialty = Specialty::find($speciality_id);
+            if (!$specialty) {
+                return response()->json(['message' => 'Specialty not found'], 404);
             }
 
-            $workers = Worker::whereHas('specialties', function ($query) use ($occupation, $speciality_id) {
+            $query->whereHas('specialties', function ($query) use ($speciality_id) {
                 $query->where('specialties.id', $speciality_id);
-                if ($occupation) {
-                    $query->whereRaw('LOWER(occupation) = ?', [strtolower($occupation)]);
-                }
-            })->with(['person'])->simplePaginate(50);
-
-            return response()->json($workers);
+            });
         }
+
+        // Ejecución de la consulta con paginación y carga de relaciones
+        $workers = $query->with(['person'])->simplePaginate(50);
+
+        return response()->json($workers);
     }
 
     /**
@@ -205,111 +209,244 @@ class WorkerController extends Controller
     }
 
     /**
- * @OA\Post(
- *      path="/tecnimotors-backend/public/api/storeByOccupation",
- *      summary="Store a new person",
- *      tags={"Worker"},
- *      security={{"bearerAuth": {}}},
- *      @OA\RequestBody(
- *          required=true,
- *          @OA\JsonContent(
- *              required={"typeofDocument","documentNumber"},
- *              @OA\Property(property="typeofDocument", type="string", example="DNI", description="Type of Document"),
- *              @OA\Property(property="documentNumber", type="string", example="12345678", description="Document Number"),
- *              @OA\Property(property="names", type="string", example="John Doe", description="Names"),
- *              @OA\Property(property="fatherSurname", type="string", example="Doe", description="Father's Surname"),
- *              @OA\Property(property="motherSurname", type="string", example="Smith", description="Mother's Surname"),
- *              @OA\Property(property="businessName", type="string", example="Doe Enterprises", description="Business Name"),
- *              @OA\Property(property="representativeDni", type="string", example="87654321", description="Representative's DNI"),
- *              @OA\Property(property="representativeNames", type="string", example="Jane Doe", description="Representative's Names"),
- *              @OA\Property(property="address", type="string", example="123 Main St", description="Address"),
- *              @OA\Property(property="phone", type="string", example="+123456789", description="Phone Number"),
- *              @OA\Property(property="email", type="string", example="example@example.com", description="Email"),
- *              @OA\Property(property="origin", type="string", example="USA", description="Origin"),
- *              @OA\Property(property="occupation", type="string", example="Asesor", description="Occupation"),
- *              @OA\Property(property="startDate", type="string", format="date", example="2023-01-01", description="Start Date"),
- *              @OA\Property(property="birthDate", type="string", format="date", example="1990-01-01", description="Birth Date"),
- *          )
- *      ),
- *      @OA\Response(
- *          response=201,
- *          description="Person created",
- *          @OA\JsonContent(ref="#/components/schemas/Person")
- *      ),
- *      @OA\Response(
- *          response=401,
- *          description="Unauthenticated",
- *          @OA\JsonContent(
- *              @OA\Property(property="message", type="string", example="Unauthenticated.")
- *          )
- *      ),
- *      @OA\Response(
- *          response=422,
- *          description="Validation Error",
- *          @OA\JsonContent(
- *              @OA\Property(property="error", type="string", example="Validation error message.")
- *          )
- *      )
- * )
- */
+     * @OA\Post(
+     *      path="/tecnimotors-backend/public/api/storeByOccupation",
+     *      summary="Store a new person",
+     *      tags={"Worker"},
+     *      security={{"bearerAuth": {}}},
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *              required={"typeofDocument","documentNumber"},
+     *              @OA\Property(property="typeofDocument", type="string", example="DNI", description="Type of Document"),
+     *              @OA\Property(property="documentNumber", type="string", example="12345678", description="Document Number"),
+     *              @OA\Property(property="names", type="string", example="John Doe", description="Names"),
+     *              @OA\Property(property="fatherSurname", type="string", example="Doe", description="Father's Surname"),
+     *              @OA\Property(property="motherSurname", type="string", example="Smith", description="Mother's Surname"),
+     *              @OA\Property(property="businessName", type="string", example="Doe Enterprises", description="Business Name"),
+     *              @OA\Property(property="representativeDni", type="string", example="87654321", description="Representative's DNI"),
+     *              @OA\Property(property="representativeNames", type="string", example="Jane Doe", description="Representative's Names"),
+     *              @OA\Property(property="address", type="string", example="123 Main St", description="Address"),
+     *              @OA\Property(property="phone", type="string", example="+123456789", description="Phone Number"),
+     *              @OA\Property(property="email", type="string", example="example@example.com", description="Email"),
+     *              @OA\Property(property="origin", type="string", example="USA", description="Origin"),
+     *              @OA\Property(property="occupation", type="string", example="Asesor", description="Occupation"),
+     *              @OA\Property(property="startDate", type="string", format="date", example="2023-01-01", description="Start Date"),
+     *              @OA\Property(property="birthDate", type="string", format="date", example="1990-01-01", description="Birth Date"),
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=201,
+     *          description="Person created",
+     *          @OA\JsonContent(ref="#/components/schemas/Person")
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=422,
+     *          description="Validation Error",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="error", type="string", example="Validation error message.")
+     *          )
+     *      )
+     * )
+     */
 
-public function storeByOccupation(Request $request)
-{
-    $validator = validator()->make($request->all(), [
-        'typeofDocument' => 'required',
-        'documentNumber' => [
-            'required',
-            Rule::unique('people')->whereNull('deleted_at'),
-        ],
-        'occupation' => 'required|in:Cajero,Mecanico,Asesor',
-    ]);
+    public function storeByOccupation(Request $request)
+    {
+        $validator = validator()->make($request->all(), [
+            'typeofDocument' => 'required',
+            'documentNumber' => [
+                'required',
+                Rule::unique('people')->whereNull('deleted_at'),
+            ],
+            'occupation' => 'required|in:Cajero,Mecanico,Asesor',
+        ]);
 
-    if ($validator->fails()) {
-        return response()->json(['error' => $validator->errors()->first()], 422);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $data = [
+            'typeofDocument' => $request->input('typeofDocument'),
+            'documentNumber' => $request->input('documentNumber'),
+            'address' => $request->input('address') ?? null,
+            'phone' => $request->input('phone') ?? null,
+            'email' => $request->input('email') ?? null,
+            'origin' => $request->input('origin') ?? null,
+            'occupation' => $request->input('occupation') ?? null,
+            'names' => null,
+            'fatherSurname' => null,
+            'motherSurname' => null,
+            'businessName' => null,
+            'representativeDni' => null,
+            'representativeNames' => null,
+        ];
+
+        if ($request->input('typeofDocument') == 'DNI') {
+            $data['names'] = $request->input('names') ?? null;
+            $data['fatherSurname'] = $request->input('fatherSurname') ?? null;
+            $data['motherSurname'] = $request->input('motherSurname') ?? null;
+        } elseif ($request->input('typeofDocument') == 'RUC') {
+            $data['businessName'] = $request->input('businessName') ?? null;
+            $data['representativeDni'] = $request->input('representativeDni') ?? null;
+            $data['representativeNames'] = $request->input('representativeNames') ?? null;
+        }
+
+        $person = Person::create($data);
+        $person = Person::find($person->id);
+
+        $dataWorker = [
+            'startDate' => $request->input('startDate') ?? null,
+            'birthDate' => $request->input('birthDate') ?? null,
+            'occupation' => $request->input('occupation'),
+            'person_id' => $person->id,
+        ];
+
+        $worker = Worker::create($dataWorker);
+        $worker = Worker::with(['person'])->find($worker->id);
+
+        return response()->json($worker, 201);
     }
 
-    $data = [
-        'typeofDocument' => $request->input('typeofDocument'),
-        'documentNumber' => $request->input('documentNumber'),
-        'address' => $request->input('address') ?? null,
-        'phone' => $request->input('phone') ?? null,
-        'email' => $request->input('email') ?? null,
-        'origin' => $request->input('origin') ?? null,
-        'occupation' => $request->input('occupation') ?? null,
-        'names' => null,
-        'fatherSurname' => null,
-        'motherSurname' => null,
-        'businessName' => null,
-        'representativeDni' => null,
-        'representativeNames' => null,
-    ];
+    /**
+     * @OA\Put(
+     *      path="/tecnimotors-backend/public/api/updateByOccupation/{id}",
+     *      summary="Update an existing person by occupation",
+     *      tags={"Worker"},
+     *      security={{"bearerAuth": {}}},
+     *      @OA\Parameter(
+     *          name="id",
+     *          in="path",
+     *          required=true,
+     *          description="ID of the person to update",
+     *          @OA\Schema(
+     *              type="integer",
+     *              format="int64"
+     *          )
+     *      ),
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *              required={"typeofDocument","documentNumber"},
+     *              @OA\Property(property="typeofDocument", type="string", example="DNI", description="Type of Document"),
+     *              @OA\Property(property="documentNumber", type="string", example="12345678", description="Document Number"),
+     *              @OA\Property(property="names", type="string", example="John Doe", description="Names"),
+     *              @OA\Property(property="fatherSurname", type="string", example="Doe", description="Father's Surname"),
+     *              @OA\Property(property="motherSurname", type="string", example="Smith", description="Mother's Surname"),
+     *              @OA\Property(property="businessName", type="string", example="Doe Enterprises", description="Business Name"),
+     *              @OA\Property(property="representativeDni", type="string", example="87654321", description="Representative's DNI"),
+     *              @OA\Property(property="representativeNames", type="string", example="Jane Doe", description="Representative's Names"),
+     *              @OA\Property(property="address", type="string", example="123 Main St", description="Address"),
+     *              @OA\Property(property="phone", type="string", example="+123456789", description="Phone Number"),
+     *              @OA\Property(property="email", type="string", example="example@example.com", description="Email"),
+     *              @OA\Property(property="origin", type="string", example="USA", description="Origin"),
+     *              @OA\Property(property="occupation", type="string", example="Asesor", description="Occupation"),
+     *              @OA\Property(property="startDate", type="string", format="date", example="2023-01-01", description="Start Date"),
+     *              @OA\Property(property="birthDate", type="string", format="date", example="1990-01-01", description="Birth Date"),
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Person updated",
+     *          @OA\JsonContent(ref="#/components/schemas/Person")
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Person not found",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Person not found.")
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=422,
+     *          description="Validation Error",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="error", type="string", example="Validation error message.")
+     *          )
+     *      )
+     * )
+     */
 
-    if ($request->input('typeofDocument') == 'DNI') {
-        $data['names'] = $request->input('names') ?? null;
-        $data['fatherSurname'] = $request->input('fatherSurname') ?? null;
-        $data['motherSurname'] = $request->input('motherSurname') ?? null;
-    } elseif ($request->input('typeofDocument') == 'RUC') {
-        $data['businessName'] = $request->input('businessName') ?? null;
-        $data['representativeDni'] = $request->input('representativeDni') ?? null;
-        $data['representativeNames'] = $request->input('representativeNames') ?? null;
+    public function updateByOccupation(Request $request, $id)
+    {
+        $person = Person::find($id);
+
+        if (!$person) {
+            return response()->json(['message' => 'Person not found.'], 404);
+        }
+
+        $validator = validator()->make($request->all(), [
+            'typeofDocument' => 'required',
+            'documentNumber' => [
+                'required',
+                Rule::unique('people')->ignore($person->id)->whereNull('deleted_at'),
+            ],
+            'occupation' => 'required|in:Cajero,Mecanico,Asesor',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $data = [
+            'typeofDocument' => $request->input('typeofDocument'),
+            'documentNumber' => $request->input('documentNumber'),
+            'address' => $request->input('address') ?? null,
+            'phone' => $request->input('phone') ?? null,
+            'email' => $request->input('email') ?? null,
+            'origin' => $request->input('origin') ?? null,
+            'occupation' => $request->input('occupation') ?? null,
+            'names' => null,
+            'fatherSurname' => null,
+            'motherSurname' => null,
+            'businessName' => null,
+            'representativeDni' => null,
+            'representativeNames' => null,
+        ];
+
+        if ($request->input('typeofDocument') == 'DNI') {
+            $data['names'] = $request->input('names') ?? null;
+            $data['fatherSurname'] = $request->input('fatherSurname') ?? null;
+            $data['motherSurname'] = $request->input('motherSurname') ?? null;
+        } elseif ($request->input('typeofDocument') == 'RUC') {
+            $data['businessName'] = $request->input('businessName') ?? null;
+            $data['representativeDni'] = $request->input('representativeDni') ?? null;
+            $data['representativeNames'] = $request->input('representativeNames') ?? null;
+        }
+
+        $person->update($data);
+
+        $worker = Worker::where('person_id', $person->id)->first();
+
+        if (!$worker) {
+            return response()->json(['message' => 'Worker not found.'], 404);
+        }
+
+        $dataWorker = [
+            'startDate' => $request->input('startDate') ?? null,
+            'birthDate' => $request->input('birthDate') ?? null,
+            'occupation' => $request->input('occupation'),
+        ];
+
+        $worker->update($dataWorker);
+
+        $worker = Worker::with(['person'])->find($worker->id);
+
+        return response()->json($worker, 200);
     }
-
-    $person = Person::create($data);
-    $person = Person::find($person->id);
-
-    $dataWorker = [
-        'startDate' => $request->input('startDate') ?? null,
-        'birthDate' => $request->input('birthDate') ?? null,
-        'occupation' => $request->input('occupation'),
-        'person_id' => $person->id,
-    ];
-
-    $worker = Worker::create($dataWorker);
-    $worker = Worker::with(['person'])->find($worker->id);
-
-    return response()->json($worker, 201);
-}
-
 
     /**
      * @OA\Put(

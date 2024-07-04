@@ -52,7 +52,7 @@ class AttentionController extends Controller
     public function index()
     {
         // Obtenemos la paginación simple de 15 registros con las relaciones necesarias
-        $objects = Attention::with(['worker.person', 'vehicle', 'vehicle.person', 'details', 'routeImages', 'elements'])->simplePaginate(15);
+        $objects = Attention::with(['worker.person', 'vehicle', 'driver', 'vehicle.person', 'details', 'routeImages', 'driver', 'elements'])->simplePaginate(15);
 
         // Transformamos cada elemento de la colección paginada
         $objects->getCollection()->transform(function ($attention) {
@@ -109,7 +109,7 @@ class AttentionController extends Controller
             return response()->json(['message' => 'Attention not found'], 404);
         }
 
-        $object = Attention::with(['worker.person', 'vehicle', 'vehicle.person', 'details', 'routeImages', 'elements'])->find($id);
+        $object = Attention::with(['worker.person', 'vehicle', 'vehicle.person', 'details', 'routeImages', 'driver', 'elements'])->find($id);
         $object->elements = $object->getElements($object->id);
         $object->details = $object->getDetails($object->id);
 
@@ -258,6 +258,7 @@ class AttentionController extends Controller
      *             @OA\Property(property="km", type="string", example="0.00"),
      *             @OA\Property(property="vehicle_id", type="integer", example=1),
      *             @OA\Property(property="worker_id", type="integer", example=1),
+     * *     @OA\Property(property="driver_id", type="integer", example=1),
      *             @OA\Property(
      *                 property="details",
      *                 type="array",
@@ -326,6 +327,8 @@ class AttentionController extends Controller
             'routeImage.*' => 'nullable|image|mimes:jpeg,png,jpg,gif',
             'vehicle_id' => 'required|exists:vehicles,id',
             'worker_id' => 'required|exists:workers,id',
+            'driver_id' => 'nullable|exists:people,id',
+
             'elements' => 'nullable',
             'elements.*' => 'exists:elements,id',
             'details' => 'nullable',
@@ -355,6 +358,8 @@ class AttentionController extends Controller
             'km' => $request->input('km') ?? null,
             'routeImage' => 'ruta.jpg',
             'vehicle_id' => $request->input('vehicle_id') ?? null,
+            'driver_id' => $request->input('driver_id') ?? null,
+
             'worker_id' => $request->input('worker_id') ?? null,
         ];
 
@@ -447,7 +452,7 @@ class AttentionController extends Controller
             RouteImages::create($dataImage);
         }
 
-        $object = Attention::with(['worker.person', 'vehicle', 'details', 'routeImages'])->find($object->id);
+        $object = Attention::with(['worker.person', 'vehicle', 'details', 'routeImages', 'driver'])->find($object->id);
         $object->elements = $object->getElements($object->id);
         $object->details = $object->getDetails($object->id);
 
@@ -476,7 +481,7 @@ class AttentionController extends Controller
      *      @OA\Property(property="observations", type="string", example="-"),
      *     @OA\Property(property="fuelLevel", type="string", example="2"),
      *     @OA\Property(property="km", type="string", example="0.00"),
-
+     *     @OA\Property(property="driver_id", type="integer", example=1),
      *     @OA\Property(property="vehicle_id", type="string", example=1),
      *     @OA\Property(property="worker_id", type="string", example=1),
      *     @OA\Property(
@@ -555,6 +560,8 @@ class AttentionController extends Controller
 
             'vehicle_id' => 'required|exists:vehicles,id',
             'worker_id' => 'required|exists:workers,id',
+            'driver_id' => 'nullable|exists:people,id',
+
             'elements' => 'nullable|array',
             'elements.*' => 'exists:elements,id',
             'details' => 'nullable',
@@ -574,6 +581,8 @@ class AttentionController extends Controller
             'km' => $request->input('km') ?? null,
             'routeImage' => 'ruta.jpg',
             'vehicle_id' => $request->input('vehicle_id') ?? null,
+            'driver_id' => $request->input('driver_id') ?? null,
+
             'worker_id' => $request->input('worker_id') ?? null,
         ];
 
@@ -596,7 +605,7 @@ class AttentionController extends Controller
         $images = $request->file('routeImage') ?? [];
         $object->setImages($object->id, $images);
 
-        $object = Attention::with(['worker.person', 'vehicle', 'details', 'routeImages'])->find($object->id);
+        $object = Attention::with(['worker.person', 'vehicle', 'details', 'routeImages', 'driver'])->find($object->id);
         $object->elements = $object->getElements($object->id);
         $object->details = $object->getDetails($object->id);
 

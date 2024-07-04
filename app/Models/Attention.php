@@ -64,6 +64,7 @@ class Attention extends Model
 
         'worker_id',
         'vehicle_id',
+        'driver_id',
 
         'created_at',
     ];
@@ -95,6 +96,11 @@ class Attention extends Model
             ->get()
             ->pluck('worker.person')->unique('id');
         return $technicians;
+    }
+
+    public function driver()
+    {
+        return $this->belongsTo(Person::class, 'driver_id');
     }
 
     public function elementForAttention()
