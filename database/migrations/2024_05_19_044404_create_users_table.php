@@ -17,7 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('username', 255)->unique();
             $table->string('password', 255);
- 
+            $table->boolean('state')->nullable()->default(true);
+
             $table->foreignId('typeofUser_id')->nullable()->unsigned()->constrained('type_users');
             $table->foreignId('worker_id')->nullable()->unsigned()->constrained('workers');
             $table->timestamps();

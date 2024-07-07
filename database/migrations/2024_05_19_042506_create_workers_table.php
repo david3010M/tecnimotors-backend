@@ -17,6 +17,8 @@ return new class extends Migration
             $table->id();
             $table->date('startDate')->nullable();
             $table->date('birthDate')->nullable();
+            $table->boolean('state')->nullable()->default(true);
+
             $table->string('occupation', 250)->nullable()->nullable();
             $table->foreignId('person_id')->nullable()->unsigned()->constrained('people');
             $table->timestamps();

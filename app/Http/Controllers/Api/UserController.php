@@ -39,7 +39,7 @@ class UserController extends Controller
 
     public function index()
     {
-        return response()->json(User::with(['worker', 'worker.person', 'typeUser'])->simplePaginate(15));
+        return response()->json(User::with(['worker', 'worker.person', 'typeUser'])->where('state', true)->simplePaginate(15));
     }
 
     /**
@@ -320,7 +320,8 @@ class UserController extends Controller
             );
         }
 
-        $object->delete();
+        $object->state = false;
+        $object->save();
 
     }
 

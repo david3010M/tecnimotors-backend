@@ -82,7 +82,7 @@ class WorkerController extends Controller
         }
 
         // Ejecución de la consulta con paginación y carga de relaciones
-        $workers = $query->with(['person'])->simplePaginate(50);
+        $workers = $query->with(['person'])->where('state', true)->simplePaginate(50);
 
         return response()->json($workers);
     }
@@ -382,7 +382,13 @@ class WorkerController extends Controller
 
     public function updateByOccupation(Request $request, $id)
     {
-        $person = Person::find($id);
+        $worker = Worker::find($id);
+
+        if (!$worker) {
+            return response()->json(['message' => 'Worker not found.'], 404);
+        }
+
+        $person = Person::find($worker->person_id);
 
         if (!$person) {
             return response()->json(['message' => 'Person not found.'], 404);
@@ -589,6 +595,19 @@ class WorkerController extends Controller
         }
 
         //REVISAR ASOCIACIONES
-        $object->delete();
+        $object->state = false;
+        $object->save();
+
+        $object = Person::find($id);
+        if (!$object) {
+            return response()->json(
+                ['message' => 'Person not found'], 404
+            );
+        }
+
+        //REVISAR ASOCIACIONES
+        $object->state = false;
+        $object->save();
+
     }
 }

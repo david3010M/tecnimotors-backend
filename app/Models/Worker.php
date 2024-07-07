@@ -38,6 +38,7 @@ class Worker extends Model
         'startDate',
         'birthDate',
         'occupation',
+        'state',
         'person_id',
         'created_at',
 
