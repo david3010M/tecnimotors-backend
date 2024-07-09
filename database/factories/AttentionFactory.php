@@ -18,6 +18,7 @@ class AttentionFactory extends Factory
     {
         return [
             'number' => $this->faker->regexify('OTRS-\d{8}'),
+            'correlativo' => $this->faker->regexify('\d{8}'),
             'arrivalDate' => $this->faker->dateTimeBetween('-1 month', 'now'),
             'deliveryDate' => $this->faker->dateTimeBetween('now', '+1 month'),
             'observations' => $this->faker->sentence(15),
