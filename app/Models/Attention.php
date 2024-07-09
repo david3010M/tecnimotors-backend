@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Storage;
  *      @OA\Property(property="total", type="number", example="300.00"),
  *      @OA\Property(property="debtAmount", type="number", example="100.00"),
  *     @OA\Property(property="percentage", type="integer", example="1"),
+ *     @OA\Property(property="driver", type="string", example="Driver"),
  *
  *     @OA\Property(property="created_at", type="string", format="date-time", example="2024-05-21 04:09:25"),
  *         @OA\Property(
@@ -66,7 +67,7 @@ class Attention extends Model
 
         'worker_id',
         'vehicle_id',
-        'driver_id',
+        'driver',
 
         'created_at',
     ];
@@ -100,10 +101,10 @@ class Attention extends Model
         return $technicians;
     }
 
-    public function driver()
-    {
-        return $this->belongsTo(Person::class, 'driver_id');
-    }
+    // public function driver()
+    // {
+    //     return $this->belongsTo(Person::class, 'driver_id');
+    // }
 
     public function elementForAttention()
     {
@@ -125,7 +126,7 @@ class Attention extends Model
     public function details()
     {
         return $this->hasMany(DetailAttention::class)->
-        orderBy('type', 'desc')
+            orderBy('type', 'desc')
             ->with(['worker', 'service', 'product']);
     }
 

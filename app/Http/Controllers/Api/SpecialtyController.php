@@ -39,7 +39,7 @@ class SpecialtyController extends Controller
 
     public function index()
     {
-        return response()->json(Specialty::simplePaginate(15));
+        return response()->json(Specialty::simplePaginate(50));
 
     }
 

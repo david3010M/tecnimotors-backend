@@ -103,11 +103,17 @@ class AuthController extends Controller
 
             $groupMenu = GroupMenu::getFilteredGroupMenus($typeUser->id);
 
+            $tipo = 'OTRS';
+            $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM attentions a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
+            $siguienteNum = (int) $resultado;
+
             // -------------------------------------------------
             return response()->json([
                 'access_token' => $token,
                 'user' => $user,
-                'groupMenu' => $groupMenu,
+                 'correlativo' => $siguienteNum,
+                 'groupMenu' => $groupMenu,
+               
 //                'optionMenuAccess' => $user->typeUser->getAccess($user->id),
 //                'permissions' => Optionmenu::pluck('id'),
 

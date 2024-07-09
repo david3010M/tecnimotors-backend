@@ -116,6 +116,10 @@
                                         "type": "string",
                                         "example": "-"
                                     },
+                                    "correlativo": {
+                                        "type": "string",
+                                        "example": "123456"
+                                    },
                                     "fuelLevel": {
                                         "type": "string",
                                         "example": "10"
@@ -132,9 +136,9 @@
                                         "type": "integer",
                                         "example": 1
                                     },
-                                    "driver_id": {
-                                        "type": "integer",
-                                        "example": 1
+                                    "driver": {
+                                        "type": "string",
+                                        "example": "Driver"
                                     },
                                     "details": {
                                         "type": "array",
@@ -344,6 +348,10 @@
                                         "type": "string",
                                         "example": "-"
                                     },
+                                    "correlativo": {
+                                        "type": "string",
+                                        "example": "123456"
+                                    },
                                     "fuelLevel": {
                                         "type": "string",
                                         "example": "2"
@@ -352,9 +360,9 @@
                                         "type": "string",
                                         "example": "0.00"
                                     },
-                                    "driver_id": {
-                                        "type": "integer",
-                                        "example": 1
+                                    "driver": {
+                                        "type": "string",
+                                        "example": "Driver"
                                     },
                                     "vehicle_id": {
                                         "type": "string",
@@ -13164,6 +13172,10 @@
                     "percentage": {
                         "type": "integer",
                         "example": "1"
+                    },
+                    "driver": {
+                        "type": "string",
+                        "example": "Driver"
                     },
                     "created_at": {
                         "type": "string",
