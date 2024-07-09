@@ -123,7 +123,7 @@ class Attention extends Model
     public function details()
     {
         return $this->hasMany(DetailAttention::class)->
-            orderBy('type', 'desc')
+        orderBy('type', 'desc')
             ->with(['worker', 'service', 'product']);
     }
 
@@ -142,7 +142,7 @@ class Attention extends Model
         $object = Attention::with([
             'worker.person',
             'vehicle.person',
-            'vehicle.brand',
+            'vehicle.vehicleModel.brand',
             'details',
             'elements.element',
         ])->find($id);

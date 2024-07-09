@@ -293,7 +293,7 @@
 
 <div class="content">
 
-  <table class="tableInfo">
+    <table class="tableInfo">
         <tr>
             <td class="center">
                 <img class="logoImage" src="{{ asset('img/logoTecnimotors.png') }}" alt="logoTecnimotors">
@@ -425,7 +425,7 @@
                 Marca
             </th>
             <td class="w50">
-                {{ $attention->vehicle->brand->name }}
+                {{ $attention->vehicle->vehicleModel->brand->name }}
             </td>
             <th class="w20 blue">
                 Km

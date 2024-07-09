@@ -197,7 +197,7 @@
     <table style="margin-bottom: 8px;">
         <tr>
             <th>Marca</th>
-            <td>{{ $order->vehicle->brand->name }}</td>
+            <td>{{ $order->vehicle->vehicleModel->brand->name }}</td>
 
             <th>Modelo</th>
             <td>{{ $order->vehicle->model }}</td>
