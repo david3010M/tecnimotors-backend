@@ -60,7 +60,7 @@ class budgetSheet extends Model
         $object = budgetSheet::with([
             'attention.worker.person',
             'attention.vehicle.person',
-            'attention.vehicle.brand',
+            'attention.vehicle.vehicleModel.brand',
             'attention.details.product.unit',
             'attention.routeImages',
             'attention.elements',

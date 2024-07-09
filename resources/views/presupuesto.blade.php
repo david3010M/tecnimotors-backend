@@ -349,7 +349,7 @@
                 Marca
             </th>
             <td class="w50">
-                {{ $budgetsheet->attention->vehicle->brand->name }}
+                {{ $budgetsheet->attention->vehicle->vehicleModel->brand->name }}
             </td>
             <th class="w20 blue">
                 Km
@@ -395,8 +395,8 @@
                 <tr>
                     <td class="id">{{ $detail->service->id }}</td>
                     <td class="description" colspan="2">{{ $detail->service->name }}</td>
-                
-               
+
+
                     <td class="quantity">{{ $detail->quantity }}</td>
                     <td class="sailPrice">S/ {{ $detail->saleprice }}</td>
                     <td class="sailTotal">S/ {{ number_format($detail->saleprice * $detail->quantity, 2) }}</td>
