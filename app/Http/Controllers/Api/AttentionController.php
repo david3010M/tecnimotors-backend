@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class AttentionController extends Controller
 {
@@ -320,7 +321,11 @@ class AttentionController extends Controller
     {
 
         $validator = validator()->make($request->all(), [
-            'correlativo' => 'required|numeric',
+
+            'correlativo' => [
+                'required', 'numeric',
+                Rule::unique('attentions')->whereNull('deleted_at'),
+            ],
             'arrivalDate' => 'required',
             'deliveryDate' => 'required',
             'observations' => 'nullable',
@@ -557,7 +562,12 @@ class AttentionController extends Controller
 
         $validator = validator()->make($request->all(), [
             'arrivalDate' => 'required',
-            'correlativo' => 'required|numeric',
+
+            'correlativo' => [
+                'required',
+                'numeric',
+                Rule::unique('attentions')->ignore($id)->whereNull('deleted_at'),
+            ],
 
             'deliveryDate' => 'required',
             'observations' => 'nullable',

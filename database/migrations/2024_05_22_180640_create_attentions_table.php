@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('attentions', function (Blueprint $table) {
             $table->id();
             $table->string('number');
-            $table->string('correlativo');
+            $table->string('correlativo')->unique();
 
             $table->dateTime('arrivalDate')->nullable();
             $table->dateTime('deliveryDate')->nullable();
