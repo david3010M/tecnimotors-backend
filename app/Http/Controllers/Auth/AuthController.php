@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\GroupMenu;
-use App\Models\Optionmenu;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -175,10 +175,16 @@ class AuthController extends Controller
 
             $groupMenu = GroupMenu::getFilteredGroupMenus($user->typeofUser_id);
 
+            $tipo = 'OTRS';
+            $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM attentions a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
+            $siguienteNum = (int) $resultado;
+
             return response()->json([
                 'access_token' => $token,
                 'user' => $user,
+                'correlativo' => $siguienteNum,
                 'groupMenu' => $groupMenu,
+
 //                'optionMenuAccess' => $user->typeUser->getAccess($user->id),
 //                'permissions' => Optionmenu::pluck('id'),
 

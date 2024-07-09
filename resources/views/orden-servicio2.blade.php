@@ -14,7 +14,7 @@
         return $fractions[$fuelLevel] ?? 'N/A';
     }
 @endphp
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -43,7 +43,8 @@
             padding-bottom: 30px;
         }
 
-        td, th {
+        td,
+        th {
             padding: 2px;
         }
 
@@ -122,7 +123,8 @@
             border: 1px solid #007AC2;
         }
 
-        .tablePeople td, .tablePeople th {
+        .tablePeople td,
+        .tablePeople th {
             border: 1px solid #007AC2;
         }
 
@@ -283,39 +285,38 @@
         .w30 {
             width: 30%;
         }
-
     </style>
 </head>
 
 <body>
 
-<img class="headerImage" src="{{ asset('img/degraded.png') }}" alt="degraded">
+    <img class="headerImage" src="{{ asset('img/degraded.png') }}" alt="degraded">
 
-<div class="content">
+    <div class="content">
 
-  <table class="tableInfo">
-        <tr>
-            <td class="center">
-                <img class="logoImage" src="{{ asset('img/logoTecnimotors.png') }}" alt="logoTecnimotors">
-            </td>
-            <td class="right">
-                <div class="titleAtencion">ORDEN ATENCIÓN</div>
-                <div class="numberAtencion">N° {{ $attention->number }}</div>
-            </td>
-        </tr>
-        <tr>
-            <td class="center gray w40">
-                <div class="text-sm">RUC: 20546989656</div>
-                <div class="text-sm">Dir: Mz. A Lt. 7 Urb. San Manuel - Prolongación Bolognesi</div>
-                <div class="text-sm">Telfono: 986202388 - 941515301</div>
-            </td>
-            <td class="right">
-                <div><strong>{{ Carbon::parse($attention->created_at)->format('d-m-Y') }}</strong></div>
-            </td>
-        </tr>
-    </table>
+        <table class="tableInfo">
+            <tr>
+                <td class="center">
+                    <img class="logoImage" src="{{ asset('img/logoTecnimotors.png') }}" alt="logoTecnimotors">
+                </td>
+                <td class="right">
+                    <div class="titleAtencion">ORDEN ATENCIÓN</div>
+                    <div class="numberAtencion">N° {{ $attention->correlativo }}</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="center gray w40">
+                    <div class="text-sm">RUC: 20546989656</div>
+                    <div class="text-sm">Dir: Mz. A Lt. 7 Urb. San Manuel - Prolongación Bolognesi</div>
+                    <div class="text-sm">Telfono: 986202388 - 941515301</div>
+                </td>
+                <td class="right">
+                    <div><strong>{{ Carbon::parse($attention->created_at)->format('d-m-Y') }}</strong></div>
+                </td>
+            </tr>
+        </table>
 
-    {{-- <table class="tablePeople font-14">
+        {{-- <table class="tablePeople font-14">
         <tr>
             <td class="left w50 font-12 gris">
                 <strong>CLIENTE</strong>
@@ -381,125 +382,125 @@
         </tr>
     </table> --}}
 
-    <table class="tablePeople font-14">
-        <tr>
-            <th class="w10 blue">
-                Cliente
-            </th>
-            <td class="w50">
-                @if ($attention->vehicle->person->typeofDocument == 'DNI')
-                    {{ $attention->vehicle->person->names .
-                        ' ' .
-                        $attention->vehicle->person->fatherSurname .
-                        ' ' .
-                        $attention->vehicle->person->motherSurname}}
-                @elseif($attention->vehicle->person->typeofDocument == 'RUC')
-                    {{ $attention->vehicle->person->businessName}}
-                @endif
-            </td>
-            <th class="w20 blue">
-                Fecha de Entrada
-            </th>
-            <td class="w20">
-                {{ Carbon::parse($attention->entryDate)->format('d/m/Y') }}
-            </td>
-        </tr>
-
-        <tr>
-            <th class="w10 blue">
-                Placa
-            </th>
-            <td class="w50">
-                {{ $attention->vehicle->plate }}
-            </td>
-            <th class="w20 blue">
-                Fecha de Entrega
-            </th>
-            <td class="w20">
-                {{ Carbon::parse($attention->deliveryDate)->format('d/m/Y') }}
-            </td>
-        </tr>
-
-        <tr>
-            <th class="w10 blue">
-                Marca
-            </th>
-            <td class="w50">
-                {{ $attention->vehicle->brand->name }}
-            </td>
-            <th class="w20 blue">
-                Km
-            </th>
-            <td class="w20">
-                {{ $attention->vehicle->km }}
-            </td>
-        </tr>
-
-        <tr>
-            <th class="w10 blue">
-                Modelo
-            </th>
-            <td class="w50">
-                {{ $attention->vehicle->model }}
-            </td>
-            <th class="w20 blue">
-                Año
-            </th>
-            <td class="w20">
-                {{ $attention->vehicle->year }}
-            </td>
-        </tr>
-
-    </table>
-
-
-    <table class="tableDetail">
-        <tr>
-            <th class="description">Descripción</th>
-            <th class="quantity">Cantidad</th>
-        </tr>
-
-        @foreach ($attention->details as $detail)
+        <table class="tablePeople font-14">
             <tr>
-                @if ($detail->type == 'Service')
-                    <td class="description">{{ $detail->service->name }}</td>
-                @elseif ($detail->type == 'Product')
-                    <td class="description">{{ $detail->product->name }}</td>
-                @endif
-                <td class="quantity">{{ $detail->quantity }}</td>
+                <th class="w10 blue">
+                    Cliente
+                </th>
+                <td class="w50">
+                    @if ($attention->vehicle->person->typeofDocument == 'DNI')
+                        {{ $attention->vehicle->person->names .
+                            ' ' .
+                            $attention->vehicle->person->fatherSurname .
+                            ' ' .
+                            $attention->vehicle->person->motherSurname }}
+                    @elseif($attention->vehicle->person->typeofDocument == 'RUC')
+                        {{ $attention->vehicle->person->businessName }}
+                    @endif
+                </td>
+                <th class="w20 blue">
+                    Fecha de Entrada
+                </th>
+                <td class="w20">
+                    {{ Carbon::parse($attention->entryDate)->format('d/m/Y') }}
+                </td>
             </tr>
-        @endforeach
-    </table>
+
+            <tr>
+                <th class="w10 blue">
+                    Placa
+                </th>
+                <td class="w50">
+                    {{ $attention->vehicle->plate }}
+                </td>
+                <th class="w20 blue">
+                    Fecha de Entrega
+                </th>
+                <td class="w20">
+                    {{ Carbon::parse($attention->deliveryDate)->format('d/m/Y') }}
+                </td>
+            </tr>
+
+            <tr>
+                <th class="w10 blue">
+                    Marca
+                </th>
+                <td class="w50">
+                    {{ $attention->vehicle->brand->name }}
+                </td>
+                <th class="w20 blue">
+                    Km
+                </th>
+                <td class="w20">
+                    {{ $attention->vehicle->km }}
+                </td>
+            </tr>
+
+            <tr>
+                <th class="w10 blue">
+                    Modelo
+                </th>
+                <td class="w50">
+                    {{ $attention->vehicle->model }}
+                </td>
+                <th class="w20 blue">
+                    Año
+                </th>
+                <td class="w20">
+                    {{ $attention->vehicle->year }}
+                </td>
+            </tr>
+
+        </table>
 
 
-    <div class="observaciones">
-        <p class="p10 bolder gris font-14">OBSERVACIONES</p>
-        <ul class="listaObservaciones font-12">
-            <li> {{ $attention->observations }}</li>
+        <table class="tableDetail">
+            <tr>
+                <th class="description">Descripción</th>
+                <th class="quantity">Cantidad</th>
+            </tr>
 
-        </ul>
-    </div>
-    <div class="observaciones">
-        <p class="p10 bolder gris font-14">ELEMENTOS</p>
-        <ul class="listaObservaciones font-12">
-            @foreach ($attention->elements as $element)
-                <li>{{ $element->element->name }}</li>
+            @foreach ($attention->details as $detail)
+                <tr>
+                    @if ($detail->type == 'Service')
+                        <td class="description">{{ $detail->service->name }}</td>
+                    @elseif ($detail->type == 'Product')
+                        <td class="description">{{ $detail->product->name }}</td>
+                    @endif
+                    <td class="quantity">{{ $detail->quantity }}</td>
+                </tr>
             @endforeach
-        </ul>
-    </div>
+        </table>
 
-    <div class="observaciones">
-        <p class="p10 gris font-14"> <span style="font-weight:bold;">NIVEL DE COMBUSTIBLE:
+
+        <div class="observaciones">
+            <p class="p10 bolder gris font-14">OBSERVACIONES</p>
+            <ul class="listaObservaciones font-12">
+                <li> {{ $attention->observations }}</li>
+
+            </ul>
+        </div>
+        <div class="observaciones">
+            <p class="p10 bolder gris font-14">ELEMENTOS</p>
+            <ul class="listaObservaciones font-12">
+                @foreach ($attention->elements as $element)
+                    <li>{{ $element->element->name }}</li>
+                @endforeach
+            </ul>
+        </div>
+
+        <div class="observaciones">
+            <p class="p10 gris font-14"> <span style="font-weight:bold;">NIVEL DE COMBUSTIBLE:
                 </span> {{ fuelLevelToFraction($attention->fuelLevel) }}</p>
-        <p class="p10 gris font-14"> <span style="font-weight:bold;">ASESOR DE SERVICIO:
+            <p class="p10 gris font-14"> <span style="font-weight:bold;">ASESOR DE SERVICIO:
                 </span> {{ $attention->worker->person->names . ' ' . $attention->worker->person->fatherSurname }}</p>
+        </div>
+
+
     </div>
 
 
-</div>
-
-
-<img class="footerImage" src="{{ asset('img/degraded.png') }}" alt="degraded">
+    <img class="footerImage" src="{{ asset('img/degraded.png') }}" alt="degraded">
 </body>
 
 </html>

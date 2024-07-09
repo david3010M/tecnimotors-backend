@@ -70,16 +70,16 @@ class WorkerController extends Controller
         }
 
         // Filtro por specialty si se proporciona y existe
-        if ($speciality_id != '') {
-            $specialty = Specialty::find($speciality_id);
-            if (!$specialty) {
-                return response()->json(['message' => 'Specialty not found'], 404);
-            }
+        // if ($speciality_id != '') {
+        //     $specialty = Specialty::find($speciality_id);
+        //     if (!$specialty) {
+        //         return response()->json(['message' => 'Specialty not found'], 404);
+        //     }
 
-            $query->whereHas('specialties', function ($query) use ($speciality_id) {
-                $query->where('specialties.id', $speciality_id);
-            });
-        }
+        //     $query->whereHas('specialties', function ($query) use ($speciality_id) {
+        //         $query->where('specialties.id', $speciality_id);
+        //     });
+        // }
 
         // Ejecución de la consulta con paginación y carga de relaciones
         $workers = $query->with(['person'])->where('state', true)->simplePaginate(50);

@@ -39,7 +39,7 @@ class TypeUserController extends Controller
 
     public function index()
     {
-        $typeUsers = TypeUser::whereNotIn('id', [1, 2, 3])->simplePaginate(15);
+        $typeUsers = TypeUser::whereNotIn('id', [1])->simplePaginate(15);
         $typeUsers->getCollection()->transform(function ($typeUser) {
             $typeUser->optionMenuAccess = $typeUser->getAccess($typeUser->id);
             return $typeUser;

@@ -41,7 +41,7 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        return response()->json(Service::simplePaginate(15));
+        return response()->json(Service::get());
     }
 
     /**

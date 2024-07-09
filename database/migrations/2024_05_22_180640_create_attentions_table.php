@@ -16,6 +16,8 @@ return new class extends Migration
         Schema::create('attentions', function (Blueprint $table) {
             $table->id();
             $table->string('number');
+            $table->decimal('correlativo');
+
             $table->dateTime('arrivalDate')->nullable();
             $table->dateTime('deliveryDate')->nullable();
             $table->string('observations')->nullable();

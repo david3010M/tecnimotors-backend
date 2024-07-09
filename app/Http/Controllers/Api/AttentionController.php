@@ -319,6 +319,7 @@ class AttentionController extends Controller
     {
 
         $validator = validator()->make($request->all(), [
+            'correlativo' => 'required|numeric',
             'arrivalDate' => 'required',
             'deliveryDate' => 'required',
             'observations' => 'nullable',
@@ -350,6 +351,7 @@ class AttentionController extends Controller
 
         $data = [
             'number' => $tipo . "-" . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT),
+            'correlativo' => $request->input('correlativo') ?? null,
             'arrivalDate' => $request->input('arrivalDate') ?? null,
             'deliveryDate' => $request->input('deliveryDate') ?? null,
             'observations' => $request->input('observations') ?? null,
@@ -553,6 +555,8 @@ class AttentionController extends Controller
 
         $validator = validator()->make($request->all(), [
             'arrivalDate' => 'required',
+            'correlativo' => 'required|numeric',
+
             'deliveryDate' => 'required',
             'observations' => 'nullable',
             'fuelLevel' => 'required',
@@ -573,6 +577,7 @@ class AttentionController extends Controller
         }
 
         $data = [
+            'correlativo' => $request->input('correlativo') ?? null,
             'arrivalDate' => $request->input('arrivalDate') ?? null,
             'deliveryDate' => $request->input('deliveryDate') ?? null,
             'observations' => $request->input('observations') ?? null,

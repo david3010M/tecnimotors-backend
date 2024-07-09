@@ -50,6 +50,8 @@ class Attention extends Model
 
     protected $fillable = [
         'number',
+        'correlativo',
+
         'arrivalDate',
         'deliveryDate',
         'observations',
