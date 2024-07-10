@@ -691,4 +691,53 @@ class AttentionController extends Controller
 
         return response()->json(['message' => 'Attention deleted']);
     }
+
+/**
+ *  Retrieve the next correlativo value
+ * @OA\Get (
+ *     path="/tecnimotors-backend/public/api/getCorrelative",
+ *     tags={"Attention"},
+ *     summary="Get next correlativo",
+      *     security={{"bearerAuth":{}}},
+ *     @OA\Response(
+ *         response=200,
+ *         description="Next correlativo retrieved successfully",
+ *         @OA\JsonContent(
+ *             @OA\Property( property="correlativo", type="string", example="123456" )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="User not authenticated",
+ *         @OA\JsonContent(
+ *             @OA\Property(
+ *                 property="message",
+ *                 type="string",
+ *                 example="Unauthorized."
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=400,
+ *         description="Invalid request",
+ *         @OA\JsonContent(
+ *             @OA\Property(
+ *                 property="message",
+ *                 type="string",
+ *                 example="Invalid request."
+ *             )
+ *         )
+ *     )
+ * )
+ */
+    public function getCorrelativo()
+    {
+        $tipo = 'OTRS';
+        $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM attentions a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
+        $siguienteNum = (int) $resultado;
+        return response()->json([
+            'correlativo' => $siguienteNum,
+        ]);
+    }
+
 }

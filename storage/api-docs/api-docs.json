@@ -652,6 +652,71 @@
                 ]
             }
         },
+        "/tecnimotors-backend/public/api/getCorrelative": {
+            "get": {
+                "tags": [
+                    "Attention"
+                ],
+                "summary": "Get next correlativo",
+                "description": "Retrieve the next correlativo value",
+                "operationId": "e524856bb2270183fae1fe7a7205f23d",
+                "responses": {
+                    "200": {
+                        "description": "Next correlativo retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "correlativo": {
+                                            "type": "string",
+                                            "example": "123456"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "User not authenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid request."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/tecnimotors-backend/public/api/bank": {
             "get": {
                 "tags": [

@@ -204,6 +204,8 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::post('storeByOccupation', [WorkerController::class, 'storeByOccupation']);
     Route::put('updateByOccupation/{id}', [WorkerController::class, 'updateByOccupation']);
 
+    Route::get('getCorrelative', [AttentionController::class, 'getCorrelativo']);
+
 //    VEHICLE MODEL
     Route::resource('vehicleModel', VehicleModelController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'vehicleModel.index', 'store' => 'vehicleModel.store', 'show' => 'vehicleModel.show',
