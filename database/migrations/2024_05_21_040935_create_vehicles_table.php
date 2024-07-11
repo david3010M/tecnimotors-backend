@@ -15,7 +15,7 @@ return new class extends Migration {
         Schema::create('vehicles', function (Blueprint $table) {
             $table->id();
             $table->string('plate');
-            $table->unsignedDecimal('km')->nullable();
+//            $table->unsignedDecimal('km')->nullable();
             $table->integer('year')->nullable();
             $table->string('model')->nullable();
             $table->string('chasis')->nullable();

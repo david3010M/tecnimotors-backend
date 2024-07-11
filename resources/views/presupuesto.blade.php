@@ -355,7 +355,7 @@
                 Km
             </th>
             <td class="w20">
-                {{ $budgetsheet->attention->vehicle->km }}
+                {{ $budgetsheet->attention->km }}
             </td>
         </tr>
 

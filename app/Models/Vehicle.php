@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *      type="object",
  *      @OA\Property(property="id", type="integer", example="1"),
  *      @OA\Property(property="plate", type="string", example="ABC123"),
- *      @OA\Property(property="km", type="number", example="15000"),
  *      @OA\Property(property="year", type="integer", example="2020"),
  *      @OA\Property(property="model", type="string", example="Model 1"),
  *      @OA\Property(property="chasis", type="string", example="Chasis 1"),
@@ -29,7 +28,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     type="object",
  *     @OA\Property(property="id", type="integer", example="1"),
  *     @OA\Property(property="plate", type="string", example="ABC123"),
- *     @OA\Property(property="km", type="number", example="15000"),
  *     @OA\Property(property="year", type="integer", example="2020"),
  *     @OA\Property(property="model", type="string", example="Model 1"),
  *     @OA\Property(property="chasis", type="string", example="Chasis 1"),
@@ -47,7 +45,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *      schema="VehicleRequest",
  *      type="object",
  *      @OA\Property(property="plate", type="string", example="ABC123"),
- *      @OA\Property(property="km", type="number", example="15000"),
  *      @OA\Property(property="year", type="integer", example="2020"),
  *      @OA\Property(property="model", type="string", example="Model 1"),
  *      @OA\Property(property="chasis", type="string", example="Chasis 1"),
@@ -67,7 +64,6 @@ class Vehicle extends Model
 
     protected $fillable = [
         'plate',
-        'km',
         'year',
         'model',
         'chasis',

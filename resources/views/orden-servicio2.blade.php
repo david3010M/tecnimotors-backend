@@ -431,7 +431,7 @@
                 Km
             </th>
             <td class="w20">
-                {{ $attention->vehicle->km }}
+                {{ $attention->km }}
             </td>
         </tr>
 
