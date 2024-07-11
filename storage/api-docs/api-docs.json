@@ -14,9 +14,8 @@
                 "summary": "Create a amortization",
                 "operationId": "71f27ad18377855e00880b99ec3c867d",
                 "requestBody": {
-                    "required": true,
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
                                 "$ref": "#/components/schemas/AmortizationRequest"
                             }
@@ -13280,8 +13279,8 @@
                         "example": "2024-06-27 22:59:36"
                     },
                     "routeVoucher": {
-                        "type": "string",
-                        "example": "image"
+                        "type": "file",
+                        "format": "binary"
                     },
                     "numberVoucher": {
                         "type": "string",
@@ -13289,23 +13288,23 @@
                     },
                     "yape": {
                         "type": "number",
-                        "example": "100.00"
+                        "example": "0.00"
                     },
                     "deposit": {
                         "type": "number",
-                        "example": "100.00"
+                        "example": "10.00"
                     },
                     "cash": {
                         "type": "number",
-                        "example": "100.00"
+                        "example": "10.00"
                     },
                     "plin": {
                         "type": "number",
-                        "example": "100.00"
+                        "example": "0.00"
                     },
                     "card": {
                         "type": "number",
-                        "example": "100.00"
+                        "example": "0.00"
                     },
                     "comment": {
                         "type": "string",
@@ -13321,7 +13320,7 @@
                     },
                     "person_id": {
                         "type": "integer",
-                        "example": "1"
+                        "example": "3"
                     },
                     "budgetSheet_id": {
                         "type": "integer",

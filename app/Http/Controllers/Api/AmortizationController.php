@@ -48,9 +48,11 @@ class AmortizationController extends Controller
      *     summary="Create a amortization",
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/AmortizationRequest")
-     *     ),
+     *           @OA\MediaType(
+     *               mediaType="multipart/form-data",
+     *               @OA\Schema(ref="#/components/schemas/AmortizationRequest")
+     *           )
+     *       ),
      *     @OA\Response(response=200, description="Successful operation" ),
      *     @OA\Response(response=422, description="Validation error", @OA\JsonContent(ref="#/components/schemas/ValidationError")),
      *     @OA\Response(response=401, description="Unauthenticated", @OA\JsonContent(ref="#/components/schemas/Unauthenticated"))
@@ -149,6 +151,14 @@ class AmortizationController extends Controller
 //        PAYMENT CONCEPT
         $paymentConcept = ConceptPay::find(7);
 
+        $image = $request->file('routeVoucher');
+
+        $bankPayment = $request->input('isBankPayment');
+//        IF IMAGE
+        if ($image) {
+            $bankPayment = 1;
+        }
+
 //        DATA MOVIMENT
         $dataMoviment = [
             'sequentialNumber' => $tipo . '-' . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT),
@@ -160,7 +170,7 @@ class AmortizationController extends Controller
             'card' => $request->input('card') ?? 0,
             'plin' => $request->input('plin') ?? 0,
 
-            'isBankPayment' => $request->input('isBankPayment'),
+            'isBankPayment' => $bankPayment,
             'routeVoucher' => $routeVoucher,
             'numberVoucher' => $numberVoucher,
             'typeDocument' => $paymentConcept->type,
