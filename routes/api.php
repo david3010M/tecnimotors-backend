@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AmortizationController;
 use App\Http\Controllers\Api\AttentionController;
 use App\Http\Controllers\Api\BankController;
 use App\Http\Controllers\Api\BrandController;
@@ -215,4 +216,9 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::resource('commitment', CommitmentController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'commitment.index', 'store' => 'commitment.store', 'show' => 'commitment.show',
             'update' => 'commitment.update', 'destroy' => 'commitment.destroy']);
+
+//    AMORTIZATION
+    Route::resource('amortization', AmortizationController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'amortization.index', 'store' => 'amortization.store', 'show' => 'amortization.show',
+            'update' => 'amortization.update', 'destroy' => 'amortization.destroy']);
 });

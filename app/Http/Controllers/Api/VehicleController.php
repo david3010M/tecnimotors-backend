@@ -99,7 +99,7 @@ class VehicleController extends Controller
             'motor' => 'required|string',
             'person_id' => 'required|int',
             'typeVehicle_id' => 'required|int',
-            'brand_id' => 'required|int',
+            'vehicle_model_id' => 'required|int',
         ]);
 
         if ($validator->fails()) {
@@ -117,7 +117,7 @@ class VehicleController extends Controller
             'motor' => $request->input('motor'),
             'person_id' => $request->input('person_id'),
             'typeVehicle_id' => $request->input('typeVehicle_id'),
-            'brand_id' => $request->input('brand_id'),
+            'vehicle_model_id' => $request->input('vehicle_model_id'),
         ];
 
         $vehicle = Vehicle::create($data);

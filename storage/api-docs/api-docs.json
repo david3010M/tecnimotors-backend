@@ -6,6 +6,55 @@
         "version": "1.0"
     },
     "paths": {
+        "/tecnimotors-backend/public/api/amortization": {
+            "post": {
+                "tags": [
+                    "Amortization"
+                ],
+                "summary": "Create a amortization",
+                "operationId": "71f27ad18377855e00880b99ec3c867d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AmortizationRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Unauthenticated"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/tecnimotors-backend/public/api/attention": {
             "get": {
                 "tags": [
@@ -13178,6 +13227,109 @@
                     },
                     "typeuser": {
                         "$ref": "#/components/schemas/TypeUser"
+                    }
+                },
+                "type": "object"
+            },
+            "Amortization": {
+                "title": "Amortization",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "sequentialNumber": {
+                        "type": "string",
+                        "example": "123456"
+                    },
+                    "amount": {
+                        "type": "number",
+                        "example": "100.00"
+                    },
+                    "paymentDate": {
+                        "type": "string",
+                        "example": "2024-06-27 22:59:36"
+                    },
+                    "moviment_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "commitment_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "example": "2024-06-27 22:59:36"
+                    }
+                },
+                "type": "object"
+            },
+            "AmortizationRequest": {
+                "title": "AmortizationRequest",
+                "required": [
+                    "paymentDate",
+                    "isBankPayment",
+                    "person_id",
+                    "budgetSheet_id",
+                    "commitment_id"
+                ],
+                "properties": {
+                    "paymentDate": {
+                        "type": "string",
+                        "example": "2024-06-27 22:59:36"
+                    },
+                    "routeVoucher": {
+                        "type": "string",
+                        "example": "image"
+                    },
+                    "numberVoucher": {
+                        "type": "string",
+                        "example": "123456"
+                    },
+                    "yape": {
+                        "type": "number",
+                        "example": "100.00"
+                    },
+                    "deposit": {
+                        "type": "number",
+                        "example": "100.00"
+                    },
+                    "cash": {
+                        "type": "number",
+                        "example": "100.00"
+                    },
+                    "plin": {
+                        "type": "number",
+                        "example": "100.00"
+                    },
+                    "card": {
+                        "type": "number",
+                        "example": "100.00"
+                    },
+                    "comment": {
+                        "type": "string",
+                        "example": "comment"
+                    },
+                    "isBankPayment": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "bank_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "person_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "budgetSheet_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "commitment_id": {
+                        "type": "integer",
+                        "example": "1"
                     }
                 },
                 "type": "object"
