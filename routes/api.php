@@ -161,8 +161,11 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
         ->names(['index' => 'conceptPay.index', 'store' => 'conceptPay.store', 'show' => 'conceptPay.show', 'update' => 'conceptPay.update', 'destroy' => 'conceptPay.destroy']);
 
 //    SPECIALTY
-    Route::resource('specialty', SpecialtyController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
-        ->names(['index' => 'specialty.index', 'store' => 'specialty.store', 'show' => 'specialty.show', 'update' => 'specialty.update', 'destroy' => 'specialty.destroy']);
+    Route::resource('specialty', SpecialtyController::class)->only(['index', 'show', 'store',
+        'update', 'destroy'])
+        ->names(['index' => 'specialty.index', 'store' => 'specialty.store',
+            'show' => 'specialty.show', 'update' => 'specialty.update',
+            'destroy' => 'specialty.destroy']);
 //    SPECIALTY
     Route::resource('specialtyPerson', SpecialtyPersonController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'specialtyPerson.index', 'store' => 'specialtyPerson.store', 'show' => 'specialtyPerson.show', 'update' => 'specialtyPerson.update', 'destroy' => 'specialtyPerson.destroy']);
@@ -182,9 +185,15 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::get('detailAttention/{id}', [DetailAttentionController::class, 'show'])->name('detailAttention.show');
     Route::put('detailAttention/{id}', [DetailAttentionController::class, 'update'])->name('detailAttention.update');
 
-    Route::resource('budgetSheet', BudgetSheetController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
-        ->names(['index' => 'budgetSheet.index', 'store' => 'budgetSheet.store', 'show' => 'budgetSheet.show',
-            'update' => 'budgetSheet.update', 'destroy' => 'budgetSheet.destroy']);
+    Route::resource('budgetSheet', BudgetSheetController::class)
+    ->only(['index', 'show', 'store', 'update', 'destroy'])
+    ->names([
+        'index' => 'budgetSheet.index',
+        'store' => 'budgetSheet.store',
+        'show' => 'budgetSheet.show',
+        'update' => 'budgetSheet.update',
+        'destroy' => 'budgetSheet.destroy'
+    ]);
 
     Route::get('taskByDetailAttention/{id}', [TaskController::class, 'getTaskByDetailAttention']);
     Route::post('taskEvidence/{id}', [TaskController::class, 'storeEvidence']);

@@ -149,7 +149,7 @@ class BudgetSheetController extends Controller
         $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM budget_sheets a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
         $siguienteNum = (int) $resultado;
 
-        $percentageDiscount = floatval($request->input('percentageDiscount', 0))/100;
+        $percentageDiscount = floatval($request->input('percentageDiscount', 0)) / 100;
         $subtotal = floatval($attention->total);
         $discount = $subtotal * $percentageDiscount;
 
@@ -175,9 +175,9 @@ class BudgetSheetController extends Controller
     }
 
     /**
-     * Update a budgedSheet
+     * Update a budgetSheet
      * @OA\Put (
-     *     path="/tecnimotors-backend/public/api/budgedSheet/{id}",
+     *     path="/tecnimotors-backend/public/api/budgetSheet/{id}",
      *     tags={"BudgetSheet"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
@@ -228,13 +228,14 @@ class BudgetSheetController extends Controller
      */
     public function update(Request $request, int $id)
     {
+
         $object = budgetSheet::find($id);
         if (!$object) {
             return response()->json(['message' => 'Budget Sheet not found.'], 404);
         }
 
         $validator = validator()->make($request->all(), [
-            'attention_id' => 'required|exists:attentions,id',
+            'attention_id' => 'nullable|exists:attentions,id',
         ]);
 
         if ($validator->fails()) {
@@ -243,7 +244,7 @@ class BudgetSheetController extends Controller
 
         $attention = Attention::find($object->attention_id);
 
-        $percentageDiscount = floatval($request->input('percentageDiscount', 0))/100;
+        $percentageDiscount = floatval($request->input('percentageDiscount', 0)) / 100;
         $subtotal = floatval($attention->total);
         $discount = $subtotal * $percentageDiscount;
 
@@ -258,7 +259,7 @@ class BudgetSheetController extends Controller
             'total' => $total ?? 0.0,
             'discount' => $discount ?? 0.0,
             'subtotal' => $subtotal ?? 0.0,
-            'igv' => $request->input('igv') ?? 0.0,
+            'igv' => $igv ?? 0.0,
 
         ];
 

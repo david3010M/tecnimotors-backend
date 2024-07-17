@@ -698,7 +698,7 @@ class AttentionController extends Controller
  *     path="/tecnimotors-backend/public/api/getCorrelative",
  *     tags={"Attention"},
  *     summary="Get next correlativo",
-      *     security={{"bearerAuth":{}}},
+ *     security={{"bearerAuth":{}}},
  *     @OA\Response(
  *         response=200,
  *         description="Next correlativo retrieved successfully",
