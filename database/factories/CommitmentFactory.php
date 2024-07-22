@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -28,14 +29,28 @@ class CommitmentFactory extends Factory
          * $table->timestamps();
          * $table->softDeletes();
          */
+
+        $typePayment = $this->faker->randomElement(['Semanal', 'Quincenal', 'Mensual']);
+        $dues = $this->faker->randomNumber(1, 1);
+        if ($typePayment === 'Semanal') {
+            $paymentDate = Carbon::now()->addWeeks($dues);
+        } elseif ($typePayment === 'Quincenal') {
+            $paymentDate = Carbon::now()->addWeeks($dues * 2);
+        } else {
+            $paymentDate = Carbon::now()->addMonths($dues);
+        }
+
+
         return [
-            'dues' => $this->faker->randomNumber(2),
+            'dues' => $dues,
+            'payment_pending' => $dues,
             'amount' => $this->faker->randomFloat(2, 0, 1000),
             'balance' => $this->faker->randomFloat(2, 0, 1000),
-            'payment_date' => $this->faker->dateTime(),
+            'payment_date' => $paymentDate,
 //            'payment_method' => $this->faker->randomElement(['Yape', 'Plin', 'Efectivo', 'Tarjeta']),
-            'payment_type' => $this->faker->randomElement(['Semanal', 'Quincenal', 'Mensual']),
-            'status' => $this->faker->randomElement(['pending', 'paid']),
+            'payment_type' => $typePayment,
+//            'status' => $this->faker->randomElement(['pending', 'paid']),
+            'status' => 'Pendiente',
             'budget_sheet_id' => $this->faker->randomNumber(),
         ];
     }

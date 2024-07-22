@@ -19,6 +19,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *     @OA\Property(property="amount_paid", type="decimal", example="100.00"),
  *     @OA\Property(property="balance", type="decimal", example="900.00"),
  *     @OA\Property(property="dues", type="integer", example="10"),
+ *     @OA\Property(property="payment_pending", type="integer", example="1"),
  *     @OA\Property(property="status", type="string", example="Pendiente"),
  *     @OA\Property(property="budget_sheet_id", type="integer", example="1"),
  *     @OA\Property(property="created_at", type="string", example="2024-06-27 22:59:36")
@@ -68,6 +69,7 @@ class CommitmentResource extends JsonResource
             'amount_paid' => $this->amount,
             'balance' => $this->balance,
             'dues' => $this->dues,
+            'payment_pending' => $this->payment_pending,
             'status' => $this->status,
             'budget_sheet_id' => $this->budget_sheet_id,
             'created_at' => $this->created_at,

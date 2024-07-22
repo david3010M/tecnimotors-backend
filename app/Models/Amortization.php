@@ -58,6 +58,11 @@ class Amortization extends Model
         'created_at',
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d',
+    ];
+
+
     protected $hidden = ['updated_at', 'deleted_at'];
 
     public function moviment()

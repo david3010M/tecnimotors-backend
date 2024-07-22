@@ -15,6 +15,7 @@ return new class extends Migration {
         Schema::create('commitments', function (Blueprint $table) {
             $table->id();
             $table->integer('dues'); // QUANTITY OF PAYMENTS
+            $table->integer('payment_pending')->default(1); // PAYMENT NUMBER
             $table->decimal('amount'); // INITIAL PAYMENT
             $table->decimal('balance'); // REMAINING BALANCE
             $table->dateTime('payment_date'); // DATE OF PAYMENT

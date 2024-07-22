@@ -43,6 +43,7 @@ class Commitment extends Model
 
     protected $fillable = [
         'dues',
+        'payment_pending',
         'amount',
         'balance',
         'payment_date',

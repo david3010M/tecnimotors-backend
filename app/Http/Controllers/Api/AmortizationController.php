@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Storage;
 
 class AmortizationController extends Controller
 {
-    public function index(Request $request)
+    public function amortizationsByCommitmentId(Request $request, int $id)
     {
         $validator = validator()->make($request->query(), [
             'per_page' => 'nullable|integer',
@@ -29,7 +29,7 @@ class AmortizationController extends Controller
         $per_page = $request->query('per_page', 10);
         $all = $request->query('all') == 'true';
 
-        $amortizations = Amortization::with(['moviment', 'commitment']);
+        $amortizations = Amortization::where('commitment_id', $id)->orderBy('created_at', 'desc');
 
         if ($all) {
             $amortizations = $amortizations->get();
@@ -38,7 +38,6 @@ class AmortizationController extends Controller
         }
 
         return response()->json($amortizations);
-
     }
 
     /**
@@ -135,16 +134,31 @@ class AmortizationController extends Controller
 //        TOTAL
         $total = $efectivo + $yape + $plin + $tarjeta + $deposito;
 
-        if ($total == 0) {
+//       COMMITMENT
+        $commitment = Commitment::find($request->input('commitment_id'));
+
+        if ($commitment->balance == 0) {
+            return response()->json(["error" => "El compromiso ya fue pagado",], 422);
+        }
+
+//        REDONDEAR DIVISION
+        $paymentQuote = round($commitment->balance / $commitment->payment_pending, 2);
+
+        if ($total < $paymentQuote) {
             return response()->json([
-                "error" => "Must enter at least one payment method",
+                "error" => "El monton minimo a pagar es S/ " . number_format($paymentQuote, 2),
             ], 422);
         }
 
-        $commitment = Commitment::find($request->input('commitment_id'));
+        if ($total == 0) {
+            return response()->json([
+                "error" => "El monto a pagar no puede ser 0",
+            ], 422);
+        }
+
         if ($commitment->balance < $total) {
             return response()->json([
-                "error" => "The amount to be paid is greater than the balance of the commitment",
+                "error" => "El monto a pagar no puede ser mayor al saldo pendiente de S/ " . number_format($commitment->balance, 2),
             ], 422);
         }
 
@@ -182,7 +196,7 @@ class AmortizationController extends Controller
             'person_id' => $request->input('person_id'),
             'user_id' => auth()->id(),
             'bank_id' => $bank_id,
-            'budgetSheet_id' => $request->input('budgetSheet_id'),
+            'budgetSheet_id' => $request->input('budgetSheet_id'), // SE PUEDE CAMBIAR POR EL OBJETO COMMITMENT
         ];
 
 //        CREATE MOVIMENT
@@ -228,6 +242,7 @@ class AmortizationController extends Controller
 
 //        UPDATE COMMITMENT
         $commitment->balance -= $total;
+        $commitment->payment_pending = $commitment->balance == 0 ? 0 : $commitment->payment_pending - 1;
         $commitment->status = $commitment->balance == 0 ? 'Pagado' : 'Pendiente';
         $commitment->save();
 

@@ -186,14 +186,14 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::put('detailAttention/{id}', [DetailAttentionController::class, 'update'])->name('detailAttention.update');
 
     Route::resource('budgetSheet', BudgetSheetController::class)
-    ->only(['index', 'show', 'store', 'update', 'destroy'])
-    ->names([
-        'index' => 'budgetSheet.index',
-        'store' => 'budgetSheet.store',
-        'show' => 'budgetSheet.show',
-        'update' => 'budgetSheet.update',
-        'destroy' => 'budgetSheet.destroy'
-    ]);
+        ->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names([
+            'index' => 'budgetSheet.index',
+            'store' => 'budgetSheet.store',
+            'show' => 'budgetSheet.show',
+            'update' => 'budgetSheet.update',
+            'destroy' => 'budgetSheet.destroy'
+        ]);
 
     Route::get('taskByDetailAttention/{id}', [TaskController::class, 'getTaskByDetailAttention']);
     Route::post('taskEvidence/{id}', [TaskController::class, 'storeEvidence']);
@@ -226,8 +226,7 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
         ->names(['index' => 'commitment.index', 'store' => 'commitment.store', 'show' => 'commitment.show',
             'update' => 'commitment.update', 'destroy' => 'commitment.destroy']);
 
-//    AMORTIZATION
-    Route::resource('amortization', AmortizationController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
-        ->names(['index' => 'amortization.index', 'store' => 'amortization.store', 'show' => 'amortization.show',
-            'update' => 'amortization.update', 'destroy' => 'amortization.destroy']);
+//    AMORTIZATION INDEX
+    Route::post('amortization', [AmortizationController::class, 'store'])->name('amortization.store');
+    Route::get('amortizationsByCommitmentId/{id}', [AmortizationController::class, 'amortizationsByCommitmentId']);
 });
