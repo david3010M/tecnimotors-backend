@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->string('name');
             $table->integer('quantity');
             $table->decimal('saleprice', 10, 2);
-            $table->decimal('time', 10, 2);
+            $table->string('time');
             $table->foreignId('specialty_id')->nullable()->unsigned()->constrained('specialties');
             $table->timestamps();
             $table->softDeletes();
