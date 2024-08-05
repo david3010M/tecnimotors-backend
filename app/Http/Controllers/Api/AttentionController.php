@@ -669,13 +669,6 @@ class AttentionController extends Controller
      *             @OA\Property(property="message", type="string", example="Unauthenticated")
      *         )
      *     ),
-     *     @OA\Response(
-     *         response=409,
-     *         description="There are services that are already being processed",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="There are services that are already being processed")
-     *         )
-     *     ),
      * )
      */
     public function destroy(int $id)
