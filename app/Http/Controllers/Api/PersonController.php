@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Attention;
 use App\Models\Person;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -250,7 +251,6 @@ class PersonController extends Controller
      *              @OA\Property(property="message", type="string", example="Unauthenticated.")
      *          )
      *     ),
-
      * )
      *
      */
@@ -355,20 +355,24 @@ class PersonController extends Controller
      *             )
      *         )
      *     ),
-
      * )
      *
      */
     public function destroy(int $id)
     {
-        $object = Person::find($id);
+        $object = Person::with('vehicles.attentions')->find($id);
         if (!$object) {
-            return response()->json(
-                ['message' => 'Person not found'], 404
-            );
+            return response()->json(['message' => 'Person not found'], 404);
         }
-        //REVISAR ASOCIACIONES
+
+        foreach ($object->vehicles as $vehicle) {
+            if ($vehicle->attentions->count() > 0) {
+                return response()->json(['message' => 'Person has attentions'], 409);
+            }
+        }
+
         $object->delete();
+        return response()->json(['message' => 'Person deleted successfully']);
     }
 
 }

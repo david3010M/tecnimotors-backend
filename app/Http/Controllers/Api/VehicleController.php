@@ -316,9 +316,9 @@ class VehicleController extends Controller
             return response()->json(['message' => 'Vehicle not found'], 404);
         }
 
-//        if ($vehicle->attentions()->count() > 0) {
-//            return response()->json(['message' => 'Vehicle has attentions'], 409);
-//        }
+        if ($vehicle->attentions()->count() > 0) {
+            return response()->json(['message' => 'Vehicle has attentions'], 409);
+        }
 
         $vehicle->delete();
 

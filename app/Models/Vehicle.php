@@ -101,8 +101,8 @@ class Vehicle extends Model
 //        return $this->belongsTo(Brand::class);
 //    }
 
-//    public function attentions()
-//    {
-//        return $this->hasMany(Attention::class);
-//    }
+    public function attentions()
+    {
+        return $this->hasMany(Attention::class);
+    }
 }

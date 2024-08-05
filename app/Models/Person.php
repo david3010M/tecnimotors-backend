@@ -28,11 +28,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     @OA\Property(property="created_at", type="string", format="date-time", example="2023-01-01T00:00:00Z"),
  * )
  */
-
 class Person extends Model
 {
 
     use SoftDeletes;
+
     protected $fillable = [
         'id',
         'typeofDocument',
@@ -56,6 +56,11 @@ class Person extends Model
         'updated_at',
         'deleted_at',
     ];
+
+    public function vehicles()
+    {
+        return $this->hasMany(Vehicle::class);
+    }
 
 
 }
