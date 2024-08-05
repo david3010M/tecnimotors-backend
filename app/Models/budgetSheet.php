@@ -73,4 +73,10 @@ class budgetSheet extends Model
         return $object;
     }
 
+//    commitment
+    public function commitments()
+    {
+        return $this->hasMany(Commitment::class);
+    }
+
 }

@@ -108,7 +108,6 @@ class BudgetSheetController extends Controller
      *              @OA\Property(property="attention_id", type="integer", example=1),
      *              @OA\Property(property="paymentType", type="string", example="Al Contado"),
      *              @OA\Property(property="percentageDiscount", type="decimal", example=0),
-
      *
      *          )
      *     ),
@@ -147,7 +146,7 @@ class BudgetSheetController extends Controller
 
         $tipo = 'PRES';
         $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM budget_sheets a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-        $siguienteNum = (int) $resultado;
+        $siguienteNum = (int)$resultado;
 
         $percentageDiscount = floatval($request->input('percentageDiscount', 0)) / 100;
         $subtotal = floatval($attention->total);
@@ -191,10 +190,8 @@ class BudgetSheetController extends Controller
      *          required=true,
      *          @OA\JsonContent(
      *              required={"attention_id"},
-
      *              @OA\Property(property="paymentType", type="string", example="Al Contado"),
      *              @OA\Property(property="percentageDiscount", type="decimal", example=0),
-
      *
      *          )
      *     ),
@@ -320,7 +317,9 @@ class BudgetSheetController extends Controller
             return response()->json(['message' => 'BudgetSheet not found'], 404);
         }
 
-        //Verificar relaciones con amoritzaciones
+        if ($budgetSheet->commitments()->count() > 0) {
+            return response()->json(['message' => 'El presupuesto tiene compromisos asociados'], 409);
+        }
 
         $budgetSheet->delete();
 

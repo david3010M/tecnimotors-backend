@@ -13144,6 +13144,10 @@
                         "type": "integer",
                         "example": "10"
                     },
+                    "payment_pending": {
+                        "type": "integer",
+                        "example": "1"
+                    },
                     "status": {
                         "type": "string",
                         "example": "Pendiente"

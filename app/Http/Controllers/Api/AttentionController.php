@@ -117,42 +117,42 @@ class AttentionController extends Controller
         return response()->json($object);
     }
 
-/**
- * Get a single Attention by number
- * @OA\Get (
- *     path="/tecnimotors-backend/public/api/searchByNumber/{number}",
- *     tags={"Attention"},
- *     security={{"bearerAuth":{}}},
- *     @OA\Parameter(
- *         name="number",
- *         in="path",
- *         required=true,
- *         description="Attention number in the format OTRS-00000001",
- *         @OA\Schema(type="string", example="OTRS-00000001")
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Attention data",
- *         @OA\JsonContent(ref="#/components/schemas/Attention")
- *     ),
- *     @OA\Response(
- *         response=404,
- *         description="Attention not found",
- *         @OA\JsonContent(
- *             @OA\Property(property="message", type="string", example="Attention not found")
- *         )
- *     ),
- *     @OA\Response(
- *         response=401,
- *         description="Unauthorized",
- *         @OA\JsonContent(
- *             @OA\Property(
- *                 property="message", type="string", example="Unauthenticated"
- *             )
- *         )
- *     )
- * )
- */
+    /**
+     * Get a single Attention by number
+     * @OA\Get (
+     *     path="/tecnimotors-backend/public/api/searchByNumber/{number}",
+     *     tags={"Attention"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="number",
+     *         in="path",
+     *         required=true,
+     *         description="Attention number in the format OTRS-00000001",
+     *         @OA\Schema(type="string", example="OTRS-00000001")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Attention data",
+     *         @OA\JsonContent(ref="#/components/schemas/Attention")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Attention not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Attention not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="message", type="string", example="Unauthenticated"
+     *             )
+     *         )
+     *     )
+     * )
+     */
 
     public function searchByNumber($number)
     {
@@ -270,7 +270,6 @@ class AttentionController extends Controller
      *                     @OA\Property(property="worker_id", type="integer", example=1)
      *                 )
      *             ),
-
      *             @OA\Property(
      *                 property="elements",
      *                 type="array",
@@ -353,7 +352,7 @@ class AttentionController extends Controller
 
         $tipo = 'OTRS';
         $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM attentions a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-        $siguienteNum = (int) $resultado;
+        $siguienteNum = (int)$resultado;
 
         $data = [
             'number' => $tipo . "-" . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT),
@@ -669,7 +668,14 @@ class AttentionController extends Controller
      *         @OA\JsonContent(
      *             @OA\Property(property="message", type="string", example="Unauthenticated")
      *         )
-     *     )
+     *     ),
+     *     @OA\Response(
+     *         response=409,
+     *         description="There are services that are already being processed",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="There are services that are already being processed")
+     *         )
+     *     ),
      * )
      */
     public function destroy(int $id)
@@ -687,54 +693,58 @@ class AttentionController extends Controller
             return response()->json(['message' => 'Exiten Servicios que ya estan siendo Procesados'], 409);
         }
 
+        if ($object->budgetSheet()->count() > 0) {
+            return response()->json(['message' => 'La hoja de servicios tiene presupuesto asociado'], 409);
+        }
+
         $object->delete();
 
         return response()->json(['message' => 'Attention deleted']);
     }
 
-/**
- *  Retrieve the next correlativo value
- * @OA\Get (
- *     path="/tecnimotors-backend/public/api/getCorrelative",
- *     tags={"Attention"},
- *     summary="Get next correlativo",
- *     security={{"bearerAuth":{}}},
- *     @OA\Response(
- *         response=200,
- *         description="Next correlativo retrieved successfully",
- *         @OA\JsonContent(
- *             @OA\Property( property="correlativo", type="string", example="123456" )
- *         )
- *     ),
- *     @OA\Response(
- *         response=401,
- *         description="User not authenticated",
- *         @OA\JsonContent(
- *             @OA\Property(
- *                 property="message",
- *                 type="string",
- *                 example="Unauthorized."
- *             )
- *         )
- *     ),
- *     @OA\Response(
- *         response=400,
- *         description="Invalid request",
- *         @OA\JsonContent(
- *             @OA\Property(
- *                 property="message",
- *                 type="string",
- *                 example="Invalid request."
- *             )
- *         )
- *     )
- * )
- */
+    /**
+     *  Retrieve the next correlativo value
+     * @OA\Get (
+     *     path="/tecnimotors-backend/public/api/getCorrelative",
+     *     tags={"Attention"},
+     *     summary="Get next correlativo",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Next correlativo retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property( property="correlativo", type="string", example="123456" )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="User not authenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string",
+     *                 example="Unauthorized."
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid request",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string",
+     *                 example="Invalid request."
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function getCorrelativo()
     {
         $tipo = 'OTRS';
         $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM attentions a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-        $siguienteNum = (int) $resultado;
+        $siguienteNum = (int)$resultado;
         return response()->json([
             'correlativo' => $siguienteNum,
         ]);

@@ -87,6 +87,11 @@ class Attention extends Model
         return $this->belongsTo(Vehicle::class, 'vehicle_id');
     }
 
+    public function budgetSheet()
+    {
+        return $this->hasOne(BudgetSheet::class);
+    }
+
     public function technicians($id)
     {
         $attention = Attention::find($id);
@@ -126,7 +131,7 @@ class Attention extends Model
     public function details()
     {
         return $this->hasMany(DetailAttention::class)->
-            orderBy('type', 'desc')
+        orderBy('type', 'desc')
             ->with(['worker', 'service', 'product']);
     }
 
