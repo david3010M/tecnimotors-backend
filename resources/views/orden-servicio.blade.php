@@ -104,6 +104,9 @@
         .mb-2 {
             margin-bottom: 16px;
         }
+
+
+        
     </style>
 </head>
 
@@ -216,7 +219,7 @@
             <td>{{ $order->vehicle->motor }}</td>
 
             <th>Km.</th>
-            <td>{{ $order->km }}</td>
+            <td>{{ intval($order->km ) }}/td>
 
             <th>Año Fab.</th>
             <td>{{ $order->vehicle->year }}</td>

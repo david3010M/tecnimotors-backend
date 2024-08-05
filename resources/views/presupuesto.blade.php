@@ -418,6 +418,9 @@
                 <td colspan="6" class="blue strong center">REPUESTOS E INSUMOS</td>
             </tr>
 
+            @php
+                $idIncremental = 1;
+            @endphp
 
             @foreach ($budgetsheet->attention->details as $detail)
                 @if ($detail->type == 'Product')
