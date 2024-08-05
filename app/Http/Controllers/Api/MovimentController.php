@@ -274,6 +274,20 @@ class MovimentController extends Controller
             $typeDocument = 'Ingreso';
 
         } else if (($request->input('paymentConcept_id') == 2)) {
+
+            $resumenCaja = Moviment::selectRaw('
+            COALESCE(SUM(CASE WHEN cp.type = "Ingreso" THEN moviments.total ELSE 0 END), 0.00) as total_ingresos,
+            COALESCE(SUM(CASE WHEN cp.type = "Egreso" THEN moviments.total ELSE 0 END), 0.00) as total_egresos')
+                ->leftJoin('concept_pays as cp', 'moviments.paymentConcept_id', '=', 'cp.id')
+                ->where('moviments.id', '>=', $movCaja->id)
+                ->first();
+
+            $saldo = $resumenCaja->total_ingresos - $resumenCaja->total_egresos;
+
+            if ($saldo < 0) {
+                return response()->json(['error' => 'Saldo negativo'], 422);
+            }
+
             $letra = 'C';
             $status = 'Inactiva';
             $typeDocument = 'Egreso';
@@ -283,6 +297,7 @@ class MovimentController extends Controller
                 ->first();
             $movCaja->status = 'Inactiva';
             $movCaja->save();
+
         }
 
         $tipo = $letra . '001';
@@ -351,7 +366,7 @@ class MovimentController extends Controller
             $object->save();
         }
 
-        if (1) {
+        if (0) {
             if (!$image) {
                 return response()->json(['error' => $validator->errors()->first()], 422);
             }
