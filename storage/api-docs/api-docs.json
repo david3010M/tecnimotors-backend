@@ -11834,7 +11834,7 @@
                         "name": "brand_id",
                         "in": "query",
                         "description": "Brand ID",
-                        "required": true,
+                        "required": false,
                         "schema": {
                             "type": "integer"
                         }

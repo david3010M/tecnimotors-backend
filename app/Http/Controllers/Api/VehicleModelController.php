@@ -15,7 +15,7 @@ class VehicleModelController extends Controller
      *     summary="List of vehicle models",
      *     tags={"VehicleModel"},
      *     security={{"bearerAuth": {}}},
-     *     @OA\Parameter( name="brand_id", in="query", description="Brand ID", required=true, @OA\Schema(type="integer")),
+     *     @OA\Parameter( name="brand_id", in="query", description="Brand ID", required=false, @OA\Schema(type="integer")),
      *     @OA\Response( response=200, description="List of vehicle models", @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/VehicleModel"))),
      *     @OA\Response( response=422, description="Validation error", @OA\JsonContent(type="object", ref="#/components/schemas/ValidationError")),
      *     @OA\Response( response=401, description="Unauthenticated", @OA\JsonContent(type="object", ref="#/components/schemas/Unauthenticated")),
