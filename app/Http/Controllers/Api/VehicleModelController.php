@@ -25,7 +25,7 @@ class VehicleModelController extends Controller
     {
         $validator = validator()->make($request->all(), [
             'brand_id' => [
-                'required',
+                'nullable',
                 'integer',
                 Rule::exists('brands', 'id')->where('type', 'vehicle')
             ]
@@ -36,6 +36,11 @@ class VehicleModelController extends Controller
         }
 
         $idBrand = $request->query('brand_id');
+
+        if ($idBrand === null) {
+            $vehicleModels = VehicleModel::all();
+            return response()->json($vehicleModels);
+        }
 
         $vehicleModels = VehicleModel::where('brand_id', $idBrand)->get();
         return response()->json($vehicleModels);
