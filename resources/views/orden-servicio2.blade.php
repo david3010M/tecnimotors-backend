@@ -43,7 +43,8 @@
             padding-bottom: 30px;
         }
 
-        td, th {
+        td,
+        th {
             padding: 2px;
         }
 
@@ -76,8 +77,8 @@
             height: 60px;
         }
 
-        .titleAtencion {
-            font-size: 32px;
+        .titlePresupuesto {
+            font-size: 25px;
             font-weight: bolder;
             text-align: right;
             /*margin-top: 20px;*/
@@ -85,8 +86,8 @@
             color: #007AC2;
         }
 
-        .numberAtencion {
-            font-size: 20px;
+        .numberPresupuesto {
+            font-size: 17px;
             font-weight: bolder;
             text-align: right;
             /*margin-top: 20px;*/
@@ -109,7 +110,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 14px;
+            font-size: 10px;
         }
 
         .tableInfo {
@@ -118,11 +119,12 @@
 
         .tablePeople {
             margin-top: 30px;
-            font-size: 16px;
+            font-size: 10px;
             border: 1px solid #007AC2;
         }
 
-        .tablePeople td, .tablePeople th {
+        .tablePeople td,
+        .tablePeople th {
             border: 1px solid #007AC2;
         }
 
@@ -133,7 +135,7 @@
         }
 
         .tableDetail {
-            margin-top: 30px;
+            margin-top: 25px;
         }
 
         .p10 {
@@ -150,6 +152,10 @@
 
         .center {
             text-align: center;
+        }
+
+        .font-10 {
+            font-size: 10px;
         }
 
         .font-12 {
@@ -183,7 +189,7 @@
         .tableDetail th {
             background-color: #007AC2;
             color: white;
-            padding: 10px;
+            padding: 5px;
             font-weight: bolder;
         }
 
@@ -216,6 +222,11 @@
         }
 
         .sailPrice {
+            width: 15%;
+            text-align: right;
+        }
+
+        .sailTotal {
             width: 15%;
             text-align: right;
         }
@@ -283,7 +294,6 @@
         .w30 {
             width: 30%;
         }
-
     </style>
 </head>
 
@@ -299,8 +309,8 @@
                 <img class="logoImage" src="{{ asset('img/logoTecnimotors.png') }}" alt="logoTecnimotors">
             </td>
             <td class="right">
-                <div class="titleAtencion">ORDEN ATENCIÓN</div>
-                <div class="numberAtencion">N° {{ $attention->correlativo }}</div>
+                <div class="titlePresupuesto">ORDEN ATENCIÓN</div>
+                <div class="numberPresupuesto">N° {{ $attention->correlativo }}</div>
             </td>
         </tr>
         <tr>
@@ -381,7 +391,7 @@
         </tr>
     </table> --}}
 
-    <table class="tablePeople font-14">
+    <table class="tablePeople font-12">
         <tr>
             <th class="w10 blue">
                 Cliente
@@ -431,7 +441,7 @@
                 Km
             </th>
             <td class="w20">
-                {{ $attention->km }}
+                {{ intval($attention->km) }}
             </td>
         </tr>
 
@@ -453,21 +463,59 @@
     </table>
 
 
-    <table class="tableDetail">
+    <table class="tableDetail font-10">
         <tr>
-            <th class="description">Descripción</th>
-            <th class="quantity">Cantidad</th>
+            <th class="id">ITEM</th>
+            <th class="description">DESCRIPCIÓN DE SERVICIOS Y REPUESTOS</th>
+            <th class="unit">UND</th>
+            <th class="quantity">CANT</th>
+            <th class="unitPrice">V. UNIT</th>
+            <th class="sailPrice">V. VENTA</th>
         </tr>
 
+        <tr>
+            <td colspan="6" class="blue strong center">MANO DE OBRA Y FACTORÍA</td>
+        </tr>
+
+        @php
+            $idIncremental = 1;
+        @endphp
+
         @foreach ($attention->details as $detail)
-            <tr>
-                @if ($detail->type == 'Service')
-                    <td class="description">{{ $detail->service->name }}</td>
-                @elseif ($detail->type == 'Product')
+            @if ($detail->type == 'Service')
+                <tr>
+                    <td class="id">{{ $idIncremental }}</td> 
+                    <td class="description" colspan="2">{{ $detail->service->name }}</td>
+                    <td class="quantity">{{ $detail->quantity }}</td>
+                    <td class="sailPrice">S/ {{ $detail->saleprice }}</td>
+                    <td class="sailTotal">S/ {{ number_format($detail->saleprice * $detail->quantity, 2) }}</td>
+                </tr>
+                @php
+                    $idIncremental++;
+                @endphp
+            @endif
+        @endforeach
+
+        <tr>
+            <td colspan="6" class="blue strong center">REPUESTOS E INSUMOS</td>
+        </tr>
+
+        @php
+            $idIncremental = 1;
+        @endphp
+
+        @foreach ($attention->details as $detail)
+            @if ($detail->type == 'Product')
+                <tr>
+                    <td class="id">{{ $idIncremental }}</td> 
                     <td class="description">{{ $detail->product->name }}</td>
-                @endif
-                <td class="quantity">{{ $detail->quantity }}</td>
-            </tr>
+                    <td class="unit">{{ $detail->product->unit->code }}</td>
+                    <td class="quantity">{{ $detail->quantity }}</td>
+                    <td class="unitPrice">S/ {{ $detail->saleprice }}</td>
+                    <td class="sailTotal">S/ {{ number_format($detail->saleprice * $detail->quantity, 2) }}</td>
+
+                </tr>
+            @endif
         @endforeach
     </table>
 

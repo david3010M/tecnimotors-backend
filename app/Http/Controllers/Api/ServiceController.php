@@ -85,7 +85,7 @@ class ServiceController extends Controller
             ],
             'quantity' => 'required|integer',
             'saleprice' => 'required|numeric',
-            'time' => 'required|numeric',
+            'time' => 'required|string',
         ]);
 
         if ($validator->fails()) {
