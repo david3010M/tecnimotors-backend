@@ -57,7 +57,7 @@ class BrandController extends Controller
         $typeVehicle = $request->input('type');
 
         if ($validator->fails() || $typeVehicle == null) {
-            return response()->json(Brand::simplePaginate(50));
+            return response()->json(Brand::paginate(50));
         }
         return response()->json(Brand::where('type', $typeVehicle)->simplePaginate(50));
     }
