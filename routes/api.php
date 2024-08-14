@@ -208,6 +208,7 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::delete('moviment/{id}', [MovimentController::class, 'destroy']);
     Route::put('moviment/{id}', [MovimentController::class, 'update']);
     Route::get('reportCaja', [PdfController::class, 'reportCaja'])->name('reportCaja');
+    Route::get('movimentLast', [MovimentController::class, 'showLastMovPayment']);
 
     Route::get('typeUser/{id}/access', [TypeUserController::class, 'getAccess']);
 

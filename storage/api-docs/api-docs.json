@@ -5730,6 +5730,65 @@
                 ]
             }
         },
+        "/tecnimotors-backend/public/api/movimentLast": {
+            "get": {
+                "tags": [
+                    "Moviment"
+                ],
+                "summary": "Get the last moviment with paymentConcept_id = 2",
+                "description": "Retrieve the last moviment with paymentConcept_id = 2 for a specific box",
+                "operationId": "f179b6645b452949a58c4d8abaa8a1fb",
+                "responses": {
+                    "200": {
+                        "description": "Moviment found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MovimentRequest"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Moviment not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/tecnimotors-backend/public/api/optionMenu": {
             "get": {
                 "tags": [

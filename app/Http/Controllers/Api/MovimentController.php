@@ -840,4 +840,51 @@ class MovimentController extends Controller
         return response()->json($object, 200);
 
     }
+
+    /**
+     * @OA\Get(
+     *     path="/tecnimotors-backend/public/api/movimentLast",
+     *     summary="Get the last moviment with paymentConcept_id = 2",
+     *     tags={"Moviment"},
+     *     description="Retrieve the last moviment with paymentConcept_id = 2 for a specific box",
+     *     security={{"bearerAuth":{}}},
+ 
+     *     @OA\Response(
+     *         response=200,
+     *         description="Moviment found",
+     *         @OA\JsonContent(
+     *              type="object",
+     *              ref="#/components/schemas/MovimentRequest"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Moviment not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="msg", type="string", example="Unauthenticated.")
+     *         )
+     *     ),
+     * )
+     */
+    public function showLastMovPayment()
+    {
+
+        $object = Moviment::with(['paymentConcept', 'person', 'user.worker.person'])
+            ->where('paymentConcept_id', 2)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if (!$object) {
+            return response()->json(null, 200);
+        }
+
+        return response()->json($object, 200);
+    }
 }
