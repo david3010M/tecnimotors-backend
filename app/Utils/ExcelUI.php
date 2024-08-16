@@ -28,9 +28,9 @@ class ExcelUI
     /** @var Style[] $listStyles */
     private $listStyles;
 
-    public static $BACKGROUND_CELL_PRIMARY = 'D9E1F2';
-    public static $BACKGROUND_CELL_SECONDARY = 'B4C6E7';
-    public static $BACKGROUND_CELL_HEADER = '86B1D5';
+    public static $BACKGROUND_CELL_PRIMARY = 'C4E0F9';
+    public static $BACKGROUND_CELL_SECONDARY = 'F0F7FE';
+    public static $BACKGROUND_CELL_HEADER = '0F172A';
     public static $BACKGROUND_CELL_TOTAL = 'FFF2CC';
 
     public static $FONT_COLOR_DEFAULT = '000000';

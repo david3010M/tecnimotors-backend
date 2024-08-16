@@ -2,49 +2,39 @@
 
 namespace App\Utils;
 
-use App\Http\Resources\ReportAttendanceVehicleResource;
 use App\Models\Attention;
 use Carbon\Carbon;
 
 class UtilFunctions
 {
-    public static function generateReportMovementeClient($movements)
+    public static function generateReportMovementClient($movements, $client, $period = "-")
     {
         $excelUI = new ExcelUI(Constants::REPORTES, Constants::REPORTE_CAJA_CLIENTE_EXCEL);
-        $excelUI->changeStyleSelected(false, "C", ExcelUI::$GENERAL, true, null, true);
-        $excelUI->setDataCellString("D6", $contrato->numero ?? Constants::NOT_REQUESTED_TEXT);
-        $excelUI->setDataCellString("D7", $estado ?? Constants::NOT_REQUESTED_TEXT);
-        $excelUI->setDataCellString("D8", $tipo ?? Constants::NOT_REQUESTED_TEXT);
-        $excelUI->setDataCellString("D9", $entidad_financiera->nombre ?? Constants::NOT_REQUESTED_TEXT);
 
-        $excelUI->setDataCellString("G6", $fecha_inicio ?? Constants::NOT_REQUESTED_TEXT);
-        $excelUI->setDataCellString("G7", $fecha_termino ?? Constants::NOT_REQUESTED_TEXT);
-        $excelUI->setDataCellString("G8", $fecha_vigencia ?? Constants::NOT_REQUESTED_TEXT);
-        $excelUI->setDataCellString("G9", $proveedor->razon_denom ?? Constants::NOT_REQUESTED_TEXT);
-
-        $col = $excelUI->getColumnIndex("B");
-        $indexRow = 14;
+        $excelUI->setTextCell("D4", $period);
+        $excelUI->setTextCell("G4", $client);
+        $col = $excelUI->getColumnIndex("A");
+        $indexRow = 7;
         $index = 1;
 
         foreach ($movements as $movement) {
+            $movement = json_decode($movement->toJson());
             $indexCol = $col;
             if ($indexRow % 2 == 0) {
-                $excelUI->changeStyleSelected(false, "L", ExcelUI::$GENERAL, true, ExcelUI::$BACKGROUND_CELL_PRIMARY, true);
+                $excelUI->changeStyleSelected(false, "C", ExcelUI::$GENERAL, true, ExcelUI::$BACKGROUND_CELL_PRIMARY, true);
             } else {
-                $excelUI->changeStyleSelected(false, "L", ExcelUI::$GENERAL, true, ExcelUI::$BACKGROUND_CELL_SECONDARY, true);
+                $excelUI->changeStyleSelected(false, "C", ExcelUI::$GENERAL, true, ExcelUI::$BACKGROUND_CELL_SECONDARY, true);
             }
             $excelUI->setRowHeight($indexRow, 30);
             $excelUI->setDataCellByIndex($indexRow, $indexCol++, $index++);
-            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement);
-            $excelUI->setDataCellByIndex($indexRow, $indexCol++, Carbon::parse(1)->format(Constants::FORMAT_DATE_ORACLE));
-            $excelUI->setDataCellByIndex($indexRow, $indexCol++, Carbon::parse(1)->format(Constants::FORMAT_DATE_ORACLE));
-            $excelUI->setDataCellByIndex($indexRow, $indexCol++, Carbon::parse(1)->format(Constants::FORMAT_DATE_ORACLE));
-            $excelUI->setDataCellByIndex($indexRow, $indexCol++, 1);
-            $excelUI->setDataCellByIndex($indexRow, $indexCol++, 1);
-            $excelUI->setDataCellByIndex($indexRow, $indexCol++, 1);
-            $excelUI->setDataCellByIndex($indexRow, $indexCol++, 1);
-            $excelUI->setDataCellByIndex($indexRow, $indexCol++, 1);
-            $excelUI->setDataCellByIndex($indexRow, $indexCol++, 1);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->numero);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->fecha);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->concepto);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->ingreso);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->egreso);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->presupuesto);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->metodo_pago);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->total);
             $indexRow++;
         }
 //        $excelUI->setRowHeight($indexRow, 30);
@@ -62,29 +52,30 @@ class UtilFunctions
         return $bytes;
     }
 
-    public static function generateReportAttendanceVehicle(int $year)
+    public static function generateReportAttendanceVehicle($months, $period)
     {
-        $months = Attention::getAttentionByMonths($year);
-
         $excelUI = new ExcelUI(Constants::REPORTES, Constants::REPORTE_UNIDADES_ATENDIDAS);
+
+        $excelUI->setTextCell("D3", $period);
         $sheetIndex = 0;
 
         foreach ($months as $month => $attentions) {
+            $year = Carbon::parse($attentions->first()->arrivalDate)->format('Y');
             $indexClone = $excelUI->getIndexOfSheet("Base");
-            $excelUI->cloneSheet($indexClone, $sheetIndex++, $month, true);
+            $excelUI->cloneSheet($indexClone, $sheetIndex++, strtoupper($month) . ' ' . $year, true);
             $excelUI->setTextCell("A2", "UNIDADES ATENDIDAS DEL MES DE " . strtoupper($month) . " DEL AÑO $year");
 
             $col = $excelUI->getColumnIndex("A");
-            $indexRow = 5;
+            $indexRow = 6;
             $index = 1;
 
             foreach ($attentions as $attention) {
                 $attention = json_decode($attention->toJson());
                 $indexCol = $col;
                 if ($indexRow % 2 == 0) {
-                    $excelUI->changeStyleSelected(false, "L", ExcelUI::$GENERAL, true, ExcelUI::$BACKGROUND_CELL_PRIMARY, true);
+                    $excelUI->changeStyleSelected(false, "C", ExcelUI::$GENERAL, true, ExcelUI::$BACKGROUND_CELL_PRIMARY, true);
                 } else {
-                    $excelUI->changeStyleSelected(false, "L", ExcelUI::$GENERAL, true, ExcelUI::$BACKGROUND_CELL_SECONDARY, true);
+                    $excelUI->changeStyleSelected(false, "C", ExcelUI::$GENERAL, true, ExcelUI::$BACKGROUND_CELL_SECONDARY, true);
                 }
 
                 $excelUI->setRowHeight($indexRow, 30);

@@ -94,26 +94,34 @@ class Attention extends Model
         return $this->hasOne(BudgetSheet::class);
     }
 
-    public static function getAttentionByMonths(int $anio)
+    public static function getAttentionByMonths($from = null, $to = null)
     {
-        $attentions = Attention::with([
+        $query = Attention::with([
             'vehicle.vehicleModel.brand',
             'vehicle.person',
             'details.service',
             'worker.person',
             'budgetSheet',
-        ])
-            ->whereYear('arrivalDate', $anio)
-            ->orderBy('arrivalDate')
-            ->get();
+        ]);
+
+        if ($from && $to) {
+            $query->whereBetween('arrivalDate', [$from, $to]);
+        } elseif ($from) {
+            $query->where('arrivalDate', '>=', $from);
+        } elseif ($to) {
+            $query->where('arrivalDate', '<=', $to);
+        }
+
+        $attentions = $query->orderBy('arrivalDate')->get();
         $attentions = ReportAttendanceVehicleResource::collection($attentions);
+
         $attentionsMonths = $attentions->groupBy(function ($attention) {
             $meses = Constants::ES_MONTHS;
             $mes = Carbon::parse($attention->arrivalDate)->format('F');
             return $meses[$mes];
         });
-        return $attentionsMonths;
 
+        return $attentionsMonths;
     }
 
     public function technicians($id)
