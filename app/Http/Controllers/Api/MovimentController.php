@@ -3,8 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AttendanceVehicleRequest;
+use App\Http\Resources\ReportAttendanceVehicleResource;
+use App\Models\Attention;
 use App\Models\ConceptPay;
 use App\Models\Moviment;
+use App\Utils\Constants;
+use App\Utils\UtilFunctions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -106,7 +111,6 @@ class MovimentController extends Controller
      *         required=true,
      *         description="Moviment data",
      *         @OA\JsonContent(
-
      *             @OA\Property(
      *                 property="paymentDate",
      *                 type="string",
@@ -187,7 +191,6 @@ class MovimentController extends Controller
      *                 nullable=true,
      *                 example="Pago parcial"
      *             ),
-
      *             @OA\Property(
      *                 property="person_id",
      *                 type="integer",
@@ -202,7 +205,6 @@ class MovimentController extends Controller
      *                 nullable=true,
      *                 example=1
      *             ),
-
      *         )
      *     ),
      *     @OA\Response(
@@ -305,7 +307,7 @@ class MovimentController extends Controller
         $tipo = str_pad($tipo, 4, '0', STR_PAD_RIGHT);
 
         $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(sequentialNumber, LOCATE("-", sequentialNumber) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM moviments WHERE SUBSTRING(sequentialNumber, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-        $siguienteNum = (int) $resultado;
+        $siguienteNum = (int)$resultado;
 
         $routeVoucher = null;
         $numberVoucher = null;
@@ -472,10 +474,8 @@ class MovimentController extends Controller
                 COALESCE(SUM(CASE WHEN cp.type = "Ingreso" THEN moviments.deposit ELSE 0 END), 0.00) as deposito_ingresos,
                 COALESCE(SUM(CASE WHEN cp.type = "Egreso" THEN moviments.deposit ELSE 0 END), 0.00) as deposito_egresos')
                 ->leftJoin('concept_pays as cp', 'moviments.paymentConcept_id', '=', 'cp.id')
-
                 ->where('moviments.id', '>=', $movCajaAperturada->id)
                 ->where('moviments.id', '<', $movCajaCierre->id)
-
                 ->first();
 
             $forma_pago = DB::select('SELECT obtenerFormaPagoPorCaja(:id) AS forma_pago', ['id' => $movCajaCierre->id]);
@@ -602,7 +602,6 @@ class MovimentController extends Controller
      *         required=true,
      *         description="Moviment data",
      *         @OA\JsonContent(
-
      *             @OA\Property(
      *                 property="paymentDate",
      *                 type="string",
@@ -683,7 +682,6 @@ class MovimentController extends Controller
      *                 nullable=true,
      *                 example="Pago parcial"
      *             ),
-
      *             @OA\Property(
      *                 property="person_id",
      *                 type="integer",
@@ -698,7 +696,6 @@ class MovimentController extends Controller
      *                 nullable=true,
      *                 example=1
      *             ),
-
      *         )
      *     ),
      *     @OA\Response(
@@ -767,7 +764,7 @@ class MovimentController extends Controller
         $tipo = str_pad($tipo, 4, '0', STR_PAD_RIGHT);
 
         $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(sequentialNumber, LOCATE("-", sequentialNumber) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM moviments WHERE SUBSTRING(sequentialNumber, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-        $siguienteNum = (int) $resultado;
+        $siguienteNum = (int)$resultado;
 
         $routeVoucher = null;
         $numberVoucher = null;
@@ -848,7 +845,6 @@ class MovimentController extends Controller
      *     tags={"Moviment"},
      *     description="Retrieve the last moviment with paymentConcept_id = 2 for a specific box",
      *     security={{"bearerAuth":{}}},
- 
      *     @OA\Response(
      *         response=200,
      *         description="Moviment found",
@@ -887,4 +883,39 @@ class MovimentController extends Controller
 
         return response()->json($object, 200);
     }
+
+    public function reportMovementClient(int $id)
+    {
+        $movements = Moviment::with(['paymentConcept', 'person', 'user.worker.person', 'budgetSheet'])
+            ->where('person_id', $id)
+            ->get();
+
+        $bytes = UtilFunctions::generateReportMovementeClient($movements);
+
+        return response($bytes, 200, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => 'attachment; filename="reporte_movimiento_cliente.xlsx"',
+            'Content-Length' => strlen($bytes),
+        ]);
+    }
+
+    public function reportAttendanceVehicle(AttendanceVehicleRequest $request)
+    {
+//        $months = Attention::getAttentionByMonths($request->year);
+//
+//        $countAttentionPerMonth = $months->map(function ($month) {
+//            return $month->count();
+//        });
+//
+//        return response()->json($countAttentionPerMonth);
+
+        $bytes = UtilFunctions::generateReportAttendanceVehicle($request->year);
+
+        return response($bytes, 200, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => 'attachment; filename="reporte_movimiento_cliente.xlsx"',
+            'Content-Length' => strlen($bytes),
+        ]);
+    }
+
 }

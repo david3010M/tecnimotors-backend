@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Http\Resources\ReportAttendanceVehicleResource;
+use App\Utils\Constants;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -90,6 +92,28 @@ class Attention extends Model
     public function budgetSheet()
     {
         return $this->hasOne(BudgetSheet::class);
+    }
+
+    public static function getAttentionByMonths(int $anio)
+    {
+        $attentions = Attention::with([
+            'vehicle.vehicleModel.brand',
+            'vehicle.person',
+            'details.service',
+            'worker.person',
+            'budgetSheet',
+        ])
+            ->whereYear('arrivalDate', $anio)
+            ->orderBy('arrivalDate')
+            ->get();
+        $attentions = ReportAttendanceVehicleResource::collection($attentions);
+        $attentionsMonths = $attentions->groupBy(function ($attention) {
+            $meses = Constants::ES_MONTHS;
+            $mes = Carbon::parse($attention->arrivalDate)->format('F');
+            return $meses[$mes];
+        });
+        return $attentionsMonths;
+
     }
 
     public function technicians($id)

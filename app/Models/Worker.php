@@ -28,7 +28,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     ),
  * )
  */
-
 class Worker extends Model
 {
     use SoftDeletes;
@@ -47,6 +46,7 @@ class Worker extends Model
         'updated_at',
         'deleted_at',
     ];
+
     public function person()
     {
         return $this->belongsTo(Person::class, 'person_id');
