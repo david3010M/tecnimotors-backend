@@ -34,6 +34,7 @@ use App\Http\Controllers\Api\VehicleController;
 use App\Http\Controllers\Api\VehicleModelController;
 use App\Http\Controllers\Api\WorkerController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\ExcelReportController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -52,8 +53,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('reportMovementClient/{id}', [MovimentController::class, 'reportMovementClient'])->name('reportMovementClient');
-Route::get('reportAttendanceVehicle', [MovimentController::class, 'reportAttendanceVehicle'])->name('reportAttendanceVehicle');
+//PENDIENTE DE PONERLO EN EL AUTH
+Route::get('reportMovementClient/{id}', [ExcelReportController::class, 'reportMovementClient'])->name('reportMovementClient');
+Route::get('reportAttendanceVehicle', [ExcelReportController::class, 'reportAttendanceVehicle'])->name('reportAttendanceVehicle');
 
 Route::post('login', [AuthController::class, 'login'])->name('login');
 

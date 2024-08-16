@@ -40,9 +40,9 @@ class ReportAttendanceVehicleResource extends JsonResource
             'servicio' => $serviceString,
             'responsable' => $responsable,
             'recepcion' => $this->driver,
-            'metodo' => $this->budgetSheet->paymentType,
-            'pago' => (float)$this->budgetSheet->total,
-            'debe' => $this->budgetSheet->debtAmount > 0 ? 'SI' : 'NO',
+            'metodo' => $this->budgetSheet ? $this->budgetSheet->paymentType : '',
+            'pago' => $this->budgetSheet ? (float)$this->budgetSheet->total : '',
+            'debe' => $this->budgetSheet ? ($this->budgetSheet->debtAmount > 0 ? 'SI' : 'NO') : '',
         ];
     }
 }
