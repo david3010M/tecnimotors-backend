@@ -35,10 +35,11 @@ class ExcelReportController extends Controller
 //        return response()->json($countAttentionPerMonth);
 
         $bytes = UtilFunctions::generateReportAttendanceVehicle($request->year);
+        $nameOfFile = date('d-m-Y') . '_Unidades_Atendidas_' . $request->year . '.xlsx';
 
         return response($bytes, 200, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'Content-Disposition' => 'attachment; filename="reporte_movimiento_cliente.xlsx"',
+            'Content-Disposition' => 'attachment; filename="' . $nameOfFile . '"',
             'Content-Length' => strlen($bytes),
         ]);
     }
