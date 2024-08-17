@@ -91,7 +91,7 @@ class Attention extends Model
 
     public function budgetSheet()
     {
-        return $this->hasOne(BudgetSheet::class);
+        return $this->hasOne(budgetSheet::class);
     }
 
     public static function getAttentionByMonths($from = null, $to = null)
