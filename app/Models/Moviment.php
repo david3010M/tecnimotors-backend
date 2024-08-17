@@ -190,6 +190,28 @@ class Moviment extends Model
         return $query->orderBy('paymentDate', 'desc')->get();
     }
 
+    public static function getMovementsVehicle($plate, $from = null, $to = null)
+    {
+        $query = Moviment::with([
+            'paymentConcept',
+            'user',
+            'person',
+            'bank',
+            'budgetSheet.attention.vehicle',
+        ])
+            ->whereHas('budgetSheet.attention.vehicle', function ($query) use ($plate) {
+                $query->where('plate', $plate);
+            });
+
+        if ($from && $to) {
+            $query->whereBetween('paymentDate', [$from, $to]);
+        } elseif ($from) {
+            $query->where('paymentDate', '>=', $from);
+        } elseif ($to) {
+            $query->where('paymentDate', '<=', $to);
+        }
+        return $query->orderBy('paymentDate', 'desc')->get();
+    }
 
     public function paymentConcept()
     {

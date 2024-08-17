@@ -56,6 +56,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //PENDIENTE DE PONERLO EN EL AUTH
 Route::get('reportMovementClient/{id}', [ExcelReportController::class, 'reportMovementClient'])->name('reportMovementClient');
 Route::get('reportAttendanceVehicle', [ExcelReportController::class, 'reportAttendanceVehicle'])->name('reportAttendanceVehicle');
+Route::get('reportMovementVehicle', [ExcelReportController::class, 'reportMovementVehicle'])->name('reportMovementVehicle');
 
 Route::post('login', [AuthController::class, 'login'])->name('login');
 

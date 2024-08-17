@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AttendanceVehicleRequest;
 use App\Http\Requests\MovementClientRequest;
+use App\Http\Requests\MovementVehicleRequest;
 use App\Http\Resources\ReportMovementClientResource;
 use App\Models\Attention;
 use App\Models\Moviment;
@@ -18,6 +19,8 @@ class ExcelReportController extends Controller
         $movements = ReportMovementClientResource::collection($movements);
         $client = Person::find($id);
         if (!$client) return response()->json(['message' => 'Client not found'], 404);
+
+//        return response()->json($movements);
 
         $clientName = $client->typeofDocument === 'RUC' ? $client->businessName : $client->names . ' ' . $client->fatherSurname . ' ' . $client->motherSurname;
         $period = ($request->from && $request->to) ? 'Del ' . $request->from . ' al ' . $request->to :
@@ -46,6 +49,27 @@ class ExcelReportController extends Controller
 //        return response()->json($months);
         $bytes = UtilFunctions::generateReportAttendanceVehicle($months, $period);
         $nameOfFile = date('d-m-Y') . '_Reporte_Unidades_Atendidas_' . $request->year . '.xlsx';
+
+        return response($bytes, 200, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => 'attachment; filename="' . $nameOfFile . '"',
+            'Content-Length' => strlen($bytes),
+        ]);
+    }
+
+    public function reportMovementVehicle(MovementVehicleRequest $request)
+    {
+        $movements = Moviment::getMovementsVehicle($request->plate, $request->from, $request->to);
+        $movements = ReportMovementClientResource::collection($movements);
+
+//        return response()->json($movements);
+
+        $vehiclePlate = $request->plate;
+        $period = ($request->from && $request->to) ? 'Del ' . $request->from . ' al ' . $request->to :
+            ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
+
+        $bytes = UtilFunctions::generateReportMovementVehicle($movements, $vehiclePlate, $period);
+        $nameOfFile = date('d-m-Y') . '_Reporte_Caja_Cliente_' . $vehiclePlate . '.xlsx';
 
         return response($bytes, 200, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

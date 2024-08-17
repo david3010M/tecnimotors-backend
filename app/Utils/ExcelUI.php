@@ -33,18 +33,8 @@ class ExcelUI
     public static $BACKGROUND_CELL_HEADER = '0F172A';
     public static $BACKGROUND_CELL_TOTAL = 'FFF2CC';
 
-    public static $FONT_COLOR_DEFAULT = '000000';
-    public static $FONT_COLOR_CELL_PRIMARY = '1B4E7A';
-    // public static $BACKGROUND_CELL_SUBGROUP = 'E7E6E6';
-
-    // public static $BACKGROUND_CELL_AMARILLO = 'FFFFCC';
-    // public static $BACKGROUND_CELL_VERDE = 'E2EFDA';
-
     public static $GENERAL = 'General';
     public static $FONT_DEFAULT = 'Segoe UI';
-    public static $FORMAT_FECHA = 'dd/mm/yyyy';
-    public static $FORMAT_NUMERO2D = '_(#,##0.00_);_((#,##0.00);_*"-";_(@_)';
-    public static $FORMAT_NUMERO3D = '_(#,###0.000_);_((#,###0.000);_*""-"";_(@_)';
     public static $FORMAT_SOLES = '_-[$S/.-es_PE] * #,##0.00_-;_-[$S/.-es_PE] * -#,##0.00_-;_-[$S/.-es_PE] * "-"??_-;_-@_-';
 
     /* OK */
