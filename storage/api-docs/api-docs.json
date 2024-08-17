@@ -13142,6 +13142,165 @@
                     }
                 ]
             }
+        },
+        "/tecnimotors-backend/public/api/reportMovementClient/{id}": {
+            "get": {
+                "tags": [
+                    "Report"
+                ],
+                "summary": "Reporte de Movimientos de un Cliente",
+                "operationId": "b7cbaaddc9672b6b69d99fa062e0f90a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del Cliente",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "from",
+                        "in": "query",
+                        "description": "Fecha de inicio",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "description": "Fecha de fin",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Reporte de Movimientos de un Cliente"
+                    },
+                    "404": {
+                        "description": "Cliente no encontrado"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/reportAttendanceVehicle": {
+            "get": {
+                "tags": [
+                    "Report"
+                ],
+                "summary": "Reporte de Atenciones de Vehículos",
+                "operationId": "d87772bf59cbebb46d7c606a1f72bc97",
+                "parameters": [
+                    {
+                        "name": "from",
+                        "in": "query",
+                        "description": "Fecha de inicio",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "description": "Fecha de fin",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Reporte de Atenciones de Vehículos"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/reportMovementVehicle": {
+            "get": {
+                "tags": [
+                    "Report"
+                ],
+                "summary": "Reporte de Movimientos de un Vehículo",
+                "operationId": "af861998b5109d15446266a05680791c",
+                "parameters": [
+                    {
+                        "name": "plate",
+                        "in": "query",
+                        "description": "Placa del Vehículo",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "from",
+                        "in": "query",
+                        "description": "Fecha de inicio",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "description": "Fecha de fin",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Reporte de Movimientos de un Vehículo"
+                    },
+                    "404": {
+                        "description": "Vehículo no encontrado"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {

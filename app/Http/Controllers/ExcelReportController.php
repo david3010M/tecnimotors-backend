@@ -22,6 +22,21 @@ use Illuminate\Support\Facades\DB;
 
 class ExcelReportController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/tecnimotors-backend/public/api/reportMovementClient/{id}",
+     *     tags={"Report"},
+     *     security={{"bearerAuth":{}}},
+     *     summary="Reporte de Movimientos de un Cliente",
+     *     @OA\Parameter(name="id", in="path", description="ID del Cliente", required=true, @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="from", in="query", description="Fecha de inicio", required=false, @OA\Schema(type="string")),
+     *     @OA\Parameter(name="to", in="query", description="Fecha de fin", required=false, @OA\Schema(type="string")),
+     *     @OA\Response(response=200, description="Reporte de Movimientos de un Cliente"),
+     *     @OA\Response(response=404, description="Cliente no encontrado"),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=422, description="Validation error")
+     * )
+     */
     public function reportMovementClient(MovementClientRequest $request, int $id)
     {
         $movements = Moviment::getMovementsByClientId($id, $request->from, $request->to);
@@ -45,6 +60,19 @@ class ExcelReportController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/tecnimotors-backend/public/api/reportAttendanceVehicle",
+     *     tags={"Report"},
+     *     security={{"bearerAuth":{}}},
+     *     summary="Reporte de Atenciones de Vehículos",
+     *     @OA\Parameter(name="from", in="query", description="Fecha de inicio", required=false, @OA\Schema(type="string")),
+     *     @OA\Parameter(name="to", in="query", description="Fecha de fin", required=false, @OA\Schema(type="string")),
+     *     @OA\Response(response=200, description="Reporte de Atenciones de Vehículos"),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=422, description="Validation error")
+     * )
+     */
     public function reportAttendanceVehicle(AttendanceVehicleRequest $request)
     {
         $months = Attention::getAttentionByMonths($request->from, $request->to);
@@ -66,6 +94,21 @@ class ExcelReportController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/tecnimotors-backend/public/api/reportMovementVehicle",
+     *     tags={"Report"},
+     *     security={{"bearerAuth":{}}},
+     *     summary="Reporte de Movimientos de un Vehículo",
+     *     @OA\Parameter(name="plate", in="query", description="Placa del Vehículo", required=true, @OA\Schema(type="string")),
+     *     @OA\Parameter(name="from", in="query", description="Fecha de inicio", required=false, @OA\Schema(type="string")),
+     *     @OA\Parameter(name="to", in="query", description="Fecha de fin", required=false, @OA\Schema(type="string")),
+     *     @OA\Response(response=200, description="Reporte de Movimientos de un Vehículo"),
+     *     @OA\Response(response=404, description="Vehículo no encontrado"),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=422, description="Validation error")
+     * )
+     */
     public function reportMovementVehicle(MovementVehicleRequest $request)
     {
         $movements = Moviment::getMovementsVehicle($request->plate, $request->from, $request->to);
@@ -106,7 +149,6 @@ class ExcelReportController extends Controller
 
         $movements = Moviment::select(['*', DB::raw('(SELECT obtenerFormaPagoPorCaja(moviments.id)) AS formaPago')])
             ->where('id', '>=', $movCajaAperturada->id)
-
             ->where('id', '<', $movCajaCierre->id)
             ->orderBy('id', 'desc')
             ->with(['paymentConcept', 'person', 'user.worker.person', 'budgetSheet'])
@@ -117,7 +159,7 @@ class ExcelReportController extends Controller
 //        return response()->json($movements);
 
         $period = ($request->from && $request->to) ? 'Del ' . $request->from . ' al ' . $request->to :
-        ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
+            ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
 
         $bytes = UtilFunctions::generateReportMovementDateRange($movements, $movCajaAperturada->sequentialNumber, $period);
         $nameOfFile = date('d-m-Y') . '_Reporte_Caja' . '.xlsx';
@@ -138,7 +180,7 @@ class ExcelReportController extends Controller
 //        return response()->json($movements);
 
         $period = ($request->from && $request->to) ? 'Del ' . $request->from . ' al ' . $request->to :
-        ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
+            ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
 
         $bytes = UtilFunctions::generateService($movements, '', $period);
         $nameOfFile = date('d-m-Y') . '_Reporte_Servicios' . '.xlsx';
@@ -152,7 +194,7 @@ class ExcelReportController extends Controller
 
     public function reportCommitment(ReportCommitmentRequest $request)
     {
-     
+
         $person_id = $request->cliente_id ?? null;
         $status = $request->status ?? 'Pendiente';
         $personNames = '';
@@ -163,13 +205,13 @@ class ExcelReportController extends Controller
                 return response()->json(['error' => 'Persona no encontrada.'], 404);
             }
 
-            $typeOfDocument = $person->typeOfDocument; 
+            $typeOfDocument = $person->typeOfDocument;
             if ($typeOfDocument === 'DNI') {
                 $fullName = $person->names . ' ' . $person->fatherSurname;
             } elseif ($typeOfDocument === 'RUC') {
                 $fullName = $person->businessName;
             } else {
-                $fullName = $person->names; 
+                $fullName = $person->names;
             }
 
             $personNames = $fullName;
@@ -194,9 +236,9 @@ class ExcelReportController extends Controller
 //        return response()->json($movements);
 
         $period = ($request->from && $request->to) ? 'Del ' . $request->from . ' al ' . $request->to :
-        ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
+            ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
 
-        $bytes = UtilFunctions::generateCommitment($movements, $period,  $personNames, $status);
+        $bytes = UtilFunctions::generateCommitment($movements, $period, $personNames, $status);
         $nameOfFile = date('d-m-Y') . '_Reporte_Compromisos' . '.xlsx';
 
         return response($bytes, 200, [
