@@ -169,7 +169,7 @@ class Moviment extends Model
         'deleted_at',
     ];
 
-    public static function getMovementsByClientId($id, $from = null, $to = null)
+    public static function getMovementsByDateRange($from = null, $to = null)
     {
         $query = Moviment::with([
             'paymentConcept',
@@ -177,9 +177,8 @@ class Moviment extends Model
             'person',
             'bank',
             'budgetSheet',
-        ])
-            ->where('person_id', $id);
-
+        ]);
+    
         if ($from && $to) {
             $query->whereBetween('paymentDate', [$from, $to]);
         } elseif ($from) {
@@ -187,8 +186,10 @@ class Moviment extends Model
         } elseif ($to) {
             $query->where('paymentDate', '<=', $to);
         }
+    
         return $query->orderBy('paymentDate', 'desc')->get();
     }
+    
 
     public static function getMovementsVehicle($plate, $from = null, $to = null)
     {

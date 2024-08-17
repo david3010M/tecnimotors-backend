@@ -58,6 +58,13 @@ Route::get('reportMovementClient/{id}', [ExcelReportController::class, 'reportMo
 Route::get('reportAttendanceVehicle', [ExcelReportController::class, 'reportAttendanceVehicle'])->name('reportAttendanceVehicle');
 Route::get('reportMovementVehicle', [ExcelReportController::class, 'reportMovementVehicle'])->name('reportMovementVehicle');
 
+//PENDIENTE DE PONERLO EN EL AUTH
+Route::get('reportServicios/{id}', [ExcelReportController::class, 'reportMovementClient'])->name('reportMovementClient');
+Route::get('reportMovement', [ExcelReportController::class, 'reportAttendanceVehicle'])->name('reportAttendanceVehicle');
+Route::get('reportCommitment', [ExcelReportController::class, 'reportMovementVehicle'])->name('reportMovementVehicle');
+
+
+
 Route::post('login', [AuthController::class, 'login'])->name('login');
 
 Route::group(["middleware" => ["auth:sanctum"]], function () {

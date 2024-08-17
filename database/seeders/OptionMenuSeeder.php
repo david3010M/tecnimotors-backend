@@ -34,6 +34,7 @@ class OptionMenuSeeder extends Seeder
             ['id' => '15', 'name' => 'Unidades', 'route' => 'unidades', 'groupmenu_id' => 2],
 
             ['id' => '16', 'name' => 'Vehiculos', 'route' => 'vehiculos', 'groupmenu_id' => 2],
+            ['id' => '17', 'name' => 'Modelo', 'route' => 'modelo', 'groupmenu_id' => 2],
 
         ];
 

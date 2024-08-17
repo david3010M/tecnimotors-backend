@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class MovementVehicleRequest extends FormRequest
+class ServiceRequest extends FormRequest
 {
     public function rules()
     {
@@ -15,4 +15,3 @@ class MovementVehicleRequest extends FormRequest
         ];
     }
 }
-

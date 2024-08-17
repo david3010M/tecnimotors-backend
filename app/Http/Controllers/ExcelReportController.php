@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AttendanceVehicleRequest;
 use App\Http\Requests\MovementClientRequest;
 use App\Http\Requests\MovementVehicleRequest;
+
 use App\Http\Resources\ReportMovementClientResource;
 use App\Models\Attention;
 use App\Models\Moviment;

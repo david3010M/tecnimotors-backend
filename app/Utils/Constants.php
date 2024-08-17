@@ -10,6 +10,11 @@ class Constants
     public const REPORTE_CAJA_CLIENTE_EXCEL = 'REPORTE_CAJA_CLIENTE.xlsx';
     public const REPORTE_CAJA_VEHICLE_EXCEL = 'REPORTE_CAJA_VEHICLE.xlsx';
     public const REPORTE_UNIDADES_ATENDIDAS = 'REPORTE_UNIDADES_ATENDIDAS.xlsx';
+
+    public const REPORTE_SERVICIOS_EXCEL = 'REPORTE_SERVICIOS.xlsx';
+    public const REPORTE_CAJA_EXCEL = 'REPORTE_CAJA.xlsx';
+    public const REPORTE_COMPROMISOS = 'REPORTE_COMPROMISOS.xlsx';
+
     public const REPORTES = 'reportes';
 
     const ES_MONTHS = [

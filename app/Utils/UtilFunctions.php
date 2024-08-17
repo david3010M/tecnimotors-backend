@@ -2,7 +2,6 @@
 
 namespace App\Utils;
 
-use App\Models\Attention;
 use Carbon\Carbon;
 
 class UtilFunctions
@@ -169,5 +168,128 @@ class UtilFunctions
         return $bytes;
     }
 
+    public static function generateReportMovementDateRange($movements, $client, $period = "-")
+    {
+        $excelUI = new ExcelUI(Constants::REPORTES, Constants::REPORTE_CAJA_EXCEL);
+
+        $excelUI->setTextCell("D4", $period);
+        $excelUI->setTextCell("G4", $client);
+        $col = $excelUI->getColumnIndex("A");
+        $indexRow = 7;
+        $index = 1;
+
+        foreach ($movements as $movement) {
+            $movement = json_decode($movement->toJson());
+            $indexCol = $col;
+            if ($indexRow % 2 == 0) {
+                $excelUI->changeStyleSelected(false, "C", ExcelUI::$GENERAL, true, ExcelUI::$BACKGROUND_CELL_PRIMARY, true);
+            } else {
+                $excelUI->changeStyleSelected(false, "C", ExcelUI::$GENERAL, true, ExcelUI::$BACKGROUND_CELL_SECONDARY, true);
+            }
+            $excelUI->setRowHeight($indexRow, 30);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $index++);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->numero);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->fecha);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->concepto);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->ingreso);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->egreso);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->presupuesto);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->metodo_pago);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->total);
+            $indexRow++;
+        }
+        $excelUI->changeStyleSelected(true, "C", ExcelUI::$GENERAL, true, ExcelUI::$BACKGROUND_CELL_TOTAL, true);
+
+        $colTotalIncome = $excelUI->getColumnIndex("E");
+        $colTotalExpense = $excelUI->getColumnIndex("F");
+        $colTotal = $excelUI->getColumnIndex("H");
+
+        $strColTotalIncome = $excelUI->getColumnStringFromIndex($colTotalIncome);
+        $strColTotalExpense = $excelUI->getColumnStringFromIndex($colTotalExpense);
+
+        $excelUI->setFormula($indexRow, $colTotalIncome, "=SUM({$strColTotalIncome}7:$strColTotalIncome" . ($indexRow - 1) . ")");
+        $excelUI->setFormula($indexRow, $colTotalExpense, "=SUM({$strColTotalExpense}7:$strColTotalExpense" . ($indexRow - 1) . ")");
+
+        $excelUI->setRowHeight($indexRow, 30);
+        $excelUI->setDataCellByIndex($indexRow, $colTotal, "MONTO TOTAL");
+        $colTotal++;
+        $strCol = $excelUI->getColumnStringFromIndex($colTotal);
+        $excelUI->setFormula($indexRow, $colTotal, "=SUM({$strCol}7:$strCol" . ($indexRow - 1) . ")");
+
+        $bytes = $excelUI->save();
+        unset($excelUI);
+        return $bytes;
+    }
+
+    public static function generateService($movements, $client, $period = "-")
+    {
+        $excelUI = new ExcelUI(Constants::REPORTES, Constants::REPORTE_SERVICIOS_EXCEL);
+
+        $col = $excelUI->getColumnIndex("D");
+        $indexRow = 6;
+        $index = 1;
+
+        foreach ($movements as $movement) {
+            $movement = json_decode($movement->toJson());
+            $indexCol = $col;
+            if ($indexRow % 2 == 0) {
+                $excelUI->changeStyleSelected(false, "C", ExcelUI::$GENERAL, true, ExcelUI::$BACKGROUND_CELL_PRIMARY, true);
+            } else {
+                $excelUI->changeStyleSelected(false, "C", ExcelUI::$GENERAL, true, ExcelUI::$BACKGROUND_CELL_SECONDARY, true);
+            }
+            $excelUI->setRowHeight($indexRow, 30);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $index++);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->name);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->saleprice);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, Carbon::parse($movement->created_at)->format('d-m-Y H:i:s'));
+            $indexRow++;
+        }
+
+        $bytes = $excelUI->save();
+        unset($excelUI);
+        return $bytes;
+    }
+
+    public static function generateCommitment($movements, $period = "-", $personNames = '-', $status = 'Pendiente')
+    {
+        $excelUI = new ExcelUI(Constants::REPORTES, Constants::REPORTE_COMPROMISOS);
+
+        $excelUI->setTextCell("C4", $period);
+        $excelUI->setTextCell("F4", $personNames);
+        $excelUI->setTextCell("I4", $status);
+
+        $col = $excelUI->getColumnIndex("A");
+
+        $indexRow = 7;
+        $index = 1;
+
+        foreach ($movements as $movement) {
+            $movement = json_decode($movement->toJson());
+            $indexCol = $col;
+            if ($indexRow % 2 == 0) {
+                $excelUI->changeStyleSelected(false, "C", ExcelUI::$GENERAL, true, ExcelUI::$BACKGROUND_CELL_PRIMARY, true);
+            } else {
+                $excelUI->changeStyleSelected(false, "C", ExcelUI::$GENERAL, true, ExcelUI::$BACKGROUND_CELL_SECONDARY, true);
+            }
+
+            $excelUI->setRowHeight($indexRow, 30);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $index++);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->number);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->client);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->payment_type);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, Carbon::parse($movement->payment_date)->format('d-m-Y H:i:s'));
+
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->price);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->balance);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->amount_paid);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->status);
+
+            $indexRow++;
+        }
+
+        $bytes = $excelUI->save();
+        unset($excelUI);
+        return $bytes;
+    }
 
 }
