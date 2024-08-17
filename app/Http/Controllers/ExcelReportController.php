@@ -143,20 +143,7 @@ class ExcelReportController extends Controller
  *         required=true,
  *         @OA\Schema(type="integer")
  *     ),
- *     @OA\Parameter(
- *         name="from",
- *         in="query",
- *         description="Fecha de inicio",
- *         required=false,
- *         @OA\Schema(type="string", format="date")
- *     ),
- *     @OA\Parameter(
- *         name="to",
- *         in="query",
- *         description="Fecha de fin",
- *         required=false,
- *         @OA\Schema(type="string", format="date")
- *     ),
+
  *     @OA\Response(
  *         response=200,
  *         description="Reporte de Movimientos generado exitosamente",
@@ -342,59 +329,65 @@ class ExcelReportController extends Controller
  * )
  */
 
-    public function reportCommitment(ReportCommitmentRequest $request)
-    {
-
-        $person_id = $request->cliente_id ?? null;
-        $status = $request->status ?? 'Pendiente';
-        $personNames = '';
-        if ($person_id) {
-            $person = Person::find($person_id);
-
-            if (!$person) {
-                return response()->json(['error' => 'Persona no encontrada.'], 404);
-            }
-
-            $typeOfDocument = $person->typeOfDocument;
-            if ($typeOfDocument === 'DNI') {
-                $fullName = $person->names . ' ' . $person->fatherSurname;
-            } elseif ($typeOfDocument === 'RUC') {
-                $fullName = $person->businessName;
-            } else {
-                $fullName = $person->names;
-            }
-
-            $personNames = $fullName;
-        }
-
-        // Crear una consulta base
-        $query = Commitment::with('budgetSheet.attention.vehicle.person');
-
-        // Aplicar filtro por cliente_id si se proporciona
-        if ($person_id) {
-            $query->whereHas('budgetSheet.attention.vehicle.person', function ($q) use ($person_id) {
-                $q->where('id', $person_id);
-            });
-        }
-
-        $query->where('status', $status);
-
-        // Ejecutar la consulta
-        $movements = $query->get();
-        $movements = CommitmentResource::collection($movements);
-
-//        return response()->json($movements);
-
-        $period = ($request->from && $request->to) ? 'Del ' . $request->from . ' al ' . $request->to :
-        ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
-
-        $bytes = UtilFunctions::generateCommitment($movements, $period, $personNames, $status);
-        $nameOfFile = date('d-m-Y') . '_Reporte_Compromisos' . '.xlsx';
-
-        return response($bytes, 200, [
-            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'Content-Disposition' => 'attachment; filename="' . $nameOfFile . '"',
-            'Content-Length' => strlen($bytes),
-        ]);
-    }
+ public function reportCommitment(ReportCommitmentRequest $request)
+ {
+     $person_id = $request->cliente_id ?? null;
+     $status = $request->status ?? 'Pendiente';
+     $personNames = '';
+ 
+     // Verificar si se ha proporcionado un ID de persona
+     if (!is_null($person_id)) {
+         $person = Person::find($person_id);
+ 
+         if (!$person) {
+             return response()->json(['error' => 'Persona no encontrada.'], 404);
+         }
+ 
+         // Obtener el nombre completo según el tipo de documento
+         if ($person->typeOfDocument === 'DNI') {
+             $personNames = $person->names . ' ' . $person->fatherSurname;
+         } elseif ($person->typeOfDocument === 'RUC') {
+             $personNames = $person->businessName;
+         } else {
+             $personNames = $person->names;
+         }
+     }
+ 
+     // Crear una consulta base
+     $query = Commitment::with('budgetSheet.attention.vehicle.person');
+ 
+     // Aplicar filtro por cliente_id solo si se proporciona
+     if (!is_null($person_id)) {
+         $query->whereHas('budgetSheet.attention.vehicle.person', function ($q) use ($person_id) {
+             $q->where('id', $person_id);
+         });
+     }
+ 
+     // Aplicar filtro por estado
+     $query->where('status', $status);
+ 
+     // Ejecutar la consulta y transformar los resultados
+     $movements = CommitmentResource::collection($query->get());
+ 
+     // Determinar el periodo para el reporte
+     $period = ($request->from && $request->to) 
+         ? 'Del ' . $request->from . ' al ' . $request->to 
+         : ($request->from 
+             ? 'Desde ' . $request->from 
+             : ($request->to 
+                 ? 'Hasta ' . $request->to 
+                 : '-'));
+ 
+     // Generar el reporte en formato Excel
+     $bytes = UtilFunctions::generateCommitment($movements, $period, $personNames, $status);
+     $nameOfFile = date('d-m-Y') . '_Reporte_Compromisos' . '.xlsx';
+ 
+     // Devolver el archivo generado como respuesta
+     return response($bytes, 200, [
+         'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+         'Content-Disposition' => 'attachment; filename="' . $nameOfFile . '"',
+         'Content-Length' => strlen($bytes),
+     ]);
+ }
+ 
 }
