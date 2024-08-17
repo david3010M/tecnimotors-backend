@@ -16,14 +16,8 @@ class ServiceSeeder extends Seeder
      */
     public function run()
     {
-        /**
-         * 'name',
-         * 'quantity',
-         * 'saleprice',
-         * 'time'
-         */
         $array = [
-            ['name' => 'Cambio de Aceite', 'quantity' => 1, 'saleprice' => 50.00, 'time' =>2, 'specialty_id' => 1],
+            ['name' => 'Cambio de Aceite', 'quantity' => 1, 'saleprice' => 50.00, 'time' => 2, 'specialty_id' => 1],
             ['name' => 'Alineación y Balanceo', 'quantity' => 1, 'saleprice' => 70.00, 'time' => 2, 'specialty_id' => 2],
             ['name' => 'Revisión de Frenos', 'quantity' => 1, 'saleprice' => 90.00, 'time' => 2, 'specialty_id' => 1],
             ['name' => 'Cambio de Bujías', 'quantity' => 1, 'saleprice' => 120.00, 'time' => 2, 'specialty_id' => 2],
