@@ -59,9 +59,10 @@ Route::get('reportAttendanceVehicle', [ExcelReportController::class, 'reportAtte
 Route::get('reportMovementVehicle', [ExcelReportController::class, 'reportMovementVehicle'])->name('reportMovementVehicle');
 
 //PENDIENTE DE PONERLO EN EL AUTH
-Route::get('reportServicios/{id}', [ExcelReportController::class, 'reportMovementClient'])->name('reportMovementClient');
-Route::get('reportMovement', [ExcelReportController::class, 'reportAttendanceVehicle'])->name('reportAttendanceVehicle');
-Route::get('reportCommitment', [ExcelReportController::class, 'reportMovementVehicle'])->name('reportMovementVehicle');
+Route::get('reportServicios', [ExcelReportController::class, 'reportService'])->name('reportService');
+Route::get('reportMovementDateRange/{id}', [ExcelReportController::class, 'reportMovementDateRange'])->name('reportMovementDateRange');
+Route::get('reportCommitment', [ExcelReportController::class, 'reportCommitment'])->name('reportCommitment');
+
 
 
 
