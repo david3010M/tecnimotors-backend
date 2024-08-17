@@ -13146,7 +13146,7 @@
         "/tecnimotors-backend/public/api/reportMovementClient/{id}": {
             "get": {
                 "tags": [
-                    "Report"
+                    "Reporte Excel"
                 ],
                 "summary": "Reporte de Movimientos de un Cliente",
                 "operationId": "b7cbaaddc9672b6b69d99fa062e0f90a",
@@ -13203,7 +13203,7 @@
         "/tecnimotors-backend/public/api/reportAttendanceVehicle": {
             "get": {
                 "tags": [
-                    "Report"
+                    "Reporte Excel"
                 ],
                 "summary": "Reporte de Atenciones de Vehículos",
                 "operationId": "d87772bf59cbebb46d7c606a1f72bc97",
@@ -13248,7 +13248,7 @@
         "/tecnimotors-backend/public/api/reportMovementVehicle": {
             "get": {
                 "tags": [
-                    "Report"
+                    "Reporte Excel"
                 ],
                 "summary": "Reporte de Movimientos de un Vehículo",
                 "operationId": "af861998b5109d15446266a05680791c",
@@ -13287,6 +13287,207 @@
                     },
                     "404": {
                         "description": "Vehículo no encontrado"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/reportMovementDateRange/{id}": {
+            "get": {
+                "tags": [
+                    "Reporte Excel"
+                ],
+                "summary": "Reporte de Movimientos en un Rango de Fechas",
+                "description": "Genera un reporte de movimientos de caja dentro de un rango de fechas, basado en un movimiento de apertura y opcionalmente un movimiento de cierre.",
+                "operationId": "8276cbe68ad4fdb859ff078ecdf1a9df",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del movimiento de apertura",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "from",
+                        "in": "query",
+                        "description": "Fecha de inicio",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "description": "Fecha de fin",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Reporte de Movimientos generado exitosamente",
+                        "content": {
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Movimiento de Apertura no encontrado"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/reportServicios": {
+            "get": {
+                "tags": [
+                    "Reporte Excel"
+                ],
+                "summary": "Reporte de Servicios",
+                "description": "Genera un reporte de todos los servicios registrados en el sistema dentro de un rango de fechas opcional.",
+                "operationId": "5a04db96f8b1bcad7767ecfc9a6ba852",
+                "parameters": [
+                    {
+                        "name": "from",
+                        "in": "query",
+                        "description": "Fecha de inicio",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "description": "Fecha de fin",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Reporte de Servicios generado exitosamente",
+                        "content": {
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/reportCommitment": {
+            "get": {
+                "tags": [
+                    "Reporte Excel"
+                ],
+                "summary": "Reporte de Compromisos",
+                "description": "Genera un reporte de compromisos basados en el estado y opcionalmente filtra por cliente.",
+                "operationId": "1ca55c79ae7296385533e3a707598025",
+                "parameters": [
+                    {
+                        "name": "cliente_id",
+                        "in": "query",
+                        "description": "ID del cliente para filtrar los compromisos",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Estado del compromiso (por defecto: Pendiente)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "from",
+                        "in": "query",
+                        "description": "Fecha de inicio",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "description": "Fecha de fin",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Reporte de Compromisos generado exitosamente",
+                        "content": {
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Persona no encontrada"
                     },
                     "401": {
                         "description": "Unauthorized"

@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AttendanceVehicleRequest;
-use App\Http\Requests\CommitmentRequest;
 use App\Http\Requests\MovementClientRequest;
 use App\Http\Requests\MovementVehicleRequest;
 use App\Http\Requests\ReportCommitmentRequest;
-use App\Http\Requests\ServiceRequest;
 use App\Http\Resources\CommitmentResource;
 use App\Http\Resources\ReportMovementClientResource;
 use App\Http\Resources\ReportMovementDateRangeResource;
@@ -25,7 +23,7 @@ class ExcelReportController extends Controller
     /**
      * @OA\Get(
      *     path="/tecnimotors-backend/public/api/reportMovementClient/{id}",
-     *     tags={"Report"},
+     *     tags={"Reporte Excel"},
      *     security={{"bearerAuth":{}}},
      *     summary="Reporte de Movimientos de un Cliente",
      *     @OA\Parameter(name="id", in="path", description="ID del Cliente", required=true, @OA\Schema(type="integer")),
@@ -42,13 +40,15 @@ class ExcelReportController extends Controller
         $movements = Moviment::getMovementsByClientId($id, $request->from, $request->to);
         $movements = ReportMovementClientResource::collection($movements);
         $client = Person::find($id);
-        if (!$client) return response()->json(['message' => 'Client not found'], 404);
+        if (!$client) {
+            return response()->json(['message' => 'Client not found'], 404);
+        }
 
 //        return response()->json($movements);
 
         $clientName = $client->typeofDocument === 'RUC' ? $client->businessName : $client->names . ' ' . $client->fatherSurname . ' ' . $client->motherSurname;
         $period = ($request->from && $request->to) ? 'Del ' . $request->from . ' al ' . $request->to :
-            ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
+        ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
 
         $bytes = UtilFunctions::generateReportMovementClient($movements, $clientName, $period);
         $nameOfFile = date('d-m-Y') . '_Reporte_Caja_Cliente_' . $id . '.xlsx';
@@ -63,7 +63,7 @@ class ExcelReportController extends Controller
     /**
      * @OA\Get(
      *     path="/tecnimotors-backend/public/api/reportAttendanceVehicle",
-     *     tags={"Report"},
+     *     tags={"Reporte Excel"},
      *     security={{"bearerAuth":{}}},
      *     summary="Reporte de Atenciones de Vehículos",
      *     @OA\Parameter(name="from", in="query", description="Fecha de inicio", required=false, @OA\Schema(type="string")),
@@ -77,7 +77,7 @@ class ExcelReportController extends Controller
     {
         $months = Attention::getAttentionByMonths($request->from, $request->to);
         $period = ($request->from && $request->to) ? 'Del ' . $request->from . ' al ' . $request->to :
-            ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
+        ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
 //
 //        $countAttentionPerMonth = $months->map(function ($month) {
 //            return $month->count();
@@ -97,7 +97,7 @@ class ExcelReportController extends Controller
     /**
      * @OA\Get(
      *     path="/tecnimotors-backend/public/api/reportMovementVehicle",
-     *     tags={"Report"},
+     *     tags={"Reporte Excel"},
      *     security={{"bearerAuth":{}}},
      *     summary="Reporte de Movimientos de un Vehículo",
      *     @OA\Parameter(name="plate", in="query", description="Placa del Vehículo", required=true, @OA\Schema(type="string")),
@@ -118,7 +118,7 @@ class ExcelReportController extends Controller
 
         $vehiclePlate = $request->plate;
         $period = ($request->from && $request->to) ? 'Del ' . $request->from . ' al ' . $request->to :
-            ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
+        ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
 
         $bytes = UtilFunctions::generateReportMovementVehicle($movements, $vehiclePlate, $period);
         $nameOfFile = date('d-m-Y') . '_Reporte_Caja_Cliente_' . $vehiclePlate . '.xlsx';
@@ -129,12 +129,61 @@ class ExcelReportController extends Controller
             'Content-Length' => strlen($bytes),
         ]);
     }
+/**
+ * @OA\Get(
+ *     path="/tecnimotors-backend/public/api/reportMovementDateRange/{id}",
+ *     tags={"Reporte Excel"},
+ *     security={{"bearerAuth":{}}},
+ *     summary="Reporte de Movimientos en un Rango de Fechas",
+ *     description="Genera un reporte de movimientos de caja dentro de un rango de fechas, basado en un movimiento de apertura y opcionalmente un movimiento de cierre.",
+ *     @OA\Parameter(
+ *         name="id",
+ *         in="path",
+ *         description="ID del movimiento de apertura",
+ *         required=true,
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\Parameter(
+ *         name="from",
+ *         in="query",
+ *         description="Fecha de inicio",
+ *         required=false,
+ *         @OA\Schema(type="string", format="date")
+ *     ),
+ *     @OA\Parameter(
+ *         name="to",
+ *         in="query",
+ *         description="Fecha de fin",
+ *         required=false,
+ *         @OA\Schema(type="string", format="date")
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Reporte de Movimientos generado exitosamente",
+ *         @OA\MediaType(
+ *             mediaType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+ *             @OA\Schema(type="string", format="binary")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Movimiento de Apertura no encontrado"
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Unauthorized"
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Validation error"
+ *     )
+ * )
+ */
 
     public function reportMovementDateRange(MovementClientRequest $request, $id)
     {
-        $movements = Moviment::getMovementsByDateRange($request->from, $request->to);
-
-        $movCajaAperturada = Moviment::where('id', $id)->where('paymentConcept_id', 1)
+        $movCajaAperturada = Moviment::where('id', $id)
+            ->where('paymentConcept_id', 1)
             ->first();
 
         if (!$movCajaAperturada) {
@@ -143,23 +192,28 @@ class ExcelReportController extends Controller
             ], 404);
         }
 
+        // Buscar el movimiento de cierre
         $movCajaCierre = Moviment::where('id', '>', $movCajaAperturada->id)
             ->where('paymentConcept_id', 2)
-            ->orderBy('id', 'asc')->first();
+            ->orderBy('id', 'asc')
+            ->first();
 
-        $movements = Moviment::select(['*', DB::raw('(SELECT obtenerFormaPagoPorCaja(moviments.id)) AS formaPago')])
-            ->where('id', '>=', $movCajaAperturada->id)
-            ->where('id', '<', $movCajaCierre->id)
-            ->orderBy('id', 'desc')
+        // Ajustar la consulta dependiendo de si existe o no un movimiento de cierre
+        $movementsQuery = Moviment::select(['*', DB::raw('(SELECT obtenerFormaPagoPorCaja(moviments.id)) AS formaPago')])
+            ->where('id', '>=', $movCajaAperturada->id);
+
+        if ($movCajaCierre) {
+            $movementsQuery->where('id', '<', $movCajaCierre->id);
+        }
+
+        $movements = $movementsQuery->orderBy('id', 'desc')
             ->with(['paymentConcept', 'person', 'user.worker.person', 'budgetSheet'])
             ->get();
 
         $movements = ReportMovementDateRangeResource::collection($movements);
 
-//        return response()->json($movements);
-
         $period = ($request->from && $request->to) ? 'Del ' . $request->from . ' al ' . $request->to :
-            ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
+        ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
 
         $bytes = UtilFunctions::generateReportMovementDateRange($movements, $movCajaAperturada->sequentialNumber, $period);
         $nameOfFile = date('d-m-Y') . '_Reporte_Caja' . '.xlsx';
@@ -170,6 +224,45 @@ class ExcelReportController extends Controller
             'Content-Length' => strlen($bytes),
         ]);
     }
+/**
+ * @OA\Get(
+ *     path="/tecnimotors-backend/public/api/reportServicios",
+ *     tags={"Reporte Excel"},
+ *     security={{"bearerAuth":{}}},
+ *     summary="Reporte de Servicios",
+ *     description="Genera un reporte de todos los servicios registrados en el sistema dentro de un rango de fechas opcional.",
+ *     @OA\Parameter(
+ *         name="from",
+ *         in="query",
+ *         description="Fecha de inicio",
+ *         required=false,
+ *         @OA\Schema(type="string", format="date")
+ *     ),
+ *     @OA\Parameter(
+ *         name="to",
+ *         in="query",
+ *         description="Fecha de fin",
+ *         required=false,
+ *         @OA\Schema(type="string", format="date")
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Reporte de Servicios generado exitosamente",
+ *         @OA\MediaType(
+ *             mediaType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+ *             @OA\Schema(type="string", format="binary")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Unauthorized"
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Validation error"
+ *     )
+ * )
+ */
 
     public function reportService(MovementClientRequest $request)
     {
@@ -180,7 +273,7 @@ class ExcelReportController extends Controller
 //        return response()->json($movements);
 
         $period = ($request->from && $request->to) ? 'Del ' . $request->from . ' al ' . $request->to :
-            ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
+        ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
 
         $bytes = UtilFunctions::generateService($movements, '', $period);
         $nameOfFile = date('d-m-Y') . '_Reporte_Servicios' . '.xlsx';
@@ -191,6 +284,63 @@ class ExcelReportController extends Controller
             'Content-Length' => strlen($bytes),
         ]);
     }
+/**
+ * @OA\Get(
+ *     path="/tecnimotors-backend/public/api/reportCommitment",
+ *     tags={"Reporte Excel"},
+ *     security={{"bearerAuth":{}}},
+ *     summary="Reporte de Compromisos",
+ *     description="Genera un reporte de compromisos basados en el estado y opcionalmente filtra por cliente.",
+ *     @OA\Parameter(
+ *         name="cliente_id",
+ *         in="query",
+ *         description="ID del cliente para filtrar los compromisos",
+ *         required=false,
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\Parameter(
+ *         name="status",
+ *         in="query",
+ *         description="Estado del compromiso (por defecto: Pendiente)",
+ *         required=false,
+ *         @OA\Schema(type="string")
+ *     ),
+ *     @OA\Parameter(
+ *         name="from",
+ *         in="query",
+ *         description="Fecha de inicio",
+ *         required=false,
+ *         @OA\Schema(type="string", format="date")
+ *     ),
+ *     @OA\Parameter(
+ *         name="to",
+ *         in="query",
+ *         description="Fecha de fin",
+ *         required=false,
+ *         @OA\Schema(type="string", format="date")
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Reporte de Compromisos generado exitosamente",
+ *         @OA\MediaType(
+ *             mediaType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+ *             @OA\Schema(type="string", format="binary")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Persona no encontrada"
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Unauthorized"
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Validation error"
+ *     )
+ * )
+ */
 
     public function reportCommitment(ReportCommitmentRequest $request)
     {
@@ -236,7 +386,7 @@ class ExcelReportController extends Controller
 //        return response()->json($movements);
 
         $period = ($request->from && $request->to) ? 'Del ' . $request->from . ' al ' . $request->to :
-            ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
+        ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
 
         $bytes = UtilFunctions::generateCommitment($movements, $period, $personNames, $status);
         $nameOfFile = date('d-m-Y') . '_Reporte_Compromisos' . '.xlsx';
