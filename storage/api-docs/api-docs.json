@@ -13215,7 +13215,8 @@
                         "required": false,
                         "schema": {
                             "type": "string"
-                        }
+                        },
+                        "example": "2024-08-19"
                     },
                     {
                         "name": "to",
@@ -13224,12 +13225,28 @@
                         "required": false,
                         "schema": {
                             "type": "string"
-                        }
+                        },
+                        "example": "2024-08-19"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "Reporte de Atenciones de Vehículos"
+                    },
+                    "404": {
+                        "description": "Sin atenciones registradas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "Unauthorized"

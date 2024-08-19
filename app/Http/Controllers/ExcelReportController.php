@@ -66,9 +66,10 @@ class ExcelReportController extends Controller
      *     tags={"Reporte Excel"},
      *     security={{"bearerAuth":{}}},
      *     summary="Reporte de Atenciones de Vehículos",
-     *     @OA\Parameter(name="from", in="query", description="Fecha de inicio", required=false, @OA\Schema(type="string")),
-     *     @OA\Parameter(name="to", in="query", description="Fecha de fin", required=false, @OA\Schema(type="string")),
+     *     @OA\Parameter(name="from", in="query", description="Fecha de inicio", required=false, @OA\Schema(type="string"), example="2024-08-19"),
+     *     @OA\Parameter(name="to", in="query", description="Fecha de fin", required=false, @OA\Schema(type="string"), example="2024-08-19"),
      *     @OA\Response(response=200, description="Reporte de Atenciones de Vehículos"),
+     *     @OA\Response(response=404, description="Sin atenciones registradas", @OA\JsonContent(@OA\Property(property="message", type="string"))),
      *     @OA\Response(response=401, description="Unauthorized"),
      *     @OA\Response(response=422, description="Validation error")
      * )
