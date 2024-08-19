@@ -48,7 +48,7 @@ class ExcelReportController extends Controller
 
         $clientName = $client->typeofDocument === 'RUC' ? $client->businessName : $client->names . ' ' . $client->fatherSurname . ' ' . $client->motherSurname;
         $period = ($request->from && $request->to) ? 'Del ' . $request->from . ' al ' . $request->to :
-        ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
+            ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
 
         $bytes = UtilFunctions::generateReportMovementClient($movements, $clientName, $period);
         $nameOfFile = date('d-m-Y') . '_Reporte_Caja_Cliente_' . $id . '.xlsx';
@@ -77,13 +77,18 @@ class ExcelReportController extends Controller
     {
         $months = Attention::getAttentionByMonths($request->from, $request->to);
         $period = ($request->from && $request->to) ? 'Del ' . $request->from . ' al ' . $request->to :
-        ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
+            ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
 //
 //        $countAttentionPerMonth = $months->map(function ($month) {
 //            return $month->count();
 //        });
 //
 //        return response()->json($months);
+        if ($months->isEmpty()) {
+            return response()->json([
+                "message" => "No hay atenciones registradas en el rango de fechas proporcionado.",
+            ], 404);
+        }
         $bytes = UtilFunctions::generateReportAttendanceVehicle($months, $period);
         $nameOfFile = date('d-m-Y') . '_Reporte_Unidades_Atendidas_' . $request->year . '.xlsx';
 
@@ -118,7 +123,7 @@ class ExcelReportController extends Controller
 
         $vehiclePlate = $request->plate;
         $period = ($request->from && $request->to) ? 'Del ' . $request->from . ' al ' . $request->to :
-        ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
+            ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
 
         $bytes = UtilFunctions::generateReportMovementVehicle($movements, $vehiclePlate, $period);
         $nameOfFile = date('d-m-Y') . '_Reporte_Caja_Cliente_' . $vehiclePlate . '.xlsx';
@@ -129,43 +134,43 @@ class ExcelReportController extends Controller
             'Content-Length' => strlen($bytes),
         ]);
     }
-/**
- * @OA\Get(
- *     path="/tecnimotors-backend/public/api/reportMovementDateRange/{id}",
- *     tags={"Reporte Excel"},
- *     security={{"bearerAuth":{}}},
- *     summary="Reporte de Movimientos en un Rango de Fechas",
- *     description="Genera un reporte de movimientos de caja dentro de un rango de fechas, basado en un movimiento de apertura y opcionalmente un movimiento de cierre.",
- *     @OA\Parameter(
- *         name="id",
- *         in="path",
- *         description="ID del movimiento de apertura",
- *         required=true,
- *         @OA\Schema(type="integer")
- *     ),
 
- *     @OA\Response(
- *         response=200,
- *         description="Reporte de Movimientos generado exitosamente",
- *         @OA\MediaType(
- *             mediaType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
- *             @OA\Schema(type="string", format="binary")
- *         )
- *     ),
- *     @OA\Response(
- *         response=404,
- *         description="Movimiento de Apertura no encontrado"
- *     ),
- *     @OA\Response(
- *         response=401,
- *         description="Unauthorized"
- *     ),
- *     @OA\Response(
- *         response=422,
- *         description="Validation error"
- *     )
- * )
- */
+    /**
+     * @OA\Get(
+     *     path="/tecnimotors-backend/public/api/reportMovementDateRange/{id}",
+     *     tags={"Reporte Excel"},
+     *     security={{"bearerAuth":{}}},
+     *     summary="Reporte de Movimientos en un Rango de Fechas",
+     *     description="Genera un reporte de movimientos de caja dentro de un rango de fechas, basado en un movimiento de apertura y opcionalmente un movimiento de cierre.",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del movimiento de apertura",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Reporte de Movimientos generado exitosamente",
+     *         @OA\MediaType(
+     *             mediaType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+     *             @OA\Schema(type="string", format="binary")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Movimiento de Apertura no encontrado"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     )
+     * )
+     */
 
     public function reportMovementDateRange(MovementClientRequest $request, $id)
     {
@@ -200,7 +205,7 @@ class ExcelReportController extends Controller
         $movements = ReportMovementDateRangeResource::collection($movements);
 
         $period = ($request->from && $request->to) ? 'Del ' . $request->from . ' al ' . $request->to :
-        ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
+            ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
 
         $bytes = UtilFunctions::generateReportMovementDateRange($movements, $movCajaAperturada->sequentialNumber, $period);
         $nameOfFile = date('d-m-Y') . '_Reporte_Caja' . '.xlsx';
@@ -211,45 +216,46 @@ class ExcelReportController extends Controller
             'Content-Length' => strlen($bytes),
         ]);
     }
-/**
- * @OA\Get(
- *     path="/tecnimotors-backend/public/api/reportServicios",
- *     tags={"Reporte Excel"},
- *     security={{"bearerAuth":{}}},
- *     summary="Reporte de Servicios",
- *     description="Genera un reporte de todos los servicios registrados en el sistema dentro de un rango de fechas opcional.",
- *     @OA\Parameter(
- *         name="from",
- *         in="query",
- *         description="Fecha de inicio",
- *         required=false,
- *         @OA\Schema(type="string", format="date")
- *     ),
- *     @OA\Parameter(
- *         name="to",
- *         in="query",
- *         description="Fecha de fin",
- *         required=false,
- *         @OA\Schema(type="string", format="date")
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Reporte de Servicios generado exitosamente",
- *         @OA\MediaType(
- *             mediaType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
- *             @OA\Schema(type="string", format="binary")
- *         )
- *     ),
- *     @OA\Response(
- *         response=401,
- *         description="Unauthorized"
- *     ),
- *     @OA\Response(
- *         response=422,
- *         description="Validation error"
- *     )
- * )
- */
+
+    /**
+     * @OA\Get(
+     *     path="/tecnimotors-backend/public/api/reportServicios",
+     *     tags={"Reporte Excel"},
+     *     security={{"bearerAuth":{}}},
+     *     summary="Reporte de Servicios",
+     *     description="Genera un reporte de todos los servicios registrados en el sistema dentro de un rango de fechas opcional.",
+     *     @OA\Parameter(
+     *         name="from",
+     *         in="query",
+     *         description="Fecha de inicio",
+     *         required=false,
+     *         @OA\Schema(type="string", format="date")
+     *     ),
+     *     @OA\Parameter(
+     *         name="to",
+     *         in="query",
+     *         description="Fecha de fin",
+     *         required=false,
+     *         @OA\Schema(type="string", format="date")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Reporte de Servicios generado exitosamente",
+     *         @OA\MediaType(
+     *             mediaType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+     *             @OA\Schema(type="string", format="binary")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     )
+     * )
+     */
 
     public function reportService(MovementClientRequest $request)
     {
@@ -260,7 +266,7 @@ class ExcelReportController extends Controller
 //        return response()->json($movements);
 
         $period = ($request->from && $request->to) ? 'Del ' . $request->from . ' al ' . $request->to :
-        ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
+            ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
 
         $bytes = UtilFunctions::generateService($movements, '', $period);
         $nameOfFile = date('d-m-Y') . '_Reporte_Servicios' . '.xlsx';
@@ -271,123 +277,124 @@ class ExcelReportController extends Controller
             'Content-Length' => strlen($bytes),
         ]);
     }
-/**
- * @OA\Get(
- *     path="/tecnimotors-backend/public/api/reportCommitment",
- *     tags={"Reporte Excel"},
- *     security={{"bearerAuth":{}}},
- *     summary="Reporte de Compromisos",
- *     description="Genera un reporte de compromisos basados en el estado y opcionalmente filtra por cliente.",
- *     @OA\Parameter(
- *         name="cliente_id",
- *         in="query",
- *         description="ID del cliente para filtrar los compromisos",
- *         required=false,
- *         @OA\Schema(type="integer")
- *     ),
- *     @OA\Parameter(
- *         name="status",
- *         in="query",
- *         description="Estado del compromiso (por defecto: Pendiente)",
- *         required=false,
- *         @OA\Schema(type="string")
- *     ),
- *     @OA\Parameter(
- *         name="from",
- *         in="query",
- *         description="Fecha de inicio",
- *         required=false,
- *         @OA\Schema(type="string", format="date")
- *     ),
- *     @OA\Parameter(
- *         name="to",
- *         in="query",
- *         description="Fecha de fin",
- *         required=false,
- *         @OA\Schema(type="string", format="date")
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Reporte de Compromisos generado exitosamente",
- *         @OA\MediaType(
- *             mediaType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
- *             @OA\Schema(type="string", format="binary")
- *         )
- *     ),
- *     @OA\Response(
- *         response=404,
- *         description="Persona no encontrada"
- *     ),
- *     @OA\Response(
- *         response=401,
- *         description="Unauthorized"
- *     ),
- *     @OA\Response(
- *         response=422,
- *         description="Validation error"
- *     )
- * )
- */
 
- public function reportCommitment(ReportCommitmentRequest $request)
- {
-     $person_id = $request->cliente_id ?? null;
-     $status = $request->status ?? 'Pendiente';
-     $personNames = '';
- 
-     // Verificar si se ha proporcionado un ID de persona
-     if (!is_null($person_id)) {
-         $person = Person::find($person_id);
- 
-         if (!$person) {
-             return response()->json(['error' => 'Persona no encontrada.'], 404);
-         }
- 
-         // Obtener el nombre completo según el tipo de documento
-         if ($person->typeOfDocument === 'DNI') {
-             $personNames = $person->names . ' ' . $person->fatherSurname;
-         } elseif ($person->typeOfDocument === 'RUC') {
-             $personNames = $person->businessName;
-         } else {
-             $personNames = $person->names;
-         }
-     }
- 
-     // Crear una consulta base
-     $query = Commitment::with('budgetSheet.attention.vehicle.person');
- 
-     // Aplicar filtro por cliente_id solo si se proporciona
-     if (!is_null($person_id)) {
-         $query->whereHas('budgetSheet.attention.vehicle.person', function ($q) use ($person_id) {
-             $q->where('id', $person_id);
-         });
-     }
- 
-     // Aplicar filtro por estado
-     $query->where('status', $status);
- 
-     // Ejecutar la consulta y transformar los resultados
-     $movements = CommitmentResource::collection($query->get());
- 
-     // Determinar el periodo para el reporte
-     $period = ($request->from && $request->to) 
-         ? 'Del ' . $request->from . ' al ' . $request->to 
-         : ($request->from 
-             ? 'Desde ' . $request->from 
-             : ($request->to 
-                 ? 'Hasta ' . $request->to 
-                 : '-'));
- 
-     // Generar el reporte en formato Excel
-     $bytes = UtilFunctions::generateCommitment($movements, $period, $personNames, $status);
-     $nameOfFile = date('d-m-Y') . '_Reporte_Compromisos' . '.xlsx';
- 
-     // Devolver el archivo generado como respuesta
-     return response($bytes, 200, [
-         'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-         'Content-Disposition' => 'attachment; filename="' . $nameOfFile . '"',
-         'Content-Length' => strlen($bytes),
-     ]);
- }
- 
+    /**
+     * @OA\Get(
+     *     path="/tecnimotors-backend/public/api/reportCommitment",
+     *     tags={"Reporte Excel"},
+     *     security={{"bearerAuth":{}}},
+     *     summary="Reporte de Compromisos",
+     *     description="Genera un reporte de compromisos basados en el estado y opcionalmente filtra por cliente.",
+     *     @OA\Parameter(
+     *         name="cliente_id",
+     *         in="query",
+     *         description="ID del cliente para filtrar los compromisos",
+     *         required=false,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="status",
+     *         in="query",
+     *         description="Estado del compromiso (por defecto: Pendiente)",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="from",
+     *         in="query",
+     *         description="Fecha de inicio",
+     *         required=false,
+     *         @OA\Schema(type="string", format="date")
+     *     ),
+     *     @OA\Parameter(
+     *         name="to",
+     *         in="query",
+     *         description="Fecha de fin",
+     *         required=false,
+     *         @OA\Schema(type="string", format="date")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Reporte de Compromisos generado exitosamente",
+     *         @OA\MediaType(
+     *             mediaType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+     *             @OA\Schema(type="string", format="binary")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Persona no encontrada"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     )
+     * )
+     */
+
+    public function reportCommitment(ReportCommitmentRequest $request)
+    {
+        $person_id = $request->cliente_id ?? null;
+        $status = $request->status ?? 'Pendiente';
+        $personNames = '';
+
+        // Verificar si se ha proporcionado un ID de persona
+        if (!is_null($person_id)) {
+            $person = Person::find($person_id);
+
+            if (!$person) {
+                return response()->json(['error' => 'Persona no encontrada.'], 404);
+            }
+
+            // Obtener el nombre completo según el tipo de documento
+            if ($person->typeOfDocument === 'DNI') {
+                $personNames = $person->names . ' ' . $person->fatherSurname;
+            } elseif ($person->typeOfDocument === 'RUC') {
+                $personNames = $person->businessName;
+            } else {
+                $personNames = $person->names;
+            }
+        }
+
+        // Crear una consulta base
+        $query = Commitment::with('budgetSheet.attention.vehicle.person');
+
+        // Aplicar filtro por cliente_id solo si se proporciona
+        if (!is_null($person_id)) {
+            $query->whereHas('budgetSheet.attention.vehicle.person', function ($q) use ($person_id) {
+                $q->where('id', $person_id);
+            });
+        }
+
+        // Aplicar filtro por estado
+        $query->where('status', $status);
+
+        // Ejecutar la consulta y transformar los resultados
+        $movements = CommitmentResource::collection($query->get());
+
+        // Determinar el periodo para el reporte
+        $period = ($request->from && $request->to)
+            ? 'Del ' . $request->from . ' al ' . $request->to
+            : ($request->from
+                ? 'Desde ' . $request->from
+                : ($request->to
+                    ? 'Hasta ' . $request->to
+                    : '-'));
+
+        // Generar el reporte en formato Excel
+        $bytes = UtilFunctions::generateCommitment($movements, $period, $personNames, $status);
+        $nameOfFile = date('d-m-Y') . '_Reporte_Compromisos' . '.xlsx';
+
+        // Devolver el archivo generado como respuesta
+        return response($bytes, 200, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => 'attachment; filename="' . $nameOfFile . '"',
+            'Content-Length' => strlen($bytes),
+        ]);
+    }
+
 }
