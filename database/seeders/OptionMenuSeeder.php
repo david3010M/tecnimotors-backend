@@ -35,7 +35,7 @@ class OptionMenuSeeder extends Seeder
 
             ['id' => '16', 'name' => 'Vehiculos', 'route' => 'vehiculos', 'groupmenu_id' => 2],
             ['id' => '17', 'name' => 'Modelo', 'route' => 'modelo', 'groupmenu_id' => 2],
-
+            ['id' => '18', 'name' => 'Reportes', 'route' => 'reportes', 'groupmenu_id' => 5],
         ];
 
         foreach ($array as $object) {
