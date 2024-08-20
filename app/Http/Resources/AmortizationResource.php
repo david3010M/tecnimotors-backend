@@ -6,14 +6,17 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class AmortizationResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
-     */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'sequentialNumber' => $this->sequentialNumber,
+            'amount' => $this->amount,
+            'paymentDate' => $this->paymentDate,
+            'moviment_id' => $this->moviment_id,
+            'commitment_id' => $this->commitment_id,
+            'created_at' => $this->created_at,
+            'balance' => $this->commitment->balance,
+        ];
     }
 }

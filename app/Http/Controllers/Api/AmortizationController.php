@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AmortizationResource;
 use App\Models\Amortization;
 use App\Models\budgetSheet;
 use App\Models\Commitment;
@@ -248,6 +249,6 @@ class AmortizationController extends Controller
 
         $amortization = Amortization::find($amortization->id);
 
-        return response()->json($amortization);
+        return response()->json(AmortizationResource::make($amortization));
     }
 }
