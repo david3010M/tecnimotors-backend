@@ -43,7 +43,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        return response()->json(Category::simplePaginate(15));
+        return response()->json(Category::get());
     }
 
     /**

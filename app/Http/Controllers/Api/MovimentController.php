@@ -3,13 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\AttendanceVehicleRequest;
-use App\Http\Resources\ReportAttendanceVehicleResource;
-use App\Models\Attention;
 use App\Models\ConceptPay;
 use App\Models\Moviment;
-use App\Utils\Constants;
-use App\Utils\UtilFunctions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -307,7 +302,7 @@ class MovimentController extends Controller
         $tipo = str_pad($tipo, 4, '0', STR_PAD_RIGHT);
 
         $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(sequentialNumber, LOCATE("-", sequentialNumber) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM moviments WHERE SUBSTRING(sequentialNumber, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-        $siguienteNum = (int)$resultado;
+        $siguienteNum = (int) $resultado;
 
         $routeVoucher = null;
         $numberVoucher = null;
@@ -764,7 +759,7 @@ class MovimentController extends Controller
         $tipo = str_pad($tipo, 4, '0', STR_PAD_RIGHT);
 
         $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(sequentialNumber, LOCATE("-", sequentialNumber) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM moviments WHERE SUBSTRING(sequentialNumber, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-        $siguienteNum = (int)$resultado;
+        $siguienteNum = (int) $resultado;
 
         $routeVoucher = null;
         $numberVoucher = null;
@@ -882,6 +877,69 @@ class MovimentController extends Controller
         }
 
         return response()->json($object, 200);
+    }
+
+/**
+ * @OA\Get(
+ *     path="/tecnimotors-backend/public/api/showAperturaMovements",
+ *     summary="Listado de Aperturas",
+ *     tags={"Moviment"},
+ *     description="Por cada apertura, muestra su reporte con un filtro opcional por fechas basado en el campo created_at.",
+ *     security={{"bearerAuth":{}}},
+ *     @OA\Parameter(
+ *         name="start_date",
+ *         in="query",
+ *         description="Fecha de inicio para filtrar los movimientos (YYYY-MM-DD)",
+ *         required=false,
+ *         @OA\Schema(type="string", format="date")
+ *     ),
+ *     @OA\Parameter(
+ *         name="end_date",
+ *         in="query",
+ *         description="Fecha de fin para filtrar los movimientos (YYYY-MM-DD)",
+ *         required=false,
+ *         @OA\Schema(type="string", format="date")
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Movimientos obtenidos con éxito.",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/MovimentRequest"))
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Error de validación.",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="error", type="string", example="Movements not found.")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="No autenticado.",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="msg", type="string", example="Unauthenticated.")
+ *         )
+ *     ),
+ * )
+ */
+    public function showAperturaMovements(Request $request)
+    {
+        $query = Moviment::with(['paymentConcept', 'person', 'user.worker.person'])
+            ->where('paymentConcept_id', 1)
+            ->orderBy('id', 'desc');
+
+        // Filtrado por fechas
+        if ($request->has('start_date')) {
+            $query->whereDate('created_at', '>=', $request->input('start_date'));
+        }
+        if ($request->has('end_date')) {
+            $query->whereDate('created_at', '<=', $request->input('end_date'));
+        }
+
+        $movements = $query->get();
+
+        return response()->json(['data' => $movements], 200);
     }
 
 }

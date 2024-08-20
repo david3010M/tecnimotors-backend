@@ -54,15 +54,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 //PENDIENTE DE PONERLO EN EL AUTH
-Route::get('reportMovementClient/{id}', [ExcelReportController::class, 'reportMovementClient'])->name('reportMovementClient');
-Route::get('reportAttendanceVehicle', [ExcelReportController::class, 'reportAttendanceVehicle'])->name('reportAttendanceVehicle');
-Route::get('reportMovementVehicle', [ExcelReportController::class, 'reportMovementVehicle'])->name('reportMovementVehicle');
-
-//PENDIENTE DE PONERLO EN EL AUTH
-Route::get('reportServicios', [ExcelReportController::class, 'reportService'])->name('reportService');
-Route::get('reportMovementDateRange/{id}', [ExcelReportController::class, 'reportMovementDateRange'])->name('reportMovementDateRange');
-Route::get('reportCommitment', [ExcelReportController::class, 'reportCommitment'])->name('reportCommitment');
-
 
 
 
@@ -244,4 +235,17 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
 //    AMORTIZATION INDEX
     Route::post('amortization', [AmortizationController::class, 'store'])->name('amortization.store');
     Route::get('amortizationsByCommitmentId/{id}', [AmortizationController::class, 'amortizationsByCommitmentId']);
+
+//REPORTES
+Route::get('reportMovementClient/{id}', [ExcelReportController::class, 'reportMovementClient'])->name('reportMovementClient');
+Route::get('reportAttendanceVehicle', [ExcelReportController::class, 'reportAttendanceVehicle'])->name('reportAttendanceVehicle');
+Route::get('reportMovementVehicle', [ExcelReportController::class, 'reportMovementVehicle'])->name('reportMovementVehicle');
+
+//PENDIENTE DE PONERLO EN EL AUTH
+Route::get('reportServicios', [ExcelReportController::class, 'reportService'])->name('reportService');
+Route::get('reportMovementDateRange/{id}', [ExcelReportController::class, 'reportMovementDateRange'])->name('reportMovementDateRange');
+Route::get('reportCommitment', [ExcelReportController::class, 'reportCommitment'])->name('reportCommitment');
+
+Route::get('showAperturaMovements', [MovimentController::class, 'showAperturaMovements']);
+
 });
