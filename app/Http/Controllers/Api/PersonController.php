@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Attention;
 use App\Models\Person;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -195,6 +194,73 @@ class PersonController extends Controller
             ['message' => 'Person not found'], 404
         );
 
+    }
+
+    /**
+     * Get all vehicles associated with a specific Person
+     *
+     * @OA\Get (
+     *     path="/tecnimotors-backend/public/api/person/{id}/vehicles",
+     *     tags={"Person"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the Person",
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of vehicles associated with the Person",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Vehicle")),
+    
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Person not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string",
+     *                 example="Person not found"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string",
+     *                 example="Unauthenticated"
+     *             )
+     *         )
+     *     )
+     * )
+     */
+    public function vehiclesByPerson(int $id)
+    {
+        // Encuentra la persona por su ID
+        $person = Person::find($id);
+
+        if ($person) {
+            // Devuelve los vehículos asociados a la persona
+            $vehicles = $person->vehicles()->with('typeVehicle', 'vehicleModel')->get();
+
+            return response()->json([
+                'data' => $vehicles,
+            ], 200);
+        }
+
+        return response()->json(
+            ['message' => 'Person not found'], 404
+        );
     }
 
     /**

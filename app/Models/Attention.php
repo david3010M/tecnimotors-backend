@@ -66,11 +66,11 @@ class Attention extends Model
         'total',
         'percentage',
         'debtAmount',
-
+   
         'worker_id',
         'vehicle_id',
         'driver',
-
+        'status',
         'created_at',
     ];
 

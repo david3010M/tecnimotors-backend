@@ -24,6 +24,7 @@ return new class extends Migration
             $table->decimal('discount', 10, 2)->nullable();
             $table->decimal('subtotal', 10, 2)->nullable();
             $table->decimal('igv', 10, 2)->nullable();
+            $table->string('status')->nullable()->default('Pendiente');
             $table->foreignId('attention_id')->nullable()->unsigned()->constrained('attentions');
             $table->timestamps();
         });

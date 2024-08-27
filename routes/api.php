@@ -248,4 +248,7 @@ Route::get('reportCommitment', [ExcelReportController::class, 'reportCommitment'
 
 Route::get('showAperturaMovements', [MovimentController::class, 'showAperturaMovements']);
 
+
+
+Route::get('person/{id}/vehicles', [PersonController::class, 'vehiclesByPerson']);
 });

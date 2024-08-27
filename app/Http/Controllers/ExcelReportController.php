@@ -16,6 +16,7 @@ use App\Models\Moviment;
 use App\Models\Person;
 use App\Models\Service;
 use App\Utils\UtilFunctions;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class ExcelReportController extends Controller
@@ -258,26 +259,40 @@ class ExcelReportController extends Controller
      * )
      */
 
-    public function reportService(MovementClientRequest $request)
-    {
-        $movements = Service::get();
-
-        $movements = ServiceResource::collection($movements);
-
-//        return response()->json($movements);
-
-        $period = ($request->from && $request->to) ? 'Del ' . $request->from . ' al ' . $request->to :
-            ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
-
-        $bytes = UtilFunctions::generateService($movements, '', $period);
-        $nameOfFile = date('d-m-Y') . '_Reporte_Servicios' . '.xlsx';
-
-        return response($bytes, 200, [
-            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'Content-Disposition' => 'attachment; filename="' . $nameOfFile . '"',
-            'Content-Length' => strlen($bytes),
-        ]);
-    }
+     public function reportService(MovementClientRequest $request)
+     {
+         // Filtra por fechas si se proporcionan en la solicitud
+         $query = Service::query();
+     
+         if ($request->from) {
+             // Restar un día a la fecha de inicio
+             $fromDate = Carbon::createFromFormat('Y-m-d', $request->from)->subDay()->startOfDay();
+             $query->where('created_at', '>=', $fromDate);
+         }
+     
+         if ($request->to) {
+             $toDate = Carbon::createFromFormat('Y-m-d', $request->to)->endOfDay();
+             $query->where('created_at', '<=', $toDate);
+         }
+     
+         // Obtén los movimientos filtrados
+         $movements = $query->get();
+     
+         $movements = ServiceResource::collection($movements);
+     
+         $period = ($request->from && $request->to) ? 'Del ' . $fromDate->format('Y-m-d') . ' al ' . $request->to :
+             ($request->from ? 'Desde ' . $fromDate->format('Y-m-d') : ($request->to ? 'Hasta ' . $request->to : '-'));
+     
+         $bytes = UtilFunctions::generateService($movements, '', $period);
+         $nameOfFile = date('d-m-Y') . '_Reporte_Servicios' . '.xlsx';
+     
+         return response($bytes, 200, [
+             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+             'Content-Disposition' => 'attachment; filename="' . $nameOfFile . '"',
+             'Content-Length' => strlen($bytes),
+         ]);
+     }
+     
 
     /**
      * @OA\Get(

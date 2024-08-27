@@ -10,43 +10,82 @@ use Illuminate\Support\Facades\DB;
 
 class BudgetSheetController extends Controller
 {
-    /**
-     * Get all BudgetSheets
-     *
-     * @OA\Get(
-     *     path="/tecnimotors-backend/public/api/budgetSheet",
-     *     tags={"BudgetSheet"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of active BudgetSheets",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="current_page", type="integer", example=1),
-     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/BudgetSheet")),
-     *             @OA\Property(property="first_page_url", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/budgetSheet?page=1"),
-     *             @OA\Property(property="from", type="integer", example=1),
-     *             @OA\Property(property="next_page_url", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/budgetSheet?page=2"),
-     *             @OA\Property(property="path", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/budgetSheet"),
-     *             @OA\Property(property="per_page", type="integer", example=15),
-     *             @OA\Property(property="prev_page_url", type="string", example="null"),
-     *             @OA\Property(property="to", type="integer", example=15)
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthorized",
-     *         @OA\JsonContent(
-     *             @OA\Property(
-     *                 property="message", type="string", example="Unauthenticated"
-     *             )
-     *         )
-     *     )
-     * )
-     */
-
-    public function index()
+/**
+ * Get all BudgetSheets with optional filters
+ *
+ * @OA\Get(
+ *     path="/tecnimotors-backend/public/api/budgetSheet",
+ *     tags={"BudgetSheet"},
+ *     security={{"bearerAuth":{}}},
+ *     @OA\Parameter(
+ *         name="attention_vehicle_id",
+ *         in="query",
+ *         required=false,
+ *         description="Filter by Attention Vehicle ID",
+ *         @OA\Schema(
+ *             type="integer"
+ *         )
+ *     ),
+ *     @OA\Parameter(
+ *         name="status",
+ *         in="query",
+ *         required=false,
+ *         description="Filter by Status",
+ *         @OA\Schema(
+ *             type="string"
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="List of BudgetSheets with optional filters applied",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="current_page", type="integer", example=1),
+ *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/BudgetSheet")),
+ *             @OA\Property(property="first_page_url", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/budgetSheet?page=1"),
+ *             @OA\Property(property="from", type="integer", example=1),
+ *             @OA\Property(property="next_page_url", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/budgetSheet?page=2"),
+ *             @OA\Property(property="path", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/budgetSheet"),
+ *             @OA\Property(property="per_page", type="integer", example=15),
+ *             @OA\Property(property="prev_page_url", type="string", example="null"),
+ *             @OA\Property(property="to", type="integer", example=15)
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Unauthorized",
+ *         @OA\JsonContent(
+ *             @OA\Property(
+ *                 property="message", type="string", example="Unauthenticated"
+ *             )
+ *         )
+ *     )
+ * )
+ */
+    public function index(Request $request)
     {
-        return response()->json(budgetSheet::with(['attention'])->simplePaginate(15));
+        // Obtenemos los filtros de la solicitud
+        $attentionVehicleId = $request->query('attention_vehicle_id');
+        $status = $request->query('status');
+
+        // Consulta base
+        $query = BudgetSheet::with(['attention']);
+
+        // Aplicamos filtros si se proporcionan
+        if ($attentionVehicleId) {
+            $query->whereHas('attention', function ($q) use ($attentionVehicleId) {
+                $q->where('vehicle_id', $attentionVehicleId);
+            });
+        }
+
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        // Obtenemos la paginación simple con los filtros aplicados
+        $budgetSheets = $query->simplePaginate(15);
+
+        // Devolvemos la colección transformada como respuesta JSON
+        return response()->json($budgetSheets);
     }
 
     /**
@@ -146,7 +185,7 @@ class BudgetSheetController extends Controller
 
         $tipo = 'PRES';
         $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM budget_sheets a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-        $siguienteNum = (int)$resultado;
+        $siguienteNum = (int) $resultado;
 
         $percentageDiscount = floatval($request->input('percentageDiscount', 0)) / 100;
         $subtotal = floatval($attention->total);

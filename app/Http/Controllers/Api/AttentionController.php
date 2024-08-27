@@ -18,54 +18,87 @@ use Illuminate\Validation\Rule;
 
 class AttentionController extends Controller
 {
-    /**
-     * Get all Attentions
-     * @OA\Get (
-     *     path="/tecnimotors-backend/public/api/attention",
-     *     tags={"Attention"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of active Attentions",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="current_page", type="integer", example=1),
-     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Attention")),
-     *             @OA\Property(property="first_page_url", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/attention?page=1"),
-     *             @OA\Property(property="from", type="integer", example=1),
-     *             @OA\Property(property="next_page_url", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/attention?page=2"),
-     *             @OA\Property(property="path", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/attention"),
-     *             @OA\Property(property="per_page", type="integer", example=15),
-     *             @OA\Property(property="prev_page_url", type="string", example="null"),
-     *             @OA\Property(property="to", type="integer", example=15)
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthorized",
-     *         @OA\JsonContent(
-     *             @OA\Property(
-     *                 property="message", type="string", example="Unauthenticated"
-     *             )
-     *         )
-     *     )
-     * )
-     */
-    public function index()
-    {
-        // Obtenemos la paginación simple de 15 registros con las relaciones necesarias
-        $objects = Attention::with(['worker.person', 'vehicle', 'vehicle.person', 'details', 'routeImages', 'elements'])->simplePaginate(15);
+   /**
+ * Get all Attentions
+ * 
+ * @OA\Get (
+ *     path="/tecnimotors-backend/public/api/attention",
+ *     tags={"Attention"},
+ *     security={{"bearerAuth":{}}},
+ *     @OA\Parameter(
+ *         name="vehicle_id",
+ *         in="query",
+ *         description="ID of the vehicle to filter attentions",
+ *         required=false,
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\Parameter(
+ *         name="attention_status",
+ *         in="query",
+ *         description="Status of the attention to filter attentions",
+ *         required=false,
+ *         @OA\Schema(type="string")
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="List of attentions",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="current_page", type="integer", example=1),
+ *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Attention")),
+ *             @OA\Property(property="first_page_url", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/attention?page=1"),
+ *             @OA\Property(property="from", type="integer", example=1),
+ *             @OA\Property(property="next_page_url", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/attention?page=2"),
+ *             @OA\Property(property="path", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/attention"),
+ *             @OA\Property(property="per_page", type="integer", example=15),
+ *             @OA\Property(property="prev_page_url", type="string", example="null"),
+ *             @OA\Property(property="to", type="integer", example=15)
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Unauthorized",
+ *         @OA\JsonContent(
+ *             @OA\Property(
+ *                 property="message", type="string", example="Unauthenticated"
+ *             )
+ *         )
+ *     )
+ * )
+ */
+public function index(Request $request)
+{
+    // Obtén el ID del vehículo y el estado de atención desde la solicitud
+    $vehicleId = $request->input('vehicle_id');
+    $attentionStatus = $request->input('attention_status');
 
-        // Transformamos cada elemento de la colección paginada
-        $objects->getCollection()->transform(function ($attention) {
-            $attention->elements = $attention->getElements($attention->id);
-            $attention->details = $attention->getDetails($attention->id);
+    // Consulta base para Attention
+    $query = Attention::with(['worker.person', 'vehicle', 'vehicle.person', 'details', 'routeImages', 'elements']);
 
-            return $attention;
-        });
-
-        // Devolvemos la colección transformada como respuesta JSON
-        return response()->json($objects);
+    // Filtra por ID de vehículo si se proporciona
+    if ($vehicleId) {
+        $query->where('vehicle_id', $vehicleId);
     }
+
+    // Filtra por estado de atención si se proporciona
+    if ($attentionStatus) {
+        $query->where('status', $attentionStatus);
+    }
+
+    // Obtén la paginación simple de 15 registros con las relaciones necesarias
+    $objects = $query->simplePaginate(15);
+
+    // Transforma cada elemento de la colección paginada
+    $objects->getCollection()->transform(function ($attention) {
+        $attention->elements = $attention->getElements($attention->id);
+        $attention->details = $attention->getDetails($attention->id);
+
+        return $attention;
+    });
+
+    // Devuelve la colección transformada como respuesta JSON
+    return response()->json($objects);
+}
+
 
     /**
      * Get a single Attention

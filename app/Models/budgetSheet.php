@@ -41,6 +41,7 @@ class budgetSheet extends Model
         'discount',
         'subtotal',
         'igv',
+        'status',
         'attention_id',
         'created_at',
     ];

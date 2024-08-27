@@ -32,6 +32,7 @@ return new class extends Migration
             $table->string('driver')->nullable();
 
             $table->string('routeImage')->nullable();
+            $table->string('status')->nullable()->default('Pendiente');
             $table->foreignId('worker_id')->nullable()->unsigned()->constrained('workers');
             $table->foreignId('vehicle_id')->nullable()->unsigned()->constrained('vehicles');
             // $table->foreignId('driver_id')->nullable()->unsigned()->constrained('people');
