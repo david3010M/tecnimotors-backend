@@ -56,7 +56,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //PENDIENTE DE PONERLO EN EL AUTH
 
 
-
 Route::post('login', [AuthController::class, 'login'])->name('login');
 
 Route::group(["middleware" => ["auth:sanctum"]], function () {
@@ -237,18 +236,18 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::get('amortizationsByCommitmentId/{id}', [AmortizationController::class, 'amortizationsByCommitmentId']);
 
 //REPORTES
-Route::get('reportMovementClient/{id}', [ExcelReportController::class, 'reportMovementClient'])->name('reportMovementClient');
-Route::get('reportAttendanceVehicle', [ExcelReportController::class, 'reportAttendanceVehicle'])->name('reportAttendanceVehicle');
-Route::get('reportMovementVehicle', [ExcelReportController::class, 'reportMovementVehicle'])->name('reportMovementVehicle');
+    Route::get('reportMovementClient/{id}', [ExcelReportController::class, 'reportMovementClient'])->name('reportMovementClient');
+    Route::get('reportAttendanceVehicle', [ExcelReportController::class, 'reportAttendanceVehicle'])->name('reportAttendanceVehicle');
+    Route::get('reportMovementVehicle', [ExcelReportController::class, 'reportMovementVehicle'])->name('reportMovementVehicle');
 
 //PENDIENTE DE PONERLO EN EL AUTH
-Route::get('reportServicios', [ExcelReportController::class, 'reportService'])->name('reportService');
-Route::get('reportMovementDateRange/{id}', [ExcelReportController::class, 'reportMovementDateRange'])->name('reportMovementDateRange');
-Route::get('reportCommitment', [ExcelReportController::class, 'reportCommitment'])->name('reportCommitment');
+    Route::get('reportServicios', [ExcelReportController::class, 'reportService'])->name('reportService');
+    Route::get('reportMovementDateRange/{id}', [ExcelReportController::class, 'reportMovementDateRange'])->name('reportMovementDateRange');
+    Route::get('reportCommitment', [ExcelReportController::class, 'reportCommitment'])->name('reportCommitment');
 
-Route::get('showAperturaMovements', [MovimentController::class, 'showAperturaMovements']);
+    Route::get('showAperturaMovements', [MovimentController::class, 'showAperturaMovements']);
 
 
-
-Route::get('person/{id}/vehicles', [PersonController::class, 'vehiclesByPerson']);
+    Route::get('person/{id}/vehicles', [PersonController::class, 'vehiclesByPerson']);
+    Route::get('person/{id}/attentions', [PersonController::class, 'attentionsByPerson']);
 });

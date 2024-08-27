@@ -217,7 +217,6 @@ class PersonController extends Controller
      *         description="List of vehicles associated with the Person",
      *         @OA\JsonContent(
      *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Vehicle")),
-    
      *         )
      *     ),
      *     @OA\Response(
@@ -251,8 +250,7 @@ class PersonController extends Controller
 
         if ($person) {
             // Devuelve los vehículos asociados a la persona
-            $vehicles = $person->vehicles()->with('typeVehicle', 'vehicleModel')->get();
-
+            $vehicles = $person->vehicles()->with('typeVehicle', 'vehicleModel', 'attentions.budgetSheet')->get();
             return response()->json([
                 'data' => $vehicles,
             ], 200);
@@ -262,6 +260,37 @@ class PersonController extends Controller
             ['message' => 'Person not found'], 404
         );
     }
+
+
+    /**
+     * Get all pending attentions associated with a specific Person
+     * @OA\Get (
+     *     path="/tecnimotors-backend/public/api/person/{id}/attentions",
+     *     tags={"Person"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="id", in="path", required=true, description="ID of the Person", @OA\Schema( type="integer" ) ),
+     *     @OA\Response(response=200, description="List of attentions associated with the Person",
+     *          @OA\JsonContent( @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/AttentionByPerson")) ) ),
+     *     @OA\Response(response=404, description="Person not found",
+     *          @OA\JsonContent( @OA\Property(property="message", type="string", example="Person not found") ) ),
+     *     @OA\Response(response=401, description="Unauthorized",
+     *          @OA\JsonContent( @OA\Property(property="message", type="string", example="Unauthenticated") ) )
+     * )
+     */
+    public function attentionsByPerson(int $id)
+    {
+        $person = Person::find($id);
+
+        if ($person) {
+            $attentions = $person->attentions()->get();
+            return response()->json(['data' => $attentions]);
+        }
+
+        return response()->json(
+            ['message' => 'Person not found'], 404
+        );
+    }
+
 
     /**
      * @OA\Put(

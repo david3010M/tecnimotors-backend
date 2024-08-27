@@ -62,5 +62,11 @@ class Person extends Model
         return $this->hasMany(Vehicle::class);
     }
 
+    public function attentions()
+    {
+        return $this->hasManyThrough(Attention::class, Vehicle::class)
+            ->with('budgetSheet')
+            ->where('status', 'Pendiente');
+    }
 
 }

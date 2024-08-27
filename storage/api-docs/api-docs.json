@@ -6851,6 +6851,83 @@
                 ]
             }
         },
+        "/tecnimotors-backend/public/api/person/{id}/attentions": {
+            "get": {
+                "tags": [
+                    "Person"
+                ],
+                "summary": "Get all pending attentions associated with a specific Person",
+                "operationId": "28caad672bcda0792614482e6e063d39",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Person",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of attentions associated with the Person",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/AttentionByPerson"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Person not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Person not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/tecnimotors-backend/public/api/product": {
             "get": {
                 "tags": [
@@ -14037,6 +14114,85 @@
                 },
                 "type": "object"
             },
+            "AttentionByPerson": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "number": {
+                        "type": "string",
+                        "example": "12345"
+                    },
+                    "arrivalDate": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2024-05-21"
+                    },
+                    "deliveryDate": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2024-05-22"
+                    },
+                    "observations": {
+                        "type": "string",
+                        "example": "Some observations here."
+                    },
+                    "fuelLevel": {
+                        "type": "integer",
+                        "example": "80"
+                    },
+                    "km": {
+                        "type": "integer",
+                        "example": "15000"
+                    },
+                    "totalService": {
+                        "type": "number",
+                        "example": "100.00"
+                    },
+                    "totalProducts": {
+                        "type": "number",
+                        "example": "200.00"
+                    },
+                    "total": {
+                        "type": "number",
+                        "example": "300.00"
+                    },
+                    "debtAmount": {
+                        "type": "number",
+                        "example": "100.00"
+                    },
+                    "percentage": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "driver": {
+                        "type": "string",
+                        "example": "Driver"
+                    },
+                    "routeImage": {
+                        "type": "string",
+                        "example": "/image.jpg"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-05-21 04:09:25"
+                    },
+                    "worker_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "vehicle_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "budget_sheet": {
+                        "$ref": "#/components/schemas/BudgetSheetSingle"
+                    }
+                },
+                "type": "object"
+            },
             "Bank": {
                 "title": "Bank",
                 "required": [
@@ -15899,6 +16055,59 @@
                         "items": {
                             "$ref": "#/components/schemas/Attention"
                         }
+                    }
+                },
+                "type": "object"
+            },
+            "BudgetSheetSingle": {
+                "title": "BudgetSheet",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "number": {
+                        "type": "string",
+                        "example": "PRES-00000001"
+                    },
+                    "paymentType": {
+                        "type": "string",
+                        "example": "Al Contado"
+                    },
+                    "totalService": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 0
+                    },
+                    "totalProducts": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 0
+                    },
+                    "debtAmount": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 0
+                    },
+                    "total": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 0
+                    },
+                    "discount": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 0
+                    },
+                    "subtotal": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 0
+                    },
+                    "igv": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 0
                     }
                 },
                 "type": "object"
