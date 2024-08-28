@@ -6,6 +6,7 @@ use App\Http\Requests\AttendanceVehicleRequest;
 use App\Http\Requests\MovementClientRequest;
 use App\Http\Requests\MovementVehicleRequest;
 use App\Http\Requests\ReportCommitmentRequest;
+use App\Http\Requests\SaleProductReportRequest;
 use App\Http\Resources\CommitmentResource;
 use App\Http\Resources\ReportMovementClientResource;
 use App\Http\Resources\ReportMovementDateRangeResource;
@@ -14,6 +15,7 @@ use App\Models\Attention;
 use App\Models\Commitment;
 use App\Models\Moviment;
 use App\Models\Person;
+use App\Models\Product;
 use App\Models\Service;
 use App\Utils\UtilFunctions;
 use Carbon\Carbon;
@@ -259,40 +261,40 @@ class ExcelReportController extends Controller
      * )
      */
 
-     public function reportService(MovementClientRequest $request)
-     {
-         // Filtra por fechas si se proporcionan en la solicitud
-         $query = Service::query();
-     
-         if ($request->from) {
-             // Restar un día a la fecha de inicio
-             $fromDate = Carbon::createFromFormat('Y-m-d', $request->from)->subDay()->startOfDay();
-             $query->where('created_at', '>=', $fromDate);
-         }
-     
-         if ($request->to) {
-             $toDate = Carbon::createFromFormat('Y-m-d', $request->to)->endOfDay();
-             $query->where('created_at', '<=', $toDate);
-         }
-     
-         // Obtén los movimientos filtrados
-         $movements = $query->get();
-     
-         $movements = ServiceResource::collection($movements);
-     
-         $period = ($request->from && $request->to) ? 'Del ' . $fromDate->format('Y-m-d') . ' al ' . $request->to :
-             ($request->from ? 'Desde ' . $fromDate->format('Y-m-d') : ($request->to ? 'Hasta ' . $request->to : '-'));
-     
-         $bytes = UtilFunctions::generateService($movements, '', $period);
-         $nameOfFile = date('d-m-Y') . '_Reporte_Servicios' . '.xlsx';
-     
-         return response($bytes, 200, [
-             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-             'Content-Disposition' => 'attachment; filename="' . $nameOfFile . '"',
-             'Content-Length' => strlen($bytes),
-         ]);
-     }
-     
+    public function reportService(MovementClientRequest $request)
+    {
+        // Filtra por fechas si se proporcionan en la solicitud
+        $query = Service::query();
+
+        if ($request->from) {
+            // Restar un día a la fecha de inicio
+            $fromDate = Carbon::createFromFormat('Y-m-d', $request->from)->subDay()->startOfDay();
+            $query->where('created_at', '>=', $fromDate);
+        }
+
+        if ($request->to) {
+            $toDate = Carbon::createFromFormat('Y-m-d', $request->to)->endOfDay();
+            $query->where('created_at', '<=', $toDate);
+        }
+
+        // Obtén los movimientos filtrados
+        $movements = $query->get();
+
+        $movements = ServiceResource::collection($movements);
+
+        $period = ($request->from && $request->to) ? 'Del ' . $fromDate->format('Y-m-d') . ' al ' . $request->to :
+            ($request->from ? 'Desde ' . $fromDate->format('Y-m-d') : ($request->to ? 'Hasta ' . $request->to : '-'));
+
+        $bytes = UtilFunctions::generateService($movements, '', $period);
+        $nameOfFile = date('d-m-Y') . '_Reporte_Servicios' . '.xlsx';
+
+        return response($bytes, 200, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => 'attachment; filename="' . $nameOfFile . '"',
+            'Content-Length' => strlen($bytes),
+        ]);
+    }
+
 
     /**
      * @OA\Get(
@@ -352,68 +354,111 @@ class ExcelReportController extends Controller
      * )
      */
 
-     public function reportCommitment(ReportCommitmentRequest $request)
-     {
-         $person_id = $request->cliente_id ?? null;
- 
-         $status = $request->status ?? 'Pendiente';
-         $personNames = '';
- 
-         // Verificar si se ha proporcionado un ID de persona
-         if (($person_id != null)) {
-            
-             $person = Person::find($person_id);
- 
-             if (!$person) {
-                 return response()->json(['error' => 'Persona no encontrada.'], 404);
-             }
- 
-             // Obtener el nombre completo según el tipo de documento
-             if ($person->typeofDocument === 'DNI') {
-                 $personNames = $person->names . ' ' . $person->fatherSurname;
-             } elseif ($person->typeofDocument === 'RUC') {
-                 $personNames = $person->businessName;
-             } else {
-                 $personNames = $person->names;
-             }
-          
-         }
- 
-         // Crear una consulta base
-         $query = Commitment::with('budgetSheet.attention.vehicle.person');
- 
-         // Aplicar filtro por cliente_id solo si se proporciona
-         if (($person_id != null)) {
-             $query->whereHas('budgetSheet.attention.vehicle.person', function ($q) use ($person_id) {
-                 $q->where('id', $person_id);
-             });
-         }
- 
-         // Aplicar filtro por estado
-         $query->where('status', $status);
- 
-         // Ejecutar la consulta y transformar los resultados
-         $movements = CommitmentResource::collection($query->get());
- 
-         // Determinar el periodo para el reporte
-         $period = ($request->from && $request->to)
-             ? 'Del ' . $request->from . ' al ' . $request->to
-             : ($request->from
-                 ? 'Desde ' . $request->from
-                 : ($request->to
-                     ? 'Hasta ' . $request->to
-                     : '-'));
- 
-         // Generar el reporte en formato Excel
-         $bytes = UtilFunctions::generateCommitment($movements, $period, $personNames, $status);
-         $nameOfFile = date('d-m-Y') . '_Reporte_Compromisos' . '.xlsx';
- 
-         // Devolver el archivo generado como respuesta
-         return response($bytes, 200, [
-             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-             'Content-Disposition' => 'attachment; filename="' . $nameOfFile . '"',
-             'Content-Length' => strlen($bytes),
-         ]);
-     }
+    public function reportCommitment(ReportCommitmentRequest $request)
+    {
+        $person_id = $request->cliente_id ?? null;
+
+        $status = $request->status ?? 'Pendiente';
+        $personNames = '';
+
+        // Verificar si se ha proporcionado un ID de persona
+        if (($person_id != null)) {
+
+            $person = Person::find($person_id);
+
+            if (!$person) {
+                return response()->json(['error' => 'Persona no encontrada.'], 404);
+            }
+
+            // Obtener el nombre completo según el tipo de documento
+            if ($person->typeofDocument === 'DNI') {
+                $personNames = $person->names . ' ' . $person->fatherSurname;
+            } elseif ($person->typeofDocument === 'RUC') {
+                $personNames = $person->businessName;
+            } else {
+                $personNames = $person->names;
+            }
+
+        }
+
+        // Crear una consulta base
+        $query = Commitment::with('budgetSheet.attention.vehicle.person');
+
+        // Aplicar filtro por cliente_id solo si se proporciona
+        if (($person_id != null)) {
+            $query->whereHas('budgetSheet.attention.vehicle.person', function ($q) use ($person_id) {
+                $q->where('id', $person_id);
+            });
+        }
+
+        // Aplicar filtro por estado
+        $query->where('status', $status);
+
+        // Ejecutar la consulta y transformar los resultados
+        $movements = CommitmentResource::collection($query->get());
+
+        // Determinar el periodo para el reporte
+        $period = ($request->from && $request->to)
+            ? 'Del ' . $request->from . ' al ' . $request->to
+            : ($request->from
+                ? 'Desde ' . $request->from
+                : ($request->to
+                    ? 'Hasta ' . $request->to
+                    : '-'));
+
+        // Generar el reporte en formato Excel
+        $bytes = UtilFunctions::generateCommitment($movements, $period, $personNames, $status);
+        $nameOfFile = date('d-m-Y') . '_Reporte_Compromisos' . '.xlsx';
+
+        // Devolver el archivo generado como respuesta
+        return response($bytes, 200, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => 'attachment; filename="' . $nameOfFile . '"',
+            'Content-Length' => strlen($bytes),
+        ]);
+    }
+
+
+    /**
+     * @OA\Get(
+     *     path="/tecnimotors-backend/public/api/reportSaleProducts",
+     *     tags={"Reporte Excel"},
+     *     security={{"bearerAuth":{}}},
+     *     summary="Reporte de Productos Vendidos",
+     *     description="Genera un reporte de productos vendidos, filtrando por placa de vehículo, producto y rango de fechas.",
+     *     @OA\Parameter( name="plate", in="query", description="Placa del vehículo", required=false, @OA\Schema(type="string")),
+     *     @OA\Parameter( name="product_id", in="query", description="ID del producto", required=false, @OA\Schema(type="integer")),
+     *     @OA\Parameter( name="from", in="query", description="Fecha de inicio", required=false, @OA\Schema(type="string", format="date")),
+     *     @OA\Parameter( name="to", in="query", description="Fecha de fin", required=false, @OA\Schema(type="string", format="date")),
+     *     @OA\Response( response=200, description="Reporte de Productos Vendidos generado exitosamente", @OA\MediaType( mediaType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", @OA\Schema(type="string", format="binary"))),
+     *     @OA\Response( response=401, description="Unauthorized"),
+     *     @OA\Response( response=422, description="Validation error")
+     * )
+     */
+    public function reportSaleProducts(SaleProductReportRequest $request)
+    {
+        $products = Product::getSaleProducts(
+            $request->input('plate'),
+            $request->input('product_id'),
+            $request->input('from'),
+            $request->input('to')
+        );
+
+        //return response()->json($products);
+
+        $period = ($request->from && $request->to) ? 'Del ' . $request->from . ' al ' . $request->to :
+            ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
+        $product = Product::find($request->product_id)->name ?? "-";
+        $plate = $request->plate ?? "-";
+
+        $bytes = UtilFunctions::generateReportSaleProducts($products, $product, $plate, $period);
+        $nameOfFile = date('d-m-Y') . '_Reporte_Productos_Vendidos' . '.xlsx';
+
+        return response($bytes, 200, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => 'attachment; filename="' . $nameOfFile . '"',
+            'Content-Length' => strlen($bytes),
+        ]);
+    }
 
 }

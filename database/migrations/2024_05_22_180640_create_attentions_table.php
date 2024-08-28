@@ -31,7 +31,7 @@ return new class extends Migration {
             $table->string('driver')->nullable();
 
             $table->string('routeImage')->nullable();
-            $table->string('status')->nullable()->default('Pendiente'); // Pendiente, En proceso, Finalizado, Pagado Sin Boletear
+            $table->string('status')->nullable()->default('Pendiente'); // Pendiente, En proceso, Finalizada, Pagada Sin Boletear
             $table->foreignId('worker_id')->nullable()->unsigned()->constrained('workers');
             $table->foreignId('vehicle_id')->nullable()->unsigned()->constrained('vehicles');
             // $table->foreignId('driver_id')->nullable()->unsigned()->constrained('people');

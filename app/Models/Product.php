@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Resources\SaleProductResource;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -102,4 +103,52 @@ class Product extends Model
     {
         return $this->belongsTo(Brand::class);
     }
+
+    public function details()
+    {
+        return $this->hasMany(DetailAttention::class);
+    }
+
+    public static function getSaleProducts($plate = null, $productId = null, $from = null, $to = null)
+    {
+        $query = Product::whereHas('details', function ($query) use ($plate, $from, $to) {
+            if ($plate) {
+                $query->whereHas('attention', function ($query) use ($plate) {
+                    $query->whereHas('vehicle', function ($query) use ($plate) {
+                        $query->where('plate', $plate);
+                    });
+                });
+            }
+
+            if ($from && $to) {
+                $query->whereBetween('dateRegister', [$from, $to]);
+            } elseif ($from) {
+                $query->where('dateRegister', '>=', $from);
+            } elseif ($to) {
+                $query->where('dateRegister', '<=', $to);
+            }
+        });
+
+        if ($productId) {
+            $query->where('id', $productId);
+        }
+
+        $products = $query->with(['details.attention.vehicle', 'details.attention.budgetSheet'])->get();
+
+        return $products->flatMap(function ($product) use ($plate) {
+            $filteredDetails = $product->details->filter(function ($detail) use ($plate) {
+                if ($plate) {
+                    return $detail->attention->vehicle->plate === $plate;
+                }
+                return true;
+            });
+
+            return $filteredDetails->map(function ($detail) use ($product) {
+                $product->detail = $detail;
+                return new SaleProductResource($product);
+            });
+        });
+    }
+
+
 }

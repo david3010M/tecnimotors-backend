@@ -37,7 +37,8 @@ class DetailAttentionFactory extends Factory
                 return $attributes['type'] === 'Service' ? $this->faker->numberBetween(1, Service::count()) : null;
             },
             'saleprice' => function (array $attributes) {
-                return $attributes['type'] === 'Service' ? Service::find($attributes['service_id'])->saleprice : (Product::find($attributes['product_id'])->sale_price) * $attributes['quantity'];
+                return $attributes['type'] === 'Service' ? (Service::find($attributes['service_id'])->saleprice * $attributes['quantity'])
+                    : (Product::find($attributes['product_id'])->sale_price) * $attributes['quantity'];
             },
             'attention_id' => Attention::factory(),
         ];

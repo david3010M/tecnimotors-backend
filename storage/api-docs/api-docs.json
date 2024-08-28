@@ -2060,6 +2060,76 @@
                 ]
             }
         },
+        "/tecnimotors-backend/public/api/budgetSheet/{id}/updateStatusSinBoletear": {
+            "put": {
+                "tags": [
+                    "BudgetSheet"
+                ],
+                "summary": "Update the status of a budgetSheet to \"Pagado sin boletear\"",
+                "operationId": "b44cbd252440cd0ca7d3a15c5ea05b85",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "BudgetSheet ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "BudgetSheet updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BudgetSheet"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "BudgetSheet not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "BudgetSheet not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/tecnimotors-backend/public/api/category": {
             "get": {
                 "tags": [
@@ -13782,6 +13852,80 @@
                     }
                 ]
             }
+        },
+        "/tecnimotors-backend/public/api/reportSaleProducts": {
+            "get": {
+                "tags": [
+                    "Reporte Excel"
+                ],
+                "summary": "Reporte de Productos Vendidos",
+                "description": "Genera un reporte de productos vendidos, filtrando por placa de vehículo, producto y rango de fechas.",
+                "operationId": "97f5a04bfb3c902b3f72744b6d31f10b",
+                "parameters": [
+                    {
+                        "name": "plate",
+                        "in": "query",
+                        "description": "Placa del vehículo",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "product_id",
+                        "in": "query",
+                        "description": "ID del producto",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "from",
+                        "in": "query",
+                        "description": "Fecha de inicio",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "description": "Fecha de fin",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Reporte de Productos Vendidos generado exitosamente",
+                        "content": {
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -16122,5 +16266,147 @@
                 "scheme": "bearer"
             }
         }
-    }
+    },
+    "tags": [
+        {
+            "name": "Amortization",
+            "description": "Amortization"
+        },
+        {
+            "name": "Attention",
+            "description": "Attention"
+        },
+        {
+            "name": "Bank",
+            "description": "Bank"
+        },
+        {
+            "name": "Brand",
+            "description": "Brand"
+        },
+        {
+            "name": "BudgetSheet",
+            "description": "BudgetSheet"
+        },
+        {
+            "name": "Category",
+            "description": "Category"
+        },
+        {
+            "name": "Commitment",
+            "description": "Commitment"
+        },
+        {
+            "name": "ConceptMovs",
+            "description": "ConceptMovs"
+        },
+        {
+            "name": "ConceptPay",
+            "description": "ConceptPay"
+        },
+        {
+            "name": "DetailAttention",
+            "description": "DetailAttention"
+        },
+        {
+            "name": "Element",
+            "description": "Element"
+        },
+        {
+            "name": "ElementForAttention",
+            "description": "ElementForAttention"
+        },
+        {
+            "name": "Group Menu",
+            "description": "Group Menu"
+        },
+        {
+            "name": "Moviment",
+            "description": "Moviment"
+        },
+        {
+            "name": "Option Menu",
+            "description": "Option Menu"
+        },
+        {
+            "name": "Reporte",
+            "description": "Reporte"
+        },
+        {
+            "name": "Person",
+            "description": "Person"
+        },
+        {
+            "name": "Product",
+            "description": "Product"
+        },
+        {
+            "name": "Search",
+            "description": "Search"
+        },
+        {
+            "name": "WhatsApp",
+            "description": "WhatsApp"
+        },
+        {
+            "name": "Service",
+            "description": "Service"
+        },
+        {
+            "name": "Specialty",
+            "description": "Specialty"
+        },
+        {
+            "name": "SpecialtyPerson",
+            "description": "SpecialtyPerson"
+        },
+        {
+            "name": "Supplier",
+            "description": "Supplier"
+        },
+        {
+            "name": "Task",
+            "description": "Task"
+        },
+        {
+            "name": "Type Attention",
+            "description": "Type Attention"
+        },
+        {
+            "name": "TypeUser",
+            "description": "TypeUser"
+        },
+        {
+            "name": "Type Vehicle",
+            "description": "Type Vehicle"
+        },
+        {
+            "name": "Unit",
+            "description": "Unit"
+        },
+        {
+            "name": "User",
+            "description": "User"
+        },
+        {
+            "name": "Vehicle",
+            "description": "Vehicle"
+        },
+        {
+            "name": "VehicleModel",
+            "description": "VehicleModel"
+        },
+        {
+            "name": "Worker",
+            "description": "Worker"
+        },
+        {
+            "name": "Authentication",
+            "description": "Authentication"
+        },
+        {
+            "name": "Reporte Excel",
+            "description": "Reporte Excel"
+        }
+    ]
 }

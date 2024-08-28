@@ -199,6 +199,8 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
             'destroy' => 'budgetSheet.destroy'
         ]);
 
+    Route::put('budgetSheet/{id}/updateStatusSinBoletear', [BudgetSheetController::class, 'updateStatusSinBoletear']);
+
     Route::get('taskByDetailAttention/{id}', [TaskController::class, 'getTaskByDetailAttention']);
     Route::post('taskEvidence/{id}', [TaskController::class, 'storeEvidence']);
     Route::resource('task', TaskController::class)->only(['show', 'store', 'update', 'destroy'])
@@ -244,10 +246,14 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::get('reportServicios', [ExcelReportController::class, 'reportService'])->name('reportService');
     Route::get('reportMovementDateRange/{id}', [ExcelReportController::class, 'reportMovementDateRange'])->name('reportMovementDateRange');
     Route::get('reportCommitment', [ExcelReportController::class, 'reportCommitment'])->name('reportCommitment');
+    Route::get('reportSaleProducts', [ExcelReportController::class, 'reportSaleProducts'])->name('reportSaleProducts');
 
     Route::get('showAperturaMovements', [MovimentController::class, 'showAperturaMovements']);
 
 
     Route::get('person/{id}/vehicles', [PersonController::class, 'vehiclesByPerson']);
     Route::get('person/{id}/attentions', [PersonController::class, 'attentionsByPerson']);
+
+    Route::get('saleProducts', [ProductController::class, 'saleProducts']);
+
 });

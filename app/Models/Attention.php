@@ -108,6 +108,15 @@ class Attention extends Model
         return $this->hasOne(budgetSheet::class);
     }
 
+    public static function updateStatus($attentionId)
+    {
+        $attention = Attention::find($attentionId);
+        $totalDetails = DetailAttention::where('attention_id', $attentionId)->where('status', 'Fin')->count();
+        if ($totalDetails > 0) $attention->status = 'Pendiente';
+        else $attention->status = 'Finalizada';
+        $attention->save();
+    }
+
     public static function getAttentionByMonths($from = null, $to = null)
     {
         $query = Attention::with([

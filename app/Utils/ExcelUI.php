@@ -108,6 +108,16 @@ class ExcelUI
         return $ha;
     }
 
+    public function getActiveSheet()
+    {
+        return $this->ws;
+    }
+
+    public function getCellCoordinates($row, $col)
+    {
+        return Coordinate::stringFromColumnIndex($col) . $row;
+    }
+
     public function generateStyle(bool $bold, Alignment|string $alignment = null, string $dataFormatCode = null, $border, $color = null, $wrapText)
     {
         $style = null;

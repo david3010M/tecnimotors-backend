@@ -484,11 +484,11 @@
         @foreach ($attention->details as $detail)
             @if ($detail->type == 'Service')
                 <tr>
-                    <td class="id">{{ $idIncremental }}</td> 
+                    <td class="id">{{ $idIncremental }}</td>
                     <td class="description" colspan="2">{{ $detail->service->name }}</td>
                     <td class="quantity">{{ $detail->quantity }}</td>
-                    <td class="sailPrice">S/ {{ $detail->saleprice }}</td>
-                    <td class="sailTotal">S/ {{ number_format($detail->saleprice * $detail->quantity, 2) }}</td>
+                    <td class="sailPrice">S/ {{ $detail->service->saleprice }}</td>
+                    <td class="sailTotal">S/ {{ number_format($detail->saleprice, 2) }}</td>
                 </tr>
                 @php
                     $idIncremental++;
@@ -507,12 +507,12 @@
         @foreach ($attention->details as $detail)
             @if ($detail->type == 'Product')
                 <tr>
-                    <td class="id">{{ $idIncremental }}</td> 
+                    <td class="id">{{ $idIncremental }}</td>
                     <td class="description">{{ $detail->product->name }}</td>
                     <td class="unit">{{ $detail->product->unit->code }}</td>
                     <td class="quantity">{{ $detail->quantity }}</td>
-                    <td class="unitPrice">S/ {{ $detail->saleprice }}</td>
-                    <td class="sailTotal">S/ {{ number_format($detail->saleprice * $detail->quantity, 2) }}</td>
+                    <td class="unitPrice">S/ {{ $detail->product->sale_price }}</td>
+                    <td class="sailTotal">S/ {{ number_format($detail->saleprice, 2) }}</td>
 
                 </tr>
             @endif

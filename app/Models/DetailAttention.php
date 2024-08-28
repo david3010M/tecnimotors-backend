@@ -146,6 +146,16 @@ class DetailAttention extends Model
         'deleted_at',
     ];
 
+    public static function boot()
+    {
+        parent::boot();
+
+        static::saved(function ($detailAttention) {
+            Attention::updateStatus($detailAttention->attention_id);
+        });
+
+    }
+
     public function attention()
     {
         return $this->belongsTo(Attention::class, 'attention_id');
@@ -203,5 +213,4 @@ class DetailAttention extends Model
 
         $detailAttention->save();
     }
-
 }

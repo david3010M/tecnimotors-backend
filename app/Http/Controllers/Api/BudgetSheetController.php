@@ -10,57 +10,57 @@ use Illuminate\Support\Facades\DB;
 
 class BudgetSheetController extends Controller
 {
-/**
- * Get all BudgetSheets with optional filters
- *
- * @OA\Get(
- *     path="/tecnimotors-backend/public/api/budgetSheet",
- *     tags={"BudgetSheet"},
- *     security={{"bearerAuth":{}}},
- *     @OA\Parameter(
- *         name="attention_vehicle_id",
- *         in="query",
- *         required=false,
- *         description="Filter by Attention Vehicle ID",
- *         @OA\Schema(
- *             type="integer"
- *         )
- *     ),
- *     @OA\Parameter(
- *         name="status",
- *         in="query",
- *         required=false,
- *         description="Filter by Status",
- *         @OA\Schema(
- *             type="string"
- *         )
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="List of BudgetSheets with optional filters applied",
- *         @OA\JsonContent(
- *             @OA\Property(property="current_page", type="integer", example=1),
- *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/BudgetSheet")),
- *             @OA\Property(property="first_page_url", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/budgetSheet?page=1"),
- *             @OA\Property(property="from", type="integer", example=1),
- *             @OA\Property(property="next_page_url", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/budgetSheet?page=2"),
- *             @OA\Property(property="path", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/budgetSheet"),
- *             @OA\Property(property="per_page", type="integer", example=15),
- *             @OA\Property(property="prev_page_url", type="string", example="null"),
- *             @OA\Property(property="to", type="integer", example=15)
- *         )
- *     ),
- *     @OA\Response(
- *         response=401,
- *         description="Unauthorized",
- *         @OA\JsonContent(
- *             @OA\Property(
- *                 property="message", type="string", example="Unauthenticated"
- *             )
- *         )
- *     )
- * )
- */
+    /**
+     * Get all BudgetSheets with optional filters
+     *
+     * @OA\Get(
+     *     path="/tecnimotors-backend/public/api/budgetSheet",
+     *     tags={"BudgetSheet"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="attention_vehicle_id",
+     *         in="query",
+     *         required=false,
+     *         description="Filter by Attention Vehicle ID",
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="status",
+     *         in="query",
+     *         required=false,
+     *         description="Filter by Status",
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of BudgetSheets with optional filters applied",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="current_page", type="integer", example=1),
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/BudgetSheet")),
+     *             @OA\Property(property="first_page_url", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/budgetSheet?page=1"),
+     *             @OA\Property(property="from", type="integer", example=1),
+     *             @OA\Property(property="next_page_url", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/budgetSheet?page=2"),
+     *             @OA\Property(property="path", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/budgetSheet"),
+     *             @OA\Property(property="per_page", type="integer", example=15),
+     *             @OA\Property(property="prev_page_url", type="string", example="null"),
+     *             @OA\Property(property="to", type="integer", example=15)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="message", type="string", example="Unauthenticated"
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function index(Request $request)
     {
         // Obtenemos los filtros de la solicitud
@@ -185,7 +185,7 @@ class BudgetSheetController extends Controller
 
         $tipo = 'PRES';
         $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM budget_sheets a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-        $siguienteNum = (int) $resultado;
+        $siguienteNum = (int)$resultado;
 
         $percentageDiscount = floatval($request->input('percentageDiscount', 0)) / 100;
         $subtotal = floatval($attention->total);
@@ -363,6 +363,32 @@ class BudgetSheetController extends Controller
         $budgetSheet->delete();
 
         return response()->json(['message' => 'BudgetSheet deleted']);
+    }
+
+
+    /**
+     * Update the status of a budgetSheet to "Pagado sin boletear"
+     * @OA\Put (
+     *     path="/tecnimotors-backend/public/api/budgetSheet/{id}/updateStatusSinBoletear",
+     *     tags={"BudgetSheet"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter( name="id", in="path", required=true, description="BudgetSheet ID", @OA\Schema(type="integer", example=1)),
+     *     @OA\Response( response=200, description="BudgetSheet updated successfully", @OA\JsonContent(ref="#/components/schemas/BudgetSheet")),
+     *     @OA\Response( response=404, description="BudgetSheet not found", @OA\JsonContent( @OA\Property(property="message", type="string", example="BudgetSheet not found"))),
+     *     @OA\Response( response=401, description="Unauthorized", @OA\JsonContent( @OA\Property( property="message", type="string", example="Unauthenticated")))
+     * )
+     */
+    public function updateStatusSinBoletear(int $id)
+    {
+        $budgetSheet = budgetSheet::find($id);
+        if (!$budgetSheet) {
+            return response()->json(['message' => 'BudgetSheet not found'], 404);
+        }
+
+        $budgetSheet->status = 'Pagado sin boletear';
+        $budgetSheet->save();
+
+        return response()->json($budgetSheet);
     }
 
 }

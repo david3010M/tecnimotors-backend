@@ -3,6 +3,9 @@
 namespace App\Utils;
 
 use Carbon\Carbon;
+use Dflydev\DotAccessData\Data;
+use PhpOffice\PhpSpreadsheet\Cell\Hyperlink;
+use PhpOffice\PhpSpreadsheet\Style\Font;
 
 class UtilFunctions
 {
@@ -291,5 +294,95 @@ class UtilFunctions
         unset($excelUI);
         return $bytes;
     }
+
+    public static function generateReportSaleProducts($products, $product, $plate, $period = "-")
+    {
+        $excelUI = new ExcelUI(Constants::REPORTES, Constants::REPORTE_PRODUCTOS_VENDIDOS);
+
+        $excelUI->setTextCell("C4", $period);
+        $excelUI->setTextCell("G4", $plate);
+        $excelUI->setTextCell("J4", $product);
+        $col = $excelUI->getColumnIndex("A");
+        $indexRow = 7;
+        $index = 1;
+
+        foreach ($products as $product) {
+            $product = json_decode($product->toJson());
+            $indexCol = $col;
+            if ($indexRow % 2 == 0) {
+                $excelUI->changeStyleSelected(false, "C", ExcelUI::$GENERAL, true, ExcelUI::$BACKGROUND_CELL_PRIMARY, true);
+            } else {
+                $excelUI->changeStyleSelected(false, "C", ExcelUI::$GENERAL, true, ExcelUI::$BACKGROUND_CELL_SECONDARY, true);
+            }
+            $excelUI->setRowHeight($indexRow, 30);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $index++);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $product->name);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $product->date);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, (float)$product->purchase_price);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, (float)$product->sale_price);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, (int)$product->quantity);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, (float)$product->total);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, (int)$product->stock);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $product->type);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $product->category);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $product->unit);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $product->brand);
+            if (!empty($product->attention_id)) {
+                $attentionUrl = "https://develop.garzasoft.com/tecnimotors-backend/public/ordenservicio/{$product->attention_id}";
+                $attentionLink = new Hyperlink($attentionUrl, 'Ver detalle');
+                $coordinates = $excelUI->getCellCoordinates($indexRow, $indexCol++);
+                $excelUI->getActiveSheet()->setCellValue($coordinates, 'Ver detalle');
+                $excelUI->getActiveSheet()->getCell($coordinates)->setHyperlink($attentionLink);
+
+                $excelUI->getActiveSheet()->getStyle($coordinates)->applyFromArray([
+                    'font' => [
+                        'color' => ['rgb' => '0563C1'],
+                        'underline' => Font::UNDERLINE_SINGLE,
+                    ],
+                    'alignment' => ['horizontal' => 'center'],
+                    'fill' => [
+                        'fillType' => 'solid',
+                        'startColor' => ['rgb' => 'F0F7FE'],
+                    ],
+                ]);
+            }
+
+            if (!empty($product->budgetSheet_id)) {
+                $budgetSheetUrl = "https://develop.garzasoft.com/tecnimotors-backend/public/presupuesto/{$product->budgetSheet_id}";
+                $budgetSheetLink = new Hyperlink($budgetSheetUrl, 'Ver detalle');
+                $coordinates = $excelUI->getCellCoordinates($indexRow, $indexCol++);
+                $excelUI->getActiveSheet()->setCellValue($coordinates, 'Ver detalle');
+                $excelUI->getActiveSheet()->getCell($coordinates)->setHyperlink($budgetSheetLink);
+
+                $excelUI->getActiveSheet()->getStyle($coordinates)->applyFromArray([
+                    'font' => [
+                        'color' => ['rgb' => '0563C1'],
+                        'underline' => Font::UNDERLINE_SINGLE,
+                    ],
+                    'alignment' => ['horizontal' => 'center'],
+                    'fill' => [
+                        'fillType' => 'solid',
+                        'startColor' => ['rgb' => 'F0F7FE'],
+                    ],
+                ]);
+            }
+
+            $indexRow++;
+        }
+        $excelUI->changeStyleSelected(true, "C", ExcelUI::$GENERAL, true, ExcelUI::$BACKGROUND_CELL_TOTAL, true);
+
+        $colTotal = $excelUI->getColumnIndex("F");
+
+        $excelUI->setRowHeight($indexRow, 30);
+        $excelUI->setDataCellByIndex($indexRow, $colTotal, "MONTO TOTAL");
+        $colTotal++;
+        $strCol = $excelUI->getColumnStringFromIndex($colTotal);
+        $excelUI->setFormula($indexRow, $colTotal, "=SUM({$strCol}7:$strCol" . ($indexRow - 1) . ")");
+
+        $bytes = $excelUI->save();
+        unset($excelUI);
+        return $bytes;
+    }
+
 
 }
