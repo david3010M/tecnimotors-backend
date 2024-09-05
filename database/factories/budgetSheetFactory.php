@@ -5,9 +5,6 @@ namespace Database\Factories;
 use App\Models\Attention;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\BudgetSheet>
- */
 class budgetSheetFactory extends Factory
 {
     /**
@@ -19,7 +16,7 @@ class budgetSheetFactory extends Factory
     {
         return [
             'number' => $this->faker->regexify('PRES-\d{8}'),
-            'paymentType' => $this->faker->randomElement(['Al Contado', 'A Crédito']),
+            'paymentType' => $this->faker->randomElement(['Contado', 'Crédito']),
             'totalService' => $this->faker->randomFloat(2, 0, 1000),
             'totalProducts' => $this->faker->randomFloat(2, 0, 1000),
             'discount' => $this->faker->randomFloat(2, 0, 20),

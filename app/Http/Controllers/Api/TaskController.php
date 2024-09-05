@@ -390,9 +390,13 @@ class TaskController extends Controller
             $file = $image;
 
             $currentTime = now();
-            $filename = $index . '-' . $currentTime->format('YmdHis') . '_' . $file->getClientOriginalName();
+
+            // Reemplazar espacios por guiones bajos en el nombre original del archivo
+            $originalName = str_replace(' ', '_', $file->getClientOriginalName());
+
+            $filename = $index . '-' . $currentTime->format('YmdHis') . '_' . $originalName;
             $path = $file->storeAs('public/photosTaskEvidence', $filename);
-            $routeImage = Storage::url($path);
+            $routeImage = 'https://develop.garzasoft.com/tecnimotors-backend/storage/app/' . $path;
 
             $index++;
 
@@ -408,4 +412,5 @@ class TaskController extends Controller
 
         return response()->json($routes);
     }
+
 }

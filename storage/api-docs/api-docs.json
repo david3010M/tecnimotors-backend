@@ -14434,18 +14434,10 @@
                     "dues"
                 ],
                 "properties": {
-                    "amount": {
-                        "description": "REQUEST SCHEMA",
-                        "type": "decimal",
-                        "example": "1000.00"
-                    },
                     "dues": {
+                        "description": "REQUEST SCHEMA",
                         "type": "integer",
                         "example": "10"
-                    },
-                    "payment_date": {
-                        "type": "string",
-                        "example": "2024-06-27 22:59:36"
                     },
                     "payment_type": {
                         "type": "string",

@@ -124,7 +124,7 @@ class CommitmentController extends Controller
             return response()->json(['error' => 'Commitment not found'], 404);
         }
 
-        return response()->json($commitment);
+        return response()->json(new CommitmentResource($commitment));
     }
 
     /**

@@ -18,14 +18,15 @@ class CommitmentSeeder extends Seeder
     {
         $budgetSheets = budgetSheet::all();
         $budgetSheets->each(function ($budgetSheet) {
-            $totalPrice = $budgetSheet->total;
-            $initialPayment = $budgetSheet->debtAmount;
-            Commitment::factory()->create([
-//                'dues' => 2,
-                'amount' => $initialPayment,
-                'balance' => $totalPrice - $initialPayment,
-                'budget_sheet_id' => $budgetSheet->id
-            ]);
+            $quota = $budgetSheet->total / 2;
+            for ($i = 1; $i <= 2; $i++) {
+                Commitment::factory()->create([
+                    'numberQuota' => $i,
+                    'price' => $quota,
+                    'balance' => $quota,
+                    'budget_sheet_id' => $budgetSheet->id
+                ]);
+            }
         });
 
     }

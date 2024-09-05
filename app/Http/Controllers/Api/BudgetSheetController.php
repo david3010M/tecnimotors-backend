@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Attention;
 use App\Models\budgetSheet;
+use App\Models\Commitment;
+use App\Models\Moviment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class BudgetSheetController extends Controller
 {
@@ -174,8 +177,16 @@ class BudgetSheetController extends Controller
     public function store(Request $request)
     {
         $validator = validator()->make($request->all(), [
-            'attention_id' => 'required|exists:attentions,id',
+            'attention_id' => [
+                'required',
+                'exists:attentions,id',
+                Rule::unique('budget_sheets')->where(function ($query) use ($request) {
+                    return $query->where('attention_id', $request->input('attention_id'));
+                }),
+            ],
             'percentageDiscount' => 'required|numeric|between:0,100',
+            'paymentType' => 'required|string|in:Contado,Credito',
+            'commitments' => 'required_if:paymentType,Credito|int',
         ]);
 
         if ($validator->fails()) {
@@ -208,6 +219,37 @@ class BudgetSheetController extends Controller
         ];
 
         $object = budgetSheet::create($data);
+
+        if ($object->paymentType == 'Contado') {
+            Commitment::create([
+                'numberQuota' => 1,
+                'price' => $total,
+                'status' => 'Pendiente',
+                'budget_sheet_id' => $object->id,
+            ]);
+
+        } else if ($object->paymentType == 'Credito') {
+            $commitments = $request->input('commitments');
+            $quotaPerDues = round($total / $commitments, 2);
+            $totalAssigned = 0;
+            for ($i = 0; $i < $commitments; $i++) {
+                if ($i == $commitments - 1) {
+                    $price = $total - $totalAssigned;
+                } else {
+                    $price = $quotaPerDues;
+                    $totalAssigned += $price;
+                }
+
+
+                Commitment::create([
+                    'numberQuota' => ($i + 1),
+                    'price' => $price,
+                    'status' => 'Pendiente',
+                    'budget_sheet_id' => $object->id,
+                ]);
+            }
+        }
+
         $object = budgetSheet::with(['attention'])->find($object->id);
         return response()->json($object);
     }

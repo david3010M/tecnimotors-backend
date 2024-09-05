@@ -44,12 +44,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class CommitmentResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
-     */
     public function toArray($request)
     {
         $client = $this->budgetSheet->attention->vehicle->person->typeofDocument == 'DNI' ?
@@ -63,16 +57,14 @@ class CommitmentResource extends JsonResource
             'id' => $this->id,
             'number' => $this->budgetSheet->number,
             'client' => $client,
-            'payment_type' => $this->payment_type,
-            'payment_date' => Carbon::parse($this->payment_date)->format('d-m-Y'),
-            'price' => $this->budgetSheet->total,
+            'payment_date' => $this->payment_date ? Carbon::parse($this->payment_date)->format('d-m-Y') : null,
+            'price' => $this->price,
             'amount_paid' => $this->amount,
             'balance' => $this->balance,
-            'dues' => $this->dues,
-            'payment_pending' => $this->payment_pending,
+            'numberQuota' => $this->numberQuota,
             'status' => $this->status,
             'budget_sheet_id' => $this->budget_sheet_id,
-            'created_at' => $this->created_at,
+            'created_at' => Carbon::parse($this->created_at)->format('d-m-Y'),
         ];
     }
 }
