@@ -75,7 +75,6 @@ class AmortizationController extends Controller
 
             'bank_id' => 'nullable|exists:banks,id',
             'person_id' => 'required|exists:people,id',
-            'budgetSheet_id' => 'required|exists:budget_sheets,id',
             'commitment_id' => 'required|exists:commitments,id',
         ]);
 
@@ -142,15 +141,6 @@ class AmortizationController extends Controller
             return response()->json(["error" => "El compromiso ya fue pagado",], 422);
         }
 
-//        REDONDEAR DIVISION
-        $paymentQuote = round($commitment->balance / $commitment->payment_pending, 2);
-
-        if ($total < $paymentQuote) {
-            return response()->json([
-                "error" => "El monton minimo a pagar es S/ " . number_format($paymentQuote, 2),
-            ], 422);
-        }
-
         if ($total == 0) {
             return response()->json([
                 "error" => "El monto a pagar no puede ser 0",
@@ -197,7 +187,7 @@ class AmortizationController extends Controller
             'person_id' => $request->input('person_id'),
             'user_id' => auth()->id(),
             'bank_id' => $bank_id,
-            'budgetSheet_id' => $request->input('budgetSheet_id'), // SE PUEDE CAMBIAR POR EL OBJETO COMMITMENT
+            'budgetSheet_id' => $commitment->budgetSheet->id,
         ];
 
 //        CREATE MOVIMENT
@@ -243,7 +233,7 @@ class AmortizationController extends Controller
 
 //        UPDATE COMMITMENT
         $commitment->balance -= $total;
-        $commitment->payment_pending = $commitment->balance == 0 ? 0 : $commitment->payment_pending - 1;
+        $commitment->amount += $total;
         $commitment->status = $commitment->balance == 0 ? 'Pagado' : 'Pendiente';
         $commitment->save();
 

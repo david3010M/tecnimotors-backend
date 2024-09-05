@@ -224,6 +224,7 @@ class BudgetSheetController extends Controller
             Commitment::create([
                 'numberQuota' => 1,
                 'price' => $total,
+                'balance' => $total,
                 'status' => 'Pendiente',
                 'budget_sheet_id' => $object->id,
             ]);
@@ -244,6 +245,7 @@ class BudgetSheetController extends Controller
                 Commitment::create([
                     'numberQuota' => ($i + 1),
                     'price' => $price,
+                    'balance' => $price,
                     'status' => 'Pendiente',
                     'budget_sheet_id' => $object->id,
                 ]);
