@@ -37,7 +37,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     @OA\Property(property="isBankPayment", type="integer", example="1"),
  *     @OA\Property(property="bank_id", type="integer", example="1"),
  *     @OA\Property(property="person_id", type="integer", example="3"),
- *     @OA\Property(property="budgetSheet_id", type="integer", example="1"),
  *     @OA\Property(property="commitment_id", type="integer", example="1")
  * )
  *

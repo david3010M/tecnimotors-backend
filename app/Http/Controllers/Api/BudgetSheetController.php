@@ -148,9 +148,9 @@ class BudgetSheetController extends Controller
      *          @OA\JsonContent(
      *              required={"attention_id"},
      *              @OA\Property(property="attention_id", type="integer", example=1),
-     *              @OA\Property(property="paymentType", type="string", example="Al Contado"),
+     *              @OA\Property(property="paymentType", type="string", example="Contado"),
      *              @OA\Property(property="percentageDiscount", type="decimal", example=0),
-     *
+     *              @OA\Property(property="commitments", type="string", enum={"Contado", "Credito"}, example=1),
      *          )
      *     ),
      *     @OA\Response(
@@ -223,7 +223,7 @@ class BudgetSheetController extends Controller
         if ($object->paymentType == 'Contado') {
             Commitment::create([
                 'numberQuota' => 1,
-                'price' => $total,
+                'price' => $object,
                 'balance' => $total,
                 'status' => 'Pendiente',
                 'budget_sheet_id' => $object->id,

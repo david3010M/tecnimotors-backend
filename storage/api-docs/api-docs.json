@@ -1731,11 +1731,19 @@
                                     },
                                     "paymentType": {
                                         "type": "string",
-                                        "example": "Al Contado"
+                                        "example": "Contado"
                                     },
                                     "percentageDiscount": {
                                         "type": "decimal",
                                         "example": 0
+                                    },
+                                    "commitments": {
+                                        "type": "string",
+                                        "enum": [
+                                            "Contado",
+                                            "Credito"
+                                        ],
+                                        "example": 1
                                     }
                                 },
                                 "type": "object"
@@ -14166,10 +14174,6 @@
                     "person_id": {
                         "type": "integer",
                         "example": "3"
-                    },
-                    "budgetSheet_id": {
-                        "type": "integer",
-                        "example": "1"
                     },
                     "commitment_id": {
                         "type": "integer",
