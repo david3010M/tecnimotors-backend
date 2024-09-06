@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\budgetSheet;
 use App\Models\Commitment;
+use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -24,6 +25,8 @@ class CommitmentSeeder extends Seeder
                     'numberQuota' => $i,
                     'price' => $quota,
                     'balance' => $quota,
+                    'payment_type' => 'Credito',
+                    'payment_date' => Carbon::parse($budgetSheet->attention->arrivalDate)->addDays(7 * $i),
                     'budget_sheet_id' => $budgetSheet->id
                 ]);
             }

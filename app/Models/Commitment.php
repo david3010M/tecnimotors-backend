@@ -45,6 +45,7 @@ class Commitment extends Model
         'amount',
         'balance',
         'payment_date',
+        'payment_type',
         'status',
         'budget_sheet_id',
         'created_at',

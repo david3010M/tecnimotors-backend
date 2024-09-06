@@ -17,10 +17,9 @@ return new class extends Migration {
             $table->integer('numberQuota')->nullable(); // CUANTAS CUOTAS SON
             $table->decimal('price'); // PRECIO DE LA CUOTA
             $table->decimal('amount')->default(0); // LO QUE SE VA PAGANDO
-//            $table->integer('payments'); // LO QUE SE VA PAGANDO
             $table->decimal('balance')->nullable()->default(0); // LO QUE FALTA PAGAR
             $table->dateTime('payment_date')->nullable(); // DATE OF PAYMENT
-//            $table->string('payment_type'); // TYPE OF PAYMENT
+            $table->string('payment_type'); // TYPE OF PAYMENT CONTADO O CREDITO
             $table->string('status')->default('Pendiente'); // "Pagado" o "Pendiente"
             $table->foreignId('budget_sheet_id')->constrained('budget_sheets'); // BUDGET SHEET ID
             $table->timestamps();

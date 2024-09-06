@@ -14,8 +14,12 @@ class budgetSheetFactory extends Factory
      */
     public function definition()
     {
+        static $correlativo = 0;
+        $correlativo++;
+        $correlativoFormatted = str_pad($correlativo, 8, '0', STR_PAD_LEFT);
+
         return [
-            'number' => $this->faker->regexify('PRES-\d{8}'),
+            'number' => "PRES-$correlativoFormatted",
             'paymentType' => $this->faker->randomElement(['Contado', 'Crédito']),
             'totalService' => $this->faker->randomFloat(2, 0, 1000),
             'totalProducts' => $this->faker->randomFloat(2, 0, 1000),
