@@ -149,9 +149,12 @@ class BudgetSheetController extends Controller
      *          @OA\JsonContent(
      *              required={"attention_id"},
      *              @OA\Property(property="attention_id", type="integer", example=1),
-     *              @OA\Property(property="paymentType", type="string", example="Contado"),
+     *              @OA\Property(property="paymentType", type="string", enum={"Contado", "Credito"}, example="Contado"),
      *              @OA\Property(property="percentageDiscount", type="decimal", example=0),
-     *              @OA\Property(property="commitments", type="string", enum={"Contado", "Credito"}, example=1),
+     *              @OA\Property(property="commitments", type="array", @OA\Items(
+     *                  @OA\Property(property="price", type="decimal", example=100),
+     *                  @OA\Property(property="paymentDate", type="integer", example=30)
+     *              )),
      *          )
      *     ),
      *     @OA\Response(
