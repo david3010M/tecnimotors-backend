@@ -111,9 +111,15 @@ class Attention extends Model
     public static function updateStatus($attentionId)
     {
         $attention = Attention::find($attentionId);
-        $totalDetails = DetailAttention::where('attention_id', $attentionId)->where('status', 'Fin')->count();
-        if ($totalDetails > 0) $attention->status = 'Pendiente';
-        else $attention->status = 'Finalizada';
+        $totalDetails = DetailAttention::where('attention_id', $attentionId)->count();
+        $totalDetailsListos = DetailAttention::where('attention_id', $attentionId)->where('status', 'Listo')->count();
+
+        if ($totalDetails == $totalDetailsListos) {
+            $attention->status = 'Finalizada';
+        } else {
+            $attention->status = 'Pendiente';
+        }
+
         $attention->save();
     }
 

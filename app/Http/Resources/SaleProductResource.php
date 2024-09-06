@@ -20,13 +20,14 @@ class SaleProductResource extends JsonResource
             'type' => $this->type,
             'category' => $this->category->name,
             'unit' => $this->unit->name,
-            'brand' => $this->brand->name, 'detail' => $this->detail->comment,
-            'attentionNumber' => $this->detail->attention->number,
-            'budgetSheetNumber' => $this->detail->attention->budgetSheet->number,
+            'brand' => $this->brand->name,
+            'detail' => $this->detail->comment,
+            'attentionNumber' => $this->detail->attention->number ?? null,
+            'budgetSheetNumber' => $this->detail->attention->budgetSheet->number ?? null,
             'detail_id' => $this->detail->id,
-            'attention_id' => $this->detail->attention_id,
-            'vechicle_id' => $this->detail->attention->vehicle->id,
-            'budgetSheet_id' => $this->detail->attention->budgetSheet->id,
+            'attention_id' => $this->detail->attention_id ?? null,
+            'vechicle_id' => $this->detail->attention->vehicle->id ?? null,
+            'budgetSheet_id' => $this->detail->attention->budgetSheet->id ?? null,
 
         ];
     }

@@ -14,8 +14,8 @@ class SaleProductReportRequest extends FormRequest
     public function rules()
     {
         return [
-            'plate' => "nullable|string|exists:vehicles,plate",
-            'product_id' => "nullable|integer|exists:products,id",
+            'plate' => "requiredIf:product_id,null|string|exists:vehicles,plate",
+            'product_id' => "requiredIf:plate,null|integer|exists:products,id",
             'from' => "nullable|date",
             'to' => "nullable|date",
         ];

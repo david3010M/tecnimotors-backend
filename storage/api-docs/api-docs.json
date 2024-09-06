@@ -1731,6 +1731,10 @@
                                     },
                                     "paymentType": {
                                         "type": "string",
+                                        "enum": [
+                                            "Contado",
+                                            "Credito"
+                                        ],
                                         "example": "Contado"
                                     },
                                     "percentageDiscount": {
@@ -1738,12 +1742,20 @@
                                         "example": 0
                                     },
                                     "commitments": {
-                                        "type": "string",
-                                        "enum": [
-                                            "Contado",
-                                            "Credito"
-                                        ],
-                                        "example": 1
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "price": {
+                                                    "type": "decimal",
+                                                    "example": 100
+                                                },
+                                                "paymentDate": {
+                                                    "type": "integer",
+                                                    "example": 30
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
                                     }
                                 },
                                 "type": "object"
