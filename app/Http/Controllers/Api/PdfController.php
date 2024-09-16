@@ -56,14 +56,13 @@ class PdfController extends Controller
         return $pdf->stream('orden-servicio2.pdf');
     }
 
-        /**
+    /**
      * @OA\Get(
      *     path="/tecnimotors-backend/public/api/reportCaja",
      *     summary="Exportar Reporte Caja",
      *     tags={"Reporte"},
      *     description="Genera y descarga una Reporte Caja Aperturada en formato PDF",
      *     security={{"bearerAuth":{}}},
-
      *     @OA\Response(
      *         response=200,
      *         description="Reporte Caja en formato PDF",
@@ -171,10 +170,8 @@ class PdfController extends Controller
                 COALESCE(SUM(CASE WHEN cp.type = "Ingreso" THEN moviments.deposit ELSE 0 END), 0.00) as deposito_ingresos,
                 COALESCE(SUM(CASE WHEN cp.type = "Egreso" THEN moviments.deposit ELSE 0 END), 0.00) as deposito_egresos')
                     ->leftJoin('concept_pays as cp', 'moviments.paymentConcept_id', '=', 'cp.id')
-
                     ->where('moviments.id', '>=', $movCajaAperturada->id)
                     ->where('moviments.id', '<', $movCajaCierre->id)
-
                     ->first();
 
             }
@@ -211,5 +208,26 @@ class PdfController extends Controller
         $object = budgetSheet::with(['attention.worker.person', 'attention.vehicle.person', 'attention.vehicle.brand',
             'attention.details', 'attention.routeImages', 'attention.elements'])->find($id);
         return $object;
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/tecnimotors-backend/public/evidencias/{id}",
+     *     summary="Exportar Evidencias",
+     *     tags={"Reporte"},
+     *     description="Genera y descarga una Evidencias en formato PDF",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter( name="id", in="path", required=true, description="ID de la atención", @OA\Schema(type="integer")),
+     *     @OA\Response( response=200, description="Evidencias en formato PDF", @OA\MediaType(mediaType="application/pdf", @OA\Schema(type="string", format="binary"))),
+     *     @OA\Response( response=422, description="Error en los datos", @OA\JsonContent( @OA\Property(property="message", type="string", example="Error en los datos")))
+     * )
+     */
+    public function getEvidenceByAttention($id)
+    {
+        $object = Attention::with(['routeImages'])->find($id);
+        $pdf = Pdf::loadView('evidencias', [
+            'attention' => $object,
+        ]);
+        return $pdf->stream('presupuesto' . $object->id . '.pdf');
     }
 }

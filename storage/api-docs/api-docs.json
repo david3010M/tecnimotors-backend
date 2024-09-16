@@ -6562,6 +6562,61 @@
                 ]
             }
         },
+        "/tecnimotors-backend/public/evidencias/{id}": {
+            "get": {
+                "tags": [
+                    "Reporte"
+                ],
+                "summary": "Exportar Evidencias",
+                "description": "Genera y descarga una Evidencias en formato PDF",
+                "operationId": "dc5fb7323c201a8582740d90841e3769",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la atención",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Evidencias en formato PDF",
+                        "content": {
+                            "application/pdf": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error en los datos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error en los datos"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/tecnimotors-backend/public/api/person": {
             "get": {
                 "tags": [
