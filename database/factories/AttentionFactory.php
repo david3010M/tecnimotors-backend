@@ -21,8 +21,8 @@ class AttentionFactory extends Factory
             'observations' => $this->faker->sentence(15),
             'fuelLevel' => $this->faker->numberBetween(0, 10),
             'km' => $this->faker->numberBetween(0, 100000),
-            'totalService' => $this->faker->randomFloat(2, 0, 1000),
-            'totalProducts' => $this->faker->randomFloat(2, 0, 1000),
+            'totalService' => $this->faker->randomFloat(0, 0, 1000),
+            'totalProducts' => $this->faker->randomFloat(0, 0, 1000),
             'total' => function (array $attributes) {
                 return $attributes['totalService'] + $attributes['totalProducts'];
             },

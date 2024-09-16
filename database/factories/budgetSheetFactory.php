@@ -21,10 +21,10 @@ class budgetSheetFactory extends Factory
         return [
             'number' => "PRES-$correlativoFormatted",
             'paymentType' => $this->faker->randomElement(['Contado', 'Crédito']),
-            'totalService' => $this->faker->randomFloat(2, 0, 1000),
-            'totalProducts' => $this->faker->randomFloat(2, 0, 1000),
-            'discount' => $this->faker->randomFloat(2, 0, 20),
-            'debtAmount' => $this->faker->randomFloat(2, 0, 1000),
+            'totalService' => $this->faker->randomFloat(0, 0, 1000),
+            'totalProducts' => $this->faker->randomFloat(0, 0, 1000),
+            'discount' => $this->faker->randomFloat(0, 0, 20),
+            'debtAmount' => $this->faker->randomFloat(0, 0, 1000),
             'subtotal' => function (array $attributes) {
                 return $attributes['totalService'] + $attributes['totalProducts'];
             },

@@ -239,7 +239,7 @@ class BudgetSheetController extends Controller
             ]);
         } else if ($object->paymentType == 'Credito') {
             $sumCommitments = array_sum(array_column($request->input('commitments'), 'price'));
-            if ($sumCommitments != $total) return response()->json(['error' => 'La suma de los compromisos no coincide con el total ' . $total . ' falta ' . ($total - $sumCommitments)], 422);
+            if (round($sumCommitments, 4) != round($total, 4)) return response()->json(['error' => 'La suma de los compromisos no coincide con el total ' . $total . ' falta ' . ($total - $sumCommitments)], 422);
             $object->save();
             $commitments = $request->input('commitments');
             foreach ($commitments as $index => $commitment) {
