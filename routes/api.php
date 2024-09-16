@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\ConceptPayController;
 use App\Http\Controllers\Api\DetailAttentionController;
 use App\Http\Controllers\Api\ElementController;
 use App\Http\Controllers\Api\ElementForAttentionController;
+use App\Http\Controllers\Api\ExtensionController;
 use App\Http\Controllers\Api\GroupMenuController;
 use App\Http\Controllers\Api\MovimentController;
 use App\Http\Controllers\Api\OptionMenuController;
@@ -255,5 +256,10 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::get('person/{id}/attentions', [PersonController::class, 'attentionsByPerson']);
 
     Route::get('saleProducts', [ProductController::class, 'saleProducts']);
+
+//    EXTENSION
+    Route::resource('extension', ExtensionController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'extension.index', 'store' => 'extension.store', 'show' => 'extension.show',
+            'update' => 'extension.update', 'destroy' => 'extension.destroy']);
 
 });

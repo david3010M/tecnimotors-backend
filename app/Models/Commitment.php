@@ -61,4 +61,9 @@ class Commitment extends Model
         return $this->belongsTo(budgetSheet::class);
     }
 
+    public function extensions()
+    {
+        return $this->hasMany(Extension::class);
+    }
+
 }

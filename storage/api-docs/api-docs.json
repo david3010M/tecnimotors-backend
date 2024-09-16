@@ -4903,6 +4903,170 @@
                 ]
             }
         },
+        "/tecnimotors-backend/public/api/extension": {
+            "get": {
+                "tags": [
+                    "Extension"
+                ],
+                "summary": "Show all extensions",
+                "description": "SHOW ALL COMMITMENTS",
+                "operationId": "e55def56feb0ccc03837c76804f00e17",
+                "responses": {
+                    "200": {
+                        "description": "Show all extensions",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Extension"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error: Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Error: Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Unauthenticated"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Extension"
+                ],
+                "summary": "Create an extension",
+                "operationId": "8ecb7c9da1ff0a16edd7f5add7e76b9f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ExtensionRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Create an extension",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Extension"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error: Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Error: Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Unauthenticated"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/extension/{id}": {
+            "delete": {
+                "tags": [
+                    "Extension"
+                ],
+                "summary": "Delete an extension",
+                "operationId": "d699bd716240421a91188404e99e8188",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the extension",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Delete an extension",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Extension"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Error: Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Extension not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Error: Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Unauthenticated"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/tecnimotors-backend/public/api/groupmenu": {
             "get": {
                 "tags": [
@@ -14961,6 +15125,59 @@
                 },
                 "type": "object"
             },
+            "Extension": {
+                "title": "Extension",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "oldEndDate": {
+                        "type": "string",
+                        "example": "2024-06-27"
+                    },
+                    "newEndDate": {
+                        "type": "string",
+                        "example": "2024-06-27"
+                    },
+                    "reason": {
+                        "type": "string",
+                        "example": "Razón de la extensión"
+                    },
+                    "commitment_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "example": "2024-06-27 22:59:36"
+                    }
+                },
+                "type": "object"
+            },
+            "ExtensionRequest": {
+                "title": "ExtensionRequest",
+                "required": [
+                    "newEndDate",
+                    "reason",
+                    "commitment_id"
+                ],
+                "properties": {
+                    "newEndDate": {
+                        "type": "string",
+                        "example": "2024-06-27"
+                    },
+                    "reason": {
+                        "type": "string",
+                        "example": "Razón de la extensión"
+                    },
+                    "commitment_id": {
+                        "type": "integer",
+                        "example": "1"
+                    }
+                },
+                "type": "object"
+            },
             "GroupMenu": {
                 "title": "GroupMenu",
                 "required": [
@@ -16323,6 +16540,10 @@
         {
             "name": "ElementForAttention",
             "description": "ElementForAttention"
+        },
+        {
+            "name": "Extension",
+            "description": "Extension"
         },
         {
             "name": "Group Menu",

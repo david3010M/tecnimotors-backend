@@ -39,7 +39,7 @@ class CommitmentController extends Controller
 
         $per_page = $request->query('per_page', 5);
 
-        $commitments = Commitment::with('budgetSheet.attention.vehicle.person')
+        $commitments = Commitment::with('budgetSheet.attention.vehicle.person', 'extensions')
             ->orderBy('id', 'desc')
             ->paginate($per_page);
         CommitmentResource::collection($commitments);
