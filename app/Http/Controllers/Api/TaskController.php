@@ -458,7 +458,7 @@ class TaskController extends Controller
 
     /**
      * @OA\Get (
-     *     path="/tecnimotors-backend/public/api/evidenceByAttention/{id}",
+     *     path="/tecnimotors-backend/public/api/taskEvidenceByAttention/{id}",
      *     tags={"Task"},
      *     security={{"bearerAuth": {}}},
      *     summary="List all evidence of a attention",

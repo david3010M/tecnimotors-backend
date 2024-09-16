@@ -9954,7 +9954,7 @@
                 ]
             }
         },
-        "/tecnimotors-backend/public/api/evidenceByAttention/{id}": {
+        "/tecnimotors-backend/public/api/taskEvidenceByAttention/{id}": {
             "get": {
                 "tags": [
                     "Task"
