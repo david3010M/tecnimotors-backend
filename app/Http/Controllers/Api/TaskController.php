@@ -413,6 +413,19 @@ class TaskController extends Controller
         return response()->json($routes);
     }
 
+    /**
+     * @OA\Delete (
+     *     path="/tecnimotors-backend/public/api/taskEvidence/{id}",
+     *     tags={"Task"},
+     *     security={{"bearerAuth": {}}},
+     *     summary="Delete an evidence",
+     *     description="Delete an evidence",
+     *     operationId="deleteEvidence",
+     *     @OA\Parameter(name="id", in="path", required=true, description="ID of the evidence", @OA\Schema(type="integer")),
+     *     @OA\Response(response="200", description="Delete an evidence", @OA\JsonContent(@OA\Property(property="message", type="string", example="Evidence deleted"))),
+     *     @OA\Response(response="404", description="Error: Not Found", @OA\JsonContent(@OA\Property(property="message", type="string", example="Evidence not found")))
+     * )
+     */
     public function deleteEvidence(int $id)
     {
         $routeImage = RouteImages::find($id);
@@ -421,6 +434,20 @@ class TaskController extends Controller
         return response()->json(['message' => 'Evidence deleted']);
     }
 
+    /**
+     * @OA\Get (
+     *     path="/tecnimotors-backend/public/api/taskEvidence/{id}",
+     *     tags={"Task"},
+     *     security={{"bearerAuth": {}}},
+     *     summary="List all evidence of a task",
+     *     description="List all evidence of a task",
+     *     operationId="listEvidence",
+     *     @OA\Parameter( name="id", in="path", required=true, description="ID of the task", @OA\Schema(type="integer")),
+     *     @OA\Response(response="200", description="List all evidence of a task", @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/RouteImages"))),
+     *     @OA\Response(response="404", description="Task not found", @OA\JsonContent(@OA\Property(property="message", type="string", example="Task not found"))),
+     *     @OA\Response(response="401", description="Unauthenticated", @OA\JsonContent(@OA\Property(property="message", type="string", example="Unauthenticated.")))
+     * )
+     */
     public function listEvidence(int $id)
     {
         $task = Task::find($id);
@@ -429,6 +456,20 @@ class TaskController extends Controller
         return response()->json($routes);
     }
 
+    /**
+     * @OA\Get (
+     *     path="/tecnimotors-backend/public/api/evidenceByAttention/{id}",
+     *     tags={"Task"},
+     *     security={{"bearerAuth": {}}},
+     *     summary="List all evidence of a attention",
+     *     description="List all evidence of a attention",
+     *     operationId="listEvidenceByAttention",
+     *     @OA\Parameter( name="id", in="path", required=true, description="ID of the attention", @OA\Schema(type="integer")),
+     *     @OA\Response(response="200", description="List all evidence of a attention", @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/RouteImages"))),
+     *     @OA\Response(response="404", description="Attention not found", @OA\JsonContent(@OA\Property(property="message", type="string", example="Attention not found"))),
+     *     @OA\Response(response="401", description="Unauthenticated", @OA\JsonContent(@OA\Property(property="message", type="string", example="Unauthenticated.")))
+     * )
+     */
     public function listEvidenceByAttention(int $id)
     {
         $attention = Attention::find($id);

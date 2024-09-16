@@ -1,3 +1,5 @@
 *
 !public/
+!reportes/
+!reportes/*
 !.gitignore
