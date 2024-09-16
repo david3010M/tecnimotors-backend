@@ -63,7 +63,7 @@ class CommitmentResource extends JsonResource
             'amount' => $this->amount,
             'balance' => $this->balance,
             'numberQuota' => $this->numberQuota,
-            'status' => $this->status,
+            'status' => Carbon::parse($this->payment_date)->format('d-m-Y') < Carbon::now()->format('d-m-Y') ? 'Vencido' : $this->status,
             'budget_sheet_id' => $this->budget_sheet_id,
             'created_at' => Carbon::parse($this->created_at)->format('d-m-Y'),
         ];
