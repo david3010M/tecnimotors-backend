@@ -413,4 +413,28 @@ class TaskController extends Controller
         return response()->json($routes);
     }
 
+    public function deleteEvidence(int $id)
+    {
+        $routeImage = RouteImages::find($id);
+        if (!$routeImage) return response()->json(['message' => 'Evidence not found'], 404);
+        $routeImage->delete();
+        return response()->json(['message' => 'Evidence deleted']);
+    }
+
+    public function listEvidence(int $id)
+    {
+        $task = Task::find($id);
+        if (!$task) return response()->json(['message' => 'Task not found'], 404);
+        $routes = RouteImages::where('task_id', $task->id)->get();
+        return response()->json($routes);
+    }
+
+    public function listEvidenceByAttention(int $id)
+    {
+        $attention = Attention::find($id);
+        if (!$attention) return response()->json(['message' => 'Attention not found'], 404);
+        $routes = RouteImages::where('attention_id', $attention->id)->get();
+        return response()->json($routes);
+    }
+
 }

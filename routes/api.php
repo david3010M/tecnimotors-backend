@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\ElementController;
 use App\Http\Controllers\Api\ElementForAttentionController;
 use App\Http\Controllers\Api\ExtensionController;
 use App\Http\Controllers\Api\GroupMenuController;
+use App\Http\Controllers\Api\ImageController;
 use App\Http\Controllers\Api\MovimentController;
 use App\Http\Controllers\Api\OptionMenuController;
 use App\Http\Controllers\Api\PdfController;
@@ -204,6 +205,10 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
 
     Route::get('taskByDetailAttention/{id}', [TaskController::class, 'getTaskByDetailAttention']);
     Route::post('taskEvidence/{id}', [TaskController::class, 'storeEvidence']);
+    Route::delete('taskEvidence/{id}', [TaskController::class, 'deleteEvidence']);
+    Route::get('taskEvidence/{id}', [TaskController::class, 'listEvidence']);
+    Route::get('taskEvidenceByAttention/{id}', [TaskController::class, 'listEvidenceByAttention']);
+
     Route::resource('task', TaskController::class)->only(['show', 'store', 'update', 'destroy'])
         ->names(['store' => 'task.store', 'show' => 'task.show', 'update' => 'task.update', 'destroy' => 'task.destroy']);
 

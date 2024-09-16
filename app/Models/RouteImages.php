@@ -17,8 +17,6 @@ use Illuminate\Database\Eloquent\Model;
  *     @OA\Property(property="created_at", type="string", format="date-time"),
  * )
  *
- *
- *
  */
 class RouteImages extends Model
 {
@@ -39,6 +37,7 @@ class RouteImages extends Model
     {
         return $this->belongsTo(Attention::class);
     }
+
     public function task()
     {
         return $this->belongsTo(Task::class);
