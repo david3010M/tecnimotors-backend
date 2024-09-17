@@ -23,11 +23,18 @@ class ExtensionController extends Controller
      * )
      *
      */
-    public function index()
+    public function index(Request $request)
     {
-        $extensions = Extension::all();
+
+        $commitmentId = $request->input('commitment_id') ?? '';
+    
+        $extensions = Extension::when($commitmentId !== '', function ($query) use ($commitmentId) {
+            return $query->where('commitment_id', $commitmentId);
+        })->get();
+    
         return response()->json($extensions);
     }
+    
 
     /**
      * @OA\Post (

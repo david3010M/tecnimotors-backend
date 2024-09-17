@@ -310,7 +310,7 @@
             </td>
             <td class="right">
                 <div class="titlePresupuesto">ORDEN ATENCIÓN</div>
-                <div class="numberPresupuesto">N° {{ $attention->correlativo }}</div>
+                <div class="numberPresupuesto">N° {{ $attention->number }}</div>
             </td>
         </tr>
         <tr>

@@ -295,7 +295,7 @@
             </td>
             <td class="right">
                 <div class="titlePresupuesto">EVIDENCIAS DE ATTENCION</div>
-                <div class="numberPresupuesto">N° {{ $attention->id }}</div>
+                <div class="numberPresupuesto">N° {{ $attention->number }}</div>
             </td>
         </tr>
         <tr>
@@ -395,17 +395,27 @@
         {{--                @endforeach--}}
         {{--            </tr>--}}
         {{--        @endforeach--}}
-        @foreach($attention->routeImages as $image)
-            <tr style="width: 100%;text-align: center">
-                <td style="width: 100%">
-                    <img
-                        src="{{ $image->route }}"
-                        alt="imagen"
-                        style="max-width: 500px; margin-top: 30px;"
-                    >
-                </td>
+
+        <br>  <br>
+        <table style="width: 100%; border-collapse: collapse; text-align: center;">
+            <tr>
+                @foreach($attention->routeImages as $index => $image)
+                    @if($index % 2 == 0 && $index != 0)
+                        </tr><tr>
+                    @endif
+                    <td style="width: 50%; padding: 10px; border: none;">
+                        <img
+                            src="{{ $image->route }}"
+                            alt="imagen"
+                            style="width: 100%; height: 200px; object-fit: cover;"
+                        >
+                    </td>
+                    
+                @endforeach
             </tr>
-        @endforeach
+        </table>
+        
+        
     </table>
 
 

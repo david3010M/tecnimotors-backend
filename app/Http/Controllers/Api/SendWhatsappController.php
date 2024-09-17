@@ -217,4 +217,82 @@ class SendWhatsappController extends Controller
 
     }
 
+
+ /**
+     * Send sheet service information via WhatsApp
+     * @OA\Post(
+     *     path="/tecnimotors-backend/public/api/sendEvidenceByWhatsapp",
+     *     tags={"WhatsApp"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Evidences by attention via WhatsApp",
+     *         @OA\JsonContent(
+     *             required={"idAttention", "phone_number"},
+     *             @OA\Property(property="idAttention", type="integer", example=1, description="The ID of the attention."),
+     *             @OA\Property(property="phone_number", type="string", description="The phone number to send the message to.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Message sent successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="WhatsApp message sent successfully.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Validation failed: The idAttention field is required.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Internal server error occurred.")
+     *         )
+     *     )
+     * )
+     */
+    public function sendEvidenceByWhatsapp(Request $request)
+    {
+        $validator = validator()->make($request->all(), [
+           'idAttention' => 'required|exists:attentions,id',
+            'phone_number' => 'required|digits:9',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+        $attention = Attention::with(['vehicle.person'])->find($request->input('idAttention'));
+        $client = $attention->vehicle->person;
+
+        try {
+            $url = 'https://sistema.gesrest.net/api/send-document-by-whatsapp';
+
+            $response = Http::withHeaders([
+                'Authorization' => '}*rA3>#pyM<dITk]]DFP2,/wc)1md_Y/',
+            ])->post($url, [
+                "nombre_plantilla" => "tecnimotors",
+                "ruc" => "20487467139",
+                "razon_social" => "TECNI MOTORS DEL PERU E.I.R.L.",
+                "nombre_comercial" => "TECNI MOTORS DEL PERU E.I.R.L.",
+                "cliente" => $client->typeofDocument == 'DNI' ? $client->names . ' ' . $client->fatherSurname : $client->businessName,
+                "celular" => $request->input('phone_number'),
+                "tipo_documento" => "EVIDENCIAS DE LA ORDEN DE SERVICIO " . $attention->number,
+                "tipo_documento_url" => "evidencias",
+                "documento_id_url" => $attention->id,
+            ]);
+            return response()->json(['message' => 'El mensaje de WhatsApp se ha enviado correctamente'], 200);
+        } catch (Exception $e) {
+
+            Log::error('Error to send Sheet Service by Whatsapp, ' . 'Id Attention: ' . $request->input('idAttention') . '=> ' . $e->getMessage());
+            return response()->json(['error' => 'Hubo un error al enviar el mensaje de WhatsApp'], 500);
+        }
+
+
+    }
+
 }

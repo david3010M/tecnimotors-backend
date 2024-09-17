@@ -181,6 +181,8 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
 
     Route::post('sendSheetByWhatsapp', [SendWhatsappController::class, 'sendSheetServiceByWhatsapp']);
     Route::post('sendBudgetSheetByWhatsapp', [SendWhatsappController::class, 'sendBudgetSheetByWhatsapp']);
+    Route::post('sendEvidenceByWhatsapp', [SendWhatsappController::class, 'sendEvidenceByWhatsapp']);
+
 
     Route::get('detailAttentionByWorker/{id}', [DetailAttentionController::class, 'detailAttentionByWorker'])
         ->name('detailAttention.getDetailAttentionByWorkerId');

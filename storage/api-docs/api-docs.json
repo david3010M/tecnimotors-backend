@@ -8021,6 +8021,96 @@
                 ]
             }
         },
+        "/tecnimotors-backend/public/api/sendEvidenceByWhatsapp": {
+            "post": {
+                "tags": [
+                    "WhatsApp"
+                ],
+                "summary": "Send sheet service information via WhatsApp",
+                "operationId": "a691e10337188aa2a45ed03e43e902c2",
+                "requestBody": {
+                    "description": "Evidences by attention via WhatsApp",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "idAttention",
+                                    "phone_number"
+                                ],
+                                "properties": {
+                                    "idAttention": {
+                                        "description": "The ID of the attention.",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "phone_number": {
+                                        "description": "The phone number to send the message to.",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Message sent successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "WhatsApp message sent successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Validation failed: The idAttention field is required."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Internal server error occurred."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/tecnimotors-backend/public/api/service": {
             "get": {
                 "tags": [
@@ -16748,151 +16838,5 @@
                 "scheme": "bearer"
             }
         }
-    },
-    "tags": [
-        {
-            "name": "Amortization",
-            "description": "Amortization"
-        },
-        {
-            "name": "Attention",
-            "description": "Attention"
-        },
-        {
-            "name": "Bank",
-            "description": "Bank"
-        },
-        {
-            "name": "Brand",
-            "description": "Brand"
-        },
-        {
-            "name": "BudgetSheet",
-            "description": "BudgetSheet"
-        },
-        {
-            "name": "Category",
-            "description": "Category"
-        },
-        {
-            "name": "Commitment",
-            "description": "Commitment"
-        },
-        {
-            "name": "ConceptMovs",
-            "description": "ConceptMovs"
-        },
-        {
-            "name": "ConceptPay",
-            "description": "ConceptPay"
-        },
-        {
-            "name": "DetailAttention",
-            "description": "DetailAttention"
-        },
-        {
-            "name": "Element",
-            "description": "Element"
-        },
-        {
-            "name": "ElementForAttention",
-            "description": "ElementForAttention"
-        },
-        {
-            "name": "Extension",
-            "description": "Extension"
-        },
-        {
-            "name": "Group Menu",
-            "description": "Group Menu"
-        },
-        {
-            "name": "Moviment",
-            "description": "Moviment"
-        },
-        {
-            "name": "Option Menu",
-            "description": "Option Menu"
-        },
-        {
-            "name": "Reporte",
-            "description": "Reporte"
-        },
-        {
-            "name": "Person",
-            "description": "Person"
-        },
-        {
-            "name": "Product",
-            "description": "Product"
-        },
-        {
-            "name": "Search",
-            "description": "Search"
-        },
-        {
-            "name": "WhatsApp",
-            "description": "WhatsApp"
-        },
-        {
-            "name": "Service",
-            "description": "Service"
-        },
-        {
-            "name": "Specialty",
-            "description": "Specialty"
-        },
-        {
-            "name": "SpecialtyPerson",
-            "description": "SpecialtyPerson"
-        },
-        {
-            "name": "Supplier",
-            "description": "Supplier"
-        },
-        {
-            "name": "Task",
-            "description": "Task"
-        },
-        {
-            "name": "Type Attention",
-            "description": "Type Attention"
-        },
-        {
-            "name": "TypeUser",
-            "description": "TypeUser"
-        },
-        {
-            "name": "Type Vehicle",
-            "description": "Type Vehicle"
-        },
-        {
-            "name": "Unit",
-            "description": "Unit"
-        },
-        {
-            "name": "User",
-            "description": "User"
-        },
-        {
-            "name": "Vehicle",
-            "description": "Vehicle"
-        },
-        {
-            "name": "VehicleModel",
-            "description": "VehicleModel"
-        },
-        {
-            "name": "Worker",
-            "description": "Worker"
-        },
-        {
-            "name": "Authentication",
-            "description": "Authentication"
-        },
-        {
-            "name": "Reporte Excel",
-            "description": "Reporte Excel"
-        }
-    ]
+    }
 }
