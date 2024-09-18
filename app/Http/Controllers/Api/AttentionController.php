@@ -419,30 +419,36 @@ public function index(Request $request)
 
             //ASIGNAR PRODUCTS
             $detailsProducts = $request->input('detailsProducts') ?? [];
+
             $sumProducts = 0;
-            foreach ($detailsProducts as $productDetail) {
-                $idProduct = $productDetail['idProduct'];
-                $quantity = $productDetail['quantity'] ?? 1;
-
-                $product = Product::find($idProduct);
-                $objectData = [
-                    'saleprice' => $product->sale_price ?? '0.00',
-                    'type' => 'Product',
-                    'quantity' => $quantity,
-                    'comment' => '-',
-                    'status' => 'Generada',
-                    'dateRegister' => Carbon::now(),
-                    'dateMax' => null,
-                    'worker_id' => null,
-                    'product_id' => $product->id ?? null,
-                    'service_id' => null,
-                    'attention_id' => $object->id,
-                ];
-                $detailProd = DetailAttention::create($objectData);
-                $sumProducts += $detailProd->saleprice * $quantity;
-
+            
+            // Verificar si $detailsProducts tiene registros
+            if ($detailsProducts != []) {
+                foreach ($detailsProducts as $productDetail) {
+                    $idProduct = $productDetail['idProduct'];
+                    $quantity = $productDetail['quantity'] ?? 1;
+            
+                    $product = Product::find($idProduct);
+                    $objectData = [
+                        'saleprice' => $product->sale_price ?? '0.00',
+                        'type' => 'Product',
+                        'quantity' => $quantity,
+                        'comment' => '-',
+                        'status' => 'Generada',
+                        'dateRegister' => Carbon::now(),
+                        'dateMax' => null,
+                        'worker_id' => null,
+                        'product_id' => $product->id ?? null,
+                        'service_id' => null,
+                        'attention_id' => $object->id,
+                    ];
+                    $detailProd = DetailAttention::create($objectData);
+                    $sumProducts += $detailProd->saleprice * $quantity;
+                }
+            
+                $object->totalProducts = $sumProducts;
             }
-            $object->totalProducts = $sumProducts;
+            
 
             //ASIGNAR DETAILS
             $detailsAttentions = $request->input('details') ?? [];
@@ -645,7 +651,12 @@ public function index(Request $request)
         $object->setDetails($object->id, $detailsAt, $request->input('deliveryDate'));
 
         $detailsProducts = $request->input('detailsProducts') ?? [];
-        $object->setDetailProducts($object->id, $detailsProducts);
+
+        // Verificar si $detailsProducts tiene registros
+        if ($detailsProducts != []) {
+            $object->setDetailProducts($object->id, $detailsProducts);
+        }
+        
 
         $object->total = $object->details()->get()->sum(function ($detail) {
             return $detail->saleprice * $detail->quantity;

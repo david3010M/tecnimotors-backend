@@ -14,7 +14,6 @@ use App\Http\Controllers\Api\ElementController;
 use App\Http\Controllers\Api\ElementForAttentionController;
 use App\Http\Controllers\Api\ExtensionController;
 use App\Http\Controllers\Api\GroupMenuController;
-use App\Http\Controllers\Api\ImageController;
 use App\Http\Controllers\Api\MovimentController;
 use App\Http\Controllers\Api\OptionMenuController;
 use App\Http\Controllers\Api\PdfController;
@@ -56,7 +55,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 //PENDIENTE DE PONERLO EN EL AUTH
-
 
 Route::post('login', [AuthController::class, 'login'])->name('login');
 
@@ -123,10 +121,10 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
 //  ATTENTION
     Route::resource('attention', AttentionController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'attention.index', 'store' => 'attention.store',
-            'show' => 'attention.show', 'update' => 'attention.update',
+            'show' => 'attention.show',
             'destroy' => 'attention.destroy']);
     Route::get('searchByNumber/{number}', [AttentionController::class, 'searchByNumber']);
-
+    Route::post('attention/{id}', [AttentionController::class, 'update']);
 // ELEMENTFORATTENTION
     Route::resource('elementForAttention', ElementForAttentionController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'elementForAttention.index', 'store' => 'elementForAttention.store', 'show' => 'elementForAttention.show', 'update' => 'elementForAttention.update', 'destroy' => 'elementForAttention.destroy']);
@@ -183,7 +181,6 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::post('sendBudgetSheetByWhatsapp', [SendWhatsappController::class, 'sendBudgetSheetByWhatsapp']);
     Route::post('sendEvidenceByWhatsapp', [SendWhatsappController::class, 'sendEvidenceByWhatsapp']);
 
-
     Route::get('detailAttentionByWorker/{id}', [DetailAttentionController::class, 'detailAttentionByWorker'])
         ->name('detailAttention.getDetailAttentionByWorkerId');
     Route::post('detailAttentionStart/{id}', [DetailAttentionController::class, 'start'])
@@ -200,7 +197,7 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
             'store' => 'budgetSheet.store',
             'show' => 'budgetSheet.show',
             'update' => 'budgetSheet.update',
-            'destroy' => 'budgetSheet.destroy'
+            'destroy' => 'budgetSheet.destroy',
         ]);
 
     Route::put('budgetSheet/{id}/updateStatusSinBoletear', [BudgetSheetController::class, 'updateStatusSinBoletear']);
@@ -257,7 +254,6 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::get('reportSaleProducts', [ExcelReportController::class, 'reportSaleProducts'])->name('reportSaleProducts');
 
     Route::get('showAperturaMovements', [MovimentController::class, 'showAperturaMovements']);
-
 
     Route::get('person/{id}/vehicles', [PersonController::class, 'vehiclesByPerson']);
     Route::get('person/{id}/attentions', [PersonController::class, 'attentionsByPerson']);
