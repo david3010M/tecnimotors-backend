@@ -62,6 +62,7 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
 
     Route::get('logout', [AuthController::class, 'logout']);
     Route::get('authenticate', [AuthController::class, 'authenticate']);
+    Route::get('/logs', [AuthController::class, 'logs'])->name('logs');
 
     // SEARCH
     Route::get('searchByDni/{dni}', [SearchController::class, 'searchByDni']);

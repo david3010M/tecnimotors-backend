@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Log;
 
 
 /**
@@ -52,7 +53,6 @@ class CommitmentResource extends JsonResource
                 $this->budgetSheet->attention->vehicle->person->motherSurname) :
             $this->budgetSheet->attention->vehicle->person->businessName;
 
-
         return [
             'id' => $this->id,
             'number' => $this->budgetSheet->number,
@@ -63,7 +63,7 @@ class CommitmentResource extends JsonResource
             'amount' => $this->amount,
             'balance' => $this->balance,
             'numberQuota' => $this->numberQuota,
-            'status' => Carbon::parse($this->payment_date)->format('d-m-Y') < Carbon::now()->format('d-m-Y') ? 'Vencido' : $this->status,
+            'status' => Carbon::parse($this->payment_date) < Carbon::now() ? 'Vencido' : $this->status,
             'budget_sheet_id' => $this->budget_sheet_id,
             'created_at' => Carbon::parse($this->created_at)->format('d-m-Y'),
         ];

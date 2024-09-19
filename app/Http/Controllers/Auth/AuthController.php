@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -105,7 +106,7 @@ class AuthController extends Controller
 
             $tipo = 'OTRS';
             $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM attentions a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-            $siguienteNum = (int) $resultado;
+            $siguienteNum = (int)$resultado;
 
             // -------------------------------------------------
             return response()->json([
@@ -183,7 +184,7 @@ class AuthController extends Controller
 
             $tipo = 'OTRS';
             $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM attentions a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-            $siguienteNum = (int) $resultado;
+            $siguienteNum = (int)$resultado;
 
             return response()->json([
                 'access_token' => $token,
@@ -238,5 +239,37 @@ class AuthController extends Controller
         } else {
             return response()->json(['message' => 'User not authenticated'], 401);
         }
+    }
+
+    public function logs()
+    {
+        $logFile = storage_path('logs/laravel.log');
+
+        if (File::exists($logFile)) {
+            $logs = File::get($logFile);
+            $logLines = explode("\n", $logs);
+            $errorLogs = array_filter($logLines, function ($line) {
+                return strpos($line, 'ERROR') !== false;
+            });
+            $errorLogs = array_reverse($errorLogs);
+            $errorObjects = array_map(function ($line) {
+                preg_match('/^\[(.*?)\] (.*?)\.(.*?): (.*?)$/', $line, $matches);
+
+                return [
+                    'date' => $matches[1] ?? null,
+                    'environment' => $matches[2] ?? null,
+                    'error_type' => $matches[3] ?? null,
+                    'message' => $matches[4] ?? $line,
+                ];
+            }, $errorLogs);
+
+            return response()->json([
+                'errors' => array_values($errorObjects)
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'No logs found.'
+        ], 404);
     }
 }
