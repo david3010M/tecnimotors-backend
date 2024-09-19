@@ -192,19 +192,18 @@ class Attention extends Model
     public function getTask($id)
     {
         $list = Task::
-        // with(['detailAttentions.attention'])->
-        whereHas('detailAttentions.attention', function ($query) use ($id) {
+            // with(['detailAttentions.attention'])->
+            whereHas('detailAttentions.attention', function ($query) use ($id) {
             $query->where('id', $id);
         })
             ->get();
         return $list;
     }
 
-
     public function details()
     {
         return $this->hasMany(DetailAttention::class)->
-        orderBy('type', 'desc')
+            orderBy('type', 'desc')
             ->with(['worker', 'service', 'product']);
     }
 
@@ -400,13 +399,19 @@ class Attention extends Model
             $file = $image;
             $currentTime = now();
             $filename = $index . '-' . $currentTime->format('YmdHis') . '_' . $file->getClientOriginalName();
+         
+
+            $originalName = str_replace(' ', '_', $file->getClientOriginalName());
+            $filename = $index . '-' . $currentTime->format('YmdHis') . '_' . $originalName;
             $path = $file->storeAs('public/photosSheetService', $filename);
-            $rutaImagen = Storage::url($path);
-            $attention->routeImage = $rutaImagen;
+            $routeImage = 'https://develop.garzasoft.com/tecnimotors-backend/storage/app/' . $path;
+
+            // $rutaImagen = Storage::url($path);
+            $attention->routeImage = $routeImage;
             $attention->save();
 
             $dataImage = [
-                'route' => 'https://develop.garzasoft.com/tecnimotors-backend/public' . $rutaImagen,
+                'route' => $routeImage,
                 'attention_id' => $attention->id,
             ];
 

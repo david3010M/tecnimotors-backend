@@ -487,13 +487,19 @@ public function index(Request $request)
             $file = $image;
             $currentTime = now();
             $filename = $index . '-' . $currentTime->format('YmdHis') . '_' . $file->getClientOriginalName();
+      
+
+            $originalName = str_replace(' ', '_', $file->getClientOriginalName());
+            $filename = $index . '-' . $currentTime->format('YmdHis') . '_' . $originalName;
             $path = $file->storeAs('public/photosSheetService', $filename);
-            $rutaImagen = Storage::url($path);
-            $object->routeImage = $rutaImagen;
+            $routeImage = 'https://develop.garzasoft.com/tecnimotors-backend/storage/app/' . $path;
+
+            // $rutaImagen = Storage::url($path);
+            $object->routeImage = $routeImage;
             $object->save();
             $index++;
             $dataImage = [
-                'route' => 'https://develop.garzasoft.com/tecnimotors-backend'.$rutaImagen,
+                'route' => $routeImage,
                 'attention_id' => $object->id,
             ];
             RouteImages::create($dataImage);
