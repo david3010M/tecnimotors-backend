@@ -91,7 +91,7 @@ public function index(Request $request)
     $objects->getCollection()->transform(function ($attention) {
         $attention->elements = $attention->getElements($attention->id);
         $attention->details = $attention->getDetails($attention->id);
-
+        $attention->task = $attention->getTask($attention->id);
         return $attention;
     });
 
@@ -146,7 +146,7 @@ public function index(Request $request)
         $object = Attention::with(['worker.person', 'vehicle', 'vehicle.person', 'details', 'routeImages', 'elements'])->find($id);
         $object->elements = $object->getElements($object->id);
         $object->details = $object->getDetails($object->id);
-
+        $object->task = $object->getTask($object->id);
         return response()->json($object);
     }
 
@@ -493,7 +493,7 @@ public function index(Request $request)
             $object->save();
             $index++;
             $dataImage = [
-                'route' => $rutaImagen,
+                'route' => 'https://develop.garzasoft.com/tecnimotors-backend'.$rutaImagen,
                 'attention_id' => $object->id,
             ];
             RouteImages::create($dataImage);
@@ -502,7 +502,7 @@ public function index(Request $request)
         $object = Attention::with(['worker.person', 'vehicle', 'details', 'routeImages'])->find($object->id);
         $object->elements = $object->getElements($object->id);
         $object->details = $object->getDetails($object->id);
-
+        $object->task = $object->getTask($object->id);
         return response()->json($object);
     }
 
@@ -669,6 +669,7 @@ public function index(Request $request)
         $object = Attention::with(['worker.person', 'vehicle', 'details', 'routeImages'])->find($object->id);
         $object->elements = $object->getElements($object->id);
         $object->details = $object->getDetails($object->id);
+        $object->task = $object->getTask($object->id);
 
         return response()->json($object);
     }
