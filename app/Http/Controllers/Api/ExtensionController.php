@@ -17,6 +17,7 @@ class ExtensionController extends Controller
      *     tags={"Extension"},
      *     summary="Show all extensions",
      *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter( name="commitment_id", in="query", description="ID of the commitment", @OA\Schema(type="integer")),
      *     @OA\Response(response="200", description="Show all extensions", @OA\JsonContent(ref="#/components/schemas/Extension")),
      *     @OA\Response(response="422", description="Error: Unprocessable Entity", @OA\JsonContent(ref="#/components/schemas/ValidationError")),
      *     @OA\Response(response="401", description="Error: Unauthorized", @OA\JsonContent(ref="#/components/schemas/Unauthenticated")),
@@ -27,14 +28,14 @@ class ExtensionController extends Controller
     {
 
         $commitmentId = $request->input('commitment_id') ?? '';
-    
+
         $extensions = Extension::when($commitmentId !== '', function ($query) use ($commitmentId) {
             return $query->where('commitment_id', $commitmentId);
         })->get();
-    
+
         return response()->json($extensions);
     }
-    
+
 
     /**
      * @OA\Post (

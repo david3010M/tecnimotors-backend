@@ -4911,6 +4911,16 @@
                 "summary": "Show all extensions",
                 "description": "SHOW ALL COMMITMENTS",
                 "operationId": "e55def56feb0ccc03837c76804f00e17",
+                "parameters": [
+                    {
+                        "name": "commitment_id",
+                        "in": "query",
+                        "description": "ID of the commitment",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Show all extensions",
@@ -16838,5 +16848,151 @@
                 "scheme": "bearer"
             }
         }
-    }
+    },
+    "tags": [
+        {
+            "name": "Amortization",
+            "description": "Amortization"
+        },
+        {
+            "name": "Attention",
+            "description": "Attention"
+        },
+        {
+            "name": "Bank",
+            "description": "Bank"
+        },
+        {
+            "name": "Brand",
+            "description": "Brand"
+        },
+        {
+            "name": "BudgetSheet",
+            "description": "BudgetSheet"
+        },
+        {
+            "name": "Category",
+            "description": "Category"
+        },
+        {
+            "name": "Commitment",
+            "description": "Commitment"
+        },
+        {
+            "name": "ConceptMovs",
+            "description": "ConceptMovs"
+        },
+        {
+            "name": "ConceptPay",
+            "description": "ConceptPay"
+        },
+        {
+            "name": "DetailAttention",
+            "description": "DetailAttention"
+        },
+        {
+            "name": "Element",
+            "description": "Element"
+        },
+        {
+            "name": "ElementForAttention",
+            "description": "ElementForAttention"
+        },
+        {
+            "name": "Extension",
+            "description": "Extension"
+        },
+        {
+            "name": "Group Menu",
+            "description": "Group Menu"
+        },
+        {
+            "name": "Moviment",
+            "description": "Moviment"
+        },
+        {
+            "name": "Option Menu",
+            "description": "Option Menu"
+        },
+        {
+            "name": "Reporte",
+            "description": "Reporte"
+        },
+        {
+            "name": "Person",
+            "description": "Person"
+        },
+        {
+            "name": "Product",
+            "description": "Product"
+        },
+        {
+            "name": "Search",
+            "description": "Search"
+        },
+        {
+            "name": "WhatsApp",
+            "description": "WhatsApp"
+        },
+        {
+            "name": "Service",
+            "description": "Service"
+        },
+        {
+            "name": "Specialty",
+            "description": "Specialty"
+        },
+        {
+            "name": "SpecialtyPerson",
+            "description": "SpecialtyPerson"
+        },
+        {
+            "name": "Supplier",
+            "description": "Supplier"
+        },
+        {
+            "name": "Task",
+            "description": "Task"
+        },
+        {
+            "name": "Type Attention",
+            "description": "Type Attention"
+        },
+        {
+            "name": "TypeUser",
+            "description": "TypeUser"
+        },
+        {
+            "name": "Type Vehicle",
+            "description": "Type Vehicle"
+        },
+        {
+            "name": "Unit",
+            "description": "Unit"
+        },
+        {
+            "name": "User",
+            "description": "User"
+        },
+        {
+            "name": "Vehicle",
+            "description": "Vehicle"
+        },
+        {
+            "name": "VehicleModel",
+            "description": "VehicleModel"
+        },
+        {
+            "name": "Worker",
+            "description": "Worker"
+        },
+        {
+            "name": "Authentication",
+            "description": "Authentication"
+        },
+        {
+            "name": "Reporte Excel",
+            "description": "Reporte Excel"
+        }
+    ]
 }
