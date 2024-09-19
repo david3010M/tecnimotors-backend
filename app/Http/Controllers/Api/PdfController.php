@@ -224,7 +224,7 @@ class PdfController extends Controller
      */
     public function getEvidenceByAttention($id)
     {
-        $object = Attention::with(['routeImages'])->find($id);
+        $object = Attention::with(['routeImagesTask.task', 'routeImagesAttention'])->find($id);
         $pdf = Pdf::loadView('evidencias', [
             'attention' => $object,
         ]);

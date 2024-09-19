@@ -188,17 +188,17 @@ class Attention extends Model
         $list = DetailAttention::where('attention_id', $id)->with(['worker', 'service', 'product'])->get();
         return $list;
     }
+
     public function getTask($id)
     {
         $list = Task::
         // with(['detailAttentions.attention'])->
         whereHas('detailAttentions.attention', function ($query) use ($id) {
-                        $query->where('id', $id);
-                    })
-                    ->get();
+            $query->where('id', $id);
+        })
+            ->get();
         return $list;
     }
-    
 
 
     public function details()
@@ -211,6 +211,16 @@ class Attention extends Model
     public function routeImages()
     {
         return $this->hasMany(RouteImages::class);
+    }
+
+    public function routeImagesTask()
+    {
+        return $this->hasMany(RouteImages::class)->whereNotNull('task_id');
+    }
+
+    public function routeImagesAttention()
+    {
+        return $this->hasMany(RouteImages::class)->whereNull('task_id');
     }
 
     public function elements()
@@ -396,7 +406,7 @@ class Attention extends Model
             $attention->save();
 
             $dataImage = [
-               'route' => 'https://develop.garzasoft.com/tecnimotors-backend/public'.$rutaImagen,
+                'route' => 'https://develop.garzasoft.com/tecnimotors-backend/public' . $rutaImagen,
                 'attention_id' => $attention->id,
             ];
 

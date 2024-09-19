@@ -28,6 +28,14 @@
             padding-bottom: 30px;
         }
 
+        h1 {
+            font-size: 20px;
+            font-weight: bolder;
+            color: #007AC2;
+            text-align: center;
+            padding-bottom: 10px;
+        }
+
         td,
         th {
             padding: 2px;
@@ -50,11 +58,6 @@
         .content {
             padding-left: 30px;
             padding-right: 30px;
-        }
-
-        .contentImage {
-            width: 100%;
-            text-align: right;
         }
 
         .logoImage {
@@ -84,14 +87,6 @@
             color: #007AC2;
         }
 
-        .strong {
-            font-weight: bolder;
-        }
-
-        .gris {
-            color: #3b3b3b;
-        }
-
         table {
             width: 100%;
             border-collapse: collapse;
@@ -119,48 +114,16 @@
             text-align: left;
         }
 
-        .tableDetail {
-            margin-top: 25px;
-        }
-
-        .p10 {
-            padding: 10px;
-        }
-
         .right {
             text-align: right;
-        }
-
-        .left {
-            text-align: left;
         }
 
         .center {
             text-align: center;
         }
 
-        .font-10 {
-            font-size: 10px;
-        }
-
         .font-12 {
             font-size: 12px;
-        }
-
-        .font-14 {
-            font-size: 14px;
-        }
-
-        .font-16 {
-            font-size: 16px;
-        }
-
-        .margin20 {
-            margin-top: 20px;
-        }
-
-        .bolder {
-            font-weight: bolder;
         }
 
         .tablePeople td.left {
@@ -182,44 +145,6 @@
             border-bottom: 1px solid #3b3b3b;
         }
 
-        .id {
-            width: 5%;
-            text-align: center;
-        }
-
-        .description {
-            width: 50%;
-        }
-
-        .unit {
-            width: 10%;
-            text-align: center;
-        }
-
-        .quantity {
-            width: 10%;
-            text-align: center;
-        }
-
-        .unitPrice {
-            width: 10%;
-            text-align: right;
-        }
-
-        .sailPrice {
-            width: 15%;
-            text-align: right;
-        }
-
-        .sailTotal {
-            width: 15%;
-            text-align: right;
-        }
-
-        .tableTotal {
-            margin-top: 30px;
-        }
-
         .w50 {
             width: 50%;
         }
@@ -232,32 +157,9 @@
             width: 20%;
         }
 
-        .totalInfo {
-            border-collapse: collapse;
-            font-size: 16px;
-            background-color: #f2f2f2;
-        }
-
-        .observaciones {
-            margin-top: 30px;
-        }
-
-        .listaObservaciones {
-            padding-left: 20px;
-            color: #3b3b3b;
-        }
-
         .listaObservaciones li {
             margin-top: 2px;
             text-align: justify;
-        }
-
-        .tableFirmas {
-            margin-top: 100px;
-        }
-
-        .borderTop {
-            border-top: 1px solid #3b3b3b;
         }
 
         .text-sm {
@@ -268,16 +170,8 @@
             width: 40%;
         }
 
-        .w25 {
-            width: 25%;
-        }
-
         .w10 {
             width: 10%;
-        }
-
-        .w30 {
-            width: 30%;
         }
     </style>
 </head>
@@ -396,12 +290,19 @@
         {{--            </tr>--}}
         {{--        @endforeach--}}
 
-        <br>  <br>
+        <br> <br>
         <table style="width: 100%; border-collapse: collapse; text-align: center;">
-            <tr>
-                @foreach($attention->routeImages as $index => $image)
-                    @if($index % 2 == 0 && $index != 0)
-                        </tr><tr>
+            @if($attention->routeImagesAttention->isNotEmpty())
+                <tr>
+                    <td colspan="2">
+                        <h1>Evidencias de Llegada del Vehiculo</h1>
+                    </td>
+                </tr>
+                <tr>
+                    @foreach($attention->routeImagesAttention as $index => $image)
+                        @if($index % 2 == 0 && $index != 0)
+                </tr>
+                <tr>
                     @endif
                     <td style="width: 50%; padding: 10px; border: none;">
                         <img
@@ -410,12 +311,35 @@
                             style="width: 100%; height: 200px; object-fit: cover;"
                         >
                     </td>
-                    
-                @endforeach
-            </tr>
+                    @endforeach
+                </tr>
+            @endif
+
+            @if($attention->routeImagesTask->isNotEmpty())
+                <tr>
+                    <td colspan="2">
+                        <h1>Evidencias de Tareas Realizadas</h1>
+                    </td>
+                </tr>
+                <tr>
+                    @foreach($attention->routeImagesTask as $index => $image)
+                        @if($index % 2 == 0 && $index != 0)
+                </tr>
+                <tr>
+                    @endif
+                    <td style="width: 50%; padding: 10px; border: none;">
+                        <img
+                            src="{{ $image->route }}"
+                            alt="imagen"
+                            style="width: 100%; height: 200px; object-fit: cover;"
+                        >
+                    </td>
+                    @endforeach
+                </tr>
+            @endif
         </table>
-        
-        
+
+
     </table>
 
 
