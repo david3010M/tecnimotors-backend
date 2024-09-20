@@ -383,23 +383,33 @@ class Attention extends Model
     {
         $attention = Attention::find($id);
 
-        foreach ($attention->routeImages() as $routeImage) {
-            $RouteImage = RouteImages::find($routeImage->id);
-            $path = $RouteImage->route;
-            if (Storage::exists($path)) {
-                Storage::delete($path);
+        $index = 1;
+
+        if ($images != []) {
+            foreach ($attention->routeImagesAttention as $routeImage) {
+
+                $RouteImage = RouteImages::find($routeImage->id);
+                $path = $RouteImage->route;
+                $filePath = $path;
+
+                $filePath = preg_replace('/^.*public\//', '', $filePath);
+
+                // Si deseas eliminar la ruta de almacenamiento
+                if ($filePath && Storage::disk('public')->exists($filePath)) {
+
+                    Storage::disk('public')->delete($filePath);
+
+                }
+                $RouteImage->delete();
 
             }
         }
 
-        $attention->routeImages()->delete();
-        $index = 1;
         foreach ($images as $image) {
 
             $file = $image;
             $currentTime = now();
             $filename = $index . '-' . $currentTime->format('YmdHis') . '_' . $file->getClientOriginalName();
-         
 
             $originalName = str_replace(' ', '_', $file->getClientOriginalName());
             $filename = $index . '-' . $currentTime->format('YmdHis') . '_' . $originalName;

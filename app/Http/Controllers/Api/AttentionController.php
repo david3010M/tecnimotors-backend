@@ -84,8 +84,8 @@ public function index(Request $request)
         $query->where('status', $attentionStatus);
     }
 
-    // Obtén la paginación simple de 15 registros con las relaciones necesarias
-    $objects = $query->simplePaginate(15);
+    // Obtén la paginación con 15 registros por página (esto incluye el total)
+    $objects = $query->paginate(15);
 
     // Transforma cada elemento de la colección paginada
     $objects->getCollection()->transform(function ($attention) {
@@ -95,9 +95,24 @@ public function index(Request $request)
         return $attention;
     });
 
-    // Devuelve la colección transformada como respuesta JSON
-    return response()->json($objects);
+    // Devuelve la colección transformada como respuesta JSON, incluyendo toda la información de la paginación
+    return response()->json([
+        'total' => $objects->total(),               // Total de registros
+        'data' => $objects->items(),                // Los registros de la página actual
+        'current_page' => $objects->currentPage(),  // Página actual
+        'last_page' => $objects->lastPage(),        // Última página disponible
+        'per_page' => $objects->perPage(),          // Cantidad de registros por página
+        'first_page_url' => $objects->url(1),       // URL de la primera página
+        'from' => $objects->firstItem(),            // Primer registro de la página actual
+        'next_page_url' => $objects->nextPageUrl(), // URL de la siguiente página
+        'path' => $objects->path(),                 // Ruta base de la paginación
+        'prev_page_url' => $objects->previousPageUrl(), // URL de la página anterior
+        'to' => $objects->lastItem(),               // Último registro de la página actual
+    ]);
 }
+
+
+
 
 
     /**
