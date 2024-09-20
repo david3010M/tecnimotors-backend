@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Attention;
 use App\Models\DetailAttention;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DetailAttentionController extends Controller
 {
@@ -113,9 +114,18 @@ class DetailAttentionController extends Controller
      */
     public function detailAttentionByWorker(int $id)
     {
-        $detailAttention = DetailAttention::where('worker_id', $id)
-            ->where('type', 'Service')
-            ->with('service')->simplePaginate(15);
+        $user = Auth::user();
+        $typeofUser_id = $user->typeofUser_id;
+        
+        $query = DetailAttention::with(['worker.person'])->where('type', 'Service')
+            ->with('service');
+        
+        if ($typeofUser_id != 1 && $typeofUser_id != 2) {
+            $query->where('worker_id', $id);
+        }
+        
+        $detailAttention = $query->simplePaginate(15);
+        
 
         if (!$detailAttention) {
             return response()->json(['message' => 'Detail Attention not found'], 404);
