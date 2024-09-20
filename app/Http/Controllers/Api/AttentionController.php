@@ -18,101 +18,98 @@ use Illuminate\Validation\Rule;
 
 class AttentionController extends Controller
 {
-   /**
- * Get all Attentions
- * 
- * @OA\Get (
- *     path="/tecnimotors-backend/public/api/attention",
- *     tags={"Attention"},
- *     security={{"bearerAuth":{}}},
- *     @OA\Parameter(
- *         name="vehicle_id",
- *         in="query",
- *         description="ID of the vehicle to filter attentions",
- *         required=false,
- *         @OA\Schema(type="integer")
- *     ),
- *     @OA\Parameter(
- *         name="attention_status",
- *         in="query",
- *         description="Status of the attention to filter attentions",
- *         required=false,
- *         @OA\Schema(type="string")
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="List of attentions",
- *         @OA\JsonContent(
- *             @OA\Property(property="current_page", type="integer", example=1),
- *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Attention")),
- *             @OA\Property(property="first_page_url", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/attention?page=1"),
- *             @OA\Property(property="from", type="integer", example=1),
- *             @OA\Property(property="next_page_url", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/attention?page=2"),
- *             @OA\Property(property="path", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/attention"),
- *             @OA\Property(property="per_page", type="integer", example=15),
- *             @OA\Property(property="prev_page_url", type="string", example="null"),
- *             @OA\Property(property="to", type="integer", example=15)
- *         )
- *     ),
- *     @OA\Response(
- *         response=401,
- *         description="Unauthorized",
- *         @OA\JsonContent(
- *             @OA\Property(
- *                 property="message", type="string", example="Unauthenticated"
- *             )
- *         )
- *     )
- * )
- */
-public function index(Request $request)
-{
-    // Obtén el ID del vehículo y el estado de atención desde la solicitud
-    $vehicleId = $request->input('vehicle_id');
-    $attentionStatus = $request->input('attention_status');
+    /**
+     * Get all Attentions
+     *
+     * @OA\Get (
+     *     path="/tecnimotors-backend/public/api/attention",
+     *     tags={"Attention"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="vehicle_id",
+     *         in="query",
+     *         description="ID of the vehicle to filter attentions",
+     *         required=false,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="attention_status",
+     *         in="query",
+     *         description="Status of the attention to filter attentions",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of attentions",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="current_page", type="integer", example=1),
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Attention")),
+     *             @OA\Property(property="first_page_url", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/attention?page=1"),
+     *             @OA\Property(property="from", type="integer", example=1),
+     *             @OA\Property(property="next_page_url", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/attention?page=2"),
+     *             @OA\Property(property="path", type="string", example="http://develop.garzasoft.com/tecnimotors-backend/public/api/attention"),
+     *             @OA\Property(property="per_page", type="integer", example=15),
+     *             @OA\Property(property="prev_page_url", type="string", example="null"),
+     *             @OA\Property(property="to", type="integer", example=15)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="message", type="string", example="Unauthenticated"
+     *             )
+     *         )
+     *     )
+     * )
+     */
+    public function index(Request $request)
+    {
+        // Obtén el ID del vehículo y el estado de atención desde la solicitud
+        $vehicleId = $request->input('vehicle_id');
+        $attentionStatus = $request->input('attention_status');
 
-    // Consulta base para Attention
-    $query = Attention::with(['worker.person', 'vehicle', 'vehicle.person', 'details', 'routeImages', 'elements']);
+        // Consulta base para Attention
+        $query = Attention::with(['worker.person', 'vehicle', 'vehicle.person', 'details', 'routeImages', 'elements']);
 
-    // Filtra por ID de vehículo si se proporciona
-    if ($vehicleId) {
-        $query->where('vehicle_id', $vehicleId);
+        // Filtra por ID de vehículo si se proporciona
+        if ($vehicleId) {
+            $query->where('vehicle_id', $vehicleId);
+        }
+
+        // Filtra por estado de atención si se proporciona
+        if ($attentionStatus) {
+            $query->where('status', $attentionStatus);
+        }
+
+        // Obtén la paginación con 15 registros por página (esto incluye el total)
+        $objects = $query->paginate(15);
+
+        // Transforma cada elemento de la colección paginada
+        $objects->getCollection()->transform(function ($attention) {
+            $attention->elements = $attention->getElements($attention->id);
+            $attention->details = $attention->getDetails($attention->id);
+            $attention->task = $attention->getTask($attention->id);
+            return $attention;
+        });
+
+        // Devuelve la colección transformada como respuesta JSON, incluyendo toda la información de la paginación
+        return response()->json([
+            'total' => $objects->total(),               // Total de registros
+            'data' => $objects->items(),                // Los registros de la página actual
+            'current_page' => $objects->currentPage(),  // Página actual
+            'last_page' => $objects->lastPage(),        // Última página disponible
+            'per_page' => $objects->perPage(),          // Cantidad de registros por página
+            'first_page_url' => $objects->url(1),       // URL de la primera página
+            'from' => $objects->firstItem(),            // Primer registro de la página actual
+            'next_page_url' => $objects->nextPageUrl(), // URL de la siguiente página
+            'path' => $objects->path(),                 // Ruta base de la paginación
+            'prev_page_url' => $objects->previousPageUrl(), // URL de la página anterior
+            'to' => $objects->lastItem(),               // Último registro de la página actual
+        ]);
     }
-
-    // Filtra por estado de atención si se proporciona
-    if ($attentionStatus) {
-        $query->where('status', $attentionStatus);
-    }
-
-    // Obtén la paginación con 15 registros por página (esto incluye el total)
-    $objects = $query->paginate(15);
-
-    // Transforma cada elemento de la colección paginada
-    $objects->getCollection()->transform(function ($attention) {
-        $attention->elements = $attention->getElements($attention->id);
-        $attention->details = $attention->getDetails($attention->id);
-        $attention->task = $attention->getTask($attention->id);
-        return $attention;
-    });
-
-    // Devuelve la colección transformada como respuesta JSON, incluyendo toda la información de la paginación
-    return response()->json([
-        'total' => $objects->total(),               // Total de registros
-        'data' => $objects->items(),                // Los registros de la página actual
-        'current_page' => $objects->currentPage(),  // Página actual
-        'last_page' => $objects->lastPage(),        // Última página disponible
-        'per_page' => $objects->perPage(),          // Cantidad de registros por página
-        'first_page_url' => $objects->url(1),       // URL de la primera página
-        'from' => $objects->firstItem(),            // Primer registro de la página actual
-        'next_page_url' => $objects->nextPageUrl(), // URL de la siguiente página
-        'path' => $objects->path(),                 // Ruta base de la paginación
-        'prev_page_url' => $objects->previousPageUrl(), // URL de la página anterior
-        'to' => $objects->lastItem(),               // Último registro de la página actual
-    ]);
-}
-
-
-
 
 
     /**
@@ -165,42 +162,42 @@ public function index(Request $request)
         return response()->json($object);
     }
 
-/**
- * Get a single Attention by number
- * @OA\Get (
- *     path="/tecnimotors-backend/public/api/searchByNumber/{number}",
- *     tags={"Attention"},
- *     security={{"bearerAuth":{}}},
- *     @OA\Parameter(
- *         name="number",
- *         in="path",
- *         required=true,
- *         description="Attention number in the format OTRS-00000001",
- *         @OA\Schema(type="string", example="OTRS-00000001")
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Attention data",
- *         @OA\JsonContent(ref="#/components/schemas/Attention")
- *     ),
- *     @OA\Response(
- *         response=404,
- *         description="Attention not found",
- *         @OA\JsonContent(
- *             @OA\Property(property="message", type="string", example="Attention not found")
- *         )
- *     ),
- *     @OA\Response(
- *         response=401,
- *         description="Unauthorized",
- *         @OA\JsonContent(
- *             @OA\Property(
- *                 property="message", type="string", example="Unauthenticated"
- *             )
- *         )
- *     )
- * )
- */
+    /**
+     * Get a single Attention by number
+     * @OA\Get (
+     *     path="/tecnimotors-backend/public/api/searchByNumber/{number}",
+     *     tags={"Attention"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="number",
+     *         in="path",
+     *         required=true,
+     *         description="Attention number in the format OTRS-00000001",
+     *         @OA\Schema(type="string", example="OTRS-00000001")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Attention data",
+     *         @OA\JsonContent(ref="#/components/schemas/Attention")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Attention not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Attention not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="message", type="string", example="Unauthenticated"
+     *             )
+     *         )
+     *     )
+     * )
+     */
 
     public function searchByNumber($number)
     {
@@ -318,7 +315,6 @@ public function index(Request $request)
      *                     @OA\Property(property="worker_id", type="integer", example=1)
      *                 )
      *             ),
-
      *             @OA\Property(
      *                 property="elements",
      *                 type="array",
@@ -401,7 +397,7 @@ public function index(Request $request)
 
         $tipo = 'OTRS';
         $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM attentions a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-        $siguienteNum = (int) $resultado;
+        $siguienteNum = (int)$resultado;
 
         $data = [
             'number' => $tipo . "-" . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT),
@@ -436,13 +432,13 @@ public function index(Request $request)
             $detailsProducts = $request->input('detailsProducts') ?? [];
 
             $sumProducts = 0;
-            
+
             // Verificar si $detailsProducts tiene registros
             if ($detailsProducts != []) {
                 foreach ($detailsProducts as $productDetail) {
                     $idProduct = $productDetail['idProduct'];
                     $quantity = $productDetail['quantity'] ?? 1;
-            
+
                     $product = Product::find($idProduct);
                     $objectData = [
                         'saleprice' => $product->sale_price ?? '0.00',
@@ -460,10 +456,10 @@ public function index(Request $request)
                     $detailProd = DetailAttention::create($objectData);
                     $sumProducts += $detailProd->saleprice * $quantity;
                 }
-            
+
                 $object->totalProducts = $sumProducts;
             }
-            
+
 
             //ASIGNAR DETAILS
             $detailsAttentions = $request->input('details') ?? [];
@@ -502,7 +498,7 @@ public function index(Request $request)
             $file = $image;
             $currentTime = now();
             $filename = $index . '-' . $currentTime->format('YmdHis') . '_' . $file->getClientOriginalName();
-      
+
 
             $originalName = str_replace(' ', '_', $file->getClientOriginalName());
             $filename = $index . '-' . $currentTime->format('YmdHis') . '_' . $originalName;
@@ -677,7 +673,7 @@ public function index(Request $request)
         if ($detailsProducts != []) {
             $object->setDetailProducts($object->id, $detailsProducts);
         }
-        
+
 
         $object->total = $object->details()->get()->sum(function ($detail) {
             return $detail->saleprice * $detail->quantity;
@@ -749,58 +745,59 @@ public function index(Request $request)
         $detailsNotGenerated = $object->details()->where('type', 'Service')
             ->where('status', '!=', 'Generada')->exists();
 
-        if ($detailsNotGenerated) {
-            return response()->json(['message' => 'Exiten Servicios que ya estan siendo Procesados'], 409);
-        }
+        if ($detailsNotGenerated) return response()->json(['message' => 'Exiten Servicios que ya estan siendo Procesados'], 409);
+
+        $budgetSheet = $object->budgetSheet()->exists();
+        if ($budgetSheet) return response()->json(['message' => 'Orden de Servicio ya presupuestada'], 409);
 
         $object->delete();
 
         return response()->json(['message' => 'Attention deleted']);
     }
 
-/**
- *  Retrieve the next correlativo value
- * @OA\Get (
- *     path="/tecnimotors-backend/public/api/getCorrelative",
- *     tags={"Attention"},
- *     summary="Get next correlativo",
- *     security={{"bearerAuth":{}}},
- *     @OA\Response(
- *         response=200,
- *         description="Next correlativo retrieved successfully",
- *         @OA\JsonContent(
- *             @OA\Property( property="correlativo", type="string", example="123456" )
- *         )
- *     ),
- *     @OA\Response(
- *         response=401,
- *         description="User not authenticated",
- *         @OA\JsonContent(
- *             @OA\Property(
- *                 property="message",
- *                 type="string",
- *                 example="Unauthorized."
- *             )
- *         )
- *     ),
- *     @OA\Response(
- *         response=400,
- *         description="Invalid request",
- *         @OA\JsonContent(
- *             @OA\Property(
- *                 property="message",
- *                 type="string",
- *                 example="Invalid request."
- *             )
- *         )
- *     )
- * )
- */
+    /**
+     *  Retrieve the next correlativo value
+     * @OA\Get (
+     *     path="/tecnimotors-backend/public/api/getCorrelative",
+     *     tags={"Attention"},
+     *     summary="Get next correlativo",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Next correlativo retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property( property="correlativo", type="string", example="123456" )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="User not authenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string",
+     *                 example="Unauthorized."
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid request",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string",
+     *                 example="Invalid request."
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function getCorrelativo()
     {
         $tipo = 'OTRS';
         $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM attentions a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-        $siguienteNum = (int) $resultado;
+        $siguienteNum = (int)$resultado;
         return response()->json([
             'correlativo' => $siguienteNum,
         ]);
