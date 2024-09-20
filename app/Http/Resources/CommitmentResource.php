@@ -40,8 +40,6 @@ use Illuminate\Support\Facades\Log;
  *     @OA\Property(property="prev_page_url", type="string", example="null"),
  *     @OA\Property(property="to", type="integer", example="5"),
  * )
- *
- *
  */
 class CommitmentResource extends JsonResource
 {
@@ -63,7 +61,7 @@ class CommitmentResource extends JsonResource
             'amount' => $this->amount,
             'balance' => $this->balance,
             'numberQuota' => $this->numberQuota,
-            'status' => Carbon::parse($this->payment_date) < Carbon::now() ? 'Vencido' : $this->status,
+            'status' => Carbon::parse($this->payment_date) < Carbon::parse(Carbon::now()->toDateString()) ? 'Vencido' : $this->status,
             'budget_sheet_id' => $this->budget_sheet_id,
             'created_at' => Carbon::parse($this->created_at)->format('d-m-Y'),
         ];
