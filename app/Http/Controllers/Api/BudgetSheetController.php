@@ -84,8 +84,8 @@ class BudgetSheetController extends Controller
             $query->where('status', $status);
         }
 
-        // Obtenemos la paginación simple con los filtros aplicados
-        $budgetSheets = $query->orderBy('id', 'desc')->simplePaginate(15);
+        // Obtenemos la paginación completa con los filtros aplicados
+        $budgetSheets = $query->orderBy('id', 'desc')->paginate(15);
 
         // Devolvemos los datos paginados como respuesta JSON
         return response()->json([
