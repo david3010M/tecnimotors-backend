@@ -85,7 +85,7 @@ class AttentionController extends Controller
         }
 
         // Obtén la paginación con 15 registros por página (esto incluye el total)
-        $objects = $query->paginate(15);
+        $objects = $query->orderBy('id','desc')->paginate(15);
 
         // Transforma cada elemento de la colección paginada
         $objects->getCollection()->transform(function ($attention) {

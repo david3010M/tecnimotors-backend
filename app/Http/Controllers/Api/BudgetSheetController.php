@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Attention;
 use App\Models\budgetSheet;
 use App\Models\Commitment;
-use App\Models\Moviment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -86,10 +85,22 @@ class BudgetSheetController extends Controller
         }
 
         // Obtenemos la paginación simple con los filtros aplicados
-        $budgetSheets = $query->simplePaginate(15);
+        $budgetSheets = $query->orderBy('id', 'desc')->simplePaginate(15);
 
-        // Devolvemos la colección transformada como respuesta JSON
-        return response()->json($budgetSheets);
+        // Devolvemos los datos paginados como respuesta JSON
+        return response()->json([
+            'total' => $budgetSheets->total(), // Total de registros
+            'data' => $budgetSheets->items(), // Los registros de la página actual
+            'current_page' => $budgetSheets->currentPage(), // Página actual
+            'last_page' => $budgetSheets->lastPage(), // Última página disponible
+            'per_page' => $budgetSheets->perPage(), // Cantidad de registros por página
+            'first_page_url' => $budgetSheets->url(1), // URL de la primera página
+            'from' => $budgetSheets->firstItem(), // Primer registro de la página actual
+            'next_page_url' => $budgetSheets->nextPageUrl(), // URL de la siguiente página
+            'path' => $budgetSheets->path(), // Ruta base de la paginación
+            'prev_page_url' => $budgetSheets->previousPageUrl(), // URL de la página anterior
+            'to' => $budgetSheets->lastItem(), // Último registro de la página actual
+        ]);
     }
 
     /**
@@ -202,7 +213,7 @@ class BudgetSheetController extends Controller
 
         $tipo = 'PRES';
         $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM budget_sheets a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-        $siguienteNum = (int)$resultado;
+        $siguienteNum = (int) $resultado;
 
         $percentageDiscount = floatval($request->input('percentageDiscount', 0)) / 100;
         $subtotal = floatval($attention->total);
@@ -239,7 +250,10 @@ class BudgetSheetController extends Controller
             ]);
         } else if ($object->paymentType == 'Credito') {
             $sumCommitments = array_sum(array_column($request->input('commitments'), 'price'));
-            if (round($sumCommitments, 4) != round($total, 4)) return response()->json(['error' => 'La suma de los compromisos no coincide con el total ' . $total . ' falta ' . ($total - $sumCommitments)], 422);
+            if (round($sumCommitments, 4) != round($total, 4)) {
+                return response()->json(['error' => 'La suma de los compromisos no coincide con el total ' . $total . ' falta ' . ($total - $sumCommitments)], 422);
+            }
+
             $object->save();
             $commitments = $request->input('commitments');
             foreach ($commitments as $index => $commitment) {
@@ -412,7 +426,6 @@ class BudgetSheetController extends Controller
 
         return response()->json(['message' => 'BudgetSheet deleted']);
     }
-
 
     /**
      * Update the status of a budgetSheet to "Pagado sin boletear"
