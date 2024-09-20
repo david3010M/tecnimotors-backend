@@ -747,8 +747,8 @@ class AttentionController extends Controller
 
         if ($detailsNotGenerated) return response()->json(['message' => 'Exiten Servicios que ya estan siendo Procesados'], 409);
 
-        $budgetSheet = $object->budgetSheet()->exists();
-        if ($budgetSheet) return response()->json(['message' => 'Orden de Servicio ya presupuestada'], 409);
+//        $budgetSheet = $object->budgetSheet()->exists();
+//        if ($budgetSheet) return response()->json(['message' => 'Orden de Servicio ya presupuestada'], 409);
 
         $object->delete();
 

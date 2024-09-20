@@ -45,11 +45,11 @@ class CommitmentResource extends JsonResource
 {
     public function toArray($request)
     {
-        $client = $this->budgetSheet->attention->vehicle->person->typeofDocument == 'DNI' ?
+        $client = $this->budgetSheet->attencion ? ($this->budgetSheet->attention->vehicle->person->typeofDocument == 'DNI' ?
             ($this->budgetSheet->attention->vehicle->person->names . ' ' .
                 $this->budgetSheet->attention->vehicle->person->fatherSurname . ' ' .
                 $this->budgetSheet->attention->vehicle->person->motherSurname) :
-            $this->budgetSheet->attention->vehicle->person->businessName;
+            $this->budgetSheet->attention->vehicle->person->businessName) : null;
 
         return [
             'id' => $this->id,
