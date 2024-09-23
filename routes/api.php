@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\ElementForAttentionController;
 use App\Http\Controllers\Api\ExtensionController;
 use App\Http\Controllers\Api\GroupMenuController;
 use App\Http\Controllers\Api\MovimentController;
+use App\Http\Controllers\Api\OcupationController;
 use App\Http\Controllers\Api\OptionMenuController;
 use App\Http\Controllers\Api\PdfController;
 use App\Http\Controllers\Api\PersonController;
@@ -139,6 +140,11 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
 
 //    UNIT
     Route::resource('unit', UnitController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'unit.index', 'store' => 'unit.store', 'show' => 'unit.show', 'update' => 'unit.update', 'destroy' => 'unit.destroy']);
+
+    //OCUPATION
+
+    Route::resource('ocupation', OcupationController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'unit.index', 'store' => 'unit.store', 'show' => 'unit.show', 'update' => 'unit.update', 'destroy' => 'unit.destroy']);
 
 //    CATEGORY
