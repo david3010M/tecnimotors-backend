@@ -116,16 +116,15 @@ class DetailAttentionController extends Controller
     {
         $user = Auth::user();
         $typeofUser_id = $user->typeofUser_id;
-        
+
         $query = DetailAttention::with(['worker.person'])->where('type', 'Service')
             ->with('service');
-        
+
         if ($typeofUser_id != 1 && $typeofUser_id != 2) {
             $query->where('worker_id', $id);
         }
-        
-        $detailAttention = $query->simplePaginate(15);
-        
+
+        $detailAttention = $query->paginate(15);
 
         if (!$detailAttention) {
             return response()->json(['message' => 'Detail Attention not found'], 404);
@@ -346,7 +345,7 @@ class DetailAttentionController extends Controller
         });
 
 
-        $object->totalService=  $object->details()->where('type', 'Service')->get()->sum(function ($detail) {
+        $object->totalService = $object->details()->where('type', 'Service')->get()->sum(function ($detail) {
             return $detail->saleprice * $detail->quantity;
         });
 
