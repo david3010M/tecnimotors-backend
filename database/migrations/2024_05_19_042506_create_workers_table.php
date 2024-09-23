@@ -20,6 +20,7 @@ return new class extends Migration
             $table->boolean('state')->nullable()->default(true);
 
             $table->string('occupation', 250)->nullable()->nullable();
+            $table->foreignId('ocupation_id')->nullable()->unsigned()->constrained('ocupations');
             $table->foreignId('person_id')->nullable()->unsigned()->constrained('people');
             $table->timestamps();
             $table->softDeletes();

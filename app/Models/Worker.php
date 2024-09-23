@@ -37,6 +37,7 @@ class Worker extends Model
         'startDate',
         'birthDate',
         'occupation',
+        'ocupation_id',
         'state',
         'person_id',
         'created_at',
@@ -50,6 +51,10 @@ class Worker extends Model
     public function person()
     {
         return $this->belongsTo(Person::class, 'person_id');
+    }
+    public function ocupation()
+    {
+        return $this->belongsTo(Ocupation::class, 'ocupation_id');
     }
 
     public function specialties()

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Ocupation;
 use App\Models\Person;
 use App\Models\Specialty;
 use App\Models\Worker;
@@ -82,7 +83,7 @@ class WorkerController extends Controller
         // }
 
         // Ejecución de la consulta con paginación y carga de relaciones
-        $workers = $query->with(['person'])->where('state', true)->simplePaginate(50);
+        $workers = $query->with(['person','ocupation'])->where('state', true)->simplePaginate(50);
 
         return response()->json($workers);
     }
@@ -135,7 +136,7 @@ class WorkerController extends Controller
     public function show(int $id)
     {
 
-        $object = Worker::with(['person', 'specialties'])->find($id);
+        $object = Worker::with(['person','ocupation', 'specialties'])->find($id);
         if ($object) {
             return response()->json($object, 200);
         }
@@ -188,22 +189,26 @@ class WorkerController extends Controller
 
         $validator = validator()->make($request->all(), [
             'person_id' => 'required|exists:people,id',
+            'ocupation_id' => 'required|exists:ocupations,id',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
+        $ocupation = Ocupation::find($request->input('ocupation_id'));
+
         $data = [
             'startDate' => $request->input('startDate'),
             'birthDate' => $request->input('birthDate'),
-            'occupation' => $request->input('occupation'),
+            'occupation' => $ocupation->name ?? '-',
             'person_id' => $request->input('person_id'),
+            'ocupation_id' => $request->input('ocupation_id'),
 
         ];
 
         $object = Worker::create($data);
-        $object = Worker::with(['person'])->find($object->id);
+        $object = Worker::with(['person','ocupation'])->find($object->id);
         return response()->json($object, 200);
 
     }
@@ -265,12 +270,14 @@ class WorkerController extends Controller
                 'required',
                 Rule::unique('people')->whereNull('deleted_at'),
             ],
-            'occupation' => 'required|in:Cajero,Mecanico,Asesor',
+            // 'occupation' => 'required|in:Cajero,Mecanico,Asesor',
+            'ocupation_id' => 'required|exists:ocupations,id',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
+        $ocupation = Ocupation::find($request->input('ocupation_id'));
 
         $data = [
             'typeofDocument' => $request->input('typeofDocument'),
@@ -279,7 +286,7 @@ class WorkerController extends Controller
             'phone' => $request->input('phone') ?? null,
             'email' => $request->input('email') ?? null,
             'origin' => $request->input('origin') ?? null,
-            'occupation' => $request->input('occupation') ?? null,
+
             'names' => null,
             'fatherSurname' => null,
             'motherSurname' => null,
@@ -304,12 +311,13 @@ class WorkerController extends Controller
         $dataWorker = [
             'startDate' => $request->input('startDate') ?? null,
             'birthDate' => $request->input('birthDate') ?? null,
-            'occupation' => $request->input('occupation'),
+            'occupation' => $ocupation->name ?? null,
+            'ocupation_id' => $ocupation->id,
             'person_id' => $person->id,
         ];
 
         $worker = Worker::create($dataWorker);
-        $worker = Worker::with(['person'])->find($worker->id);
+        $worker = Worker::with(['person','ocupation'])->find($worker->id);
 
         return response()->json($worker, 201);
     }
@@ -400,7 +408,8 @@ class WorkerController extends Controller
                 'required',
                 Rule::unique('people')->ignore($person->id)->whereNull('deleted_at'),
             ],
-            'occupation' => 'required|in:Cajero,Mecanico,Asesor',
+            // 'occupation' => 'required|in:Cajero,Mecanico,Asesor',
+            'ocupation_id' => 'required|exists:ocupations,id',
         ]);
 
         if ($validator->fails()) {
@@ -421,6 +430,7 @@ class WorkerController extends Controller
             'businessName' => null,
             'representativeDni' => null,
             'representativeNames' => null,
+            'ocupation_id' => $request->input('ocupation_id') ?? null,
         ];
 
         if ($request->input('typeofDocument') == 'DNI') {
@@ -440,16 +450,18 @@ class WorkerController extends Controller
         if (!$worker) {
             return response()->json(['message' => 'Worker not found.'], 404);
         }
+        $ocupation = Ocupation::find($request->input('ocupation_id'));
 
         $dataWorker = [
             'startDate' => $request->input('startDate') ?? null,
             'birthDate' => $request->input('birthDate') ?? null,
-            'occupation' => $request->input('occupation'),
+            'occupation' => $ocupation->name ?? null,
+            'ocupation_id' => $ocupation->id,
         ];
 
         $worker->update($dataWorker);
 
-        $worker = Worker::with(['person'])->find($worker->id);
+        $worker = Worker::with(['person','ocupation'])->find($worker->id);
 
         return response()->json($worker, 200);
     }
@@ -520,16 +532,18 @@ class WorkerController extends Controller
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
+        $ocupation = Ocupation::find($request->input('ocupation_id'));
 
         $data = [
             'startDate' => $request->input('startDate'),
             'birthDate' => $request->input('birthDate'),
-            'occupation' => $request->input('occupation'),
+            'occupation' => $ocupation->name ?? '',
+            'occupation_id' => $ocupation->id,
             'person_id' => $request->input('person_id'),
         ];
 
         $object->update($data);
-        $object = Worker::with(['person'])->find($object->id);
+        $object = Worker::with(['person','ocupation'])->find($object->id);
         return response()->json($object, 200);
     }
 

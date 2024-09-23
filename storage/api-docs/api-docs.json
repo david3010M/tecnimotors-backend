@@ -6182,6 +6182,408 @@
                 ]
             }
         },
+        "/tecnimotors-backend/public/api/ocupation": {
+            "get": {
+                "tags": [
+                    "Ocupation"
+                ],
+                "summary": "Get all ocupations",
+                "operationId": "f648626360cfd1410c250fb4d8560de6",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "current_page": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Ocupation"
+                                            }
+                                        },
+                                        "first_page_url": {
+                                            "type": "string",
+                                            "example": "http://localhost:8000/api/ocupation?page=1"
+                                        },
+                                        "from": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        },
+                                        "next_page_url": {
+                                            "type": "string",
+                                            "example": "null"
+                                        },
+                                        "path": {
+                                            "type": "string",
+                                            "example": "http://localhost:8000/api/ocupation"
+                                        },
+                                        "per_page": {
+                                            "type": "integer",
+                                            "example": "15"
+                                        },
+                                        "prev_page_url": {
+                                            "type": "string",
+                                            "example": "null"
+                                        },
+                                        "to": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Ocupation"
+                ],
+                "summary": "Create a new ocupation",
+                "operationId": "69b187924b7cd06ab39a97bdc147c33b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/OcupationRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Ocupation"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "The name has already been taken."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/ocupation/{id}": {
+            "get": {
+                "tags": [
+                    "Ocupation"
+                ],
+                "summary": "Get a ocupation by id",
+                "operationId": "054af3095d9c053448307ceefa173c7a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Ocupation id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Ocupation"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Ocupation"
+                ],
+                "summary": "Update a ocupation",
+                "operationId": "ef594f249d9e7ed3dde3cf633297c0f3",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Ocupation id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/OcupationRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Ocupation"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "The name has already been taken."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Ocupation"
+                ],
+                "summary": "Delete a ocupation",
+                "operationId": "bb9c35b1c2c5f1c3ffc289de6bddf322",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Ocupation id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Deleted"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Cannot delete ocupation with products"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/tecnimotors-backend/public/api/optionMenu": {
             "get": {
                 "tags": [
@@ -15676,6 +16078,51 @@
                 },
                 "type": "object"
             },
+            "Ocupation": {
+                "title": "Ocupation",
+                "required": [
+                    "name",
+                    "comment"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Kilogram"
+                    },
+                    "comment": {
+                        "type": "string",
+                        "example": "kg"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2021-04-14T17:59:10.000000Z"
+                    }
+                },
+                "type": "object"
+            },
+            "OcupationRequest": {
+                "title": "OcupationRequest",
+                "required": [
+                    "name",
+                    "comment"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "Kilogram"
+                    },
+                    "comment": {
+                        "type": "string",
+                        "example": "kg"
+                    }
+                },
+                "type": "object"
+            },
             "OptionMenu": {
                 "title": "OptionMenu",
                 "required": [
@@ -16848,151 +17295,5 @@
                 "scheme": "bearer"
             }
         }
-    },
-    "tags": [
-        {
-            "name": "Amortization",
-            "description": "Amortization"
-        },
-        {
-            "name": "Attention",
-            "description": "Attention"
-        },
-        {
-            "name": "Bank",
-            "description": "Bank"
-        },
-        {
-            "name": "Brand",
-            "description": "Brand"
-        },
-        {
-            "name": "BudgetSheet",
-            "description": "BudgetSheet"
-        },
-        {
-            "name": "Category",
-            "description": "Category"
-        },
-        {
-            "name": "Commitment",
-            "description": "Commitment"
-        },
-        {
-            "name": "ConceptMovs",
-            "description": "ConceptMovs"
-        },
-        {
-            "name": "ConceptPay",
-            "description": "ConceptPay"
-        },
-        {
-            "name": "DetailAttention",
-            "description": "DetailAttention"
-        },
-        {
-            "name": "Element",
-            "description": "Element"
-        },
-        {
-            "name": "ElementForAttention",
-            "description": "ElementForAttention"
-        },
-        {
-            "name": "Extension",
-            "description": "Extension"
-        },
-        {
-            "name": "Group Menu",
-            "description": "Group Menu"
-        },
-        {
-            "name": "Moviment",
-            "description": "Moviment"
-        },
-        {
-            "name": "Option Menu",
-            "description": "Option Menu"
-        },
-        {
-            "name": "Reporte",
-            "description": "Reporte"
-        },
-        {
-            "name": "Person",
-            "description": "Person"
-        },
-        {
-            "name": "Product",
-            "description": "Product"
-        },
-        {
-            "name": "Search",
-            "description": "Search"
-        },
-        {
-            "name": "WhatsApp",
-            "description": "WhatsApp"
-        },
-        {
-            "name": "Service",
-            "description": "Service"
-        },
-        {
-            "name": "Specialty",
-            "description": "Specialty"
-        },
-        {
-            "name": "SpecialtyPerson",
-            "description": "SpecialtyPerson"
-        },
-        {
-            "name": "Supplier",
-            "description": "Supplier"
-        },
-        {
-            "name": "Task",
-            "description": "Task"
-        },
-        {
-            "name": "Type Attention",
-            "description": "Type Attention"
-        },
-        {
-            "name": "TypeUser",
-            "description": "TypeUser"
-        },
-        {
-            "name": "Type Vehicle",
-            "description": "Type Vehicle"
-        },
-        {
-            "name": "Unit",
-            "description": "Unit"
-        },
-        {
-            "name": "User",
-            "description": "User"
-        },
-        {
-            "name": "Vehicle",
-            "description": "Vehicle"
-        },
-        {
-            "name": "VehicleModel",
-            "description": "VehicleModel"
-        },
-        {
-            "name": "Worker",
-            "description": "Worker"
-        },
-        {
-            "name": "Authentication",
-            "description": "Authentication"
-        },
-        {
-            "name": "Reporte Excel",
-            "description": "Reporte Excel"
-        }
-    ]
+    }
 }
