@@ -273,6 +273,7 @@ class WorkerController extends Controller
             // 'occupation' => 'required|in:Cajero,Mecanico,Asesor',
             'ocupation_id' => 'required|exists:ocupations,id',
         ]);
+        
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
