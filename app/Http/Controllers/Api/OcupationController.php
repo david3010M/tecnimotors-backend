@@ -283,7 +283,7 @@ class OcupationController extends Controller
     public function destroy(int $id)
     {
         if (in_array($id, [1, 2, 3, 4, 5])) {
-            return response()->json(['error' => 'No se puede editar este registro.'], 403);
+            return response()->json(['error' => 'No se puede eliminar este registro.'], 403);
         }
         
         $ocupation = Ocupation::find($id);
