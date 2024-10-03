@@ -512,25 +512,31 @@
                     $hasDetails = false; // Variable para verificar si hay detalles
                 @endphp
         
-                @foreach ($budgetsheet->attention?->details as $detail)
-                    @if ($detail->type == 'Service')
-                        <tr>
-                            <td class="id" style="border: 1px solid black; padding: 5px;">{{ $idIncremental }}</td>
-                            <td class="description" colspan="1" style="border: 1px solid black; padding: 5px;">
-                                {{ $detail->service?->name ?? '-' }}</td>
-                            <td class="quantity" style="border: 1px solid black; padding: 5px;">
-                                {{ $detail->quantity ?? '-' }}</td>
-                            <td class="quantity" style="border: 1px solid black; padding: 5px;">
-                                {{ number_format($detail->saleprice ?? 0, 2) }}</td>
-                            <td class="sailTotal" style="border: 1px solid black; padding: 5px;">S/
-                                {{ number_format(($detail->saleprice ?? 0) * ($detail->quantity ?? 0), 2) }}</td>
-                        </tr>
-                        @php
-                            $idIncremental++;
-                            $hasDetails = true; // Marcamos que hay detalles
-                        @endphp
-                    @endif
-                @endforeach
+                @if (!empty($budgetsheet->attention?->details))
+                    @foreach ($budgetsheet->attention->details as $detail)
+                        @if ($detail->type == 'Service')
+                            <tr>
+                                <td class="id" style="border: 1px solid black; padding: 5px;">{{ $idIncremental }}</td>
+                                <td class="description" style="border: 1px solid black; padding: 5px;">
+                                    {{ $detail->service?->name ?? '-' }}</td>
+                                <td class="quantity" style="border: 1px solid black; padding: 5px;">
+                                    {{ $detail->quantity ?? '-' }}</td>
+                                <td class="quantity" style="border: 1px solid black; padding: 5px;">
+                                    {{ number_format($detail->saleprice ?? 0, 2) }}</td>
+                                <td class="sailTotal" style="border: 1px solid black; padding: 5px;">S/
+                                    {{ number_format(($detail->saleprice ?? 0) * ($detail->quantity ?? 0), 2) }}</td>
+                            </tr>
+                            @php
+                                $idIncremental++;
+                                $hasDetails = true; // Marcamos que hay detalles
+                            @endphp
+                        @endif
+                    @endforeach
+                @else
+                    <tr>
+                        <td colspan="5" style="border: 1px solid black; padding: 5px; text-align: center;">No hubo registros</td>
+                    </tr>
+                @endif
         
                 @if (!$hasDetails)
                     <tr>
@@ -539,6 +545,7 @@
                 @endif
             </tbody>
         </table>
+        
         
 
         <br>
@@ -566,27 +573,33 @@
                     $hasDetails = false; // Variable para verificar si hay detalles
                 @endphp
         
-                @foreach ($budgetsheet->attention?->details as $detail)
-                    @if ($detail->type == 'Product')
-                        <tr>
-                            <td class="id" style="border: 1px solid black; padding: 5px;">{{ $idIncremental }}</td>
-                            <td class="description" style="border: 1px solid black; padding: 5px;">
-                                {{ $detail->product?->name ?? '-' }}</td>
-                            <td class="unit" style="border: 1px solid black; padding: 5px;">
-                                {{ $detail->product?->unit?->code ?? '-' }}</td>
-                            <td class="quantity" style="border: 1px solid black; padding: 5px;">
-                                {{ $detail->quantity ?? '-' }}</td>
-                            <td class="unitPrice" style="border: 1px solid black; padding: 5px;">S/
-                                {{ number_format($detail->product?->sale_price ?? 0, 2) }}</td>
-                            <td class="sailTotal" style="border: 1px solid black; padding: 5px;">S/
-                                {{ number_format($detail->saleprice ?? 0, 2) }}</td>
-                        </tr>
-                        @php
-                            $idIncremental++;
-                            $hasDetails = true; // Marcamos que hay detalles
-                        @endphp
-                    @endif
-                @endforeach
+                @if (!empty($budgetsheet->attention?->details))
+                    @foreach ($budgetsheet->attention->details as $detail)
+                        @if ($detail->type == 'Product')
+                            <tr>
+                                <td class="id" style="border: 1px solid black; padding: 5px;">{{ $idIncremental }}</td>
+                                <td class="description" style="border: 1px solid black; padding: 5px;">
+                                    {{ $detail->product?->name ?? '-' }}</td>
+                                <td class="unit" style="border: 1px solid black; padding: 5px;">
+                                    {{ $detail->product?->unit?->code ?? '-' }}</td>
+                                <td class="quantity" style="border: 1px solid black; padding: 5px;">
+                                    {{ $detail->quantity ?? '-' }}</td>
+                                <td class="unitPrice" style="border: 1px solid black; padding: 5px;">S/
+                                    {{ number_format($detail->product?->sale_price ?? 0, 2) }}</td>
+                                <td class="sailTotal" style="border: 1px solid black; padding: 5px;">S/
+                                    {{ number_format($detail->saleprice*$detail->quantity ?? 0, 2) }}</td>
+                            </tr>
+                            @php
+                                $idIncremental++;
+                                $hasDetails = true; // Marcamos que hay detalles
+                            @endphp
+                        @endif
+                    @endforeach
+                @else
+                    <tr>
+                        <td colspan="6" style="border: 1px solid black; padding: 5px; text-align: center;">No hubo registros</td>
+                    </tr>
+                @endif
         
                 @if (!$hasDetails)
                     <tr>
@@ -595,6 +608,7 @@
                 @endif
             </tbody>
         </table>
+        
         
 
         <table style="width: 100%; border-collapse: collapse;">
