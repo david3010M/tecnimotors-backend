@@ -81,6 +81,7 @@ class DatabaseSeeder extends Seeder
         $this->call(TypeUserSeeder::class);
 
         $this->call(OptionMenuSeeder::class);
+        $this->call(OcupationSeeder::class);
         $this->call(WorkerSeeder::class);
         $this->call(AccessSeeder::class);
         $this->call(UserSeeder::class);
