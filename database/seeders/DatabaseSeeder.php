@@ -14,22 +14,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        /**
-         * typeofDocument
-         * documentNumber
-         * names
-         * fatherSurname
-         * motherSurname
-         * businessName
-         * representativeDni
-         * representativeNames
-         * address
-         * phone
-         * email
-         * origin
-         * ocupation
-         */
-
         $array = [
             ['id' => '1', 'typeofDocument' => 'DNI', 'documentNumber' => '11111111',
                 'names' => 'Administrador', 'fatherSurname' => '-', 'motherSurname' => '-',
@@ -111,6 +95,8 @@ class DatabaseSeeder extends Seeder
         $this->call(TaskSeeder::class);
 
         $this->call(CommitmentSeeder::class);
+        $this->call(BranchSeeder::class);
+        $this->call(CashSeeder::class);
 
     }
 }

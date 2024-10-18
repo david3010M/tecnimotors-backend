@@ -3,8 +3,10 @@
 use App\Http\Controllers\Api\AmortizationController;
 use App\Http\Controllers\Api\AttentionController;
 use App\Http\Controllers\Api\BankController;
+use App\Http\Controllers\Api\BranchController;
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\BudgetSheetController;
+use App\Http\Controllers\Api\CashController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CommitmentController;
 use App\Http\Controllers\Api\ConceptMovController;
@@ -142,10 +144,9 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::resource('unit', UnitController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'unit.index', 'store' => 'unit.store', 'show' => 'unit.show', 'update' => 'unit.update', 'destroy' => 'unit.destroy']);
 
-    //OCUPATION
-
+//    OCUPATION
     Route::resource('ocupation', OcupationController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
-        ->names(['index' => 'unit.index', 'store' => 'unit.store', 'show' => 'unit.show', 'update' => 'unit.update', 'destroy' => 'unit.destroy']);
+        ->names(['index' => 'ocupation.index', 'store' => 'ocupation.store', 'show' => 'ocupation.show', 'update' => 'ocupation.update', 'destroy' => 'ocupation.destroy']);
 
 //    CATEGORY
     Route::resource('category', CategoryController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
@@ -271,5 +272,15 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::resource('extension', ExtensionController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'extension.index', 'store' => 'extension.store', 'show' => 'extension.show',
             'update' => 'extension.update', 'destroy' => 'extension.destroy']);
+
+//    BRANCH
+    Route::resource('branch', BranchController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'branch.index', 'store' => 'branch.store', 'show' => 'branch.show',
+            'update' => 'branch.update', 'destroy' => 'branch.destroy']);
+
+//    CASH
+    Route::resource('cash', CashController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'cash.index', 'store' => 'cash.store', 'show' => 'cash.show',
+            'update' => 'cash.update', 'destroy' => 'cash.destroy']);
 
 });
