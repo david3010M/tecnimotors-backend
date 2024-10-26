@@ -39,6 +39,7 @@ use App\Http\Controllers\Api\VehicleModelController;
 use App\Http\Controllers\Api\WorkerController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ExcelReportController;
+use App\Http\Controllers\SaleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -282,5 +283,10 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::resource('cash', CashController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'cash.index', 'store' => 'cash.store', 'show' => 'cash.show',
             'update' => 'cash.update', 'destroy' => 'cash.destroy']);
+
+//    SALE
+    Route::resource('sale', SaleController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'sale.index', 'store' => 'sale.store', 'show' => 'sale.show',
+            'update' => 'sale.update', 'destroy' => 'sale.destroy']);
 
 });

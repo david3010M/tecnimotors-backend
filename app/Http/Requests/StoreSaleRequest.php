@@ -6,25 +6,17 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreSaleRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
-    {
-        return false;
-    }
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, mixed>
-     */
     public function rules()
     {
         return [
-            //
+            'paymentDate' => 'required|date_format:Y-m-d',
+            'documentType' => 'required|string|in:BOLETA,FACTURA,TICKET',
+            'saleType' => 'required|string|in:NORMAL,DETRACCION',
+            'detractionCode' => 'nullable|required_if:saleType,DETRACCION|string',
+            'detractionPercentage' => 'nullable|required_if:saleType,DETRACCION|string',
+            'paymentType' => 'required|string|in:CONTADO,CREDITO',
+            'person_id' => 'required|integer|exists:people,id',
+            'budget_sheet_id' => 'required|integer|exists:budget_sheets,id',
         ];
     }
 }

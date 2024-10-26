@@ -4,6 +4,7 @@ namespace App\Utils;
 
 class Constants
 {
+    public const DEFAULT_PER_PAGE = 5;
     public const NOT_REQUESTED_TEXT = "TODOS";
 
     //REPORTES

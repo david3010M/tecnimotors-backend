@@ -73,43 +73,40 @@ class budgetSheet extends Model
     }
 
     public static function getBudgetSheet($id)
-{
-    // Consulta para recuperar el presupuesto y relaciones, incluyendo registros eliminados
-    $object = budgetSheet::with([
-        'attention' => function($query) {
-            $query->withTrashed(); // Incluye atención eliminada
-        },
-        'attention.worker.person' => function($query) {
-            $query->withTrashed(); // Incluye personas eliminadas
-        },
-        'attention.vehicle.person' => function($query) {
-            $query->withTrashed(); // Incluye personas eliminadas
-        },
-        'attention.vehicle.vehicleModel.brand' => function($query) {
-            $query->withTrashed(); // Incluye marcas eliminadas
-        },
-        'attention.details' => function($query) {
-            $query->withTrashed(); // Incluye detalles eliminados
-        },
-        'attention.details.product.unit' => function($query) {
-            $query->withTrashed(); // Incluye unidades de productos eliminadas
-        },
-        'attention.routeImages',
-        'attention.elements' => function($query) {
-            $query->withTrashed(); // Incluye elementos eliminados
-        },
-    ])->find($id);
+    {
+        // Consulta para recuperar el presupuesto y relaciones, incluyendo registros eliminados
+        $object = budgetSheet::with([
+            'attention' => function ($query) {
+                $query->withTrashed(); // Incluye atención eliminada
+            },
+            'attention.worker.person' => function ($query) {
+                $query->withTrashed(); // Incluye personas eliminadas
+            },
+            'attention.vehicle.person' => function ($query) {
+                $query->withTrashed(); // Incluye personas eliminadas
+            },
+            'attention.vehicle.vehicleModel.brand' => function ($query) {
+                $query->withTrashed(); // Incluye marcas eliminadas
+            },
+            'attention.details' => function ($query) {
+                $query->withTrashed(); // Incluye detalles eliminados
+            },
+            'attention.details.product.unit' => function ($query) {
+                $query->withTrashed(); // Incluye unidades de productos eliminadas
+            },
+            'attention.routeImages',
+            'attention.elements' => function ($query) {
+                $query->withTrashed(); // Incluye elementos eliminados
+            },
+        ])->find($id);
 
-    if (!$object) {
-        abort(404, 'BudgetSheet not found');
+        if (!$object) {
+            abort(404, 'BudgetSheet not found');
+        }
+
+        return $object;
     }
 
-    return $object;
-}
-
-    
-    
-    
 
 //    commitment
     public function commitments()
