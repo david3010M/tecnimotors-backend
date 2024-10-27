@@ -23,6 +23,7 @@ return new class extends Migration {
             $table->string('detractionPercentage')->nullable();
             $table->string('paymentType')->nullable(); // CONTADO, CREDITO
             $table->string('status')->nullable()->default('Pendiente');
+            $table->decimal('total', 10)->nullable();
 
             $table->foreignId('person_id')->nullable()->unsigned()->constrained('people');
             $table->foreignId('budget_sheet_id')->nullable()->unsigned()->constrained('budget_sheets');

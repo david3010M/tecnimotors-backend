@@ -20,6 +20,7 @@ class Sale extends Model
         'detractionPercentage',
         'paymentType',
         'status',
+        'total',
         'person_id',
         'budget_sheet_id',
         'created_at',

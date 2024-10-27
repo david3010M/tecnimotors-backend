@@ -213,7 +213,7 @@ class BudgetSheetController extends Controller
 
         $tipo = 'PRES';
         $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM budget_sheets a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-        $siguienteNum = (int) $resultado;
+        $siguienteNum = (int)$resultado;
 
         $percentageDiscount = floatval($request->input('percentageDiscount', 0)) / 100;
         $subtotal = floatval($attention->total);
@@ -450,6 +450,25 @@ class BudgetSheetController extends Controller
         $budgetSheet->save();
 
         return response()->json($budgetSheet);
+    }
+
+    /**
+     * @OA\Get (
+     *     path="/tecnimotors-backend/public/api/budgetSheet/findBudgetSheetByPersonId/{id}",
+     *     tags={"BudgetSheet"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter( name="id", in="path", required=true, description="Person ID", @OA\Schema(type="integer", example=1)),
+     *     @OA\Response( response=200, description="BudgetSheet updated successfully", @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/BudgetSheet"))),
+     *     @OA\Response( response=401, description="Unauthorized", @OA\JsonContent( @OA\Property( property="message", type="string", example="Unauthenticated")))
+     * )
+     */
+    public function findBudgetSheetByPersonId(int $id)
+    {
+//        ATENTION->VEHICLE->PERSON
+        $budgetSheets = budgetSheet::whereHas('attention.vehicle.person', function ($query) use ($id) {
+            $query->where('id', $id);
+        })->get();
+        return response()->json($budgetSheets);
     }
 
 }

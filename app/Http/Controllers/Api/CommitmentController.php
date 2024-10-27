@@ -7,6 +7,7 @@ use App\Http\Resources\CommitmentResource;
 use App\Models\Attention;
 use App\Models\budgetSheet;
 use App\Models\Commitment;
+use App\Utils\Constants;
 use Illuminate\Http\Request;
 
 class CommitmentController extends Controller
@@ -87,7 +88,7 @@ class CommitmentController extends Controller
             'balance' => $budgetSheet->total - $request->input('amount'),
             'payment_date' => $request->input('payment_date'),
             'payment_type' => $request->input('payment_type'),
-            'status' => 'Pendiente',
+            'status' => Constants::COMMITMENT_PENDIENTE,
             'budget_sheet_id' => $request->input('budget_sheet_id'),
         ];
 
@@ -175,7 +176,7 @@ class CommitmentController extends Controller
             'balance' => $budgetSheet->total - $request->input('amount'),
             'payment_date' => $request->input('payment_date'),
             'payment_type' => $request->input('payment_type'),
-            'status' => 'Pendiente',
+            'status' => Constants::COMMITMENT_PENDIENTE,
             'budget_sheet_id' => $request->input('budget_sheet_id'),
         ];
 

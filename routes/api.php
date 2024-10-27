@@ -209,6 +209,7 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
             'destroy' => 'budgetSheet.destroy',
         ]);
 
+    Route::get('budgetSheet/findBudgetSheetByPersonId/{id}', [BudgetSheetController::class, 'findBudgetSheetByPersonId']);
     Route::put('budgetSheet/{id}/updateStatusSinBoletear', [BudgetSheetController::class, 'updateStatusSinBoletear']);
 
     Route::get('taskByDetailAttention/{id}', [TaskController::class, 'getTaskByDetailAttention']);

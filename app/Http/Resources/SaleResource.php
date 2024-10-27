@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Client\Request;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
@@ -43,17 +43,18 @@ class SaleResource extends JsonResource
 {
     protected bool $includeBudgetSheet = false;
 
-    public function toArray(Request $request): array
+    public function toArray($request): array
     {
         $data = [
-            'number' => $this->number,
-            'paymentDate' => $this->paymentDate,
+            'number' => 'VENT-' . $this->number,
+            'paymentDate' => $this->paymentDate ? $this->paymentDate->format('Y-m-d') : null,
             'documentType' => $this->documentType,
             'saleType' => $this->saleType,
             'detractionCode' => $this->detractionCode,
             'detractionPercentage' => $this->detractionPercentage,
             'paymentType' => $this->paymentType,
             'status' => $this->status,
+            'total' => $this->total,
             'person_id' => $this->person_id,
             'budget_sheet_id' => $this->budget_sheet_id,
             'created_at' => $this->created_at,
@@ -64,5 +65,11 @@ class SaleResource extends JsonResource
         }
 
         return $data;
+    }
+
+    public function withBudgetSheet(): self
+    {
+        $this->includeBudgetSheet = true;
+        return $this;
     }
 }

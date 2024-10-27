@@ -9,6 +9,8 @@ use App\Models\budgetSheet;
 use App\Models\Commitment;
 use App\Models\ConceptPay;
 use App\Models\Moviment;
+use App\Models\Sale;
+use App\Utils\Constants;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -234,8 +236,26 @@ class AmortizationController extends Controller
 //        UPDATE COMMITMENT
         $commitment->balance -= $total;
         $commitment->amount += $total;
-        $commitment->status = $commitment->balance == 0 ? 'Pagado' : 'Pendiente';
+        $commitment->status = $commitment->balance == 0 ? Constants::COMMITMENT_PAGADO : Constants::COMMITMENT_PENDIENTE;
         $commitment->save();
+
+        $commitments = Commitment::where('budget_sheet_id', $commitment->budgetSheet_id)->get();
+        $anyCommitmentPending = false;
+        foreach ($commitments as $commitment) {
+            if ($commitment->status == Constants::COMMITMENT_PENDIENTE) {
+                $anyCommitmentPending = true;
+                break;
+            }
+        }
+        if (!$anyCommitmentPending) {
+            $budgetSheet = budgetSheet::find($commitment->budget_sheet_id);
+            $budgetSheet->status = $budgetSheet->status == Constants::BUDGET_SHEET_FACTURADO ? Constants::BUDGET_SHEET_FACTURADO : Constants::BUDGET_SHEET_PAGADO;
+            $budgetSheet->save();
+
+            $sale = Sale::where('budget_sheet_id', $budgetSheet->id)->first();
+            $sale->status = Constants::SALE_PAGADO;
+            $sale->save();
+        }
 
         $amortization = Amortization::find($amortization->id);
 

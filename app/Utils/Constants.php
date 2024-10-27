@@ -4,6 +4,19 @@ namespace App\Utils;
 
 class Constants
 {
+    public const SALE_DETRACCION = 'DETRACCION';
+    public const SALE_FACTURADO = 'FACTURADO';
+    public const COMMITMENT_PAGADO = 'PAGADO';
+    public const COMMITMENT_PENDIENTE = 'PENDIENTE';
+    public const COMMITMENT_VENCIDO = 'VENCIDO';
+    public const SALE_PAGADO = 'PAGADO';
+    public const SALE_PENDIENTE = 'PENDIENTE';
+    public const SALE_VENCIDO = 'VENCIDO';
+    public const BUDGET_SHEET_PAGADO = 'PAGADO';
+    public const BUDGET_SHEET_FACTURADO = 'FACTURADO';
+    public const BUDGET_SHEET_PENDIENTE = 'PENDIENTE';
+    public const BUDGET_SHEET_VENCIDO = 'VENCIDO';
+
     public const DEFAULT_PER_PAGE = 5;
     public const NOT_REQUESTED_TEXT = "TODOS";
 

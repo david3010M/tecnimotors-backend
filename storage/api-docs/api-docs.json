@@ -2422,6 +2422,62 @@
                 ]
             }
         },
+        "/tecnimotors-backend/public/api/budgetSheet/findBudgetSheetByPersonId/{id}": {
+            "get": {
+                "tags": [
+                    "BudgetSheet"
+                ],
+                "operationId": "1d914d2104146a4f408376ce2d0e40fd",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Person ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "BudgetSheet updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/BudgetSheet"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/tecnimotors-backend/public/api/cash": {
             "get": {
                 "tags": [
@@ -15377,10 +15433,411 @@
                     }
                 ]
             }
+        },
+        "/tecnimotors-backend/public/api/sale": {
+            "get": {
+                "tags": [
+                    "Sale"
+                ],
+                "summary": "Get all sales",
+                "description": "Get all sales",
+                "operationId": "7af218ccff8f3bd4690f0b5b7ae1e579",
+                "parameters": [
+                    {
+                        "name": "number",
+                        "in": "query",
+                        "description": "Filter by number",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "paymentDate",
+                        "in": "query",
+                        "description": "Filter by paymentDate",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "format": "date"
+                            }
+                        }
+                    },
+                    {
+                        "name": "documentType",
+                        "in": "query",
+                        "description": "Filter by documentType",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "BOLETA",
+                                "FACTURA"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "saleType",
+                        "in": "query",
+                        "description": "Filter by saleType",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "NORMAL",
+                                "DETRACCION"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "detractionCode",
+                        "in": "query",
+                        "description": "Filter by detractionCode",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "detractionPercentage",
+                        "in": "query",
+                        "description": "Filter by detractionPercentage",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "paymentType",
+                        "in": "query",
+                        "description": "Filter by paymentType",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "CONTADO",
+                                "CREDITO"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter by status",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "person_id",
+                        "in": "query",
+                        "description": "Filter by person_id",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "person$documentNumber",
+                        "in": "query",
+                        "description": "Filter by person$documentNumber",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "budget_sheet_id",
+                        "in": "query",
+                        "description": "Filter by budget_sheet_id",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SaleCollection"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Sale"
+                ],
+                "summary": "Create a sale",
+                "description": "Create a sale",
+                "operationId": "bdef45563fb8d5e532c85311e4a4ce2b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreSaleRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SaleSingleResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/sale/{id}": {
+            "get": {
+                "tags": [
+                    "Sale"
+                ],
+                "summary": "Get a sale",
+                "description": "Get a sale",
+                "operationId": "286881c877a927024aac039a81c21016",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Sale ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SaleSingleResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Sale"
+                ],
+                "summary": "Update a sale",
+                "description": "Update a sale",
+                "operationId": "905ba0e9e628de4821726c8e61c9361b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Sale ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateSaleRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SaleSingleResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Sale"
+                ],
+                "summary": "Delete a sale",
+                "description": "Delete a sale",
+                "operationId": "0a456de0c950eae19b937c8d5ca708f5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Sale ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Sale deleted"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
         "schemas": {
+            "PaginationLinks": {
+                "properties": {
+                    "first": {
+                        "type": "string",
+                        "example": "https://develop.garzasoft.com/taeyoung-backend/public/api/path?page=1"
+                    },
+                    "last": {
+                        "type": "string",
+                        "example": "https://develop.garzasoft.com/taeyoung-backend/public/api/path?page=4"
+                    },
+                    "prev": {
+                        "type": "string",
+                        "example": "null"
+                    },
+                    "next": {
+                        "type": "string",
+                        "example": "https://develop.garzasoft.com/taeyoung-backend/public/api/path?page=2"
+                    }
+                },
+                "type": "object"
+            },
+            "PaginationMetaLinks": {
+                "properties": {
+                    "url": {
+                        "type": "string",
+                        "example": "https://develop.garzasoft.com/taeyoung-backend/public/api/path?page=1"
+                    },
+                    "label": {
+                        "type": "string",
+                        "example": "1"
+                    },
+                    "active": {
+                        "type": "boolean",
+                        "example": "true"
+                    }
+                },
+                "type": "object"
+            },
+            "PaginationMeta": {
+                "properties": {
+                    "current_page": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "from": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "last_page": {
+                        "type": "integer",
+                        "example": "4"
+                    },
+                    "links": {
+                        "$ref": "#/components/schemas/PaginationMetaLinks"
+                    },
+                    "path": {
+                        "type": "string",
+                        "example": "https://develop.garzasoft.com/taeyoung-backend/public/api/path"
+                    },
+                    "per_page": {
+                        "type": "integer",
+                        "example": "15"
+                    },
+                    "to": {
+                        "type": "integer",
+                        "example": "15"
+                    },
+                    "total": {
+                        "type": "integer",
+                        "example": "60"
+                    }
+                },
+                "type": "object"
+            },
             "ValidationError": {
                 "properties": {
                     "error": {
@@ -15395,6 +15852,92 @@
                     "error": {
                         "type": "string",
                         "example": "Unauthenticated."
+                    }
+                },
+                "type": "object"
+            },
+            "StoreSaleRequest": {
+                "title": "StoreSaleRequest",
+                "required": [
+                    "paymentDate",
+                    "documentType",
+                    "saleType",
+                    "paymentType",
+                    "person_id",
+                    "budget_sheet_id"
+                ],
+                "properties": {
+                    "paymentDate": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2021-01-01"
+                    },
+                    "documentType": {
+                        "type": "string",
+                        "example": "FACTURA"
+                    },
+                    "saleType": {
+                        "type": "string",
+                        "example": "NORMAL"
+                    },
+                    "detractionCode": {
+                        "type": "string",
+                        "example": "123456"
+                    },
+                    "detractionPercentage": {
+                        "type": "string",
+                        "example": "10.00"
+                    },
+                    "paymentType": {
+                        "type": "string",
+                        "example": "CONTADO"
+                    },
+                    "person_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "budget_sheet_id": {
+                        "type": "integer",
+                        "example": "1"
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateSaleRequest": {
+                "title": "UpdateSaleRequest",
+                "properties": {
+                    "paymentDate": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2021-01-01"
+                    },
+                    "documentType": {
+                        "type": "string",
+                        "example": "FACTURA"
+                    },
+                    "saleType": {
+                        "type": "string",
+                        "example": "NORMAL"
+                    },
+                    "detractionCode": {
+                        "type": "string",
+                        "example": "123456"
+                    },
+                    "detractionPercentage": {
+                        "type": "string",
+                        "example": "10.00"
+                    },
+                    "paymentType": {
+                        "type": "string",
+                        "example": "CONTADO"
+                    },
+                    "person_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "budget_sheet_id": {
+                        "type": "integer",
+                        "example": "1"
                     }
                 },
                 "type": "object"
@@ -15497,6 +16040,89 @@
                     "to": {
                         "type": "integer",
                         "example": "5"
+                    }
+                },
+                "type": "object"
+            },
+            "SaleResource": {
+                "properties": {
+                    "number": {
+                        "type": "string",
+                        "example": "VENT-123456"
+                    },
+                    "paymentDate": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2021-01-01"
+                    },
+                    "documentType": {
+                        "type": "string",
+                        "example": "FACTURA"
+                    },
+                    "saleType": {
+                        "type": "string",
+                        "example": "NORMAL"
+                    },
+                    "detractionCode": {
+                        "type": "string",
+                        "example": "123456"
+                    },
+                    "detractionPercentage": {
+                        "type": "string",
+                        "example": "10.00"
+                    },
+                    "paymentType": {
+                        "type": "string",
+                        "example": "CONTADO"
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "PENDING"
+                    },
+                    "person_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "budget_sheet_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2021-01-01T00:00:00"
+                    }
+                },
+                "type": "object"
+            },
+            "SaleSingleResource": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/SaleResource"
+                    },
+                    {
+                        "properties": {
+                            "budgetSheet": {
+                                "$ref": "#/components/schemas/BudgetSheetSingle"
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "SaleCollection": {
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SaleResource"
+                        }
+                    },
+                    "links": {
+                        "$ref": "#/components/schemas/PaginationLinks"
+                    },
+                    "meta": {
+                        "$ref": "#/components/schemas/PaginationMeta"
                     }
                 },
                 "type": "object"
@@ -18004,6 +18630,10 @@
         {
             "name": "Reporte Excel",
             "description": "Reporte Excel"
+        },
+        {
+            "name": "Sale",
+            "description": "Sale"
         }
     ]
 }
