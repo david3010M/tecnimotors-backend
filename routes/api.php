@@ -199,6 +199,7 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::get('detailAttention/{id}', [DetailAttentionController::class, 'show'])->name('detailAttention.show');
     Route::put('detailAttention/{id}', [DetailAttentionController::class, 'update'])->name('detailAttention.update');
 
+    Route::get('budgetSheet/findBudgetSheetByPersonId', [BudgetSheetController::class, 'findBudgetSheetByPersonId']);
     Route::resource('budgetSheet', BudgetSheetController::class)
         ->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names([
@@ -209,7 +210,6 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
             'destroy' => 'budgetSheet.destroy',
         ]);
 
-    Route::get('budgetSheet/findBudgetSheetByPersonId/{id}', [BudgetSheetController::class, 'findBudgetSheetByPersonId']);
     Route::put('budgetSheet/{id}/updateStatusSinBoletear', [BudgetSheetController::class, 'updateStatusSinBoletear']);
 
     Route::get('taskByDetailAttention/{id}', [TaskController::class, 'getTaskByDetailAttention']);

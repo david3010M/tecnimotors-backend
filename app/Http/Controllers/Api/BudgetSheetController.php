@@ -141,7 +141,16 @@ class BudgetSheetController extends Controller
      */
     public function show(int $id)
     {
-        $budgetSheet = budgetSheet::with(['attention'])->find($id);
+        $budgetSheet = budgetSheet::with([
+            'attention',
+            'attention.details',
+            'attention.details.product.unit',
+            'attention.vehicle.person',
+            'attention.vehicle.vehicleModel.brand',
+            'attention.elements',
+            'attention.routeImages',
+            'attention.worker.person',
+        ])->find($id);
         if (!$budgetSheet) {
             return response()->json(['message' => 'BudgetSheet not found'], 404);
         }
@@ -454,21 +463,28 @@ class BudgetSheetController extends Controller
 
     /**
      * @OA\Get (
-     *     path="/tecnimotors-backend/public/api/budgetSheet/findBudgetSheetByPersonId/{id}",
+     *     path="/tecnimotors-backend/public/api/budgetSheet/findBudgetSheetByPersonId",
      *     tags={"BudgetSheet"},
      *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter( name="id", in="path", required=true, description="Person ID", @OA\Schema(type="integer", example=1)),
+     *     @OA\Parameter( name="search", in="query", required=true, description="Search term", @OA\Schema(type="string")),
      *     @OA\Response( response=200, description="BudgetSheet updated successfully", @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/BudgetSheet"))),
      *     @OA\Response( response=401, description="Unauthorized", @OA\JsonContent( @OA\Property( property="message", type="string", example="Unauthenticated")))
      * )
      */
-    public function findBudgetSheetByPersonId(int $id)
+    public function findBudgetSheetByPersonId(Request $request)
     {
-//        ATENTION->VEHICLE->PERSON
-        $budgetSheets = budgetSheet::whereHas('attention.vehicle.person', function ($query) use ($id) {
-            $query->where('id', $id);
+        $search = $request->query('search');
+
+        $budgetSheets = budgetSheet::where(function ($query) use ($search) {
+            $query->whereHas('attention.vehicle.person', function ($query) use ($search) {
+                $query->where('names', 'like', '%' . $search . '%')
+                    ->orWhere('fatherSurname', 'like', '%' . $search . '%')
+                    ->orWhere('motherSurname', 'like', '%' . $search . '%')
+                    ->orWhere('businessName', 'like', '%' . $search . '%');
+            })->orWhere('number', 'like', '%' . $search . '%');
         })->get();
         return response()->json($budgetSheets);
+
     }
 
 }

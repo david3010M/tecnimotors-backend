@@ -2422,21 +2422,20 @@
                 ]
             }
         },
-        "/tecnimotors-backend/public/api/budgetSheet/findBudgetSheetByPersonId/{id}": {
+        "/tecnimotors-backend/public/api/budgetSheet/findBudgetSheetByPersonId": {
             "get": {
                 "tags": [
                     "BudgetSheet"
                 ],
-                "operationId": "1d914d2104146a4f408376ce2d0e40fd",
+                "operationId": "61504a1a9ec85567ba170ee583761a57",
                 "parameters": [
                     {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Person ID",
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search term",
                         "required": true,
                         "schema": {
-                            "type": "integer",
-                            "example": 1
+                            "type": "string"
                         }
                     }
                 ],
