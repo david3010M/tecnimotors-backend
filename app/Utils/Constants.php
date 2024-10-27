@@ -4,8 +4,17 @@ namespace App\Utils;
 
 class Constants
 {
-    public const IGV = 0.18;
+    public const SALE_CONTADO = 'CONTADO';
+    public const SALE_CREDITO = 'CREDITO';
+    public const SALE_NORMAL = 'NORMAL';
     public const SALE_DETRACCION = 'DETRACCION';
+    public const SALE_FACTURA = 'FACTURA';
+    public const SALE_BOLETA = 'BOLETA';
+    public const SALE_TICKET = 'TICKET';
+    public const SALE_NOTA_CREDITO_BOLETA = 'NOTA_CREDITO_BOLETA';
+    public const SALE_NOTA_CREDITO_FACTURA = 'NOTA_CREDITO_FACTURA';
+
+    public const IGV = 0.18;
     public const SALE_FACTURADO = 'FACTURADO';
     public const COMMITMENT_PAGADO = 'PAGADO';
     public const COMMITMENT_PENDIENTE = 'PENDIENTE';

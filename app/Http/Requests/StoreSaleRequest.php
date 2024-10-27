@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Utils\Constants;
 use Illuminate\Validation\Rule;
 
 /**
@@ -34,11 +35,20 @@ class StoreSaleRequest extends StoreRequest
     {
         return [
             'paymentDate' => 'required|date_format:Y-m-d',
-            'documentType' => 'required|string|in:BOLETA,FACTURA,TICKET',
-            'saleType' => 'required|string|in:NORMAL,DETRACCION',
-            'detractionCode' => 'nullable|required_if:saleType,DETRACCION|string',
-            'detractionPercentage' => 'nullable|required_if:saleType,DETRACCION|string',
-            'paymentType' => 'required|string|in:CONTADO,CREDITO',
+            'documentType' => 'required|string|in:' .
+                Constants::SALE_BOLETA . ',' .
+                Constants::SALE_FACTURA . ',' .
+                Constants::SALE_TICKET . ',' .
+                Constants::SALE_NOTA_CREDITO_BOLETA . ',' .
+                Constants::SALE_NOTA_CREDITO_FACTURA . "'", // BOLETA, FACTURA, TICKET, NOTA_CREDITO_BOLETA, NOTA_CREDITO_FACTURA
+            'saleType' => 'required|string|in:' .
+                Constants::SALE_NORMAL . ',' .
+                Constants::SALE_DETRACCION . "'", // NORMAL, ANTICIPO, DETRACCION
+            'detractionCode' => 'nullable|required_if:saleType,' . Constants::SALE_DETRACCION . '|string',
+            'detractionPercentage' => 'nullable|required_if:saleType,' . Constants::SALE_DETRACCION . '|numeric',
+            'paymentType' => 'required|string|in:' .
+                Constants::SALE_CONTADO . ',' .
+                Constants::SALE_CREDITO . "'", // CONTADO, CREDITO
             'person_id' => 'required|integer|exists:people,id',
             'budget_sheet_id' => [
                 'required',

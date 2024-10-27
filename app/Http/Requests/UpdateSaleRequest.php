@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Utils\Constants;
 use Illuminate\Validation\Rule;
 
 /**
@@ -24,12 +25,21 @@ class UpdateSaleRequest extends UpdateRequest
     {
         return [
             'paymentDate' => 'nullable|date_format:Y-m-d',
-            'documentType' => 'nullable|string|in:BOLETA,FACTURA,TICKET',
-            'saleType' => 'nullable|string|in:NORMAL,DETRACCION',
-            'detractionCode' => 'nullable|string',
-            'detractionPercentage' => 'nullable|string',
-            'paymentType' => 'nullable|string|in:CONTADO,CREDITO',
-            'person_id' => 'nullable|integer|exists:people,id',
+            'documentType' => 'required|string|in:' .
+                Constants::SALE_BOLETA . ',' .
+                Constants::SALE_FACTURA . ',' .
+                Constants::SALE_TICKET . ',' .
+                Constants::SALE_NOTA_CREDITO_BOLETA . ',' .
+                Constants::SALE_NOTA_CREDITO_FACTURA . "'", // BOLETA, FACTURA, TICKET, NOTA_CREDITO_BOLETA, NOTA_CREDITO_FACTURA
+            'saleType' => 'required|string|in:' .
+                Constants::SALE_NORMAL . ',' .
+                Constants::SALE_DETRACCION . "'", // NORMAL, ANTICIPO, DETRACCION
+            'detractionCode' => 'nullable|required_if:saleType,' . Constants::SALE_DETRACCION . '|string',
+            'detractionPercentage' => 'nullable|required_if:saleType,' . Constants::SALE_DETRACCION . '|numeric',
+            'paymentType' => 'required|string|in:' .
+                Constants::SALE_CONTADO . ',' .
+                Constants::SALE_CREDITO . "'", // CONTADO, CREDITO
+            'person_id' => 'required|integer|exists:people,id',
             'budget_sheet_id' => [
                 'required',
                 'integer',
@@ -37,7 +47,15 @@ class UpdateSaleRequest extends UpdateRequest
                 Rule::unique('sales', 'budget_sheet_id')
                     ->whereNull('deleted_at')
                     ->ignore($this->route('sale'))
-            ]
+            ],
+            'saleDetails' => 'required|array',
+            'saleDetails.*.description' => 'required|string',
+            'saleDetails.*.unit' => 'required|string',
+            'saleDetails.*.quantity' => 'required|numeric',
+            'saleDetails.*.unitValue' => 'required|numeric',
+            'saleDetails.*.unitPrice' => 'required|numeric',
+            'saleDetails.*.discount' => 'nullable|numeric',
+            'saleDetails.*.subTotal' => 'required|numeric',
         ];
     }
 }

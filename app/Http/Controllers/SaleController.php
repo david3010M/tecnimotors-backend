@@ -68,7 +68,7 @@ class SaleController extends Controller
         if (!$budgetSheet) return response()->json(['message' => 'Budget sheet not found'], 404);
 
         $data = [
-            'number' => $this->nextCorrelative(Sale::class, 'number'),
+            'number' => $this->nextCorrelativeQuery(Sale::where('documentType', $request->documentType), 'number'),
             'paymentDate' => $request->paymentDate,
             'documentType' => $request->documentType,
             'saleType' => $request->saleType,
@@ -79,6 +79,7 @@ class SaleController extends Controller
             'total' => $budgetSheet->total,
             'person_id' => $request->person_id,
             'budget_sheet_id' => $request->budget_sheet_id,
+            'cash_id' => 1,
         ];
 
         $sale = Sale::create($data);

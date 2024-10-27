@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Utils\Constants;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -49,8 +50,16 @@ class SaleResource extends JsonResource
 
     public function toArray($request): array
     {
+        $documentTypePrefixes = [
+            Constants::SALE_TICKET => 'T',
+            Constants::SALE_BOLETA => 'B',
+            Constants::SALE_FACTURA => 'F',
+            Constants::SALE_NOTA_CREDITO_BOLETA => 'FC',
+            Constants::SALE_NOTA_CREDITO_FACTURA => 'BC',
+        ];
+
         $data = [
-            'number' => 'VENT-' . $this->number,
+            'number' => $documentTypePrefixes[$this->documentType] . $this->cash->series . '-' . $this->number,
             'paymentDate' => $this->paymentDate ? $this->paymentDate->format('Y-m-d') : null,
             'documentType' => $this->documentType,
             'saleType' => $this->saleType,
@@ -63,6 +72,7 @@ class SaleResource extends JsonResource
             'total' => $this->total,
             'person_id' => $this->person_id,
             'budget_sheet_id' => $this->budget_sheet_id,
+            'cash_id' => $this->cash_id,
             'created_at' => $this->created_at,
         ];
 

@@ -25,6 +25,7 @@ class Sale extends Model
         'total',
         'person_id',
         'budget_sheet_id',
+        'cash_id',
         'created_at',
     ];
 
@@ -78,6 +79,11 @@ class Sale extends Model
     public function saleDetails()
     {
         return $this->hasMany(SaleDetail::class);
+    }
+
+    public function cash()
+    {
+        return $this->belongsTo(Cash::class);
     }
 
 

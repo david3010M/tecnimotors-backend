@@ -29,4 +29,9 @@ class Cash extends Model
     {
         return $this->belongsTo(Branch::class);
     }
+
+    public function sales()
+    {
+        return $this->hasMany(Sale::class);
+    }
 }
