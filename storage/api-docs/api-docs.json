@@ -16043,6 +16043,65 @@
                 },
                 "type": "object"
             },
+            "SaleDetailResource": {
+                "properties": {
+                    "description": {
+                        "type": "string",
+                        "example": "Producto 1"
+                    },
+                    "unit": {
+                        "type": "string",
+                        "example": "UNIDAD"
+                    },
+                    "quantity": {
+                        "type": "number",
+                        "example": "10"
+                    },
+                    "unitValue": {
+                        "type": "number",
+                        "example": "10.00"
+                    },
+                    "unitPrice": {
+                        "type": "number",
+                        "example": "10.00"
+                    },
+                    "discount": {
+                        "type": "number",
+                        "example": "0.00"
+                    },
+                    "subTotal": {
+                        "type": "number",
+                        "example": "100.00"
+                    },
+                    "sale_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2021-01-01T00:00:00"
+                    }
+                },
+                "type": "object"
+            },
+            "SaleDetailCollection": {
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SaleDetailResource"
+                        }
+                    },
+                    "links": {
+                        "$ref": "#/components/schemas/PaginationLinks"
+                    },
+                    "meta": {
+                        "$ref": "#/components/schemas/PaginationMeta"
+                    }
+                },
+                "type": "object"
+            },
             "SaleResource": {
                 "properties": {
                     "number": {
@@ -16103,6 +16162,12 @@
                         "properties": {
                             "budgetSheet": {
                                 "$ref": "#/components/schemas/BudgetSheetSingle"
+                            },
+                            "saleDetails": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/SaleDetailResource"
+                                }
                             }
                         },
                         "type": "object"

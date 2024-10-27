@@ -16,6 +16,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *     @OA\Property(property="detractionPercentage", type="string", example="10.00"),
  *     @OA\Property(property="paymentType", type="string", example="CONTADO"),
  *     @OA\Property(property="status", type="string", example="PENDING"),
+ *     @OA\Property(property="taxableOperation", type="number", example="100.00"),
+ *     @OA\Property(property="igv", type="number", example="18.00"),
+ *     @OA\Property(property="total", type="number", example="118.00"),
  *     @OA\Property(property="person_id", type="integer", example="1"),
  *     @OA\Property(property="budget_sheet_id", type="integer", example="1"),
  *     @OA\Property(property="created_at", type="string", format="date-time", example="2021-01-01T00:00:00"),
@@ -26,7 +29,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *     allOf={
  *         @OA\Schema(ref="#/components/schemas/SaleResource"),
  *         @OA\Schema(
- *             @OA\Property(property="budgetSheet", type="object", ref="#/components/schemas/BudgetSheetSingle")
+ *             @OA\Property(property="budgetSheet", type="object", ref="#/components/schemas/BudgetSheetSingle"),
+ *             @OA\Property(property="saleDetails", type="array", @OA\Items(ref="#/components/schemas/SaleDetailResource")),
  *         )
  *     }
  * )
@@ -54,6 +58,8 @@ class SaleResource extends JsonResource
             'detractionPercentage' => $this->detractionPercentage,
             'paymentType' => $this->paymentType,
             'status' => $this->status,
+            'taxableOperation' => $this->taxableOperation,
+            'igv' => $this->igv,
             'total' => $this->total,
             'person_id' => $this->person_id,
             'budget_sheet_id' => $this->budget_sheet_id,
@@ -61,6 +67,7 @@ class SaleResource extends JsonResource
         ];
 
         if ($this->includeBudgetSheet) {
+            $data['saleDetails'] = SaleDetailResource::collection($this->saleDetails);
             $data['budgetSheet'] = $this->budgetSheet;
         }
 

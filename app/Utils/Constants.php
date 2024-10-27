@@ -4,6 +4,7 @@ namespace App\Utils;
 
 class Constants
 {
+    public const IGV = 0.18;
     public const SALE_DETRACCION = 'DETRACCION';
     public const SALE_FACTURADO = 'FACTURADO';
     public const COMMITMENT_PAGADO = 'PAGADO';

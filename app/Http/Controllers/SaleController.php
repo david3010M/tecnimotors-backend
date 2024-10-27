@@ -8,6 +8,7 @@ use App\Models\budgetSheet;
 use App\Models\Sale;
 use App\Http\Requests\StoreSaleRequest;
 use App\Http\Requests\UpdateSaleRequest;
+use App\Models\SaleDetail;
 use App\Utils\Constants;
 
 class SaleController extends Controller
@@ -81,8 +82,32 @@ class SaleController extends Controller
         ];
 
         $sale = Sale::create($data);
-        $sale = Sale::find($sale->id);
+        $taxableOperation = 0;
 
+        foreach ($request->saleDetails as $saleDetail) {
+            SaleDetail::create([
+                'description' => $saleDetail['description'],
+                'unit' => $saleDetail['unit'],
+                'quantity' => $saleDetail['quantity'],
+                'unitValue' => $saleDetail['unitValue'],
+                'unitPrice' => $saleDetail['unitPrice'],
+                'discount' => $saleDetail['discount'] ?? 0,
+                'subTotal' => $saleDetail['subTotal'],
+                'sale_id' => $sale->id,
+            ]);
+            $taxableOperation += $saleDetail['subTotal'];
+        }
+
+        $igv = $taxableOperation * Constants::IGV;
+        $total = $taxableOperation + $igv;
+
+        $sale->update([
+            'taxableOperation' => $taxableOperation,
+            'igv' => $igv,
+            'total' => $total,
+        ]);
+
+        $sale = Sale::find($sale->id);
         $budgetSheet->status = Constants::BUDGET_SHEET_FACTURADO;
         $budgetSheet->save();
         return response()->json(SaleResource::make($sale)->withBudgetSheet());
@@ -106,6 +131,7 @@ class SaleController extends Controller
     {
         $sale = Sale::with(
             [
+                'saleDetails',
                 'person',
                 'budgetSheet.commitments',
                 'budgetSheet.attention',
@@ -160,12 +186,40 @@ class SaleController extends Controller
         ];
 
         $sale->update($data);
-        $sale = Sale::find($sale->id);
+        $taxableOperation = 0;
 
+        foreach ($request->saleDetails as $saleDetail) {
+            if (isset($saleDetail['id'])) {
+                $saleDetailModel = SaleDetail::find($saleDetail['id']);
+                $saleDetailModel->update($saleDetail);
+            } else {
+                SaleDetail::create([
+                    'description' => $saleDetail['description'],
+                    'unit' => $saleDetail['unit'],
+                    'quantity' => $saleDetail['quantity'],
+                    'unitValue' => $saleDetail['unitValue'],
+                    'unitPrice' => $saleDetail['unitPrice'],
+                    'discount' => $saleDetail['discount'] ?? 0,
+                    'subTotal' => $saleDetail['subTotal'],
+                    'sale_id' => $sale->id,
+                ]);
+            }
+            $taxableOperation += $saleDetail['subTotal'];
+        }
+
+        $igv = $taxableOperation * Constants::IGV;
+        $total = $taxableOperation + $igv;
+
+        $sale->update([
+            'taxableOperation' => $taxableOperation,
+            'igv' => $igv,
+            'total' => $total,
+        ]);
+
+        $sale = Sale::find($sale->id);
         $budgetSheet->status = Constants::BUDGET_SHEET_FACTURADO;
         $budgetSheet->save();
-
-        return response()->json(SaleResource::make($sale));
+        return response()->json(SaleResource::make($sale)->withBudgetSheet());
     }
 
     /**

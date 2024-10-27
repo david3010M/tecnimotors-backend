@@ -16,7 +16,16 @@ use Illuminate\Validation\Rule;
  *     @OA\Property(property="detractionPercentage", type="string", example="10.00"),
  *     @OA\Property(property="paymentType", type="string", example="CONTADO"),
  *     @OA\Property(property="person_id", type="integer", example="1"),
- *     @OA\Property(property="budget_sheet_id", type="integer", example="1")
+ *     @OA\Property(property="budget_sheet_id", type="integer", example="1"),
+ *     @OA\Property(property="saleDetails", type="array", @OA\Items(
+ *         @OA\Property(property="description", type="string", example="Producto 1"),
+ *         @OA\Property(property="unit", type="string", example="UNIDAD"),
+ *         @OA\Property(property="quantity", type="number", example="10"),
+ *         @OA\Property(property="unitValue", type="number", example="10.00"),
+ *         @OA\Property(property="unitPrice", type="number", example="10.00"),
+ *         @OA\Property(property="discount", type="number", example="0.00"),
+ *         @OA\Property(property="subTotal", type="number", example="100.00"),
+ *     )),
  * )
  */
 class StoreSaleRequest extends StoreRequest
@@ -37,7 +46,15 @@ class StoreSaleRequest extends StoreRequest
                 'exists:budget_sheets,id',
                 Rule::unique('sales', 'budget_sheet_id')
                     ->whereNull('deleted_at')
-            ]
+            ],
+            'saleDetails' => 'required|array',
+            'saleDetails.*.description' => 'required|string',
+            'saleDetails.*.unit' => 'required|string',
+            'saleDetails.*.quantity' => 'required|numeric',
+            'saleDetails.*.unitValue' => 'required|numeric',
+            'saleDetails.*.unitPrice' => 'required|numeric',
+            'saleDetails.*.discount' => 'nullable|numeric',
+            'saleDetails.*.subTotal' => 'required|numeric',
         ];
     }
 }

@@ -20,6 +20,8 @@ class Sale extends Model
         'detractionPercentage',
         'paymentType',
         'status',
+        'taxableOperation',
+        'igv',
         'total',
         'person_id',
         'budget_sheet_id',
@@ -71,6 +73,11 @@ class Sale extends Model
     public function budgetSheet()
     {
         return $this->belongsTo(BudgetSheet::class);
+    }
+
+    public function saleDetails()
+    {
+        return $this->hasMany(SaleDetail::class);
     }
 
 
