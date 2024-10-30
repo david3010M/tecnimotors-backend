@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\BudgetSheetDetailsResource;
+use App\Http\Resources\BudgetSheetResource;
 use App\Models\Attention;
 use App\Models\budgetSheet;
 use App\Models\Commitment;
@@ -151,6 +153,19 @@ class BudgetSheetController extends Controller
             'attention.routeImages',
             'attention.worker.person',
         ])->find($id);
+
+        if ($budgetSheet && $budgetSheet->attention && $budgetSheet->attention->details) {
+            $budgetSheet->attention->details = $budgetSheet->attention->details->map(function ($detail) {
+                if ($detail->product) {
+                    $detail->product->unitValue = round($detail->product->saleprice / 1.18, 2);
+                }
+                if ($detail->service) {
+                    $detail->service->unitValue = round($detail->service->saleprice / 1.18, 2);
+                }
+                return $detail;
+            });
+        }
+
         if (!$budgetSheet) {
             return response()->json(['message' => 'BudgetSheet not found'], 404);
         }
@@ -482,9 +497,8 @@ class BudgetSheetController extends Controller
                     ->orWhere('motherSurname', 'like', '%' . $search . '%')
                     ->orWhere('businessName', 'like', '%' . $search . '%');
             })->orWhere('number', 'like', '%' . $search . '%');
-        })->get();
-        return response()->json($budgetSheets);
-
+        })->limit(30)->get();
+        return response()->json(BudgetSheetResource::collection($budgetSheets));
     }
 
 }

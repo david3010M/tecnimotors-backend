@@ -15898,6 +15898,42 @@
                     "budget_sheet_id": {
                         "type": "integer",
                         "example": "1"
+                    },
+                    "saleDetails": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "description": {
+                                    "type": "string",
+                                    "example": "Producto 1"
+                                },
+                                "unit": {
+                                    "type": "string",
+                                    "example": "UNIDAD"
+                                },
+                                "quantity": {
+                                    "type": "number",
+                                    "example": "10"
+                                },
+                                "unitValue": {
+                                    "type": "number",
+                                    "example": "10.00"
+                                },
+                                "unitPrice": {
+                                    "type": "number",
+                                    "example": "10.00"
+                                },
+                                "discount": {
+                                    "type": "number",
+                                    "example": "0.00"
+                                },
+                                "subTotal": {
+                                    "type": "number",
+                                    "example": "100.00"
+                                }
+                            },
+                            "type": "object"
+                        }
                     }
                 },
                 "type": "object"
@@ -16136,6 +16172,18 @@
                     "status": {
                         "type": "string",
                         "example": "PENDING"
+                    },
+                    "taxableOperation": {
+                        "type": "number",
+                        "example": "100.00"
+                    },
+                    "igv": {
+                        "type": "number",
+                        "example": "18.00"
+                    },
+                    "total": {
+                        "type": "number",
+                        "example": "118.00"
                     },
                     "person_id": {
                         "type": "integer",
