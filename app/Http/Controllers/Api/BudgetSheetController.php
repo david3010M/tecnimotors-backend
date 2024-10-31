@@ -157,10 +157,10 @@ class BudgetSheetController extends Controller
         if ($budgetSheet && $budgetSheet->attention && $budgetSheet->attention->details) {
             $budgetSheet->attention->details = $budgetSheet->attention->details->map(function ($detail) {
                 if ($detail->product) {
-                    $detail->product->unitValue = round($detail->product->saleprice / 1.18, 2);
+                    $detail->product->unitValue = round($detail->product->sale_price / 1.18, 2);
                 }
                 if ($detail->service) {
-                    $detail->service->unitValue = round($detail->service->sale_price / 1.18, 2);
+                    $detail->service->unitValue = round($detail->service->saleprice / 1.18, 2);
                 }
                 return $detail;
             });
