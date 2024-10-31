@@ -26,6 +26,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *     @OA\Property(property="card", type="number", example="10.00"),
  *     @OA\Property(property="plin", type="number", example="10.00"),
  *     @OA\Property(property="isBankPayment", type="boolean", example="false"),
+ *     @OA\Property(property="bank_id", type="integer", example="1"),
+ *     @OA\Property(property="bank", type="string", example="BCP"),
  *     @OA\Property(property="numberVoucher", type="string", example="123456"),
  *     @OA\Property(property="routeVoucher", type="string", example="http://example.com"),
  *     @OA\Property(property="comment", type="string", example="comment"),
