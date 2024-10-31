@@ -72,6 +72,13 @@ class SaleController extends Controller
         $budgetSheet = budgetSheet::find($request->budget_sheet_id);
         if (!$budgetSheet) return response()->json(['message' => 'Budget sheet not found'], 404);
 
+        $subtotal = 0;
+        foreach ($request->saleDetails as $saleDetail) {
+            $subtotal += $saleDetail['subTotal'];
+        }
+        $igv = $subtotal * Constants::IGV;
+        $total = $subtotal + $igv;
+
         $data = [
             'number' => $this->nextCorrelativeQuery(Sale::where('documentType', $request->documentType), 'number'),
             'paymentDate' => $request->input('paymentDate'),
@@ -81,7 +88,7 @@ class SaleController extends Controller
             'detractionPercentage' => $request->input('saleType') === Constants::SALE_DETRACCION ? $request->input('detractionPercentage') : '',
             'paymentType' => $request->input('paymentType'),
             'status' => Constants::SALE_PENDIENTE,
-            'total' => $budgetSheet->total,
+            'total' => $total,
             'person_id' => $request->input('person_id'),
             'budget_sheet_id' => $request->input('budget_sheet_id'),
             'cash_id' => 1,
@@ -119,7 +126,7 @@ class SaleController extends Controller
             }
 
 //        PAYMENT METHODS
-            $efectivo = $request->input('cash') ?? 0;
+            $efectivo = $request->input('effective') ?? 0;
             $yape = $request->input('yape') ?? 0;
             $plin = $request->input('plin') ?? 0;
             $tarjeta = $request->input('card') ?? 0;
@@ -134,9 +141,10 @@ class SaleController extends Controller
                 ], 422);
             }
 
-            if ($sale->total != $total) {
+            if (round($sale->total - $total, 2) != 0) {
                 return response()->json([
-                    "error" => "El monto a pagar no coincide con el total " . number_format($sale->total, 2),
+                    "error" => "El monto a pagar no coincide con el total " . number_format($sale->total, 2) .
+                        " diferencia " . number_format($sale->total - $total, 2),
                 ], 422);
             }
 
@@ -164,7 +172,7 @@ class SaleController extends Controller
             $bank_id = null;
             $depositAmount = 0;
 
-            $moviment = Moviment::create([
+            $movement = Moviment::create([
                 'sequentialNumber' => $tipo . '-' . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT),
                 'paymentDate' => now(),
                 'total' => $commitment->price,
@@ -185,6 +193,18 @@ class SaleController extends Controller
                 'sale_id' => $sale->id,
             ]);
 
+            $sale->update([
+                'yape' => $yape,
+                'deposit' => $depositAmount,
+                'effective' => $efectivo,
+                'card' => $tarjeta,
+                'plin' => $plin,
+                'isBankPayment' => $request->input('isBankPayment'),
+                'numberVoucher' => $numberVoucher,
+                'routeVoucher' => $routeVoucher,
+                'comment' => $request->input('comment'),
+            ]);
+
 //            AMORTIZATION CREATION
             $tipo = 'AMRT';
             $tipo = str_pad($tipo, 4, '0', STR_PAD_RIGHT);
@@ -196,7 +216,7 @@ class SaleController extends Controller
                 'amount' => $commitment->price,
                 'status' => Constants::AMORTIZATION_PAID,
                 'paymentDate' => now(),
-                'moviment_id' => $moviment->id,
+                'moviment_id' => $movement->id,
                 'commitment_id' => $commitment->id,
             ]);
 

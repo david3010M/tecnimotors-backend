@@ -59,7 +59,7 @@ class StoreSaleRequest extends StoreRequest
             ],
             'yape' => 'nullable|numeric',
             'deposit' => 'nullable|numeric',
-            'cash' => 'nullable|numeric',
+            'effective' => 'nullable|numeric',
             'card' => 'nullable|numeric',
             'plin' => 'nullable|numeric',
             'isBankPayment' => 'required|in:0,1',
