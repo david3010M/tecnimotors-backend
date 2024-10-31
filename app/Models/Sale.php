@@ -29,6 +29,7 @@ class Sale extends Model
         'card',
         'plin',
         'isBankPayment',
+        'bank_id',
         'numberVoucher',
         'routeVoucher',
         'comment',

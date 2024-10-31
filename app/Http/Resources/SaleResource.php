@@ -88,6 +88,8 @@ class SaleResource extends JsonResource
             'card' => $this->card,
             'plin' => $this->plin,
             'isBankPayment' => $this->isBankPayment,
+            'bank' => $this->bank?->name,
+            'bank_id' => $this->bank_id,
             'numberVoucher' => $this->numberVoucher,
             'routeVoucher' => $this->routeVoucher,
             'comment' => $this->comment,

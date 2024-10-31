@@ -23,22 +23,22 @@ class UpdateSaleRequest extends UpdateRequest
 {
     public function rules()
     {
-        return [
-            'paymentDate' => 'nullable|date_format:Y-m-d',
-            'documentType' => 'required|string|in:' .
+        $data = [
+            'paymentDate' => 'required|date_format:Y-m-d',
+            'documentType' => 'required|in:' .
                 Constants::SALE_BOLETA . ',' .
                 Constants::SALE_FACTURA . ',' .
                 Constants::SALE_TICKET . ',' .
                 Constants::SALE_NOTA_CREDITO_BOLETA . ',' .
-                Constants::SALE_NOTA_CREDITO_FACTURA, // BOLETA, FACTURA, TICKET, NOTA_CREDITO_BOLETA, NOTA_CREDITO_FACTURA
+                Constants::SALE_NOTA_CREDITO_FACTURA,
             'saleType' => 'required|string|in:' .
                 Constants::SALE_NORMAL . ',' .
-                Constants::SALE_DETRACCION, // NORMAL, ANTICIPO, DETRACCION
+                Constants::SALE_DETRACCION,
             'detractionCode' => 'nullable|required_if:saleType,' . Constants::SALE_DETRACCION . '|string',
             'detractionPercentage' => 'nullable|required_if:saleType,' . Constants::SALE_DETRACCION . '|numeric',
             'paymentType' => 'required|string|in:' .
                 Constants::SALE_CONTADO . ',' .
-                Constants::SALE_CREDITO, // CONTADO, CREDITO
+                Constants::SALE_CREDITO,
             'person_id' => 'required|integer|exists:people,id',
             'budget_sheet_id' => [
                 'required',
@@ -46,8 +46,17 @@ class UpdateSaleRequest extends UpdateRequest
                 'exists:budget_sheets,id',
                 Rule::unique('sales', 'budget_sheet_id')
                     ->whereNull('deleted_at')
-                    ->ignore($this->route('sale'))
+                    ->ignore($this->sale), // Ignorar el ID actual al actualizar
             ],
+            'yape' => 'nullable|numeric',
+            'deposit' => 'nullable|numeric',
+            'effective' => 'nullable|numeric',
+            'card' => 'nullable|numeric',
+            'plin' => 'nullable|numeric',
+            'isBankPayment' => 'required|in:0,1',
+            'bank_id' => 'required_if:isBankPayment,1|integer|exists:banks,id',
+            'routeVoucher' => 'nullable|file',
+            'comment' => 'nullable|string',
             'saleDetails' => 'required|array',
             'saleDetails.*.description' => 'required|string',
             'saleDetails.*.unit' => 'required|string',
@@ -56,6 +65,11 @@ class UpdateSaleRequest extends UpdateRequest
             'saleDetails.*.unitPrice' => 'required|numeric',
             'saleDetails.*.discount' => 'nullable|numeric',
             'saleDetails.*.subTotal' => 'required|numeric',
+            'commitments' => 'required_if:paymentType,' . Constants::SALE_CREDITO . '|array',
+            'commitments.*.price' => 'required|numeric',
+            'commitments.*.paymentDate' => 'required|int',
         ];
+
+        return $data;
     }
 }
