@@ -20,8 +20,18 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *     @OA\Property(property="taxableOperation", type="number", example="100.00"),
  *     @OA\Property(property="igv", type="number", example="18.00"),
  *     @OA\Property(property="total", type="number", example="118.00"),
+ *     @OA\Property(property="yape", type="number", example="10.00"),
+ *     @OA\Property(property="deposit", type="number", example="10.00"),
+ *     @OA\Property(property="effective", type="number", example="10.00"),
+ *     @OA\Property(property="card", type="number", example="10.00"),
+ *     @OA\Property(property="plin", type="number", example="10.00"),
+ *     @OA\Property(property="isBankPayment", type="boolean", example="false"),
+ *     @OA\Property(property="numberVoucher", type="string", example="123456"),
+ *     @OA\Property(property="routeVoucher", type="string", example="http://example.com"),
+ *     @OA\Property(property="comment", type="string", example="comment"),
  *     @OA\Property(property="person_id", type="integer", example="1"),
  *     @OA\Property(property="budget_sheet_id", type="integer", example="1"),
+ *     @OA\Property(property="cash_id", type="integer", example="1"),
  *     @OA\Property(property="created_at", type="string", format="date-time", example="2021-01-01T00:00:00"),
  * )
  *
@@ -32,6 +42,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *         @OA\Schema(
  *             @OA\Property(property="budgetSheet", type="object", ref="#/components/schemas/BudgetSheetSingle"),
  *             @OA\Property(property="saleDetails", type="array", @OA\Items(ref="#/components/schemas/SaleDetailResource")),
+ *             @OA\Property(property="commitments", type="array", @OA\Items(ref="#/components/schemas/CommitmentResource")),
+ *             @OA\Property(property="cash", type="object", ref="#/components/schemas/Cash"),
  *         )
  *     }
  * )
@@ -41,7 +53,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *     schema="SaleCollection",
  *     @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/SaleResource")),
  *     @OA\Property(property="links", type="object", ref="#/components/schemas/PaginationLinks"),
- *     @OA\Property(property="meta", type="object", ref="#/components/schemas/PaginationMeta")
+ *     @OA\Property(property="meta", type="object", ref="#/components/schemas/PaginationMeta"),
  * )
  */
 class SaleResource extends JsonResource

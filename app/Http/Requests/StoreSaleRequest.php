@@ -11,21 +11,33 @@ use Illuminate\Validation\Rule;
  *     title="StoreSaleRequest",
  *     required={"paymentDate", "documentType", "saleType", "paymentType", "person_id", "budget_sheet_id"},
  *     @OA\Property(property="paymentDate", type="string", format="date", example="2021-01-01"),
- *     @OA\Property(property="documentType", type="string", example="FACTURA"),
- *     @OA\Property(property="saleType", type="string", example="NORMAL"),
+ *     @OA\Property(property="documentType", type="string", example="FACTURA", enum={"BOLETA", "FACTURA", "TICKET", "NOTA_CREDITO_BOLETA", "NOTA_CREDITO_FACTURA"}),
+ *     @OA\Property(property="saleType", type="string", example="NORMAL", enum={"NORMAL", "DETRACCION"}),
  *     @OA\Property(property="detractionCode", type="string", example="123456"),
  *     @OA\Property(property="detractionPercentage", type="string", example="10.00"),
- *     @OA\Property(property="paymentType", type="string", example="CONTADO"),
+ *     @OA\Property(property="paymentType", type="string", example="CONTADO", enum={"CONTADO", "CREDITO"}),
  *     @OA\Property(property="person_id", type="integer", example="1"),
  *     @OA\Property(property="budget_sheet_id", type="integer", example="1"),
- *     @OA\Property(property="saleDetails", type="array", @OA\Items(
+ *     @OA\Property(property="yape", type="number", example="10.00"),
+ *     @OA\Property(property="deposit", type="number", example="10.00"),
+ *     @OA\Property(property="effective", type="number", example="10.00"),
+ *     @OA\Property(property="card", type="number", example="10.00"),
+ *     @OA\Property(property="plin", type="number", example="10.00"),
+ *     @OA\Property(property="isBankPayment", type="number", example="0", enum={0, 1}),
+ *     @OA\Property(property="routeVoucher", type="file", format="binary"),
+ *     @OA\Property(property="comment", type="string", example="comment"),
+ *     @OA\Property(property="saleDetails[]", type="array", @OA\Items(
  *         @OA\Property(property="description", type="string", example="Producto 1"),
  *         @OA\Property(property="unit", type="string", example="UNIDAD"),
  *         @OA\Property(property="quantity", type="number", example="10"),
- *         @OA\Property(property="unitValue", type="number", example="10.00"),
- *         @OA\Property(property="unitPrice", type="number", example="10.00"),
- *         @OA\Property(property="discount", type="number", example="0.00"),
- *         @OA\Property(property="subTotal", type="number", example="100.00"),
+ *         @OA\Property(property="unitValue", type="number", example="100"),
+ *         @OA\Property(property="unitPrice", type="number", example="118"),
+ *         @OA\Property(property="discount", type="number", example="0"),
+ *         @OA\Property(property="subTotal", type="number", example="100"),
+ *     )),
+ *     @OA\Property(property="commitments[]", type="array", @OA\Items(
+ *         @OA\Property(property="price", type="number", example="100.00"),
+ *         @OA\Property(property="paymentDate", type="integer", example="1"),
  *     )),
  * )
  */
@@ -63,8 +75,7 @@ class StoreSaleRequest extends StoreRequest
             'card' => 'nullable|numeric',
             'plin' => 'nullable|numeric',
             'isBankPayment' => 'required|in:0,1',
-            'numberVoucher' => 'nullable|string',
-            'routeVoucher' => 'nullable|string',
+            'routeVoucher' => 'nullable|file',
             'comment' => 'nullable|string',
             'saleDetails' => 'required|array',
             'saleDetails.*.description' => 'required|string',
@@ -78,7 +89,6 @@ class StoreSaleRequest extends StoreRequest
             'commitments.*.price' => 'required|numeric',
             'commitments.*.paymentDate' => 'required|int',
         ];
-        logger($data);
         return $data;
     }
 }

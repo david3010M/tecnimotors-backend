@@ -15,6 +15,8 @@ use App\Models\SaleDetail;
 use App\Utils\Constants;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class SaleController extends Controller
 {
@@ -61,7 +63,12 @@ class SaleController extends Controller
      *     summary="Create a sale",
      *     description="Create a sale",
      *     security={{"bearerAuth": {}}},
-     *     @OA\RequestBody( required=true, @OA\JsonContent(ref="#/components/schemas/StoreSaleRequest")),
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(ref="#/components/schemas/StoreSaleRequest")
+     *         )
+     *     ),
      *     @OA\Response(response="200", description="Success", @OA\JsonContent(ref="#/components/schemas/SaleSingleResource")),
      *     @OA\Response(response="401", description="Unauthenticated"),
      *     @OA\Response(response="422", description="Unprocessable Entity")
@@ -192,6 +199,22 @@ class SaleController extends Controller
                 'user_id' => auth()->id(),
                 'sale_id' => $sale->id,
             ]);
+
+            $image = $request->file('routeVoucher');
+
+            //        IF IMAGE
+            if ($image) {
+                Log::info('Imagen recibida: ' . $image->getClientOriginalName());
+                $file = $image;
+                $currentTime = now();
+                $filename = $currentTime->format('YmdHis') . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('public/photosVouchers', $filename);
+                Log::info('Imagen almacenada en: ' . $path);
+                $rutaImagen = Storage::url($path);
+                $movement->routeVoucher = $rutaImagen;
+                $movement->save();
+                Log::info('Imagen guardada en la base de datos con ruta: ' . $rutaImagen);
+            }
 
             $sale->update([
                 'yape' => $yape,

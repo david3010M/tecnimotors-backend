@@ -15579,9 +15579,8 @@
                 "description": "Create a sale",
                 "operationId": "bdef45563fb8d5e532c85311e4a4ce2b",
                 "requestBody": {
-                    "required": true,
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
                                 "$ref": "#/components/schemas/StoreSaleRequest"
                             }
@@ -15873,10 +15872,21 @@
                     },
                     "documentType": {
                         "type": "string",
+                        "enum": [
+                            "BOLETA",
+                            "FACTURA",
+                            "TICKET",
+                            "NOTA_CREDITO_BOLETA",
+                            "NOTA_CREDITO_FACTURA"
+                        ],
                         "example": "FACTURA"
                     },
                     "saleType": {
                         "type": "string",
+                        "enum": [
+                            "NORMAL",
+                            "DETRACCION"
+                        ],
                         "example": "NORMAL"
                     },
                     "detractionCode": {
@@ -15889,6 +15899,10 @@
                     },
                     "paymentType": {
                         "type": "string",
+                        "enum": [
+                            "CONTADO",
+                            "CREDITO"
+                        ],
                         "example": "CONTADO"
                     },
                     "person_id": {
@@ -15899,7 +15913,43 @@
                         "type": "integer",
                         "example": "1"
                     },
-                    "saleDetails": {
+                    "yape": {
+                        "type": "number",
+                        "example": "10.00"
+                    },
+                    "deposit": {
+                        "type": "number",
+                        "example": "10.00"
+                    },
+                    "effective": {
+                        "type": "number",
+                        "example": "10.00"
+                    },
+                    "card": {
+                        "type": "number",
+                        "example": "10.00"
+                    },
+                    "plin": {
+                        "type": "number",
+                        "example": "10.00"
+                    },
+                    "isBankPayment": {
+                        "type": "number",
+                        "enum": [
+                            0,
+                            1
+                        ],
+                        "example": "0"
+                    },
+                    "routeVoucher": {
+                        "type": "file",
+                        "format": "binary"
+                    },
+                    "comment": {
+                        "type": "string",
+                        "example": "comment"
+                    },
+                    "saleDetails[]": {
                         "type": "array",
                         "items": {
                             "properties": {
@@ -15917,19 +15967,35 @@
                                 },
                                 "unitValue": {
                                     "type": "number",
-                                    "example": "10.00"
+                                    "example": "100"
                                 },
                                 "unitPrice": {
                                     "type": "number",
-                                    "example": "10.00"
+                                    "example": "118"
                                 },
                                 "discount": {
                                     "type": "number",
-                                    "example": "0.00"
+                                    "example": "0"
                                 },
                                 "subTotal": {
                                     "type": "number",
+                                    "example": "100"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "commitments[]": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "price": {
+                                    "type": "number",
                                     "example": "100.00"
+                                },
+                                "paymentDate": {
+                                    "type": "integer",
+                                    "example": "1"
                                 }
                             },
                             "type": "object"
@@ -16024,7 +16090,7 @@
                         "type": "string",
                         "example": "Pendiente"
                     },
-                    "budget_sheet_id": {
+                    "sale_id": {
                         "type": "integer",
                         "example": "1"
                     },
@@ -16185,11 +16251,51 @@
                         "type": "number",
                         "example": "118.00"
                     },
+                    "yape": {
+                        "type": "number",
+                        "example": "10.00"
+                    },
+                    "deposit": {
+                        "type": "number",
+                        "example": "10.00"
+                    },
+                    "effective": {
+                        "type": "number",
+                        "example": "10.00"
+                    },
+                    "card": {
+                        "type": "number",
+                        "example": "10.00"
+                    },
+                    "plin": {
+                        "type": "number",
+                        "example": "10.00"
+                    },
+                    "isBankPayment": {
+                        "type": "boolean",
+                        "example": "false"
+                    },
+                    "numberVoucher": {
+                        "type": "string",
+                        "example": "123456"
+                    },
+                    "routeVoucher": {
+                        "type": "string",
+                        "example": "http://example.com"
+                    },
+                    "comment": {
+                        "type": "string",
+                        "example": "comment"
+                    },
                     "person_id": {
                         "type": "integer",
                         "example": "1"
                     },
                     "budget_sheet_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "cash_id": {
                         "type": "integer",
                         "example": "1"
                     },
@@ -16216,6 +16322,15 @@
                                 "items": {
                                     "$ref": "#/components/schemas/SaleDetailResource"
                                 }
+                            },
+                            "commitments": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/CommitmentResource"
+                                }
+                            },
+                            "cash": {
+                                "$ref": "#/components/schemas/Cash"
                             }
                         },
                         "type": "object"
@@ -16672,7 +16787,7 @@
                         "type": "string",
                         "example": "Semanal"
                     },
-                    "budget_sheet_id": {
+                    "sale_id": {
                         "type": "integer",
                         "example": "1"
                     }
@@ -16710,7 +16825,7 @@
                         "type": "string",
                         "example": "Pendiente"
                     },
-                    "budget_sheet_id": {
+                    "sale_id": {
                         "type": "integer",
                         "example": "1"
                     },
