@@ -24,6 +24,7 @@ use Illuminate\Validation\Rule;
  *     @OA\Property(property="card", type="number", example="10.00"),
  *     @OA\Property(property="plin", type="number", example="10.00"),
  *     @OA\Property(property="isBankPayment", type="number", example="0", enum={0, 1}),
+ *     @OA\Property(property="bank_id", type="integer", example="1"),
  *     @OA\Property(property="routeVoucher", type="file", format="binary"),
  *     @OA\Property(property="comment", type="string", example="comment"),
  *     @OA\Property(property="saleDetails[]", type="array", @OA\Items(
