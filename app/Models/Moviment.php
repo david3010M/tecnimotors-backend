@@ -149,6 +149,7 @@ class Moviment extends Model
         'card',
         'plin',
 
+        'nro_operation',
         'typeDocument',
         'isBankPayment',
         'numberVoucher',

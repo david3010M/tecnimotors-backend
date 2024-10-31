@@ -76,6 +76,7 @@ class StoreSaleRequest extends StoreRequest
             'card' => 'nullable|numeric',
             'plin' => 'nullable|numeric',
             'isBankPayment' => 'required|in:0,1',
+            'nro_operation' => 'nullable|string',
             'bank_id' => 'required_if:isBankPayment,1|integer|exists:banks,id',
             'routeVoucher' => 'nullable|file',
             'comment' => 'nullable|string',

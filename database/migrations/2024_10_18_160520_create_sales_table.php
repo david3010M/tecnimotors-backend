@@ -28,6 +28,7 @@ return new class extends Migration {
             $table->decimal('total', 10)->nullable();
             $table->decimal('yape', 10)->nullable();
             $table->decimal('deposit', 10)->nullable();
+            $table->string('nro_operation')->nullable();
             $table->decimal('effective', 10)->nullable();
             $table->decimal('card', 10)->nullable();
             $table->decimal('plin', 10)->nullable();

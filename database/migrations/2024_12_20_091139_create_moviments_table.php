@@ -25,6 +25,7 @@ return new class extends Migration {
 
             $table->string('typeDocument')->nullable();
             $table->boolean('isBankPayment')->nullable()->default(false);
+            $table->string('nro_operation')->nullable();
             $table->string('numberVoucher')->nullable();
             $table->string('routeVoucher')->nullable();
             $table->string('comment')->nullable();

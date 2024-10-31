@@ -77,7 +77,6 @@ class SaleController extends Controller
     public function store(StoreSaleRequest $request)
     {
         $budgetSheet = budgetSheet::find($request->budget_sheet_id);
-        if (!$budgetSheet) return response()->json(['message' => 'Budget sheet not found'], 404);
 
         $subtotal = 0;
         foreach ($request->saleDetails as $saleDetail) {
@@ -220,6 +219,7 @@ class SaleController extends Controller
             $sale->update([
                 'yape' => $yape,
                 'deposit' => $depositAmount,
+                'nro_operation' => $request->input('nro_operation'),
                 'effective' => $efectivo,
                 'card' => $tarjeta,
                 'plin' => $plin,

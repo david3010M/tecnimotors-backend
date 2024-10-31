@@ -25,6 +25,7 @@ class Sale extends Model
         'total',
         'yape',
         'deposit',
+        'nro_operation',
         'effective',
         'card',
         'plin',

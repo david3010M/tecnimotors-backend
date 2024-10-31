@@ -460,7 +460,8 @@ class BudgetSheetController extends Controller
                     ->orWhere('fatherSurname', 'like', '%' . $search . '%')
                     ->orWhere('motherSurname', 'like', '%' . $search . '%')
                     ->orWhere('businessName', 'like', '%' . $search . '%');
-            })->orWhere('number', 'like', '%' . $search . '%');
+            })->orWhere('number', 'like', '%' . $search . '%')
+                ->where('status', '!=', 'Pagado sin boletear');
         })->limit(30)->get();
         return response()->json(BudgetSheetResource::collection($budgetSheets));
     }
