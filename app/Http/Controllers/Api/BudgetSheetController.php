@@ -160,7 +160,7 @@ class BudgetSheetController extends Controller
                     $detail->product->unitValue = round($detail->product->saleprice / 1.18, 2);
                 }
                 if ($detail->service) {
-                    $detail->service->unitValue = round($detail->service->saleprice / 1.18, 2);
+                    $detail->service->unitValue = round($detail->service->sale_price / 1.18, 2);
                 }
                 return $detail;
             });
