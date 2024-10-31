@@ -38,22 +38,22 @@ class DetailAttentionSeeder extends Seeder
 //            $this->model::create($data);
 //        }
 
-        $attentions = Attention::all();
+//         $attentions = Attention::all();
 
-        foreach ($attentions as $attention) {
-            DetailAttention::factory()->count(3)->create([
-                'attention_id' => $attention->id,
-            ]);
+//         foreach ($attentions as $attention) {
+//             DetailAttention::factory()->count(3)->create([
+//                 'attention_id' => $attention->id,
+//             ]);
 
-//            UPDATE totalService, totalProducts AND total
-            $totalService = $attention->details->where('type', 'Service')->sum('saleprice');
-            $totalProducts = $attention->details->where('type', 'Product')->sum('saleprice');
-            $attention->totalService = $totalService;
-            $attention->totalProducts = $totalProducts;
-            $attention->total = $totalService + $totalProducts;
-            $attention->debtAmount = $attention->total * 0.5;
-            $attention->save();
-        }
+// //            UPDATE totalService, totalProducts AND total
+//             $totalService = $attention->details->where('type', 'Service')->sum('saleprice');
+//             $totalProducts = $attention->details->where('type', 'Product')->sum('saleprice');
+//             $attention->totalService = $totalService;
+//             $attention->totalProducts = $totalProducts;
+//             $attention->total = $totalService + $totalProducts;
+//             $attention->debtAmount = $attention->total * 0.5;
+//             $attention->save();
+//         }
 
 
     }

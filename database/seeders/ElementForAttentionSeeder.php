@@ -18,17 +18,17 @@ class ElementForAttentionSeeder extends Seeder
     public function run()
     {
         
-        $array = [
-            ['element_id' => 1, 'attention_id' => 1],
-            ['element_id' => 2, 'attention_id' => 1],
-            ['element_id' => 3, 'attention_id' => 1],
-            ['element_id' => 4, 'attention_id' => 1],
+        // $array = [
+        //     ['element_id' => 1, 'attention_id' => 1],
+        //     ['element_id' => 2, 'attention_id' => 1],
+        //     ['element_id' => 3, 'attention_id' => 1],
+        //     ['element_id' => 4, 'attention_id' => 1],
 
-        ];
+        // ];
 
-        foreach ($array as $item) {
-            $this->model::create($item);
-        }
+        // foreach ($array as $item) {
+        //     $this->model::create($item);
+        // }
 
 
     }

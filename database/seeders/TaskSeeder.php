@@ -58,8 +58,8 @@ class TaskSeeder extends Seeder
             ]
         ];
 
-        foreach ($array as $data) {
-            Task::create($data);
-        }
+        // foreach ($array as $data) {
+        //     Task::create($data);
+        // }
     }
 }

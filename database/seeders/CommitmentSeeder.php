@@ -16,22 +16,22 @@ class CommitmentSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
-    {
-        $sales = Sale::all();
-        $sales->each(function ($sale) {
-            $quota = $sale->total / 2;
-            for ($i = 1; $i <= 2; $i++) {
-                Commitment::factory()->create([
-                    'numberQuota' => $i,
-                    'price' => $quota,
-                    'balance' => $quota,
-                    'payment_type' => 'Credito',
-                    'payment_date' => Carbon::parse($sale->budgetSheet->attention->arrivalDate)->addDays(7 * $i),
-                    'sale_id' => $sale->id
-                ]);
-            }
-        });
+    // public function run()
+    // {
+    //     $sales = Sale::all();
+    //     $sales->each(function ($sale) {
+    //         $quota = $sale->total / 2;
+    //         for ($i = 1; $i <= 2; $i++) {
+    //             Commitment::factory()->create([
+    //                 'numberQuota' => $i,
+    //                 'price' => $quota,
+    //                 'balance' => $quota,
+    //                 'payment_type' => 'Credito',
+    //                 'payment_date' => Carbon::parse($sale->budgetSheet->attention->arrivalDate)->addDays(7 * $i),
+    //                 'sale_id' => $sale->id
+    //             ]);
+    //         }
+    //     });
 
-    }
+    // }
 }

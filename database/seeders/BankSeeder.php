@@ -17,6 +17,7 @@ class BankSeeder extends Seeder
     public function run()
     {
         $array = [
+            ['name' => 'Banco de la Nación'],
             ['name' => 'Banco de Crédito del Perú (BCP)'],
             ['name' => 'Interbank'],
             ['name' => 'Scotiabank Perú'],
@@ -29,6 +30,7 @@ class BankSeeder extends Seeder
             ['name' => 'Caja Sullana'],
             ['name' => 'Caja Piura'],
             ['name' => 'Caja Trujillo'],
+           
         ];
 
         foreach ($array as $item) {

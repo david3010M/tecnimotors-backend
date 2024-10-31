@@ -44,7 +44,7 @@ class DatabaseSeeder extends Seeder
 
             ['id' => '7', 'typeofDocument' => 'DNI', 'documentNumber' => '45678901', 'names' => 'Ana',
                 'fatherSurname' => 'Díaz', 'motherSurname' => 'Torres', 'address' => '321 Oak St',
-                'phone' => '876543210', 'email' => 'anadiaz@example.com', 'origin' => 'Chiclayo', 'ocupation' => 'Asesora'],
+                'phone' => '876543210', 'email' => 'anadiaz@example.com', 'origin' => 'Chiclayo', 'ocupation' => 'Asesor'],
 
             ['id' => '8', 'typeofDocument' => 'DNI', 'documentNumber' => '56789022', 'names' => 'Miguel',
                 'fatherSurname' => 'Morales', 'motherSurname' => 'Rojas', 'address' => '123 Main St',
@@ -98,7 +98,6 @@ class DatabaseSeeder extends Seeder
         $this->call(BranchSeeder::class);
         $this->call(CashSeeder::class);
         $this->call(SaleSeeder::class);
-
 
     }
 }

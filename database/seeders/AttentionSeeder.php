@@ -14,8 +14,8 @@ class AttentionSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
-    {
-        Attention::factory()->count(10)->create();
-    }
+    // public function run()
+    // {
+    //     Attention::factory()->count(10)->create();
+    // }
 }

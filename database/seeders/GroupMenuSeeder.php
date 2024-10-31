@@ -18,7 +18,7 @@ class GroupMenuSeeder extends Seeder
             ['id' => '1', 'name' => 'Principal', 'icon' => 'HomeIcon'],
             ['id' => '2', 'name' => 'Servicios', 'icon' => 'BuildIcon'],
             ['id' => '3', 'name' => 'Trabajador', 'icon' => 'UserIcon'],
-            ['id' => '4', 'name' => 'Caja', 'icon' => 'VanIcon'],
+            ['id' => '4', 'name' => 'Facturación', 'icon' => 'VanIcon'],
             ['id' => '5', 'name' => 'Administración', 'icon' => 'ScrewIcon'],
         ];
 
