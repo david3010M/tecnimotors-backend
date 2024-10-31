@@ -33,22 +33,22 @@ class StoreSaleRequest extends StoreRequest
 {
     public function rules()
     {
-        return [
+        $data = [
             'paymentDate' => 'required|date_format:Y-m-d',
-            'documentType' => 'required|string|in:' .
+            'documentType' => 'required|in:' .
                 Constants::SALE_BOLETA . ',' .
                 Constants::SALE_FACTURA . ',' .
                 Constants::SALE_TICKET . ',' .
                 Constants::SALE_NOTA_CREDITO_BOLETA . ',' .
-                Constants::SALE_NOTA_CREDITO_FACTURA . "'", // BOLETA, FACTURA, TICKET, NOTA_CREDITO_BOLETA, NOTA_CREDITO_FACTURA
+                Constants::SALE_NOTA_CREDITO_FACTURA, // BOLETA, FACTURA, TICKET, NOTA_CREDITO_BOLETA, NOTA_CREDITO_FACTURA
             'saleType' => 'required|string|in:' .
                 Constants::SALE_NORMAL . ',' .
-                Constants::SALE_DETRACCION . "'", // NORMAL, ANTICIPO, DETRACCION
+                Constants::SALE_DETRACCION, // NORMAL, ANTICIPO, DETRACCION
             'detractionCode' => 'nullable|required_if:saleType,' . Constants::SALE_DETRACCION . '|string',
             'detractionPercentage' => 'nullable|required_if:saleType,' . Constants::SALE_DETRACCION . '|numeric',
             'paymentType' => 'required|string|in:' .
                 Constants::SALE_CONTADO . ',' .
-                Constants::SALE_CREDITO . "'", // CONTADO, CREDITO
+                Constants::SALE_CREDITO, // CONTADO, CREDITO
             'person_id' => 'required|integer|exists:people,id',
             'budget_sheet_id' => [
                 'required',
@@ -57,6 +57,15 @@ class StoreSaleRequest extends StoreRequest
                 Rule::unique('sales', 'budget_sheet_id')
                     ->whereNull('deleted_at')
             ],
+            'yape' => 'nullable|numeric',
+            'deposit' => 'nullable|numeric',
+            'cash' => 'nullable|numeric',
+            'card' => 'nullable|numeric',
+            'plin' => 'nullable|numeric',
+            'isBankPayment' => 'required|in:0,1',
+            'numberVoucher' => 'nullable|string',
+            'routeVoucher' => 'nullable|string',
+            'comment' => 'nullable|string',
             'saleDetails' => 'required|array',
             'saleDetails.*.description' => 'required|string',
             'saleDetails.*.unit' => 'required|string',
@@ -65,6 +74,11 @@ class StoreSaleRequest extends StoreRequest
             'saleDetails.*.unitPrice' => 'required|numeric',
             'saleDetails.*.discount' => 'nullable|numeric',
             'saleDetails.*.subTotal' => 'required|numeric',
+            'commitments' => 'required_if:paymentType,' . Constants::SALE_CREDITO . '|array',
+            'commitments.*.price' => 'required|numeric',
+            'commitments.*.paymentDate' => 'required|int',
         ];
+        logger($data);
+        return $data;
     }
 }

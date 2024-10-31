@@ -4,6 +4,17 @@ namespace App\Utils;
 
 class Constants
 {
+
+    public const AMORTIZATION_PAID = 'PAGADO';
+    public const AMORTIZATION_PENDING = 'PENDIENTE';
+    public const COMMITMENT_PENDING = 'PENDIENTE';
+    public const COMMITMENT_PAID = 'PAGADO';
+    public const COMMITMENT_EXPIRED = 'VENCIDO';
+
+    public const COMMITMENT_CONTADO = 'CONTADO';
+    public const COMMITMENT_CREDITO = 'CREDITO';
+    public const BUDGET_CREDITO = 'Credito';
+    public const BUDGET_CONTADO = 'Contado';
     public const SALE_CONTADO = 'CONTADO';
     public const SALE_CREDITO = 'CREDITO';
     public const SALE_NORMAL = 'NORMAL';

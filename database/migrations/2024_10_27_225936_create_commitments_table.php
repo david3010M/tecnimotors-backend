@@ -21,7 +21,7 @@ return new class extends Migration {
             $table->dateTime('payment_date')->nullable(); // DATE OF PAYMENT
             $table->string('payment_type'); // TYPE OF PAYMENT CONTADO O CREDITO
             $table->string('status')->default('Pendiente'); // "Pagado" o "Pendiente"
-            $table->foreignId('budget_sheet_id')->constrained('budget_sheets'); // BUDGET SHEET ID
+            $table->foreignId('sale_id')->constrained('sales'); // SALE ID
             $table->timestamps();
             $table->softDeletes();
         });

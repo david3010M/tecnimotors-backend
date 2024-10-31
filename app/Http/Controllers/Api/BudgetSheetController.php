@@ -225,9 +225,6 @@ class BudgetSheetController extends Controller
             ],
             'percentageDiscount' => 'required|numeric|between:0,100',
             'paymentType' => 'required|string|in:Contado,Credito',
-            'commitments' => 'required_if:paymentType,Credito|array',
-            'commitments.*.price' => 'required|numeric',
-            'commitments.*.paymentDate' => 'required|int',
         ]);
 
         if ($validator->fails()) {
@@ -259,40 +256,7 @@ class BudgetSheetController extends Controller
             'attention_id' => $request->input('attention_id'),
         ];
 
-        $object = budgetSheet::make($data);
-
-        if ($object->paymentType == 'Contado') {
-            $object->save();
-            Commitment::create([
-                'numberQuota' => 1,
-                'price' => $total,
-                'balance' => $total,
-                'status' => 'Pendiente',
-                'payment_type' => 'Contado',
-                'payment_date' => now(),
-                'budget_sheet_id' => $object->id,
-            ]);
-        } else if ($object->paymentType == 'Credito') {
-            $sumCommitments = array_sum(array_column($request->input('commitments'), 'price'));
-            if (round($sumCommitments, 4) != round($total, 4)) {
-                return response()->json(['error' => 'La suma de los compromisos no coincide con el total ' . $total . ' falta ' . ($total - $sumCommitments)], 422);
-            }
-
-            $object->save();
-            $commitments = $request->input('commitments');
-            foreach ($commitments as $index => $commitment) {
-                Commitment::create([
-                    'numberQuota' => $index + 1,
-                    'price' => $commitment['price'],
-                    'balance' => $commitment['price'],
-                    'amount' => 0,
-                    'status' => 'Pendiente',
-                    'payment_date' => Carbon::parse($attention->arrivalDate)->addDays($commitment['paymentDate']),
-                    'payment_type' => 'Credito',
-                    'budget_sheet_id' => $object->id,
-                ]);
-            }
-        }
+        $object = budgetSheet::create($data);
 
         $object = budgetSheet::with(['attention'])->find($object->id);
         return response()->json($object);

@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Log;
  *     @OA\Property(property="dues", type="integer", example="10"),
  *     @OA\Property(property="payment_pending", type="integer", example="1"),
  *     @OA\Property(property="status", type="string", example="Pendiente"),
- *     @OA\Property(property="budget_sheet_id", type="integer", example="1"),
+ *     @OA\Property(property="sale_id", type="integer", example="1"),
  *     @OA\Property(property="created_at", type="string", example="2024-06-27 22:59:36")
  * )
  *
@@ -45,15 +45,15 @@ class CommitmentResource extends JsonResource
 {
     public function toArray($request)
     {
-        $client = $this->budgetSheet->attention ? ($this->budgetSheet->attention->vehicle->person->typeofDocument == 'DNI' ?
-            ($this->budgetSheet->attention->vehicle->person->names . ' ' .
-                $this->budgetSheet->attention->vehicle->person->fatherSurname . ' ' .
-                $this->budgetSheet->attention->vehicle->person->motherSurname) :
-            $this->budgetSheet->attention->vehicle->person->businessName) : 'NO ASIGNADO';
+        $client = $this->sale->budgetSheet->attention ? ($this->sale->budgetSheet->attention->vehicle->person->typeofDocument == 'DNI' ?
+            ($this->sale->budgetSheet->attention->vehicle->person->names . ' ' .
+                $this->sale->budgetSheet->attention->vehicle->person->fatherSurname . ' ' .
+                $this->sale->budgetSheet->attention->vehicle->person->motherSurname) :
+            $this->sale->budgetSheet->attention->vehicle->person->businessName) : 'NO ASIGNADO';
 
         return [
             'id' => $this->id,
-            'number' => $this->budgetSheet->number,
+            'number' => $this->sale->budgetSheet->number,
             'client' => $client,
             'payment_date' => $this->payment_date ? Carbon::parse($this->payment_date)->format('d-m-Y') : null,
             'payment_type' => $this->payment_type,
@@ -61,8 +61,8 @@ class CommitmentResource extends JsonResource
             'amount' => $this->amount,
             'balance' => $this->balance,
             'numberQuota' => $this->numberQuota,
-            'status' => Carbon::parse($this->payment_date) < Carbon::parse(Carbon::now()->toDateString()) ? 'Vencido' : $this->status,
-            'budget_sheet_id' => $this->budget_sheet_id,
+            'status' => $this->status,
+            'sale_id' => $this->sale_id,
             'created_at' => Carbon::parse($this->created_at)->format('d-m-Y'),
         ];
     }

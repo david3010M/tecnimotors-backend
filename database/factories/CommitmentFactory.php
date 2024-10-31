@@ -11,7 +11,7 @@ class CommitmentFactory extends Factory
     {
         return [
             'status' => 'Pendiente',
-            'budget_sheet_id' => $this->faker->randomNumber(),
+            'sale_id' => $this->faker->randomNumber(),
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\UpdateStatusScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     required={"amount", "dues"},
  *     @OA\Property(property="dues", type="integer", example="10"),
  *     @OA\Property(property="payment_type", type="string", example="Semanal"),
- *     @OA\Property(property="budget_sheet_id", type="integer", example="1")
+ *     @OA\Property(property="sale_id", type="integer", example="1")
  * )
  *
  *
@@ -29,7 +30,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     @OA\Property(property="payment_date", type="string", example="2024-06-27 22:59:36"),
  *     @OA\Property(property="payment_type", type="string", example="Semanal"),
  *     @OA\Property(property="status", type="string", example="Pendiente"),
- *     @OA\Property(property="budget_sheet_id", type="integer", example="1"),
+ *     @OA\Property(property="sale_id", type="integer", example="1"),
  *     @OA\Property(property="created_at", type="string", example="2024-06-27 22:59:36")
  * )
  *
@@ -47,7 +48,7 @@ class Commitment extends Model
         'payment_date',
         'payment_type',
         'status',
-        'budget_sheet_id',
+        'sale_id',
         'created_at',
     ];
 
@@ -56,9 +57,14 @@ class Commitment extends Model
         'deleted_at'
     ];
 
-    public function budgetSheet()
+    protected static function booted()
     {
-        return $this->belongsTo(budgetSheet::class);
+        static::addGlobalScope(new UpdateStatusScope);
+    }
+
+    public function sale()
+    {
+        return $this->belongsTo(Sale::class);
     }
 
     public function extensions()

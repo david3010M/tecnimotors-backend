@@ -189,7 +189,7 @@ class AmortizationController extends Controller
             'person_id' => $request->input('person_id'),
             'user_id' => auth()->id(),
             'bank_id' => $bank_id,
-            'budgetSheet_id' => $commitment->budgetSheet->id,
+            'sale_id' => $commitment->sale->id,
         ];
 
 //        CREATE MOVIMENT
@@ -239,7 +239,7 @@ class AmortizationController extends Controller
         $commitment->status = $commitment->balance == 0 ? Constants::COMMITMENT_PAGADO : Constants::COMMITMENT_PENDIENTE;
         $commitment->save();
 
-        $commitments = Commitment::where('budget_sheet_id', $commitment->budgetSheet_id)->get();
+        $commitments = Commitment::where('sale_id', $commitment->sale_id)->get();
         $anyCommitmentPending = false;
         foreach ($commitments as $commitment) {
             if ($commitment->status == Constants::COMMITMENT_PENDIENTE) {
@@ -248,11 +248,11 @@ class AmortizationController extends Controller
             }
         }
         if (!$anyCommitmentPending) {
-            $budgetSheet = budgetSheet::find($commitment->budget_sheet_id);
-            $budgetSheet->status = $budgetSheet->status == Constants::BUDGET_SHEET_FACTURADO ? Constants::BUDGET_SHEET_FACTURADO : Constants::BUDGET_SHEET_PAGADO;
-            $budgetSheet->save();
+            $sale = Sale::find($commitment->sale_id);
+            $sale->budgetSheet->status = $sale->budgetSheet->status == Constants::BUDGET_SHEET_FACTURADO ? Constants::BUDGET_SHEET_FACTURADO : Constants::BUDGET_SHEET_PAGADO;
+            $sale->budgetSheet->save();
 
-            $sale = Sale::where('budget_sheet_id', $budgetSheet->id)->first();
+            $sale = Sale::where('budget_sheet_id', $sale->budgetSheet->id)->first();
             $sale->status = Constants::SALE_PAGADO;
             $sale->save();
         }

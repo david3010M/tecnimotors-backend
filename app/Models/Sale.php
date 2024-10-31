@@ -23,6 +23,15 @@ class Sale extends Model
         'taxableOperation',
         'igv',
         'total',
+        'yape',
+        'deposit',
+        'effective',
+        'card',
+        'plin',
+        'isBankPayment',
+        'numberVoucher',
+        'routeVoucher',
+        'comment',
         'person_id',
         'budget_sheet_id',
         'cash_id',
@@ -62,8 +71,24 @@ class Sale extends Model
         'detractionPercentage',
         'paymentType',
         'status',
+        'taxableOperation',
+        'igv',
+        'total',
+        'yape',
+        'deposit',
+        'effective',
+        'card',
+        'plin',
+        'isBankPayment',
+        'numberVoucher',
+        'routeVoucher',
+        'comment',
         'person_id',
         'budget_sheet_id',
+        'bank_id',
+        'cash_id',
+        'user_id',
+        'created_at',
     ];
 
     public function person()
@@ -76,14 +101,34 @@ class Sale extends Model
         return $this->belongsTo(BudgetSheet::class);
     }
 
+    public function commitments()
+    {
+        return $this->hasMany(Commitment::class);
+    }
+
     public function saleDetails()
     {
         return $this->hasMany(SaleDetail::class);
     }
 
+    public function moviment()
+    {
+        return $this->hasOne(Moviment::class);
+    }
+
+    public function bank()
+    {
+        return $this->belongsTo(Bank::class);
+    }
+
     public function cash()
     {
         return $this->belongsTo(Cash::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
 

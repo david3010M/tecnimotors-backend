@@ -163,11 +163,21 @@ class Moviment extends Model
         'bank_id',
         'paymentConcept_id',
         'budgetSheet_id',
+        'sale_id',
     ];
     protected $hidden = [
         'updated_at',
         'deleted_at',
     ];
+
+    protected $casts = [
+        'paymentDate' => 'date:Y-m-d',
+    ];
+
+    public function sale()
+    {
+        return $this->belongsTo(Sale::class, 'sale_id');
+    }
 
     public static function getMovementsByDateRange($from = null, $to = null)
     {
@@ -178,7 +188,7 @@ class Moviment extends Model
             'bank',
             'budgetSheet',
         ]);
-    
+
         if ($from && $to) {
             $query->whereBetween('paymentDate', [$from, $to]);
         } elseif ($from) {
@@ -186,9 +196,10 @@ class Moviment extends Model
         } elseif ($to) {
             $query->where('paymentDate', '<=', $to);
         }
-    
+
         return $query->orderBy('paymentDate', 'desc')->get();
     }
+
     public static function getMovementsByClientId($id, $from = null, $to = null)
     {
         $query = Moviment::with([

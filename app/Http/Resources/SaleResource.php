@@ -59,7 +59,7 @@ class SaleResource extends JsonResource
         ];
 
         $data = [
-            'number' => $documentTypePrefixes[$this->documentType] . $this->cash->series . '-' . $this->number,
+            'number' => $documentTypePrefixes[$this->documentType] . $this->cash?->series . '-' . $this->number,
             'paymentDate' => $this->paymentDate ? $this->paymentDate->format('Y-m-d') : null,
             'documentType' => $this->documentType,
             'saleType' => $this->saleType,
@@ -78,7 +78,9 @@ class SaleResource extends JsonResource
 
         if ($this->includeBudgetSheet) {
             $data['saleDetails'] = SaleDetailResource::collection($this->saleDetails);
+            $data['commitments'] = CommitmentResource::collection($this->commitments);
             $data['budgetSheet'] = $this->budgetSheet;
+            $data['cash'] = $this->cash;
         }
 
         return $data;

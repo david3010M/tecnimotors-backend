@@ -4,12 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\IndexRequestSale;
 use App\Http\Resources\SaleResource;
+use App\Models\Amortization;
 use App\Models\budgetSheet;
+use App\Models\Commitment;
+use App\Models\Moviment;
 use App\Models\Sale;
 use App\Http\Requests\StoreSaleRequest;
 use App\Http\Requests\UpdateSaleRequest;
 use App\Models\SaleDetail;
 use App\Utils\Constants;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class SaleController extends Controller
 {
@@ -69,20 +74,153 @@ class SaleController extends Controller
 
         $data = [
             'number' => $this->nextCorrelativeQuery(Sale::where('documentType', $request->documentType), 'number'),
-            'paymentDate' => $request->paymentDate,
-            'documentType' => $request->documentType,
-            'saleType' => $request->saleType,
-            'detractionCode' => $request->saleType === Constants::SALE_DETRACCION ? $request->detractionCode : null,
-            'detractionPercentage' => $request->saleType === Constants::SALE_DETRACCION ? $request->detractionPercentage : null,
-            'paymentType' => $request->paymentType,
+            'paymentDate' => $request->input('paymentDate'),
+            'documentType' => $request->input('documentType'),
+            'saleType' => $request->input('saleType'),
+            'detractionCode' => $request->input('saleType') === Constants::SALE_DETRACCION ? $request->input('detractionCode') : '',
+            'detractionPercentage' => $request->input('saleType') === Constants::SALE_DETRACCION ? $request->input('detractionPercentage') : '',
+            'paymentType' => $request->input('paymentType'),
             'status' => Constants::SALE_PENDIENTE,
             'total' => $budgetSheet->total,
-            'person_id' => $request->person_id,
-            'budget_sheet_id' => $request->budget_sheet_id,
+            'person_id' => $request->input('person_id'),
+            'budget_sheet_id' => $request->input('budget_sheet_id'),
             'cash_id' => 1,
         ];
 
-        $sale = Sale::create($data);
+        $sale = Sale::make($data);
+
+        if ($sale->paymentType == Constants::SALE_CONTADO) {
+//            CHECK IF CASH MOVEMENT EXISTS
+            $movCaja = Moviment::where('status', 'Activa')->where('paymentConcept_id', 1)->first();
+            if (!$movCaja) {
+                if ($request->input('paymentConcept_id') != 1) {
+                    return response()->json([
+                        "message" => "Debe Aperturar Caja",
+                    ], 422);
+                }
+            } else {
+                if ($request->input('paymentConcept_id') == 1) {
+                    return response()->json([
+                        "message" => "Caja Ya Aperturada",
+                    ], 422);
+                }
+            }
+
+            $routeVoucher = null;
+            $numberVoucher = null;
+            $bank_id = null;
+            $depositAmount = 0;
+            //        IF IS BANK PAYMENT
+            if ($request->input('isBankPayment') == 1) {
+                $routeVoucher = 'ruta.jpg';
+                $numberVoucher = $request->input('numberVoucher');
+                $bank_id = $request->input('bank_id');
+                $depositAmount = $request->input('deposit') ?? 0;
+            }
+
+//        PAYMENT METHODS
+            $efectivo = $request->input('cash') ?? 0;
+            $yape = $request->input('yape') ?? 0;
+            $plin = $request->input('plin') ?? 0;
+            $tarjeta = $request->input('card') ?? 0;
+            $deposito = $depositAmount ?? 0;
+
+//        TOTAL
+            $total = $efectivo + $yape + $plin + $tarjeta + $deposito;
+
+            if ($total == 0) {
+                return response()->json([
+                    "error" => "El monto a pagar no puede ser 0",
+                ], 422);
+            }
+
+            if ($sale->total != $total) {
+                return response()->json([
+                    "error" => "El monto a pagar no coincide con el total " . number_format($sale->total, 2),
+                ], 422);
+            }
+
+//            THEN SAVE SALE
+            $sale->save();
+            $commitment = Commitment::create([
+                'numberQuota' => 1,
+                'price' => $sale->total,
+                'balance' => $sale->total,
+                'status' => Constants::COMMITMENT_PAGADO,
+                'payment_type' => Constants::COMMITMENT_CONTADO,
+                'payment_date' => now(),
+                'sale_id' => $sale->id,
+            ]);
+
+//            MOVEMENT CREATION
+            $tipo = 'M001';
+            $tipo = str_pad($tipo, 4, '0', STR_PAD_RIGHT);
+            $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(sequentialNumber, LOCATE("-", sequentialNumber) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM moviments WHERE SUBSTRING(sequentialNumber, 1, 4) = ?', [$tipo])[0]->siguienteNum;
+            $siguienteNum = (int)$resultado;
+
+//        DATA
+            $routeVoucher = null;
+            $numberVoucher = null;
+            $bank_id = null;
+            $depositAmount = 0;
+
+            $moviment = Moviment::create([
+                'sequentialNumber' => $tipo . '-' . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT),
+                'paymentDate' => now(),
+                'total' => $commitment->price,
+                'yape' => $request->input('yape') ?? 0,
+                'deposit' => $depositAmount ?? 0,
+                'cash' => $request->input('cash') ?? 0,
+                'card' => $request->input('card') ?? 0,
+                'plin' => $request->input('plin') ?? 0,
+                'isBankPayment' => $request->input('isBankPayment'),
+                'routeVoucher' => $routeVoucher,
+                'numberVoucher' => $numberVoucher,
+                'typeDocument' => 'Ingreso',
+                'comment' => $request->input('comment') ?? '-',
+                'status' => 'Generada',
+                'paymentConcept_id' => 7,
+                'person_id' => $request->input('person_id'),
+                'user_id' => auth()->id(),
+                'sale_id' => $sale->id,
+            ]);
+
+//            AMORTIZATION CREATION
+            $tipo = 'AMRT';
+            $tipo = str_pad($tipo, 4, '0', STR_PAD_RIGHT);
+            $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(sequentialNumber, LOCATE("-", sequentialNumber) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM amortizations WHERE SUBSTRING(sequentialNumber, 1, 4) = ?', [$tipo])[0]->siguienteNum;
+            $siguienteNum = (int)$resultado;
+
+            Amortization::create([
+                'sequentialNumber' => $tipo . '-' . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT),
+                'amount' => $commitment->price,
+                'status' => Constants::AMORTIZATION_PAID,
+                'paymentDate' => now(),
+                'moviment_id' => $moviment->id,
+                'commitment_id' => $commitment->id,
+            ]);
+
+        } else if ($sale->paymentType == Constants::SALE_CREDITO) {
+            $sumCommitments = array_sum(array_column($request->input('commitments'), 'price'));
+            if (round($sumCommitments, 4) != round($sale->total, 4)) {
+                return response()->json(['error' => 'La suma de los compromisos no coincide con el total ' . $sale->total . ' falta ' . ($sale->total - $sumCommitments)], 422);
+            }
+            $sale->save();
+            $commitments = $request->input('commitments');
+            foreach ($commitments as $index => $commitment) {
+                Commitment::create([
+                    'numberQuota' => $index + 1,
+                    'price' => $commitment['price'],
+                    'balance' => $commitment['price'],
+                    'amount' => 0,
+                    'status' => Constants::COMMITMENT_PENDING,
+                    'payment_date' => Carbon::parse($sale->budgetSheet->attention->arrivalDate)->addDays($commitment['paymentDate']),
+                    'payment_type' => Constants::COMMITMENT_CREDITO,
+                    'sale_id' => $sale->id,
+                ]);
+            }
+        }
+
         $taxableOperation = 0;
 
         foreach ($request->saleDetails as $saleDetail) {
@@ -134,7 +272,8 @@ class SaleController extends Controller
             [
                 'saleDetails',
                 'person',
-                'budgetSheet.commitments',
+                'cash',
+                'commitments',
                 'budgetSheet.attention',
                 'budgetSheet.attention.worker.person',
                 'budgetSheet.attention.vehicle.person',

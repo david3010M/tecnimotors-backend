@@ -85,7 +85,7 @@ class AttentionController extends Controller
         }
 
         // Obtén la paginación con 15 registros por página (esto incluye el total)
-        $objects = $query->orderBy('id','desc')->paginate(15);
+        $objects = $query->orderBy('id', 'desc')->paginate(15);
 
         // Transforma cada elemento de la colección paginada
         $objects->getCollection()->transform(function ($attention) {
@@ -736,8 +736,6 @@ class AttentionController extends Controller
      */
     public function destroy(int $id)
     {
-        // VALIDAR AUN ESTA ELIMINACIÓN
-
         $object = Attention::find($id);
         if (!$object) {
             return response()->json(['message' => 'Attention not found'], 404);
@@ -747,8 +745,8 @@ class AttentionController extends Controller
 
         if ($detailsNotGenerated) return response()->json(['message' => 'Exiten Servicios que ya estan siendo Procesados'], 409);
 
-//        $budgetSheet = $object->budgetSheet()->exists();
-//        if ($budgetSheet) return response()->json(['message' => 'Orden de Servicio ya presupuestada'], 409);
+        $budgetSheet = $object->budgetSheet()->exists();
+        if ($budgetSheet) return response()->json(['message' => 'Orden de Servicio ya presupuestada'], 409);
 
         $object->delete();
 

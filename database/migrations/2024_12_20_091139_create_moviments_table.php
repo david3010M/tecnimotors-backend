@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -36,6 +35,7 @@ return new class extends Migration
             $table->foreignId('bank_id')->nullable()->unsigned()->constrained('banks');
             $table->foreignId('paymentConcept_id')->nullable()->unsigned()->constrained('concept_pays');
             $table->foreignId('budgetSheet_id')->nullable()->unsigned()->constrained('budget_sheets');
+            $table->foreignId('sale_id')->nullable()->unsigned()->constrained('sales');
 
             $table->timestamps();
             $table->softDeletes();

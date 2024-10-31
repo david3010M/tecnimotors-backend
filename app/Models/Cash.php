@@ -21,7 +21,7 @@ class Cash extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['name', 'branch_id', 'created_at'];
+    protected $fillable = ['name', 'series', 'branch_id', 'created_at'];
     protected $hidden = ['updated_at', 'deleted_at'];
     protected $casts = ['created_at' => 'datetime'];
 

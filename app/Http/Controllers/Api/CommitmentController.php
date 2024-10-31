@@ -7,6 +7,7 @@ use App\Http\Resources\CommitmentResource;
 use App\Models\Attention;
 use App\Models\budgetSheet;
 use App\Models\Commitment;
+use App\Models\Sale;
 use App\Utils\Constants;
 use Illuminate\Http\Request;
 
@@ -40,7 +41,7 @@ class CommitmentController extends Controller
 
         $per_page = $request->query('per_page', 5);
 
-        $commitments = Commitment::with('budgetSheet.attention.vehicle.person', 'extensions')
+        $commitments = Commitment::with('sale.budgetSheet.attention.vehicle.person', 'extensions')
             ->orderBy('id', 'desc')
             ->paginate($per_page);
         CommitmentResource::collection($commitments);
@@ -73,31 +74,31 @@ class CommitmentController extends Controller
             'dues' => 'required|integer',
             'payment_date' => 'required|date',
             'payment_type' => 'required|string|in:Semanal,Quincenal,Mensual',
-            'budget_sheet_id' => 'required|integer|exists:budget_sheets,id',
+            'sale_id' => 'required|integer|exists:budget_sheets,id',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
-        $budgetSheet = budgetSheet::find($request->input('budget_sheet_id'));
+        $sale = Sale::find($request->input('sale_id'));
 
         $data = [
             'dues' => $request->input('dues'),
             'amount' => $request->input('amount'),
-            'balance' => $budgetSheet->total - $request->input('amount'),
+            'balance' => $sale->budgetSheet->total - $request->input('amount'),
             'payment_date' => $request->input('payment_date'),
             'payment_type' => $request->input('payment_type'),
             'status' => Constants::COMMITMENT_PENDIENTE,
-            'budget_sheet_id' => $request->input('budget_sheet_id'),
+            'sale_id' => $request->input('sale_id'),
         ];
 
         $commitment = Commitment::create($data);
 
-        $budgetSheet->debtAmount = $commitment->amount;
-        $budgetSheet->save();
+        $sale->budgetSheet->debtAmount = $commitment->amount;
+        $sale->budgetSheet->save();
 
-        $attention = Attention::find($budgetSheet->attention_id);
+        $attention = Attention::find($sale->budgetSheet->attention_id);
         $attention->debtAmount = $commitment->amount;
         $attention->save();
 
@@ -155,7 +156,7 @@ class CommitmentController extends Controller
             'dues' => 'required|integer',
             'payment_date' => 'required|date',
             'payment_type' => 'required|string|in:Semanal,Quincenal,Mensual',
-            'budget_sheet_id' => 'required|integer|exists:budget_sheets,id',
+            'sale_id' => 'required|integer|exists:budget_sheets,id',
         ]);
 
         if ($validator->fails()) {
@@ -168,24 +169,24 @@ class CommitmentController extends Controller
             return response()->json(['error' => 'Commitment not found'], 404);
         }
 
-        $budgetSheet = budgetSheet::find($request->input('budget_sheet_id'));
+        $sale = Sale::find($request->input('sale_id'));
 
         $data = [
             'dues' => $request->input('dues'),
             'amount' => $request->input('amount'),
-            'balance' => $budgetSheet->total - $request->input('amount'),
+            'balance' => $sale->budgetSheet->total - $request->input('amount'),
             'payment_date' => $request->input('payment_date'),
             'payment_type' => $request->input('payment_type'),
             'status' => Constants::COMMITMENT_PENDIENTE,
-            'budget_sheet_id' => $request->input('budget_sheet_id'),
+            'sale_id' => $request->input('sale_id'),
         ];
 
         $commitment->update($data);
 
-        $budgetSheet->debtAmount = $commitment->amount;
-        $budgetSheet->save();
+        $sale->budgetSheet->debtAmount = $commitment->amount;
+        $sale->budgetSheet->save();
 
-        $attention = Attention::find($budgetSheet->attention_id);
+        $attention = Attention::find($sale->budgetSheet->attention_id);
         $attention->debtAmount = $commitment->amount;
         $attention->save();
 
