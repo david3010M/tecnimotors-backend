@@ -49,7 +49,6 @@ class Person extends Model
         'origin',
         'ocupation',
         'created_at',
-
     ];
 
     protected $hidden = [

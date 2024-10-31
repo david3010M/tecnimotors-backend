@@ -37,12 +37,23 @@ class PersonController extends Controller
      * )
      */
 
-    public function index()
+    public function index(Request $request)
     {
-        //REVISAR LO DE LA PAGINACIÓN
-        return response()->json(Person::where('id', '!=', 1)->simplePaginate(100));
+        $search = $request->query('search');
 
+        return response()->json(
+            Person::where('id', '!=', 1)
+                ->where(function ($query) use ($search) {
+                    $query->where('documentNumber', 'like', '%' . $search . '%')
+                        ->orWhere('names', 'like', '%' . $search . '%')
+                        ->orWhere('fatherSurname', 'like', '%' . $search . '%')
+                        ->orWhere('motherSurname', 'like', '%' . $search . '%')
+                        ->orWhere('businessName', 'like', '%' . $search . '%');
+                })
+                ->get()
+        );
     }
+
 
     /**
      * @OA\Post(
