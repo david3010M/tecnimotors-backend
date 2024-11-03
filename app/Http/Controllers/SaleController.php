@@ -293,8 +293,10 @@ class SaleController extends Controller
         ]);
 
         $sale = Sale::find($sale->id);
-        $budgetSheet->status = Constants::BUDGET_SHEET_FACTURADO;
-        $budgetSheet->save();
+        if ($budgetSheet) {
+            $budgetSheet->status = Constants::BUDGET_SHEET_FACTURADO;
+            $budgetSheet->save();
+        }
         return response()->json(SaleResource::make($sale)->withBudgetSheet());
     }
 
