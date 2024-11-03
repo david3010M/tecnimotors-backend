@@ -45,15 +45,15 @@ class CommitmentResource extends JsonResource
 {
     public function toArray($request)
     {
-        $client = $this->sale->budgetSheet->attention ? ($this->sale->budgetSheet->attention->vehicle->person->typeofDocument == 'DNI' ?
-            ($this->sale->budgetSheet->attention->vehicle->person->names . ' ' .
-                $this->sale->budgetSheet->attention->vehicle->person->fatherSurname . ' ' .
-                $this->sale->budgetSheet->attention->vehicle->person->motherSurname) :
-            $this->sale->budgetSheet->attention->vehicle->person->businessName) : 'NO ASIGNADO';
+        $client = $this->sale->person ? ($this->sale->person->typeofDocument == 'DNI' ?
+            ($this->sale->person->names . ' ' .
+                $this->sale->person->fatherSurname . ' ' .
+                $this->sale->person->motherSurname) :
+            $this->sale->person->businessName) : 'NO ASIGNADO';
 
         return [
             'id' => $this->id,
-            'number' => $this->sale->budgetSheet->number,
+            'number' => $this->sale?->budgetSheet?->number?? null,
             'client' => $client,
             'payment_date' => $this->payment_date ? Carbon::parse($this->payment_date)->format('d-m-Y') : null,
             'payment_type' => $this->payment_type,

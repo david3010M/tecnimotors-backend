@@ -47,7 +47,7 @@ class StoreSaleRequest extends StoreRequest
     public function rules()
     {
         $data = [
-            'paymentDate' => 'required|date_format:Y-m-d',
+            'paymentDate' => 'required',
             'documentType' => 'required|in:' .
                 Constants::SALE_BOLETA . ',' .
                 Constants::SALE_FACTURA . ',' .
@@ -64,7 +64,7 @@ class StoreSaleRequest extends StoreRequest
                 Constants::SALE_CREDITO, // CONTADO, CREDITO
             'person_id' => 'required|integer|exists:people,id',
             'budget_sheet_id' => [
-                'required',
+                'nullable',
                 'integer',
                 'exists:budget_sheets,id',
                 Rule::unique('sales', 'budget_sheet_id')
