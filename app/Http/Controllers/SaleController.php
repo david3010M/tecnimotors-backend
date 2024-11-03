@@ -162,7 +162,7 @@ class SaleController extends Controller
                 'balance' => $sale->total,
                 'status' => Constants::COMMITMENT_PAGADO,
                 'payment_type' => Constants::COMMITMENT_CONTADO,
-                'payment_date' => now(),
+                'payment_date' => today(),
                 'sale_id' => $sale->id,
             ]);
 
@@ -249,7 +249,7 @@ class SaleController extends Controller
         } else if ($sale->paymentType == Constants::SALE_CREDITO) {
             $sumCommitments = array_sum(array_column($request->input('commitments'), 'price'));
             if (round($sumCommitments, 4) != round($sale->total, 4)) {
-                return response()->json(['error' => 'La suma de los compromisos no coincide con el total ' . $sale->total . ' falta ' . ($sale->total - $sumCommitments)], 422);
+                return response()->json(['error' => 'La suma de los compromisos no coincide con el total ' . $sale->total . ' diferencia ' . ($sale->total - $sumCommitments)], 422);
             }
             $sale->save();
             $commitments = $request->input('commitments');
@@ -260,7 +260,7 @@ class SaleController extends Controller
                     'balance' => $commitment['price'],
                     'amount' => 0,
                     'status' => Constants::COMMITMENT_PENDING,
-                    'payment_date' => Carbon::parse($sale->budgetSheet->attention->arrivalDate)->addDays($commitment['paymentDate']),
+                    'payment_date' => Carbon::today()->addDays($commitment['paymentDate']),
                     'payment_type' => Constants::COMMITMENT_CREDITO,
                     'sale_id' => $sale->id,
                 ]);
@@ -445,7 +445,7 @@ class SaleController extends Controller
         } else if ($sale->paymentType == Constants::SALE_CREDITO) {
             $sumCommitments = array_sum(array_column($request->input('commitments'), 'price'));
             if (round($sumCommitments, 4) != round($sale->total, 4)) {
-                return response()->json(['error' => 'La suma de los compromisos no coincide con el total ' . $sale->total . ' falta ' . ($sale->total - $sumCommitments)], 422);
+                return response()->json(['error' => 'La suma de los compromisos no coincide con el total ' . $sale->total . ' diferencia ' . ($sale->total - $sumCommitments)], 422);
             }
 
             $commitments = $request->input('commitments');
@@ -465,7 +465,7 @@ class SaleController extends Controller
                         'price' => $commitmentData['price'],
                         'balance' => $commitmentData['price'],
                         'status' => Constants::COMMITMENT_PENDING,
-                        'payment_date' => Carbon::parse($sale->budgetSheet->attention->arrivalDate)->addDays($commitmentData['paymentDate']),
+                        'payment_date' => Carbon::today()->addDays($commitmentData['paymentDate']),
                         'sale_id' => $sale->id,
                     ]);
                 }
