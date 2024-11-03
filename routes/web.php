@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\BudgetSheetController;
 use App\Http\Controllers\Api\PdfController;
+use App\Http\Controllers\SaleController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,5 +25,6 @@ Route::get('ordenservicio2/{id}', [PdfController::class, 'getServiceOrder'])->na
 Route::get('presupuesto/{id}', [PdfController::class, 'getBudgetSheet'])->name('presupuesto');
 Route::get('ordenservicio/{id}', [PdfController::class, 'getServiceOrder2'])->name('ordenservicio');
 Route::get('evidencias/{id}', [PdfController::class, 'getEvidenceByAttention'])->name('evidencias');
+Route::get('pruebaFacturador', [SaleController::class, 'pruebaFacturador'])->name('pruebaFacturador');
 // Route::get('reportCaja', [PdfController::class, 'reportCaja'])->name('reportCaja');
 // Route::get('presupuestoInfo/{id}', [PdfController::class, 'getBudgetSheetInfo'])->name('presupuesto.info');
