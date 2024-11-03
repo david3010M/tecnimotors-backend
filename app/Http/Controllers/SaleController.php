@@ -528,4 +528,9 @@ class SaleController extends Controller
         $sale->delete();
         return response()->json(['message' => 'Sale deleted']);
     }
+    public function pruebaFacturador()
+    {
+        // Aquí puedes pasar datos a la vista si lo necesitas, pero por ahora solo devuelve la vista.
+        return view('pruebaFacturador');
+    }
 }
