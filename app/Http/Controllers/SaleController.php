@@ -533,4 +533,69 @@ class SaleController extends Controller
         // Aquí puedes pasar datos a la vista si lo necesitas, pero por ahora solo devuelve la vista.
         return view('pruebaFacturador');
     }
+    public function getArchivosDocument($idventa, $typeDocument)
+    {
+        // Habilitar CORS para un origen específico
+        header("Access-Control-Allow-Origin: https://transportes-hernandez-mrsoft.vercel.app"); // Permitir solo este origen
+        header("Access-Control-Allow-Methods: GET, POST, OPTIONS"); // Permitir métodos HTTP específicos
+        header("Access-Control-Allow-Headers: Content-Type, Authorization"); // Permitir tipos de encabezados específicos
+
+        // Si es una solicitud OPTIONS (preflight), responde sin ejecutar más lógica
+        if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+            http_response_code(200); // Código de éxito
+            exit; // Termina el script aquí
+        }
+
+        $funcion = 'buscarNumeroSolicitud';
+        $url = 'https://develop.garzasoft.com:81/tecnimotors-facturador/controlador/contComprobante.php?funcion=' . $funcion . "&typeDocument=" . $typeDocument;
+
+        // Parámetros para la solicitud
+        $params = http_build_query(['idventa' => $idventa]);
+
+        // Inicializamos cURL
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url . '&' . $params);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        // Ejecutamos la solicitud y obtenemos la respuesta
+        $response = curl_exec($ch);
+
+        // Cerramos cURL
+        curl_close($ch);
+
+        // Verificamos si la respuesta es válida
+        if ($response !== false) {
+            // Decodificamos la respuesta JSON
+            $data = json_decode($response, true);
+
+            // Verificamos si la respuesta contiene la información del archivo XML
+            if (isset($data['xml'])) {
+                $xmlFile = $data['xml'];
+
+                // Ruta completa del archivo XML
+                $fileUrl = 'https://develop.garzasoft.com:81/tecnimotors-facturador/ficheros/' . $xmlFile;
+
+                // Obtener el contenido del archivo XML
+                $fileContent = file_get_contents($fileUrl);
+
+                if ($fileContent !== false) {
+                    // Forzar la descarga del archivo XML
+                    header('Content-Description: File Transfer');
+                    header('Content-Type: application/xml');
+                    header('Content-Disposition: attachment; filename="' . basename($xmlFile) . '"');
+                    header('Content-Length: ' . strlen($fileContent));
+
+                    // Enviar el contenido del archivo
+                    echo $fileContent;
+                    exit;
+                } else {
+                    echo 'Error al descargar el archivo XML.';
+                }
+            } else {
+                echo 'Archivo XML no encontrado.';
+            }
+        } else {
+            echo 'Error en la solicitud.';
+        }
+    }
 }

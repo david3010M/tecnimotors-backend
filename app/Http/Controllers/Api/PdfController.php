@@ -6,9 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Attention;
 use App\Models\budgetSheet;
 use App\Models\Moviment;
+use App\Models\Person;
+use App\Models\Sale;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Dompdf\Dompdf;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 
 class PdfController extends Controller
 {
@@ -229,5 +233,114 @@ class PdfController extends Controller
             'attention' => $object,
         ]);
         return $pdf->stream('presupuesto' . $object->id . '.pdf');
+    }
+
+    public function documentoA4(Request $request, $idMov = 0)
+    {
+
+        $Movimiento = Sale::with(['budgetSheet', 'commitments', 'saleDetails', 'moviment'])
+        ->find($idMov);
+
+        $linkRevisarFact = false;
+        $productList = [];
+        if ($Movimiento) {
+            $productList = $Movimiento->saleDetails;
+        }
+        // Inicializar el array de detalles
+        $detalles = [];
+
+        if (($productList) != []) {
+            foreach ($productList as $detalle) {
+                $detalles[] = [
+                    "descripcion" => $detalle->description ?? '-',
+                    "um" => $detalle->unit ?? '-',
+                    "cant" => $detalle->quantity ?? '-',
+                    "vu" => $detalle->unitValue ?? '-',
+                    "pu" => $detalle->unitPrice, // Cantidad fija (es un servicio)
+                    "dscto" => $detalle->discount ?? 0,
+                    "precioventaunitarioxitem" => $detalle->subTotal ?? 0,
+                ];
+            }
+        }
+
+        $tipoDocumento = '';
+
+        $num = $Movimiento->number;
+        if (strpos($num, 'B') === 0) {
+            $tipoDocumento = 'BOLETA ELECTRÓNICA';
+            $linkRevisarFact = true;
+        } elseif (strpos($num, 'F') === 0) {
+            $tipoDocumento = 'FACTURA ELECTRÓNICA';
+            $linkRevisarFact = true;
+        } elseif (strpos($num, 'T') === 0) {
+            $tipoDocumento = 'TICKET ELECTRÓNICO';
+            $linkRevisarFact = false;
+        } else {
+            abort(404);
+        }
+        $dateTime = Carbon::now()->format('Y-m-d H:i:s');
+        $personaCliente = Person::withTrashed()->find($Movimiento->person_id);
+        $fechaInicio = $Movimiento->created_at;
+        $rucOdni = $personaCliente->documentNumber;
+        $direccion = "";
+        if (strtoupper($personaCliente->typeofDocument) != 'DNI') {
+            $nombreCliente = $personaCliente->businessName;
+
+            $direccion = $personaCliente->fiscalAddress ?? '-';
+        } else {
+            $nombreCliente = $personaCliente->names . ' ' . $personaCliente->fatherSurname . ' ' . $personaCliente->motherSurname;
+            $direccion = $personaCliente->address ?? '-';
+        }
+
+        if ($personaCliente->names == 'VARIOS') {
+            $nombreCliente = "VARIOS";
+            if (strpos($num, 'B') === 0) {
+                $rucOdni = '11111111';
+
+            } elseif (strpos($num, 'F') === 0) {
+                $rucOdni = '11111111111';
+
+            }
+        }
+
+        $dataE = [
+            'title' => 'DOCUMENTO DE PAGO',
+            'ruc_dni' => $rucOdni,
+            'direccion' => $direccion,
+            'idMovimiento' => $Movimiento->id,
+            'tipoElectronica' => $tipoDocumento,
+            'typePayment' => $Movimiento->paymentType === 'CONTADO' ? 'Contado' : ($Movimiento->paymentType === 'CREDITO' ? 'Crédito' : '-'),
+            'numeroVenta' => $num,
+            'porcentaje' => $Movimiento->detractionPercentage,
+            'fechaemision' => $Movimiento->paymentDate->format('d/m/Y'),
+            'cliente' => $nombreCliente,
+            'detalles' => $detalles,
+            'cuentas' => $Movimiento->installments,
+            'vuelto' => '0.00',
+            'totalPagado' => $Movimiento->total,
+            'presupuesto' => $Movimiento?->budgetSheet?->number?? '-',
+            'linkRevisarFact' => $linkRevisarFact,
+            'formaPago' => $Movimiento->formaPago ?? '-',
+            'fechaInicio' => $fechaInicio,
+            
+            'typeSale' => $Movimiento->saleType === 'NORMAL' ? 'Normal' : ($Movimiento->saleType === 'DETRACCION' ? 'Detracción' : '-'),
+            'codeDetraction' => $Movimiento->detractionCode ?? '-',
+        ];
+        // Utiliza el método loadView() directamente en la fachada PDF
+        $pdf = PDF::loadView('documentoA4', $dataE);
+        $canvas = $pdf->getDomPDF()->get_canvas();
+        // $contenidoAncho = $canvas->get_width();
+        $contenidoAlto = $canvas->get_height();
+        if (strpos($num, 'B') === 0) {
+            $tipoDocumento = '01'; // Boleta
+        } elseif (strpos($num, 'F') === 0) {
+            $tipoDocumento = '03'; // Factura
+        } elseif (strpos($num, 'T') === 0) {
+            $tipoDocumento = '00'; // Ticket
+        }
+
+        $fileName = '20487467139-' . $tipoDocumento . '-' . $num . '.pdf'; // Formato del nombre
+        $fileName = str_replace(' ', '_', $fileName); // Reemplazar espacios con guiones bajos
+        return $pdf->stream($fileName);
     }
 }
