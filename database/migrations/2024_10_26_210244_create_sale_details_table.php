@@ -21,7 +21,8 @@ return new class extends Migration {
             $table->decimal('unitPrice', 10);
             $table->decimal('discount', 10)->default(0);
             $table->decimal('subTotal', 10);
-            $table->foreignId('sale_id')->constrained();
+            $table->foreignId('sale_id')->nullable()->constrained();
+            $table->foreignId('note_id')->nullable()->constrained();
             $table->timestamps();
             $table->softDeletes();
         });

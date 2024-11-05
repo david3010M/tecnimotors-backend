@@ -15,7 +15,9 @@ return new class extends Migration {
     {
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
+            $table->string('series')->nullable();
             $table->string('number')->nullable();
+            $table->string('fullNumber')->nullable();
             $table->date('paymentDate')->nullable();
             $table->string('documentType')->nullable(); // BOLETA, FACTURA, TICKET
             $table->string('saleType')->nullable(); // NORMAL, DETRACCION

@@ -8,6 +8,7 @@ use App\Http\Resources\BudgetSheetResource;
 use App\Models\Attention;
 use App\Models\budgetSheet;
 use App\Models\Commitment;
+use App\Utils\Constants;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -461,7 +462,8 @@ class BudgetSheetController extends Controller
                     ->orWhere('motherSurname', 'like', '%' . $search . '%')
                     ->orWhere('businessName', 'like', '%' . $search . '%');
             })->orWhere('number', 'like', '%' . $search . '%')
-                ->where('status', '!=', 'Pagado sin boletear');
+                ->where('status', '!=', 'Pagado sin boletear')
+                ->where('status', '!=', Constants::BUDGET_SHEET_FACTURADO);
         })->limit(30)->get();
         return response()->json(BudgetSheetResource::collection($budgetSheets));
     }

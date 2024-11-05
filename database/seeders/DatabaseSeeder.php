@@ -7,11 +7,6 @@ use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     *
-     * @return void
-     */
     public function run()
     {
         $array = [
@@ -97,6 +92,7 @@ class DatabaseSeeder extends Seeder
         // $this->call(CommitmentSeeder::class);
         $this->call(BranchSeeder::class);
         $this->call(CashSeeder::class);
+        $this->call(NoteReasonSeeder::class);
         // $this->call(SaleSeeder::class);
 
     }
