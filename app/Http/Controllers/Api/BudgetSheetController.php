@@ -455,16 +455,20 @@ class BudgetSheetController extends Controller
     {
         $search = $request->query('search');
 
-        $budgetSheets = budgetSheet::where(function ($query) use ($search) {
-            $query->whereHas('attention.vehicle.person', function ($query) use ($search) {
-                $query->where('names', 'like', '%' . $search . '%')
-                    ->orWhere('fatherSurname', 'like', '%' . $search . '%')
-                    ->orWhere('motherSurname', 'like', '%' . $search . '%')
-                    ->orWhere('businessName', 'like', '%' . $search . '%');
-            })->orWhere('number', 'like', '%' . $search . '%')
-                ->where('status', '!=', 'Pagado sin boletear')
-                ->where('status', '!=', Constants::BUDGET_SHEET_FACTURADO);
-        })->limit(30)->get();
+        $budgetSheets = BudgetSheet::where('status', '!=', 'Pagado sin boletear')
+            ->where('status', '!=', Constants::BUDGET_SHEET_FACTURADO)
+            ->where(function ($query) use ($search) {
+                $query->whereHas('attention.vehicle.person', function ($query) use ($search) {
+                    $query->where('names', 'like', '%' . $search . '%')
+                        ->orWhere('fatherSurname', 'like', '%' . $search . '%')
+                        ->orWhere('motherSurname', 'like', '%' . $search . '%')
+                        ->orWhere('businessName', 'like', '%' . $search . '%');
+                })
+                    ->orWhere('number', 'like', '%' . $search . '%');
+            })
+            ->limit(30)
+            ->get();
+
         return response()->json(BudgetSheetResource::collection($budgetSheets));
     }
 

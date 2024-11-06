@@ -267,7 +267,7 @@ class PdfController extends Controller
 
         $tipoDocumento = '';
 
-        $num = $Movimiento->numberfull;
+        $num = $Movimiento->fullNumber;
         if (strpos($num, 'B') === 0) {
             $tipoDocumento = 'BOLETA ELECTRÓNICA';
             $linkRevisarFact = true;
@@ -345,6 +345,7 @@ class PdfController extends Controller
         $fileName = str_replace(' ', '_', $fileName); // Reemplazar espacios con guiones bajos
         return $pdf->stream($fileName);
     }
+
     public function creditNote($id)
     {
         $object = Note::with(['branchOffice', 'moviment', 'moviment.reception.details'])->find($id);

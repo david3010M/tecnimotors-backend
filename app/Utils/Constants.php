@@ -21,6 +21,9 @@ class Constants
     public const BUDGET_CREDITO = 'Credito';
     public const BUDGET_CONTADO = 'Contado';
     public const SALE_CONTADO = 'CONTADO';
+
+    public const SALE_STATUS_PENDIENTE = 'PENDIENTE';
+    public const SALE_STATUS_ENVIADO = 'ENVIADO';
     public const SALE_CREDITO = 'CREDITO';
     public const SALE_NORMAL = 'NORMAL';
     public const SALE_DETRACCION = 'DETRACCION';

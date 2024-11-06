@@ -2,8 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Utils\Constants;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
@@ -74,6 +72,7 @@ class SaleResource extends JsonResource
             'detractionPercentage' => $this->detractionPercentage,
             'paymentType' => $this->paymentType,
             'status' => $this->status,
+            'status_facturado' => $this->status_facturado,
             'taxableOperation' => $this->taxableOperation,
             'igv' => $this->igv,
             'total' => $this->total,

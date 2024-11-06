@@ -151,7 +151,7 @@ class SaleController extends Controller
             if (round($sale->total - $total, 2) != 0) {
                 return response()->json([
                     "error" => "El monto a pagar no coincide con el total " . number_format($sale->total, 2) .
-                    " diferencia " . number_format($sale->total - $total, 2),
+                        " diferencia " . number_format($sale->total - $total, 2),
                 ], 422);
             }
 
@@ -171,7 +171,7 @@ class SaleController extends Controller
             $tipo = 'M001';
             $tipo = str_pad($tipo, 4, '0', STR_PAD_RIGHT);
             $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(sequentialNumber, LOCATE("-", sequentialNumber) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM moviments WHERE SUBSTRING(sequentialNumber, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-            $siguienteNum = (int) $resultado;
+            $siguienteNum = (int)$resultado;
 
 //        DATA
             $routeVoucher = null;
@@ -236,7 +236,7 @@ class SaleController extends Controller
             $tipo = 'AMRT';
             $tipo = str_pad($tipo, 4, '0', STR_PAD_RIGHT);
             $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(sequentialNumber, LOCATE("-", sequentialNumber) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM amortizations WHERE SUBSTRING(sequentialNumber, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-            $siguienteNum = (int) $resultado;
+            $siguienteNum = (int)$resultado;
 
             Amortization::create([
                 'sequentialNumber' => $tipo . '-' . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT),
@@ -249,7 +249,7 @@ class SaleController extends Controller
 
         } else if ($sale->paymentType == Constants::SALE_CREDITO) {
             $sumCommitments = array_sum(array_column($request->input('commitments'), 'price'));
-            if (round($sumCommitments, 4) != round($sale->total, 4)) {
+            if (round($sale->total - $sumCommitments, 2) != 0) {
                 return response()->json(['error' => 'La suma de los compromisos no coincide con el total ' . $sale->total . ' diferencia ' . ($sale->total - $sumCommitments)], 422);
             }
             $sale->save();
@@ -438,7 +438,7 @@ class SaleController extends Controller
             if (round($sale->total - $total, 2) != 0) {
                 return response()->json([
                     "error" => "El monto a pagar no coincide con el total " . number_format($sale->total, 2) .
-                    " diferencia " . number_format($sale->total - $total, 2),
+                        " diferencia " . number_format($sale->total - $total, 2),
                 ], 422);
             }
 
@@ -686,8 +686,12 @@ class SaleController extends Controller
         // Log del cierre de la solicitud
         Log::info("Solicitud de VENTA finalizada para ID venta: $idventa. $funcion");
 
+        $moviment->status_facturado = Constants::SALE_STATUS_ENVIADO;
+        $moviment->save();
+
         return response()->json($moviment, 200);
     }
+
     public function updateFullNumber($sale): void
     {
         $documentTypePrefixes = [

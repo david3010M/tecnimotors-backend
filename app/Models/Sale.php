@@ -21,6 +21,7 @@ class Sale extends Model
         'detractionPercentage',
         'paymentType',
         'status',
+        'status_facturado',
         'taxableOperation',
         'igv',
         'total',

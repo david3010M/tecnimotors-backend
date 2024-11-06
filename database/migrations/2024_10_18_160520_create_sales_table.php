@@ -23,7 +23,8 @@ return new class extends Migration {
             $table->string('detractionCode')->nullable();
             $table->string('detractionPercentage')->nullable();
             $table->string('paymentType')->nullable(); // CONTADO, CREDITO
-            $table->string('status')->nullable()->default('Pendiente');
+            $table->string('status')->nullable()->default('PENDIENTE');
+            $table->string('status_facturado')->nullable()->default('PENDIENTE'); // PENDIENTE O ENVIADO
             $table->decimal('taxableOperation', 10)->nullable();
             $table->decimal('igv', 10)->nullable();
             $table->decimal('total', 10)->nullable();
