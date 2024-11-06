@@ -14,10 +14,20 @@ return new class extends Migration {
     {
         Schema::create('notes', function (Blueprint $table) {
             $table->id();
-            $table->date('date');
-            $table->foreignId('note_reason_id')->constrained('note_reasons');
+            $table->string('number')->nullable();
+            $table->string('fullNumber')->nullable();
+            $table->string('documentType')->nullable();
+            $table->date('date')->nullable();
+            $table->string('comment')->nullable();
+            $table->string('company')->default('TECNIMOTORS');
+            $table->decimal('discount', 10)->default(0);
+            $table->decimal('totalCreditNote', 10)->nullable();
+            $table->decimal('totalDocumentReference', 10)->nullable();
+            $table->string('status');
+            $table->foreignId('note_reason_id')->nullable()->constrained('note_reasons');
             $table->foreignId('sale_id')->nullable()->constrained('sales'); //ref
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

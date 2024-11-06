@@ -2,85 +2,232 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\IndexRequestNote;
+use App\Http\Resources\NoteResource;
 use App\Models\Note;
 use App\Http\Requests\StoreNoteRequest;
 use App\Http\Requests\UpdateNoteRequest;
+use App\Models\Sale;
+use App\Models\SaleDetail;
+use App\Utils\Constants;
 
 class NoteController extends Controller
 {
     /**
+     *
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * @OA\Get (
+     *     path="/tecnimotors-backend/public/api/note",
+     *     tags={"Note"},
+     *     summary="Listado de ventas",
+     *     description="Listado de ventas",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Parameter(name="all", in="query", description="Listar todos los registros", required=false, @OA\Schema(type="string", enum={"true", "false"})),
+     *     @OA\Parameter(name="page", in="query", description="Número de página", required=false, @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="per_page", in="query", description="Cantidad de registros por página", required=false, @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="direction", in="query", description="Orden de los registros", required=false, @OA\Schema(type="string", enum={"asc", "desc"})),
+     *     @OA\Response(response="200", description="Listado de notas de crédito", @OA\JsonContent(ref="#/components/schemas/NoteCollection")),
+     *     @OA\Response(response="401", description="No autorizado", @OA\JsonContent(ref="#/components/schemas/Unauthenticated"))
+     * )
      */
-    public function index()
+    public function index(IndexRequestNote $request)
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return $this->getFilteredResults(
+            Note::class,
+            $request,
+            Note::filters,
+            Note::sorts,
+            NoteResource::class
+        );
     }
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreNoteRequest  $request
-     * @return \Illuminate\Http\Response
+     * @OA\Post (
+     *     path="/tecnimotors-backend/public/api/note",
+     *     tags={"Note"},
+     *     summary="Crear nota de crédito",
+     *     description="Crear una nueva nota de crédito",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\RequestBody(required=true, description="Datos de la nota de crédito", @OA\JsonContent(ref="#/components/schemas/StoreNoteRequest")),
+     *     @OA\Response(response="200", description="Nota de crédito creada", @OA\JsonContent(ref="#/components/schemas/NoteResource")),
+     *     @OA\Response(response="401", description="No autorizado", @OA\JsonContent(ref="#/components/schemas/Unauthenticated"))
+     * )
      */
     public function store(StoreNoteRequest $request)
     {
-        //
+        $sale = Sale::find($request->sale_id);
+        foreach ($sale->commitments as $commitment) {
+            if ($commitment->amortizations->count() > 0) {
+                logger($commitment->amortizations->count());
+                logger($commitment->amortizations->toArray());
+                return response()->json(["message" => "No se puede crear una nota de crédito para una venta con amortizaciones"], 422);
+            }
+        }
+        if ($sale->documentType != Constants::SALE_FACTURA && $sale->documentType != Constants::SALE_BOLETA) {
+            return response()->json(["message" => "No se puede crear una nota de crédito para una venta de tipo " . $sale->documentType,], 422);
+        }
+        $documentType = $sale->documentType == Constants::SALE_BOLETA ? Constants::SALE_NOTA_CREDITO_BOLETA : Constants::SALE_NOTA_CREDITO_FACTURA;
+
+        $data = [
+            'number' => $this->nextCorrelativeQuery(Note::where('documentType', $documentType), 'number'),
+            'documentType' => $documentType,
+            'date' => $request->input('date'),
+            'comment' => $request->input('comment'),
+            'company' => 'TECNIMOTORS',
+            'discount' => $request->input('discount'),
+            'totalCreditNote' => $request->input('totalCreditNote'),
+            'totalDocumentReference' => $request->input('totalDocumentReference'),
+            'note_reason_id' => $request->input('note_reason_id'),
+            'sale_id' => $request->input('sale_id'),
+            'status' => Constants::CREDIT_NOTE_STATUS_PENDING,
+        ];
+
+        $note = Note::create($data);
+
+        foreach ($sale->saleDetails as $saleDetail) {
+            SaleDetail::create([
+                'description' => $saleDetail['description'],
+                'unit' => $saleDetail['unit'],
+                'quantity' => $saleDetail['quantity'],
+                'unitValue' => $saleDetail['unitValue'],
+                'unitPrice' => $saleDetail['unitPrice'],
+                'discount' => $saleDetail['discount'] ?? 0,
+                'subTotal' => $saleDetail['subTotal'],
+                'note_id' => $note->id,
+            ]);
+        }
+
+        $this->updateFullNumber($note);
+        $note = Note::find($note->id);
+        return response()->json(NoteResource::make($note));
     }
 
     /**
      * Display the specified resource.
-     *
-     * @param  \App\Models\Note  $note
-     * @return \Illuminate\Http\Response
+     * @OA\Get (
+     *     path="/tecnimotors-backend/public/api/note/{id}",
+     *     tags={"Note"},
+     *     summary="Mostrar nota de crédito",
+     *     description="Muestra una nota de crédito específica",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Parameter(name="id", in="path", description="ID de la nota de crédito", required=true, @OA\Schema(type="integer")),
+     *     @OA\Response(response="200", description="Nota de crédito", @OA\JsonContent(ref="#/components/schemas/NoteResource")),
+     *     @OA\Response(response="401", description="No autorizado", @OA\JsonContent(ref="#/components/schemas/Unauthenticated"))
+     * )
      */
-    public function show(Note $note)
+    public function show(int $id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Note  $note
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Note $note)
-    {
-        //
+        $note = Note::find($id);
+        if (!$note) return response()->json(["message" => "Nota de crédito no encontrada"], 404);
+        return response()->json(NoteResource::make($note));
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateNoteRequest  $request
-     * @param  \App\Models\Note  $note
-     * @return \Illuminate\Http\Response
+     * @OA\Put (
+     *     path="/tecnimotors-backend/public/api/note/{id}",
+     *     tags={"Note"},
+     *     summary="Actualizar nota de crédito",
+     *     description="Actualizar una nota de crédito existente",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Parameter(name="id", in="path", description="ID de la nota de crédito", required=true, @OA\Schema(type="integer")),
+     *     @OA\RequestBody(required=true, description="Datos de la nota de crédito", @OA\JsonContent(ref="#/components/schemas/UpdateNoteRequest")),
+     *     @OA\Response(response="200", description="Nota de crédito actualizada", @OA\JsonContent(ref="#/components/schemas/NoteResource")),
+     *     @OA\Response(response="401", description="No autorizado", @OA\JsonContent(ref="#/components/schemas/Unauthenticated"))
+     * )
      */
-    public function update(UpdateNoteRequest $request, Note $note)
+    public function update(UpdateNoteRequest $request, int $id)
     {
-        //
+        // Buscar la nota y verificar que exista
+        $note = Note::find($id);
+        if (!$note) {
+            return response()->json(["message" => "Nota de crédito no encontrada."], 404);
+        }
+        foreach ($note->sale->commitments as $commitment) {
+            if ($commitment->amortizations->count() > 0) {
+                logger($commitment->amortizations->count());
+                logger($commitment->amortizations->toArray());
+                return response()->json(["message" => "No se puede crear una nota de crédito para una venta con amortizaciones"], 422);
+            }
+        }
+        // Verificar que la venta asociada sea válida para una nota de crédito
+        $sale = Sale::find($request->sale_id);
+        if (!$sale || ($sale->documentType != Constants::SALE_FACTURA && $sale->documentType != Constants::SALE_BOLETA)) {
+            return response()->json([
+                "message" => "No se puede actualizar una nota de crédito para una venta de tipo " . ($sale->documentType ?? 'desconocido'),
+            ], 422);
+        }
+
+        $documentType = $sale->documentType == Constants::SALE_BOLETA
+            ? Constants::SALE_NOTA_CREDITO_BOLETA
+            : Constants::SALE_NOTA_CREDITO_FACTURA;
+
+        // Actualizar los datos de la nota
+        $note->update([
+            'documentType' => $documentType,
+            'date' => $request->input('date'),
+            'comment' => $request->input('comment'),
+            'discount' => $request->input('discount'),
+            'totalCreditNote' => $request->input('totalCreditNote'),
+            'totalDocumentReference' => $request->input('totalDocumentReference'),
+            'note_reason_id' => $request->input('note_reason_id'),
+            'sale_id' => $request->input('sale_id'),
+            'status' => Constants::CREDIT_NOTE_STATUS_PENDING, // Puedes ajustar este campo si el estado cambia al actualizar
+        ]);
+
+        // Actualizar los detalles de la venta asociados a la nota
+        $note->saleDetails()->delete(); // Elimina los detalles existentes
+        foreach ($sale->saleDetails as $saleDetail) {
+            SaleDetail::create([
+                'description' => $saleDetail['description'],
+                'unit' => $saleDetail['unit'],
+                'quantity' => $saleDetail['quantity'],
+                'unitValue' => $saleDetail['unitValue'],
+                'unitPrice' => $saleDetail['unitPrice'],
+                'discount' => $saleDetail['discount'] ?? 0,
+                'subTotal' => $saleDetail['subTotal'],
+                'note_id' => $note->id,
+            ]);
+        }
+
+        $this->updateFullNumber($note);
+
+        // Volver a cargar la nota actualizada con sus relaciones
+        $note = Note::with('saleDetails')->find($note->id);
+        return response()->json(NoteResource::make($note));
     }
+
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Note  $note
-     * @return \Illuminate\Http\Response
+     * @OA\Delete (
+     *     path="/tecnimotors-backend/public/api/note/{id}",
+     *     tags={"Note"},
+     *     summary="Eliminar nota de crédito",
+     *     description="Eliminar una nota de crédito existente",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Parameter(name="id", in="path", description="ID de la nota de crédito", required=true, @OA\Schema(type="integer")),
+     *     @OA\Response(response="200", description="Nota de crédito eliminada"),
+     *     @OA\Response(response="401", description="No autorizado", @OA\JsonContent(ref="#/components/schemas/Unauthenticated")),
+     * )
      */
-    public function destroy(Note $note)
+    public function destroy(int $id)
     {
-        //
+        $note = Note::find($id);
+        if (!$note) return response()->json(["message" => "Nota de crédito no encontrada"], 404);
+        $note->delete();
+        return response()->json(["message" => "Nota de crédito eliminada"]);
+    }
+
+    public function updateFullNumber($note): void
+    {
+        $documentTypePrefixes = [
+            Constants::SALE_NOTA_CREDITO_BOLETA => 'FC',
+            Constants::SALE_NOTA_CREDITO_FACTURA => 'BC',
+        ];
+        $fullNumber = $documentTypePrefixes[$note->documentType] . $note->sale?->cash?->series . '-' . $note->number;
+        $note->update(['fullNumber' => $fullNumber]);
+        $note->save();
     }
 }

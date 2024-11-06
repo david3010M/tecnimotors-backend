@@ -72,4 +72,9 @@ class Commitment extends Model
         return $this->hasMany(Extension::class);
     }
 
+    public function amortizations()
+    {
+        return $this->hasMany(Amortization::class);
+    }
+
 }

@@ -5,6 +5,11 @@ namespace App\Utils;
 class Constants
 {
 
+    public const CREDIT_NOTE_STATUS_PENDING = 'PENDIENTE';
+    public const CREDIT_NOTE_STATUS_PAID = 'PAGADO';
+    public const CREDIT_NOTE_STATUS_EXPIRED = 'VENCIDO';
+    public const CREDIT_NOTE_STATUS_CANCELED = 'ANULADO';
+
     public const AMORTIZATION_PAID = 'PAGADO';
     public const AMORTIZATION_PENDING = 'PENDIENTE';
     public const COMMITMENT_PENDING = 'PENDIENTE';

@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\NoteReason;
 use Illuminate\Database\Seeder;
 
 class NoteReasonSeeder extends Seeder
@@ -17,6 +17,15 @@ class NoteReasonSeeder extends Seeder
         $noteReasons = [
             ['code' => '1', 'description' => 'Anulación de la Operación'],
             ['code' => '2', 'description' => 'Anulación por error en el monto'],
+            ['code' => '3', 'description' => 'Correción por error en la descripción'],
+            ['code' => '4', 'description' => 'Descuento Global'],
+            ['code' => '5', 'description' => 'Descuento por ítem'],
+            ['code' => '6', 'description' => 'Devolución total'],
+            ['code' => '7', 'description' => 'Devolución por ítem'],
         ];
+
+        foreach ($noteReasons as $noteReason) {
+            NoteReason::create($noteReason);
+        }
     }
 }

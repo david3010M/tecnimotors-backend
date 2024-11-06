@@ -606,10 +606,6 @@ class SaleController extends Controller
         }
     }
 
-    /**
-     * @param $sale
-     * @return void
-     */
     public function updateFullNumber($sale): void
     {
         $documentTypePrefixes = [

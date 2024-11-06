@@ -15433,6 +15433,279 @@
                 ]
             }
         },
+        "/tecnimotors-backend/public/api/note": {
+            "get": {
+                "tags": [
+                    "Note"
+                ],
+                "summary": "Listado de ventas",
+                "description": "Listado de ventas",
+                "operationId": "d4f9a6fb5bfb9bd771ad5b4784f36933",
+                "parameters": [
+                    {
+                        "name": "all",
+                        "in": "query",
+                        "description": "Listar todos los registros",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "true",
+                                "false"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Número de página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Cantidad de registros por página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "direction",
+                        "in": "query",
+                        "description": "Orden de los registros",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Listado de notas de crédito",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NoteCollection"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Unauthenticated"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Note"
+                ],
+                "summary": "Crear nota de crédito",
+                "description": "Crear una nueva nota de crédito",
+                "operationId": "d53d4a9e3bcca1a5d743451a75816f5d",
+                "requestBody": {
+                    "description": "Datos de la nota de crédito",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreNoteRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Nota de crédito creada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NoteResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Unauthenticated"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/note/{id}": {
+            "get": {
+                "tags": [
+                    "Note"
+                ],
+                "summary": "Mostrar nota de crédito",
+                "description": "Muestra una nota de crédito específica",
+                "operationId": "6dac929d9757cc8fa582f772b02428b2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la nota de crédito",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Nota de crédito",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NoteResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Unauthenticated"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Note"
+                ],
+                "summary": "Actualizar nota de crédito",
+                "description": "Actualizar una nota de crédito existente",
+                "operationId": "cf8a3f5623afa5716ae7de240ef1b241",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la nota de crédito",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Datos de la nota de crédito",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateNoteRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Nota de crédito actualizada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NoteResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Unauthenticated"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Note"
+                ],
+                "summary": "Eliminar nota de crédito",
+                "description": "Eliminar una nota de crédito existente",
+                "operationId": "2772f6be1d930110a58ce4d0da4b65e5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la nota de crédito",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Nota de crédito eliminada"
+                    },
+                    "401": {
+                        "description": "No autorizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Unauthenticated"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/tecnimotors-backend/public/api/noteReason": {
             "get": {
                 "tags": [
@@ -16139,6 +16412,48 @@
                 },
                 "type": "object"
             },
+            "StoreNoteRequest": {
+                "title": "StoreNoteRequest",
+                "description": "Store note request",
+                "required": [
+                    "date",
+                    "discount",
+                    "note_reason_id",
+                    "sale_id"
+                ],
+                "properties": {
+                    "date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2021-01-01"
+                    },
+                    "comment": {
+                        "type": "string",
+                        "example": "comment"
+                    },
+                    "discount": {
+                        "type": "number",
+                        "example": "10.00"
+                    },
+                    "totalCreditNote": {
+                        "type": "number",
+                        "example": "100.00"
+                    },
+                    "totalDocumentReference": {
+                        "type": "number",
+                        "example": "110.00"
+                    },
+                    "note_reason_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "sale_id": {
+                        "type": "integer",
+                        "example": "1"
+                    }
+                },
+                "type": "object"
+            },
             "StoreSaleRequest": {
                 "title": "StoreSaleRequest",
                 "required": [
@@ -16309,6 +16624,42 @@
                         "description": "The description of the note reason",
                         "type": "string",
                         "example": "description"
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateNoteRequest": {
+                "title": "UpdateNoteRequest",
+                "description": "Update note request",
+                "properties": {
+                    "date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2021-01-01"
+                    },
+                    "comment": {
+                        "type": "string",
+                        "example": "comment"
+                    },
+                    "discount": {
+                        "type": "number",
+                        "example": "10.00"
+                    },
+                    "totalCreditNote": {
+                        "type": "number",
+                        "example": "100.00"
+                    },
+                    "totalDocumentReference": {
+                        "type": "number",
+                        "example": "110.00"
+                    },
+                    "note_reason_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "sale_id": {
+                        "type": "integer",
+                        "example": "1"
                     }
                 },
                 "type": "object"
@@ -16486,6 +16837,95 @@
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/NoteReasonResource"
+                        }
+                    },
+                    "links": {
+                        "$ref": "#/components/schemas/PaginationLinks"
+                    },
+                    "meta": {
+                        "$ref": "#/components/schemas/PaginationMeta"
+                    }
+                },
+                "type": "object"
+            },
+            "NoteResource": {
+                "title": "NoteResource",
+                "description": "Note resource",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "number": {
+                        "type": "string",
+                        "example": "NOTA-123456"
+                    },
+                    "documentType": {
+                        "type": "string",
+                        "example": "NOTA DE CRÉDITO"
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2021-01-01"
+                    },
+                    "comment": {
+                        "type": "string",
+                        "example": "comment"
+                    },
+                    "company": {
+                        "type": "string",
+                        "example": "TECNIMOTORS"
+                    },
+                    "discount": {
+                        "type": "number",
+                        "example": "10.00"
+                    },
+                    "totalCreditNote": {
+                        "type": "number",
+                        "example": "100.00"
+                    },
+                    "totalDocumentReference": {
+                        "type": "number",
+                        "example": "110.00"
+                    },
+                    "note_reason_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "sale_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "PENDING"
+                    },
+                    "sale": {
+                        "$ref": "#/components/schemas/SaleResource"
+                    },
+                    "details": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SaleDetailResource"
+                        }
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2021-01-01T00:00:00"
+                    }
+                },
+                "type": "object"
+            },
+            "NoteCollection": {
+                "title": "NoteCollection",
+                "description": "Note collection",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/NoteResource"
                         }
                     },
                     "links": {
@@ -19217,6 +19657,10 @@
         {
             "name": "Reporte Excel",
             "description": "Reporte Excel"
+        },
+        {
+            "name": "Note",
+            "description": "Note"
         },
         {
             "name": "Note Reason",

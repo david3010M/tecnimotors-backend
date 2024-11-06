@@ -65,6 +65,7 @@ class SaleResource extends JsonResource
     public function toArray($request): array
     {
         $data = [
+            'id' => $this->id,
             'number' => $this->fullNumber,
             'paymentDate' => $this->paymentDate ? $this->paymentDate->format('Y-m-d') : null,
             'documentType' => $this->documentType,
@@ -90,13 +91,14 @@ class SaleResource extends JsonResource
             'person_id' => $this->person_id,
             'budget_sheet_id' => $this->budget_sheet_id,
             'cash_id' => $this->cash_id,
+            'client' => $this->person,
+            'budgetSheet' => $this->budgetSheet,
             'created_at' => $this->created_at,
         ];
 
         if ($this->includeBudgetSheet) {
             $data['saleDetails'] = SaleDetailResource::collection($this->saleDetails);
             $data['commitments'] = CommitmentResource::collection($this->commitments);
-            $data['budgetSheet'] = $this->budgetSheet;
             $data['cash'] = $this->cash;
         }
 

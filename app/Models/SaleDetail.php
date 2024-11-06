@@ -20,6 +20,7 @@ class SaleDetail extends Model
         'discount',
         'subTotal',
         'sale_id',
+        'note_id',
         'created_at',
     ];
 
