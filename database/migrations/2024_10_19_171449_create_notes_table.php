@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->id();
             $table->date('date');
             $table->foreignId('note_reason_id')->constrained('note_reasons');
-            $table->foreignId('sale_id')->nullable()->constrained('sales');
+            $table->foreignId('sale_id')->nullable()->constrained('sales'); //ref
             $table->timestamps();
         });
     }

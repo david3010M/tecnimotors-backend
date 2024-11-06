@@ -64,16 +64,8 @@ class SaleResource extends JsonResource
 
     public function toArray($request): array
     {
-        $documentTypePrefixes = [
-            Constants::SALE_TICKET => 'T',
-            Constants::SALE_BOLETA => 'B',
-            Constants::SALE_FACTURA => 'F',
-            Constants::SALE_NOTA_CREDITO_BOLETA => 'FC',
-            Constants::SALE_NOTA_CREDITO_FACTURA => 'BC',
-        ];
-
         $data = [
-            'number' => $documentTypePrefixes[$this->documentType] . $this->cash?->series . '-' . $this->number,
+            'number' => $this->fullNumber,
             'paymentDate' => $this->paymentDate ? $this->paymentDate->format('Y-m-d') : null,
             'documentType' => $this->documentType,
             'saleType' => $this->saleType,

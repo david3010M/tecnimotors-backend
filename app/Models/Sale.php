@@ -13,6 +13,7 @@ class Sale extends Model
 
     protected $fillable = [
         'number',
+        'fullNumber',
         'paymentDate',
         'documentType',
         'saleType',

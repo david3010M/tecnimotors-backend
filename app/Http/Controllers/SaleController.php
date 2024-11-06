@@ -292,11 +292,14 @@ class SaleController extends Controller
             'total' => $total,
         ]);
 
+        $this->updateFullNumber($sale);
+
         $sale = Sale::find($sale->id);
         if ($budgetSheet) {
             $budgetSheet->status = Constants::BUDGET_SHEET_FACTURADO;
             $budgetSheet->save();
         }
+
         return response()->json(SaleResource::make($sale)->withBudgetSheet());
     }
 
@@ -498,6 +501,8 @@ class SaleController extends Controller
             'total' => $total,
         ]);
 
+        $this->updateFullNumber($sale);
+
         $sale = Sale::find($sale->id);
         $budgetSheet->status = Constants::BUDGET_SHEET_FACTURADO;
         $budgetSheet->save();
@@ -528,11 +533,13 @@ class SaleController extends Controller
         $sale->delete();
         return response()->json(['message' => 'Sale deleted']);
     }
+
     public function pruebaFacturador()
     {
         // Aquí puedes pasar datos a la vista si lo necesitas, pero por ahora solo devuelve la vista.
         return view('pruebaFacturador');
     }
+
     public function getArchivosDocument($idventa, $typeDocument)
     {
         // Habilitar CORS para un origen específico
@@ -597,5 +604,23 @@ class SaleController extends Controller
         } else {
             echo 'Error en la solicitud.';
         }
+    }
+
+    /**
+     * @param $sale
+     * @return void
+     */
+    public function updateFullNumber($sale): void
+    {
+        $documentTypePrefixes = [
+            Constants::SALE_TICKET => 'T',
+            Constants::SALE_BOLETA => 'B',
+            Constants::SALE_FACTURA => 'F',
+            Constants::SALE_NOTA_CREDITO_BOLETA => 'FC',
+            Constants::SALE_NOTA_CREDITO_FACTURA => 'BC',
+        ];
+        $fullNumber = $documentTypePrefixes[$sale->documentType] . $sale->cash?->series . '-' . $sale->number;
+        $sale->update(['fullNumber' => $fullNumber]);
+        $sale->save();
     }
 }
