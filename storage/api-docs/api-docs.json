@@ -15511,6 +15511,191 @@
                         "bearerAuth": []
                     }
                 ]
+            },
+            "post": {
+                "tags": [
+                    "Note Reason"
+                ],
+                "summary": "Create a note reason",
+                "description": "Create a note reason",
+                "operationId": "b157fe50136b6a86c3c1c52b0a776c8f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreNoteReasonRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NoteReasonResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/noteReason/{id}": {
+            "get": {
+                "tags": [
+                    "Note Reason"
+                ],
+                "summary": "Get a note reason",
+                "description": "Get a note reason",
+                "operationId": "59ae3a087c88c988d87547ceef394679",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Note reason id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NoteReasonResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Note reason not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Note Reason"
+                ],
+                "summary": "Update a note reason",
+                "description": "Update a note reason",
+                "operationId": "4f456658895e9e66d4b3139c62768f7a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Note reason id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateNoteReasonRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NoteReasonResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Note reason not found"
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Note Reason"
+                ],
+                "summary": "Delete a note reason",
+                "description": "Delete a note reason",
+                "operationId": "da106d38ba47f03f1b3e61daf154e729",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Note reason id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NoteReasonResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Note reason not found"
+                    },
+                    "409": {
+                        "description": "Note reason has notes"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/tecnimotors-backend/public/api/sale": {
@@ -15934,6 +16119,26 @@
                 },
                 "type": "object"
             },
+            "StoreNoteReasonRequest": {
+                "title": "StoreNoteReasonRequest",
+                "required": [
+                    "code",
+                    "description"
+                ],
+                "properties": {
+                    "code": {
+                        "description": "The code of the note reason",
+                        "type": "string",
+                        "example": "1"
+                    },
+                    "description": {
+                        "description": "The description of the note reason",
+                        "type": "string",
+                        "example": "description"
+                    }
+                },
+                "type": "object"
+            },
             "StoreSaleRequest": {
                 "title": "StoreSaleRequest",
                 "required": [
@@ -16084,6 +16289,26 @@
                             },
                             "type": "object"
                         }
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateNoteReasonRequest": {
+                "title": "UpdateNoteReasonRequest",
+                "required": [
+                    "code",
+                    "description"
+                ],
+                "properties": {
+                    "code": {
+                        "description": "The code of the note reason",
+                        "type": "string",
+                        "example": "1"
+                    },
+                    "description": {
+                        "description": "The description of the note reason",
+                        "type": "string",
+                        "example": "description"
                     }
                 },
                 "type": "object"

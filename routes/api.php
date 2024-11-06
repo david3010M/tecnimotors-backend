@@ -39,6 +39,7 @@ use App\Http\Controllers\Api\VehicleModelController;
 use App\Http\Controllers\Api\WorkerController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ExcelReportController;
+use App\Http\Controllers\NoteReasonController;
 use App\Http\Controllers\SaleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -231,7 +232,7 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::get('reportCaja', [PdfController::class, 'reportCaja'])->name('reportCaja');
     Route::get('movimentLast', [MovimentController::class, 'showLastMovPayment']);
     Route::get('getArchivosDocument/{id}/{tipodocumento}', [SaleController::class, 'getArchivosDocument']);
-    
+
 
     Route::get('typeUser/{id}/access', [TypeUserController::class, 'getAccess']);
 
@@ -291,5 +292,10 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::resource('sale', SaleController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'sale.index', 'store' => 'sale.store', 'show' => 'sale.show',
             'update' => 'sale.update', 'destroy' => 'sale.destroy']);
+    
+    //    NOTE REASON
+    Route::resource('noteReason', NoteReasonController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'noteReason.index', 'store' => 'noteReason.store', 'show' => 'noteReason.show',
+            'update' => 'noteReason.update', 'destroy' => 'noteReason.destroy']);
 
 });

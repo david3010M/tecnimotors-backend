@@ -15,7 +15,7 @@ return new class extends Migration {
         Schema::create('notes', function (Blueprint $table) {
             $table->id();
             $table->date('date');
-            $table->text('reason');
+            $table->foreignId('note_reason_id')->constrained('note_reasons');
             $table->foreignId('sale_id')->nullable()->constrained('sales');
             $table->timestamps();
         });
