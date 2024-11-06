@@ -259,14 +259,15 @@ class PdfController extends Controller
                     "vu" => $detalle->unitValue ?? '-',
                     "pu" => $detalle->unitPrice, // Cantidad fija (es un servicio)
                     "dscto" => $detalle->discount ?? 0,
-                    "precioventaunitarioxitem" => $detalle->subTotal ?? 0,
+                    // "precioventaunitarioxitem" => $detalle->subTotal ?? 0,
+                    "precioventaunitarioxitem" => $detalle->unitPrice ?? 0,
                 ];
             }
         }
 
         $tipoDocumento = '';
 
-        $num = $Movimiento->number;
+        $num = $Movimiento->numberfull;
         if (strpos($num, 'B') === 0) {
             $tipoDocumento = 'BOLETA ELECTRÓNICA';
             $linkRevisarFact = true;

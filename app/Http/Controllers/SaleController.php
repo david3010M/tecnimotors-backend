@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Storage;
 
 class SaleController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      * @OA\Get (
@@ -300,15 +301,15 @@ class SaleController extends Controller
             $budgetSheet->save();
         }
 
-        switch ($sale->documentType) {
+        switch ($request->input('documentType')) {
             case 'BOLETA':
-                // Log::info("VENTA BOLETA DECLARADA BIEN");
-                $this->declararBoletaFactura($sale->id, 3, 1);
+                Log::info($this->declararBoletaFactura($sale->id, 3));
                 break;
-
             case 'FACTURA':
-                // Log::info("VENTA FACTURA DECLARADA BIEN");
-                $this->declararBoletaFactura($sale->id, 2, 1);
+                $this->declararBoletaFactura($sale->id, 2);
+                break;
+            default:
+                Log::info("documentType NO DEFINIDO id venta: $sale->id");
                 break;
         }
 
@@ -627,18 +628,19 @@ class SaleController extends Controller
             echo 'Error en la solicitud.';
         }
     }
+
     public function declararBoletaFactura($idventa, $idtipodocumento)
     {
         $empresa_id = 1;
 
-        $moviment = Moviment::find($idventa);
+        $moviment = Sale::find($idventa);
 
         if (!$moviment) {
             return response()->json(['message' => 'VENTA NO ENCONTRADA'], 422);
         }
-        if ($moviment->status_facturado != 'Pendiente') {
-            return response()->json(['message' => 'VENTA NO SE ENCUENTRA EN PENDIENTE DE ENVÍO'], 422);
-        }
+        // if ($moviment->status_facturado != 'Pendiente') {
+        //     return response()->json(['message' => 'VENTA NO SE ENCUENTRA EN PENDIENTE DE ENVÍO'], 422);
+        // }
 
         // Definir la función de acuerdo al tipo de documento
         if ($idtipodocumento == 3) {
@@ -683,12 +685,9 @@ class SaleController extends Controller
         curl_close($ch);
         // Log del cierre de la solicitud
         Log::info("Solicitud de VENTA finalizada para ID venta: $idventa. $funcion");
-        // $moviment->user_factured_id = Auth::user()->id;
-        // $moviment->status_facturado = 'Enviado';
-        // $moviment->save();
+
         return response()->json($moviment, 200);
     }
-
     public function updateFullNumber($sale): void
     {
         $documentTypePrefixes = [

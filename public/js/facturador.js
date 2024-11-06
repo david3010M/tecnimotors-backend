@@ -73,5 +73,5 @@ $(document).ready(function () {
 
 // Ejemplo de cómo llamar la función:
 // $(document).ready(function () {
- declararBoletaFactura(1, 2,1); // Llamada de prueba con valores de ejemplo
+//  declararBoletaFactura(1, 2,1); // Llamada de prueba con valores de ejemplo
 // });
