@@ -93,6 +93,7 @@ class NoteController extends Controller
 
         $this->updateFullNumber($note);
         $note = Note::find($note->id);
+        $sale->update(['status' => Constants::SALE_STATUS_ANULADO]);
         return response()->json(NoteResource::make($note));
     }
 

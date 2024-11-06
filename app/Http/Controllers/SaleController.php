@@ -148,10 +148,10 @@ class SaleController extends Controller
                 ], 422);
             }
 
-            if (round($sale->total - $total, 2) != 0) {
+            if (round($sale->total - $total, 1) != 0) {
                 return response()->json([
-                    "error" => "El monto a pagar no coincide con el total " . number_format($sale->total, 2) .
-                        " diferencia " . number_format($sale->total - $total, 2),
+                    "error" => "El monto a pagar no coincide con el total " . round($sale->total, 1) .
+                        " diferencia " . round($sale->total - $total, 1),
                 ], 422);
             }
 
@@ -249,7 +249,7 @@ class SaleController extends Controller
 
         } else if ($sale->paymentType == Constants::SALE_CREDITO) {
             $sumCommitments = array_sum(array_column($request->input('commitments'), 'price'));
-            if (round($sale->total - $sumCommitments, 2) != 0) {
+            if (round($sale->total - $sumCommitments, 1) != 0) {
                 return response()->json(['error' => 'La suma de los compromisos no coincide con el total ' . $sale->total . ' diferencia ' . ($sale->total - $sumCommitments)], 422);
             }
             $sale->save();
@@ -435,7 +435,7 @@ class SaleController extends Controller
                 return response()->json(["error" => "El monto a pagar no puede ser 0"], 422);
             }
 
-            if (round($sale->total - $total, 2) != 0) {
+            if (round($sale->total - $total, 1) != 0) {
                 return response()->json([
                     "error" => "El monto a pagar no coincide con el total " . number_format($sale->total, 2) .
                         " diferencia " . number_format($sale->total - $total, 2),
@@ -465,7 +465,7 @@ class SaleController extends Controller
             ]);
         } else if ($sale->paymentType == Constants::SALE_CREDITO) {
             $sumCommitments = array_sum(array_column($request->input('commitments'), 'price'));
-            if (round($sumCommitments, 4) != round($sale->total, 4)) {
+            if (round($sale->total - $sumCommitments, 1) != 0) {
                 return response()->json(['error' => 'La suma de los compromisos no coincide con el total ' . $sale->total . ' diferencia ' . ($sale->total - $sumCommitments)], 422);
             }
 

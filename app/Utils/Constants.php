@@ -24,6 +24,7 @@ class Constants
 
     public const SALE_STATUS_PENDIENTE = 'PENDIENTE';
     public const SALE_STATUS_ENVIADO = 'ENVIADO';
+    public const SALE_STATUS_ANULADO = 'ANULADO';
     public const SALE_CREDITO = 'CREDITO';
     public const SALE_NORMAL = 'NORMAL';
     public const SALE_DETRACCION = 'DETRACCION';
