@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\IndexRequestSale;
+use App\Http\Requests\StoreSaleRequest;
+use App\Http\Requests\UpdateSaleRequest;
 use App\Http\Resources\SaleResource;
 use App\Models\Amortization;
 use App\Models\budgetSheet;
 use App\Models\Commitment;
 use App\Models\Moviment;
 use App\Models\Sale;
-use App\Http\Requests\StoreSaleRequest;
-use App\Http\Requests\UpdateSaleRequest;
 use App\Models\SaleDetail;
 use App\Utils\Constants;
 use Carbon\Carbon;
@@ -150,7 +150,7 @@ class SaleController extends Controller
             if (round($sale->total - $total, 2) != 0) {
                 return response()->json([
                     "error" => "El monto a pagar no coincide con el total " . number_format($sale->total, 2) .
-                        " diferencia " . number_format($sale->total - $total, 2),
+                    " diferencia " . number_format($sale->total - $total, 2),
                 ], 422);
             }
 
@@ -170,7 +170,7 @@ class SaleController extends Controller
             $tipo = 'M001';
             $tipo = str_pad($tipo, 4, '0', STR_PAD_RIGHT);
             $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(sequentialNumber, LOCATE("-", sequentialNumber) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM moviments WHERE SUBSTRING(sequentialNumber, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-            $siguienteNum = (int)$resultado;
+            $siguienteNum = (int) $resultado;
 
 //        DATA
             $routeVoucher = null;
@@ -235,7 +235,7 @@ class SaleController extends Controller
             $tipo = 'AMRT';
             $tipo = str_pad($tipo, 4, '0', STR_PAD_RIGHT);
             $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(sequentialNumber, LOCATE("-", sequentialNumber) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM amortizations WHERE SUBSTRING(sequentialNumber, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-            $siguienteNum = (int)$resultado;
+            $siguienteNum = (int) $resultado;
 
             Amortization::create([
                 'sequentialNumber' => $tipo . '-' . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT),
@@ -300,6 +300,18 @@ class SaleController extends Controller
             $budgetSheet->save();
         }
 
+        switch ($sale->documentType) {
+            case 'BOLETA':
+                // Log::info("VENTA BOLETA DECLARADA BIEN");
+                $this->declararBoletaFactura($sale->id, 3, 1);
+                break;
+
+            case 'FACTURA':
+                // Log::info("VENTA FACTURA DECLARADA BIEN");
+                $this->declararBoletaFactura($sale->id, 2, 1);
+                break;
+        }
+
         return response()->json(SaleResource::make($sale)->withBudgetSheet());
     }
 
@@ -335,7 +347,10 @@ class SaleController extends Controller
                 'budgetSheet.attention.elements',
             ]
         )->find($id);
-        if (!$sale) return response()->json(['message' => 'Sale not found'], 404);
+        if (!$sale) {
+            return response()->json(['message' => 'Sale not found'], 404);
+        }
+
         return response()->json(SaleResource::make($sale)->withBudgetSheet());
     }
 
@@ -358,7 +373,9 @@ class SaleController extends Controller
     public function update(UpdateSaleRequest $request, Sale $sale)
     {
         $budgetSheet = BudgetSheet::find($request->budget_sheet_id);
-        if (!$budgetSheet) return response()->json(['message' => 'Budget sheet not found'], 404);
+        if (!$budgetSheet) {
+            return response()->json(['message' => 'Budget sheet not found'], 404);
+        }
 
         $subtotal = 0;
         foreach ($request->saleDetails as $saleDetail) {
@@ -420,7 +437,7 @@ class SaleController extends Controller
             if (round($sale->total - $total, 2) != 0) {
                 return response()->json([
                     "error" => "El monto a pagar no coincide con el total " . number_format($sale->total, 2) .
-                        " diferencia " . number_format($sale->total - $total, 2),
+                    " diferencia " . number_format($sale->total - $total, 2),
                 ], 422);
             }
 
@@ -510,7 +527,6 @@ class SaleController extends Controller
         return response()->json(SaleResource::make($sale)->withBudgetSheet());
     }
 
-
     /**
      * Remove the specified resource from storage.
      * @OA\Delete (
@@ -528,8 +544,14 @@ class SaleController extends Controller
     public function destroy(int $id)
     {
         $sale = Sale::find($id);
-        if (!$sale) return response()->json(['message' => 'Sale not found'], 404);
-        if ($sale->status === Constants::SALE_FACTURADO) return response()->json(['message' => 'Sale already invoiced'], 422);
+        if (!$sale) {
+            return response()->json(['message' => 'Sale not found'], 404);
+        }
+
+        if ($sale->status === Constants::SALE_FACTURADO) {
+            return response()->json(['message' => 'Sale already invoiced'], 422);
+        }
+
         $sale->delete();
         return response()->json(['message' => 'Sale deleted']);
     }
@@ -604,6 +626,67 @@ class SaleController extends Controller
         } else {
             echo 'Error en la solicitud.';
         }
+    }
+    public function declararBoletaFactura($idventa, $idtipodocumento)
+    {
+        $empresa_id = 1;
+
+        $moviment = Moviment::find($idventa);
+
+        if (!$moviment) {
+            return response()->json(['message' => 'VENTA NO ENCONTRADA'], 422);
+        }
+        if ($moviment->status_facturado != 'Pendiente') {
+            return response()->json(['message' => 'VENTA NO SE ENCUENTRA EN PENDIENTE DE ENVÍO'], 422);
+        }
+
+        // Definir la función de acuerdo al tipo de documento
+        if ($idtipodocumento == 3) {
+            $funcion = "enviarBoleta";
+        } else {
+            $funcion = "enviarFactura";
+        }
+
+        // Construir la URL con los parámetros
+        $url = "https://develop.garzasoft.com:81/tecnimotors-facturador/controlador/contComprobante.php";
+        $params = [
+            'funcion' => $funcion,
+            'idventa' => $idventa,
+            'empresa_id' => $empresa_id,
+        ];
+        $url .= '?' . http_build_query($params);
+
+        // Inicializar cURL
+        $ch = curl_init();
+
+        // Configurar opciones cURL
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        // Ejecutar la solicitud y obtener la respuesta
+        $response = curl_exec($ch);
+
+        // Verificar si ocurrió algún error
+        if (curl_errno($ch)) {
+            $error = curl_error($ch);
+            // Registrar el error en el log
+            Log::error("Error en cURL al enviar VENTA. ID venta: $idventa,$funcion Error: $error");
+            // echo 'Error en cURL: ' . $error;
+        } else {
+            // Registrar la respuesta en el log
+            Log::error("Respuesta recibida de VENTA para ID venta: $idventa,$funcion Respuesta: $response");
+            // Mostrar la respuesta
+            // echo 'Respuesta: ' . $response;
+        }
+
+        // Cerrar cURL
+        curl_close($ch);
+        // Log del cierre de la solicitud
+        Log::info("Solicitud de VENTA finalizada para ID venta: $idventa. $funcion");
+        // $moviment->user_factured_id = Auth::user()->id;
+        // $moviment->status_facturado = 'Enviado';
+        // $moviment->save();
+        return response()->json($moviment, 200);
     }
 
     public function updateFullNumber($sale): void

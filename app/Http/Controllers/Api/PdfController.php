@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Attention;
 use App\Models\budgetSheet;
 use App\Models\Moviment;
+use App\Models\Note;
 use App\Models\Person;
 use App\Models\Sale;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -239,7 +240,7 @@ class PdfController extends Controller
     {
 
         $Movimiento = Sale::with(['budgetSheet', 'commitments', 'saleDetails', 'moviment'])
-        ->find($idMov);
+            ->find($idMov);
 
         $linkRevisarFact = false;
         $productList = [];
@@ -318,11 +319,11 @@ class PdfController extends Controller
             'cuentas' => $Movimiento->installments,
             'vuelto' => '0.00',
             'totalPagado' => $Movimiento->total,
-            'presupuesto' => $Movimiento?->budgetSheet?->number?? '-',
+            'presupuesto' => $Movimiento?->budgetSheet?->number ?? '-',
             'linkRevisarFact' => $linkRevisarFact,
             'formaPago' => $Movimiento->formaPago ?? '-',
             'fechaInicio' => $fechaInicio,
-            
+
             'typeSale' => $Movimiento->saleType === 'NORMAL' ? 'Normal' : ($Movimiento->saleType === 'DETRACCION' ? 'Detracción' : '-'),
             'codeDetraction' => $Movimiento->detractionCode ?? '-',
         ];
@@ -342,5 +343,119 @@ class PdfController extends Controller
         $fileName = '20487467139-' . $tipoDocumento . '-' . $num . '.pdf'; // Formato del nombre
         $fileName = str_replace(' ', '_', $fileName); // Reemplazar espacios con guiones bajos
         return $pdf->stream($fileName);
+    }
+    public function creditNote($id)
+    {
+        $object = Note::with(['branchOffice', 'moviment', 'moviment.reception.details'])->find($id);
+
+        $Movimiento = Moviment::with(['reception',
+            'reception.firstCarrierGuide.origin', 'reception.firstCarrierGuide.destination'])->find($object->moviment_id);
+        $linkRevisarFact = false;
+        $pointSend = strtoupper($Movimiento->reception?->pointSender?->name) ?? '';
+        $pointDestination = strtoupper($Movimiento->reception?->pointDestination?->name ?? '');
+        $ruta = $pointSend . ' - ' . $pointDestination;
+        $receptionDetails = $Movimiento?->reception?->details() ?? [];
+        $descriptionString = '';
+        if ($receptionDetails != []) {
+            $descriptions = $receptionDetails?->pluck('description')?->toArray() ?? []; // Obtiene todas las descripciones
+            $descriptionString = implode(', ', $descriptions); // Une las descripciones con comas
+        }
+        if ($Movimiento) {
+            $productList = $Movimiento->detalles;
+        }
+        // Inicializar el array de detalles
+        $detalles = [];
+
+        if (($productList) != []) {
+            foreach ($productList as $producto) {
+                // Buscar la recepción si existe 'reception_id', si no asigna null
+                // $reception = Reception::find($producto->reception_id ?? null);
+
+                // Usar operadores de navegación segura y coalescencia para evitar errores y asignar valores por defecto
+                $detalles[] = [
+                    "descripcion" => $producto->description ?? '-',
+                    "os" => $producto->os ?? '-',
+                    "guia" => $producto->guia ?? '-',
+                    "placaVehiculo" => $producto->placa ?? '-',
+                    "cantidad" => $producto->cantidad ?? 1, // Cantidad fija (es un servicio)
+                    "precioventaunitarioxitem" => $producto->precioVenta ?? 0,
+                ];
+            }
+        }
+        $tipoDocumento = '';
+        $num = $Movimiento->sequentialNumber;
+        if (strpos($num, 'B') === 0) {
+            $tipoDocumento = 'BOLETA ELECTRÓNICA';
+            $linkRevisarFact = true;
+        } elseif (strpos($num, 'F') === 0) {
+            $tipoDocumento = 'FACTURA ELECTRÓNICA';
+            $linkRevisarFact = true;
+        } elseif (strpos($num, 'T') === 0) {
+            $tipoDocumento = 'TICKET ELECTRÓNICO';
+            $linkRevisarFact = false;
+        } else {
+            abort(404);
+        }
+        $dateTime = Carbon::now()->format('Y-m-d H:i:s');
+        // $personaCliente = Person::find($Movimiento->person_id);
+        $personaCliente = Person::withTrashed()->find($Movimiento->person_id);
+        $fechaInicio = $Movimiento->created_at;
+        $rucOdni = $personaCliente->documentNumber;
+        $direccion = "";
+        if (strtoupper($personaCliente->typeofDocument) != 'DNI') {
+            $nombreCliente = $personaCliente->businessName;
+            $direccion = $personaCliente->fiscalAddress ?? '-';
+        } else {
+            $nombreCliente = $personaCliente->names . ' ' . $personaCliente->fatherSurname . ' ' . $personaCliente->motherSurname;
+            $nombreCliente = $personaCliente->names . ' ' . $personaCliente->fatherSurname . ' ' . $personaCliente->motherSurname;
+            $direccion = $personaCliente->address ?? '-';
+        }
+
+        if ($personaCliente->names == 'VARIOS') {
+            $nombreCliente = "VARIOS";
+            if (strpos($num, 'B') === 0) {
+                $rucOdni = '11111111';
+            } elseif (strpos($num, 'F') === 0) {
+                $rucOdni = '11111111111';
+            }
+        }
+        $direccion = $personaCliente->address ?? '-';
+        // Generar el código QR
+        $dataE = [
+            'object' => $object,
+            'title' => 'NOTA DE CREDITO',
+            'linkRevisarFact' => $linkRevisarFact,
+            'ruc_dni' => $rucOdni,
+            'direccion' => $direccion,
+            'tipoElectronica' => 'NOTA DE CREDITO ELECTRÓNICA',
+            'typePayment' => $Movimiento->typePayment ?? '-',
+            'nroReferencia' => $Movimiento->sequentialNumber ?? '-',
+            'numeroNotaCredito' => $object->number ?? '',
+            'comment' => $object->comment ?? '',
+            'numeroVenta' => $num,
+            'fechaemision' => $object->created_at->format('Y-m-d'),
+            'cliente' => $nombreCliente,
+            'detalles' => $detalles,
+            'vuelto' => '0.00',
+            'totalPagado' => $Movimiento->total,
+            'idMovimiento' => $object->id,
+
+            'motive' => $object?->reason ?? '',
+            'formaPago' => $Movimiento->formaPago ?? '-',
+            'fechaInicio' => $fechaInicio,
+            'guia' => $Movimiento->reception?->firstCarrierGuide?->numero ?? '-',
+            'placa' => $Movimiento->reception?->firstCarrierGuide?->tract?->currentPlate ?? '-',
+        ];
+
+        $pdf = PDF::loadView('creditNote', $dataE);
+        $canvas = $pdf->getDomPDF()->get_canvas();
+        // $contenidoAncho = $canvas->get_width();
+        $contenidoAlto = $canvas->get_height();
+
+        $tipoDocumento = "07";
+        $fileName = '20605597484-' . $tipoDocumento . '-' . $object->number . '.pdf'; // Formato del nombre
+        $fileName = str_replace(' ', '_', $fileName); // Reemplazar espacios con guiones bajos
+        return $pdf->stream($fileName);
+
     }
 }
