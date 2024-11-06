@@ -16049,7 +16049,7 @@
                         }
                     },
                     {
-                        "name": "paymentDate",
+                        "name": "paymentDate[]",
                         "in": "query",
                         "description": "Filter by paymentDate",
                         "schema": {

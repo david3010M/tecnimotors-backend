@@ -30,7 +30,7 @@ class SaleController extends Controller
      *     description="Get all sales",
      *     security={{"bearerAuth": {}}},
      *     @OA\Parameter( name="number", in="query", description="Filter by number", @OA\Schema(type="string")),
-     *     @OA\Parameter( name="paymentDate", in="query", description="Filter by paymentDate", @OA\Schema(type="array", @OA\Items(type="string", format="date"))),
+     *     @OA\Parameter( name="paymentDate[]", in="query", description="Filter by paymentDate", @OA\Schema(type="array", @OA\Items(type="string", format="date"))),
      *     @OA\Parameter( name="documentType", in="query", description="Filter by documentType", @OA\Schema(type="string", enum={"BOLETA", "FACTURA"})),
      *     @OA\Parameter( name="saleType", in="query", description="Filter by saleType", @OA\Schema(type="string", enum={"NORMAL", "DETRACCION"})),
      *     @OA\Parameter( name="detractionCode", in="query", description="Filter by detractionCode", @OA\Schema(type="string")),
