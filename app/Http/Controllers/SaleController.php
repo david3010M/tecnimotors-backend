@@ -277,7 +277,7 @@ class SaleController extends Controller
                 'quantity' => $saleDetail['quantity'],
                 'unitValue' => $saleDetail['unitValue'],
                 'unitPrice' => $saleDetail['unitPrice'],
-                'discount' => $saleDetail['discount'] ?? 0,
+                'discount' => 0,
                 'subTotal' => $saleDetail['subTotal'],
                 'sale_id' => $sale->id,
             ]);
@@ -503,7 +503,7 @@ class SaleController extends Controller
                     'quantity' => $saleDetail['quantity'],
                     'unitValue' => $saleDetail['unitValue'],
                     'unitPrice' => $saleDetail['unitPrice'],
-                    'discount' => $saleDetail['discount'] ?? 0,
+                    'discount' => 0,
                     'subTotal' => $saleDetail['subTotal'],
                 ]
             );
