@@ -57,13 +57,6 @@ class NoteController extends Controller
     public function store(StoreNoteRequest $request)
     {
         $sale = Sale::find($request->sale_id);
-        foreach ($sale->commitments as $commitment) {
-            if ($commitment->amortizations->count() > 0) {
-                logger($commitment->amortizations->count());
-                logger($commitment->amortizations->toArray());
-                return response()->json(["message" => "No se puede crear una nota de crédito para una venta con amortizaciones"], 422);
-            }
-        }
         if ($sale->documentType != Constants::SALE_FACTURA && $sale->documentType != Constants::SALE_BOLETA) {
             return response()->json(["message" => "No se puede crear una nota de crédito para una venta de tipo " . $sale->documentType,], 422);
         }
