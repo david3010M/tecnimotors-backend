@@ -134,5 +134,29 @@ class Sale extends Model
         return $this->belongsTo(User::class);
     }
 
+    public static function getSales($from = null, $to = null)
+    {
+        $query = Sale::with([
+            'person',
+            'budgetSheet',
+            'commitments',
+            'saleDetails',
+            'moviment',
+            'bank',
+            'cash',
+            'user',
+        ]);
+
+        if ($from && $to) {
+            $query->whereBetween('paymentDate', [$from, $to]);
+        } elseif ($from) {
+            $query->where('paymentDate', '>=', $from);
+        } elseif ($to) {
+            $query->where('paymentDate', '<=', $to);
+        }
+
+        return $query->orderBy('paymentDate', 'desc')->get();
+    }
+
 
 }

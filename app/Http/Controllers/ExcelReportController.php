@@ -7,15 +7,18 @@ use App\Http\Requests\MovementClientRequest;
 use App\Http\Requests\MovementVehicleRequest;
 use App\Http\Requests\ReportCommitmentRequest;
 use App\Http\Requests\SaleProductReportRequest;
+use App\Http\Requests\SaleReportRequest;
 use App\Http\Resources\CommitmentResource;
 use App\Http\Resources\ReportMovementClientResource;
 use App\Http\Resources\ReportMovementDateRangeResource;
+use App\Http\Resources\ReportSaleResource;
 use App\Http\Resources\ServiceResource;
 use App\Models\Attention;
 use App\Models\Commitment;
 use App\Models\Moviment;
 use App\Models\Person;
 use App\Models\Product;
+use App\Models\Sale;
 use App\Models\Service;
 use App\Utils\UtilFunctions;
 use Carbon\Carbon;
@@ -141,6 +144,43 @@ class ExcelReportController extends Controller
 
     /**
      * @OA\Get(
+     *     path="/tecnimotors-backend/public/api/reportSales",
+     *     tags={"Reporte Excel"},
+     *     security={{"bearerAuth":{}}},
+     *     summary="Reporte de Ventas",
+     *     @OA\Parameter(name="from", in="query", description="Fecha de inicio", required=false, @OA\Schema(type="string")),
+     *     @OA\Parameter(name="to", in="query", description="Fecha de fin", required=false, @OA\Schema(type="string")),
+     *     @OA\Response(response=200, description="Reporte de Ventas"),
+     *     @OA\Response(response=404, description="Vehículo no encontrado", @OA\JsonContent(@OA\Property(property="message", type="string"))),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=422, description="Validation error")
+     * )
+     */
+    public function reportSale(SaleReportRequest $request)
+    {
+        $sales = Sale::getSales($request->from, $request->to);
+        if ($sales->isEmpty()) {
+            return response()->json([
+                "message" => "No hay ventas registradas en el rango de fechas proporcionado.",
+            ], 404);
+        }
+        $sales = ReportSaleResource::collection($sales);
+//        return response()->json($sales);
+        $period = ($request->from && $request->to) ? 'Del ' . $request->from . ' al ' . $request->to :
+            ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
+
+        $bytes = UtilFunctions::generateReportSales($sales, $period);
+        $nameOfFile = date('d-m-Y') . '_Reporte_Ventas' . '.xlsx';
+
+        return response($bytes, 200, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => 'attachment; filename="' . $nameOfFile . '"',
+            'Content-Length' => strlen($bytes),
+        ]);
+    }
+
+    /**
+     * @OA\Get(
      *     path="/tecnimotors-backend/public/api/reportMovementDateRange/{id}",
      *     tags={"Reporte Excel"},
      *     security={{"bearerAuth":{}}},
@@ -175,7 +215,6 @@ class ExcelReportController extends Controller
      *     )
      * )
      */
-
     public function reportMovementDateRange(MovementClientRequest $request, $id)
     {
         $movCajaAperturada = Moviment::where('id', $id)
