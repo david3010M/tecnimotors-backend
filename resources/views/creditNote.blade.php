@@ -642,8 +642,8 @@
                         </tr>
                         <tr>
                             <td class="border">BCP</td>
-                            <td class="border">305-4587365-0-26</td>
-                            <td class="border">002305458736502616</td>
+                            <td class="border">000-0000000-0-00</td>
+                            <td class="border">00000000000000000000</td>
                         </tr>
                         <tr>
                             <th class="border">BANCO</th>
@@ -652,7 +652,7 @@
                         </tr>
                         <tr>
                             <td class="border">BN</td>
-                            <td class="border">00250034385</td>
+                            <td class="border">00000000000</td>
                             <td class="border"></td>
                         </tr>
                     </table>
