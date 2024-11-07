@@ -15187,6 +15187,15 @@
                 "operationId": "a4116885e896596d29989001012c526f",
                 "parameters": [
                     {
+                        "name": "number",
+                        "in": "query",
+                        "description": "Número de Venta",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
                         "name": "from",
                         "in": "query",
                         "description": "Fecha de inicio",
@@ -15203,12 +15212,85 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "name": "documentType",
+                        "in": "query",
+                        "description": "Tipo de Documento",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "BOLETA",
+                                "FACTURA",
+                                "TICKET"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "saleType",
+                        "in": "query",
+                        "description": "Tipo de Venta",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "NORMAL",
+                                "DETRACCION"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "paymentType",
+                        "in": "query",
+                        "description": "Tipo de Pago",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "CONTADO",
+                                "CREDITO"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Estado de la Venta",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "person_id",
+                        "in": "query",
+                        "description": "ID de la Persona",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "person$documentNumber",
+                        "in": "query",
+                        "description": "Número de Documento de la Persona",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "budget_sheet_id",
+                        "in": "query",
+                        "description": "ID de la Hoja de Presupuesto",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "Reporte de Ventas"
-                    },
                     "404": {
                         "description": "Vehículo no encontrado",
                         "content": {
@@ -16049,15 +16131,21 @@
                         }
                     },
                     {
-                        "name": "paymentDate[]",
+                        "name": "from",
                         "in": "query",
-                        "description": "Filter by paymentDate",
+                        "description": "Filter by from",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string",
-                                "format": "date"
-                            }
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "description": "Filter by to",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
                         }
                     },
                     {

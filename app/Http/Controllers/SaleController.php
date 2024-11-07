@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateSaleRequest;
 use App\Http\Resources\SaleResource;
 use App\Models\Amortization;
 use App\Models\budgetSheet;
+use App\Models\Cash;
 use App\Models\Commitment;
 use App\Models\Moviment;
 use App\Models\Sale;
@@ -30,7 +31,8 @@ class SaleController extends Controller
      *     description="Get all sales",
      *     security={{"bearerAuth": {}}},
      *     @OA\Parameter( name="number", in="query", description="Filter by number", @OA\Schema(type="string")),
-     *     @OA\Parameter( name="paymentDate[]", in="query", description="Filter by paymentDate", @OA\Schema(type="array", @OA\Items(type="string", format="date"))),
+     *     @OA\Parameter( name="from", in="query", description="Filter by from", @OA\Schema(type="string", format="date")),
+     *     @OA\Parameter( name="to", in="query", description="Filter by to", @OA\Schema(type="string", format="date")),
      *     @OA\Parameter( name="documentType", in="query", description="Filter by documentType", @OA\Schema(type="string", enum={"BOLETA", "FACTURA"})),
      *     @OA\Parameter( name="saleType", in="query", description="Filter by saleType", @OA\Schema(type="string", enum={"NORMAL", "DETRACCION"})),
      *     @OA\Parameter( name="detractionCode", in="query", description="Filter by detractionCode", @OA\Schema(type="string")),
@@ -86,8 +88,12 @@ class SaleController extends Controller
         $igv = $subtotal * Constants::IGV;
         $total = $subtotal + $igv;
 
+        $cashId = 1;
+        $query = Sale::where('documentType', $request->documentType)
+            ->where('cash_id', $cashId);
+
         $data = [
-            'number' => $this->nextCorrelativeQuery(Sale::where('documentType', $request->documentType), 'number'),
+            'number' => $this->nextCorrelativeQuery($query, 'number'),
             'paymentDate' => $request->input('paymentDate'),
             'documentType' => $request->input('documentType'),
             'saleType' => $request->input('saleType'),
@@ -98,7 +104,7 @@ class SaleController extends Controller
             'total' => $total,
             'person_id' => $request->input('person_id'),
             'budget_sheet_id' => $request->input('budget_sheet_id'),
-            'cash_id' => 1,
+            'cash_id' => $cashId,
         ];
 
         $sale = Sale::make($data);
@@ -231,6 +237,7 @@ class SaleController extends Controller
                 'routeVoucher' => $routeVoucher,
                 'comment' => $request->input('comment'),
             ]);
+            $sale->save();
 
 //            AMORTIZATION CREATION
             $tipo = 'AMRT';
@@ -292,6 +299,7 @@ class SaleController extends Controller
             'igv' => $igv,
             'total' => $total,
         ]);
+        $sale->save();
 
         $this->updateFullNumber($sale);
 
@@ -398,6 +406,7 @@ class SaleController extends Controller
             'budget_sheet_id' => $request->input('budget_sheet_id'),
             'cash_id' => 1,
         ]);
+        $sale->save();
 
         if ($sale->paymentType == Constants::SALE_CONTADO) {
             $movCaja = Moviment::where('status', 'Activa')->where('paymentConcept_id', 1)->first();
@@ -449,6 +458,7 @@ class SaleController extends Controller
                 'payment_type' => Constants::COMMITMENT_CONTADO,
                 'payment_date' => now(),
             ]);
+            $commitment->save();
 
             $sale->moviment()->update([
                 'total' => $commitment->price,
@@ -480,6 +490,7 @@ class SaleController extends Controller
                         'status' => Constants::COMMITMENT_PENDING,
                         'payment_date' => Carbon::parse($sale->budgetSheet->attention->arrivalDate)->addDays($commitmentData['paymentDate']),
                     ]);
+                    $commitment->save();
                 } else {
                     Commitment::create([
                         'numberQuota' => $index + 1,
@@ -518,6 +529,8 @@ class SaleController extends Controller
             'igv' => $igv,
             'total' => $total,
         ]);
+        $sale->save();
+
 
         $this->updateFullNumber($sale);
 

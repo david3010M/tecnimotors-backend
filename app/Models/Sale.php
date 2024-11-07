@@ -53,7 +53,8 @@ class Sale extends Model
 
     const filters = [
         'number' => 'like',
-        'paymentDate' => 'between',
+        'from' => '>=',
+        'to' => '<=',
         'documentType' => 'like',
         'saleType' => 'like',
         'detractionCode' => 'like',
@@ -135,7 +136,18 @@ class Sale extends Model
         return $this->belongsTo(User::class);
     }
 
-    public static function getSales($from = null, $to = null)
+    public static function getSales(
+        $number = null,
+        $from = null,
+        $to = null,
+        $documentType = null,
+        $saleType = null,
+        $paymentType = null,
+        $status = null,
+        $person_id = null,
+        $personDocumentNumber = null,
+        $budget_sheet_id = null
+    )
     {
         $query = Sale::with([
             'person',
@@ -148,12 +160,37 @@ class Sale extends Model
             'user',
         ]);
 
-        if ($from && $to) {
-            $query->whereBetween('paymentDate', [$from, $to]);
-        } elseif ($from) {
+        if ($number) {
+            $query->where('number', 'like', "%$number%");
+        }
+        if ($from) {
             $query->where('paymentDate', '>=', $from);
-        } elseif ($to) {
+        }
+        if ($to) {
             $query->where('paymentDate', '<=', $to);
+        }
+        if ($documentType) {
+            $query->where('documentType', 'like', "%$documentType%");
+        }
+        if ($saleType) {
+            $query->where('saleType', 'like', "%$saleType%");
+        }
+        if ($paymentType) {
+            $query->where('paymentType', 'like', "%$paymentType%");
+        }
+        if ($status) {
+            $query->where('status', 'like', "%$status%");
+        }
+        if ($person_id) {
+            $query->where('person_id', '=', $person_id);
+        }
+        if ($personDocumentNumber) {
+            $query->whereHas('person', function ($query) use ($personDocumentNumber) {
+                $query->where('documentNumber', 'like', "%$personDocumentNumber%");
+            });
+        }
+        if ($budget_sheet_id) {
+            $query->where('budget_sheet_id', '=', $budget_sheet_id);
         }
 
         return $query->orderBy('paymentDate', 'desc')->get();

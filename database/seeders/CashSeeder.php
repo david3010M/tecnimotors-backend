@@ -11,7 +11,8 @@ class CashSeeder extends Seeder
     public function run()
     {
         $cashes = [
-            ['series' => '002', 'name' => 'Principal', 'branch_id' => 1],
+            ['series' => '001', 'name' => 'Principal', 'branch_id' => 1],
+            ['series' => '002', 'name' => 'Secundaria', 'branch_id' => 1],
         ];
 
         foreach ($cashes as $cash) {

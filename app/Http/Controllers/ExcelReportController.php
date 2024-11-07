@@ -148,9 +148,16 @@ class ExcelReportController extends Controller
      *     tags={"Reporte Excel"},
      *     security={{"bearerAuth":{}}},
      *     summary="Reporte de Ventas",
+     *     @OA\Parameter(name="number", in="query", description="Número de Venta", required=false, @OA\Schema(type="string")),
      *     @OA\Parameter(name="from", in="query", description="Fecha de inicio", required=false, @OA\Schema(type="string")),
      *     @OA\Parameter(name="to", in="query", description="Fecha de fin", required=false, @OA\Schema(type="string")),
-     *     @OA\Response(response=200, description="Reporte de Ventas"),
+     *     @OA\Parameter(name="documentType", in="query", description="Tipo de Documento", required=false, @OA\Schema(type="string", enum={"BOLETA", "FACTURA", "TICKET"})),
+     *     @OA\Parameter(name="saleType", in="query", description="Tipo de Venta", required=false, @OA\Schema(type="string", enum={"NORMAL", "DETRACCION"})),
+     *     @OA\Parameter(name="paymentType", in="query", description="Tipo de Pago", required=false, @OA\Schema(type="string", enum={"CONTADO", "CREDITO"})),
+     *     @OA\Parameter(name="status", in="query", description="Estado de la Venta", required=false, @OA\Schema(type="string")),
+     *     @OA\Parameter(name="person_id", in="query", description="ID de la Persona", required=false, @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="person$documentNumber", in="query", description="Número de Documento de la Persona", required=false, @OA\Schema(type="string")),
+     *     @OA\Parameter(name="budget_sheet_id", in="query", description="ID de la Hoja de Presupuesto", required=false, @OA\Schema(type="integer")),
      *     @OA\Response(response=404, description="Vehículo no encontrado", @OA\JsonContent(@OA\Property(property="message", type="string"))),
      *     @OA\Response(response=401, description="Unauthorized"),
      *     @OA\Response(response=422, description="Validation error")
@@ -158,7 +165,18 @@ class ExcelReportController extends Controller
      */
     public function reportSale(SaleReportRequest $request)
     {
-        $sales = Sale::getSales($request->from, $request->to);
+        $sales = Sale::getSales(
+            $request->input('number'),
+            $request->input('from'),
+            $request->input('to'),
+            $request->input('documentType'),
+            $request->input('saleType'),
+            $request->input('paymentType'),
+            $request->input('status'),
+            $request->input('person_id'),
+            $request->input('person$documentNumber'),
+            $request->input('budget_sheet_id')
+        );
         if ($sales->isEmpty()) {
             return response()->json([
                 "message" => "No hay ventas registradas en el rango de fechas proporcionado.",
