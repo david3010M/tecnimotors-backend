@@ -111,12 +111,14 @@
 
         .contentImage {
             width: 100%;
-            text-align: right;
+            text-align: left;
         }
 
+     
         .logoImage {
-            width: auto;
-            height: 90px;
+            width: 70%;
+            height: 70px;
+            text-align: left
         }
 
         .logoImageQr {
@@ -380,9 +382,8 @@
         <table class="tableInfo">
             <tr>
                 <div class="contentImage">
-                    <img class="logoImage" src="{{ asset('storage/img/logoTransportes.jpeg') }}" alt="logoTransporte">
+                    <img class="logoImage" src="{{ asset('img/logoTecnimotors.png') }}" alt="logoTransporte">
                 </div>
-
 
 
 
@@ -407,12 +408,12 @@
 
             <tr>
                 <td class="w10 blue left">
-                    <b> OPERACIONES LOGISTICAS HERNANDEZ S.A.C.</b>
+                    <b> TECNI MOTORS DEL PERÚ E.I.R.L.</b>
                 </td>
             </tr>
             <tr>
-                <td class="w10 blue left">
-                    MZA. 38 LOTE. 4A INT. 302 P.J. CHOSICA DEL NORTE LAMBAYEQUE CHICLAYO LA VICTORIA
+                <td class="w10 blue left" style="font-size: 11px">
+                    PRO. AVENIDA BOLOGNESI - URB. SAN MANUEL MZA. A LOTE. 7 LAMBAYEQUE - CHICLAYO - CHICLAYO
                 </td>
             </tr>
         </table>
@@ -463,28 +464,14 @@
                 </td>
             </tr>
 
-            @php
-                // Obtener el nombre del motivo basado en el motive_id
-                $motive = collect([
-                    ['id' => 1, 'name' => 'Anulacion de la Operación'],
-                    ['id' => 2, 'name' => 'Anulacion por error en el RUC'],
-                    ['id' => 3, 'name' => 'Correción por error en la descripción'],
-                    ['id' => 4, 'name' => 'Descuento global'],
-                    ['id' => 5, 'name' => 'Descuento por item'],
-                    ['id' => 6, 'name' => 'Devolución total'],
-                    ['id' => 7, 'name' => 'Devolución por ítem'],
-                    ['id' => 8, 'name' => 'Bonificación'],
-                    ['id' => 9, 'name' => 'Disminución en el valor'],
-                    ['id' => 10, 'name' => 'Otros conceptos'],
-                ])->firstWhere('id', $motive); // Buscamos el motivo por su ID
-            @endphp
+    
 
             <tr>
                 <th class="w20 blue">
                     Motivo:
                 </th>
                 <td class="w20">
-                    {{ $motive['name'] ?? 'Motivo no encontrado' }} <!-- Mostrar el nombre o un mensaje por defecto -->
+                    {{ $motive ?? 'Motivo no encontrado' }} <!-- Mostrar el nombre o un mensaje por defecto -->
                 </td>
             </tr>
 
@@ -506,21 +493,19 @@
             <tr>
 
                 <th class="item">Item</th>
-                <th class="quantity">Guia</th>
-                <th class="unitPrice">Placa</th>
-                <th class="sailPrice">OS</th>
                 <th class="description">Descripción</th>
-                <th class="sailPrice">UM</th>
-                <th class="sailPrice">Cant.</th>
+                <th class="unitPrice">UM</th>
+                <th class="sailPrice">Cantidad</th>
                 <th class="sailPrice">V.U.</th>
                 <th class="sailPrice">P.U.</th>
+                <th class="sailPrice">Dscto.</th>
                 <th class="sailPrice">Valor Venta</th>
-
 
             </tr>
             <?php
               $totalDetalle = $totalPagado;
               $subtotal = $totalPagado;
+              $iterador=1;
             foreach ($detalles as $detHab) :
                 // $subtotal = $detHab['precioventaunitarioxitem'] * $detHab['cantidad'];
                 // $totalDetalle += $subtotal;
@@ -529,27 +514,15 @@
             ?>
 
             <tr>
-                <td class="center"><?php echo 1; ?></td>
+                <td class="center"><?php echo $iterador++; ?></td>
 
+                <td class="center font-10"> <?php echo $detHab['descripcion']; ?> </td>
+                <td class="center font-10"> <?php echo $detHab['um']; ?> </td>
+                <td class="center font-10"><?php echo $detHab['cant']; ?></td>
 
-                {{-- <td class="center"> {{ $guia }}</td>
-                <td class="center"> {{ $placa }}</td> --}}
-
-                <td class="center font-10"> <?php echo $detHab['guia']; ?> </td>
-                <td class="center font-10"> <?php echo $detHab['placaVehiculo']; ?> </td>
-                <td class="center font-10">
-                    <?php echo isset($detHab['os']) ? $detHab['os'] : '-'; ?>
-                </td>
-
-                <td class="justifiy font-10" style="text-align: center">
-                    <?php echo $detHab['descripcion']; ?></td>
-                <td class="center  font-10"><?php echo 'NIU'; ?></td>
-                <td class="center font-10"><?php echo $detHab['cantidad']; ?></td>
-                {{-- <td class="center font-10"><?php echo number_format($totalDetalle / 1.18, 2); ?></td> --}}
-                {{-- <td class="center font-10"><?php echo number_format($subtotal, 2); ?></td> --}}
-                {{-- <td class="center font-10"><?php echo number_format($totalDetalle / 1.18, 2); ?></td> --}}
                 <td class="center font-10"><?php echo number_format($detHab['precioventaunitarioxitem'] / 1.18, 2); ?></td>
                 <td class="center font-10"><?php echo number_format($detHab['precioventaunitarioxitem'], 2); ?></td>
+                <td class="center font-10"><?php echo $detHab['dscto']; ?></td>
                 <td class="center font-10"><?php echo number_format($detHab['precioventaunitarioxitem'] / 1.18, 2); ?></td>
             </tr>
 
@@ -565,49 +538,49 @@
             
             if ($linkRevisarFact) {
                 echo '
-                                                                                                                                                                                                                    <tr>
-                                                                                                                                                                                                                        <td style="text-align: left;">
-                                                                                                                                                                                                                            <b>Op. Gravada:</b>
-                                                                                                                                                                                                                        </td>
-                                                                                                                                                                                                                        <td style="text-align: right;">
-                                                                                                                                                                                                                            ' .
+                                                                                                                                                                                                                                <tr>
+                                                                                                                                                                                                                                    <td style="text-align: left;">
+                                                                                                                                                                                                                                        <b>Op. Gravada:</b>
+                                                                                                                                                                                                                                    </td>
+                                                                                                                                                                                                                                    <td style="text-align: right;">
+                                                                                                                                                                                                                                        ' .
                     number_format($totalDetalle / 1.18, 2) .
                     '
-                                                                                                                                                                                                                        </td>
-                                                                                                                                                                                                                    </tr>
-                                                                                                                                                                                                                    <tr>
-                                                                                                                                                                                                                        <td style="text-align: left;">
-                                                                                                                                                                                                                            <label for="igv"><b>I.G.V.(18%):</b>
-                                                                                                                                                                                                                        </td>
-                                                                                                                                                                                                                        <td style="text-align: right;">
-                                                                                                                                                                                                                            <label for="igv">' .
+                                                                                                                                                                                                                                    </td>
+                                                                                                                                                                                                                                </tr>
+                                                                                                                                                                                                                                <tr>
+                                                                                                                                                                                                                                    <td style="text-align: left;">
+                                                                                                                                                                                                                                        <label for="igv"><b>I.G.V.(18%):</b>
+                                                                                                                                                                                                                                    </td>
+                                                                                                                                                                                                                                    <td style="text-align: right;">
+                                                                                                                                                                                                                                        <label for="igv">' .
                     number_format($totalDetalle - $totalDetalle / 1.18, 2) .
                     '
-                                                                                                                                                                                                                        </td>
-                                                                                                                                                                                                                    </tr>
-                                                                                                                                                                                                                    <tr>
-                                                                                                                                                                                                                        <td style="text-align: left;">
-                                                                                                                                                                                                                            <label for="opInafecta"><b>Op. Inafecta:</b>
-                                                                                                                                                                                                                        </td>
-                                                                                                                                                                                                                        <td style="text-align: right;">
-                                                                                                                                                                                                                            <label for="opInafecta">0.00
-                                                                                                                                                                                                                        </td>
-                                                                                                                                                                                                                    </tr>
-                                                                                                                                                                                                                    <tr>
-                                                                                                                                                                                                                        <td style="text-align: left;">
-                                                                                                                                                                                                                            <label for="opExonerada"><b>Op. Exonerada:</b>
-                                                                                                                                                                                                                        </td>
-                                                                                                                                                                                                                        <td style="text-align: right;">
-                                                                                                                                                                                                                            <label for="opExonerada">0.00
-                                                                                                                                                                                                                        </td>
-                                                                                                                                                                                                                    </tr>
-                                                                                                                                                                                                                    <tr>
-                                                                                                                                                                                                                        <td style="text-align: left;"><b>Importe Total</b></td>
-                                                                                                                                                                                                    
-                                                                                                                                                                                                                             <td style="text-align: right;"><b>' .
+                                                                                                                                                                                                                                    </td>
+                                                                                                                                                                                                                                </tr>
+                                                                                                                                                                                                                                <tr>
+                                                                                                                                                                                                                                    <td style="text-align: left;">
+                                                                                                                                                                                                                                        <label for="opInafecta"><b>Op. Inafecta:</b>
+                                                                                                                                                                                                                                    </td>
+                                                                                                                                                                                                                                    <td style="text-align: right;">
+                                                                                                                                                                                                                                        <label for="opInafecta">0.00
+                                                                                                                                                                                                                                    </td>
+                                                                                                                                                                                                                                </tr>
+                                                                                                                                                                                                                                <tr>
+                                                                                                                                                                                                                                    <td style="text-align: left;">
+                                                                                                                                                                                                                                        <label for="opExonerada"><b>Op. Exonerada:</b>
+                                                                                                                                                                                                                                    </td>
+                                                                                                                                                                                                                                    <td style="text-align: right;">
+                                                                                                                                                                                                                                        <label for="opExonerada">0.00
+                                                                                                                                                                                                                                    </td>
+                                                                                                                                                                                                                                </tr>
+                                                                                                                                                                                                                                <tr>
+                                                                                                                                                                                                                                    <td style="text-align: left;"><b>Importe Total</b></td>
+                                                                                                                                                                                                                
+                                                                                                                                                                                                                                         <td style="text-align: right;"><b>' .
                     number_format($totalDetalle, 2) .
                     '</b></td>
-                                                                                                                                                                                                                    </tr>';
+                                                                                                                                                                                                                                </tr>';
             }
             ?>
 
@@ -621,7 +594,7 @@
 
             <tr>
                 <td class="w10 blue left">
-                    <label for=""> <b>Comentario:</b> {{ $comment ?? '' }} </label>
+                    <label for=""> <b>Comentario:</b> {{ $comment ?? $motive }} </label>
                 </td>
             </tr>
             <br>
@@ -686,7 +659,7 @@
                 </td>
 
                 <td style="vertical-align: top; padding-right: 10px;">
-                    {{ getArchivosDocument($idMovimiento,'nota') }}
+                    {{ getArchivosDocument($idMovimiento, 'nota') }}
                 </td>
             </tr>
         </table>

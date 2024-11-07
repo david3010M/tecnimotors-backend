@@ -348,44 +348,34 @@ class PdfController extends Controller
 
     public function creditNote($id)
     {
-        $object = Note::with(['branchOffice', 'moviment', 'moviment.reception.details'])->find($id);
+        $object = Note::find($id);
 
-        $Movimiento = Moviment::with(['reception',
-            'reception.firstCarrierGuide.origin', 'reception.firstCarrierGuide.destination'])->find($object->moviment_id);
+        $Movimiento = Sale::find($object->sale_id);
         $linkRevisarFact = false;
-        $pointSend = strtoupper($Movimiento->reception?->pointSender?->name) ?? '';
-        $pointDestination = strtoupper($Movimiento->reception?->pointDestination?->name ?? '');
-        $ruta = $pointSend . ' - ' . $pointDestination;
-        $receptionDetails = $Movimiento?->reception?->details() ?? [];
-        $descriptionString = '';
-        if ($receptionDetails != []) {
-            $descriptions = $receptionDetails?->pluck('description')?->toArray() ?? []; // Obtiene todas las descripciones
-            $descriptionString = implode(', ', $descriptions); // Une las descripciones con comas
-        }
+
+        $productList = [];
         if ($Movimiento) {
-            $productList = $Movimiento->detalles;
+            $productList = $Movimiento->saleDetails;
+  
         }
         // Inicializar el array de detalles
         $detalles = [];
-
         if (($productList) != []) {
-            foreach ($productList as $producto) {
-                // Buscar la recepción si existe 'reception_id', si no asigna null
-                // $reception = Reception::find($producto->reception_id ?? null);
-
-                // Usar operadores de navegación segura y coalescencia para evitar errores y asignar valores por defecto
+            foreach ($productList as $detalle) {
                 $detalles[] = [
-                    "descripcion" => $producto->description ?? '-',
-                    "os" => $producto->os ?? '-',
-                    "guia" => $producto->guia ?? '-',
-                    "placaVehiculo" => $producto->placa ?? '-',
-                    "cantidad" => $producto->cantidad ?? 1, // Cantidad fija (es un servicio)
-                    "precioventaunitarioxitem" => $producto->precioVenta ?? 0,
+                    "descripcion" => $detalle->description ?? '-',
+                    "um" => $detalle->unit ?? '-',
+                    "cant" => $detalle->quantity ?? '-',
+                    "vu" => $detalle->unitValue ?? '-',
+                    "pu" => $detalle->unitPrice, // Cantidad fija (es un servicio)
+                    "dscto" => $detalle->discount ?? 0,
+                    // "precioventaunitarioxitem" => $detalle->subTotal ?? 0,
+                    "precioventaunitarioxitem" => $detalle->unitPrice ?? 0,
                 ];
             }
         }
         $tipoDocumento = '';
-        $num = $Movimiento->sequentialNumber;
+        $num = $Movimiento->fullNumber;
         if (strpos($num, 'B') === 0) {
             $tipoDocumento = 'BOLETA ELECTRÓNICA';
             $linkRevisarFact = true;
@@ -430,10 +420,10 @@ class PdfController extends Controller
             'ruc_dni' => $rucOdni,
             'direccion' => $direccion,
             'tipoElectronica' => 'NOTA DE CREDITO ELECTRÓNICA',
-            'typePayment' => $Movimiento->typePayment ?? '-',
-            'nroReferencia' => $Movimiento->sequentialNumber ?? '-',
-            'numeroNotaCredito' => $object->number ?? '',
-            'comment' => $object->comment ?? '',
+            'typePayment' => $Movimiento->paymentType ?? '-',
+            'nroReferencia' => $Movimiento->fullNumber ?? '-',
+            'numeroNotaCredito' => $object->fullNumber ?? '',
+            'comment' => $object->comment ,
             'numeroVenta' => $num,
             'fechaemision' => $object->created_at->format('Y-m-d'),
             'cliente' => $nombreCliente,
@@ -442,11 +432,10 @@ class PdfController extends Controller
             'totalPagado' => $Movimiento->total,
             'idMovimiento' => $object->id,
 
-            'motive' => $object?->reason ?? '',
+            'motive' => $object?->noteReason?->description ?? '',
             'formaPago' => $Movimiento->formaPago ?? '-',
             'fechaInicio' => $fechaInicio,
-            'guia' => $Movimiento->reception?->firstCarrierGuide?->numero ?? '-',
-            'placa' => $Movimiento->reception?->firstCarrierGuide?->tract?->currentPlate ?? '-',
+          
         ];
 
         $pdf = PDF::loadView('creditNote', $dataE);
