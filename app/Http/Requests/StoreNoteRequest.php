@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
+
 /**
  * @OA\Schema(
  *     title="StoreNoteRequest",
@@ -28,7 +30,13 @@ class StoreNoteRequest extends StoreRequest
             'totalCreditNote' => 'nullable|numeric',
             'totalDocumentReference' => 'nullable|numeric',
             'note_reason_id' => 'required|exists:note_reasons,id',
-            'sale_id' => 'required|exists:sales,id',
+            'sale_id' => [
+                'required',
+                'exists:sales,id',
+                Rule::exists('sales', 'id')->where(function ($query) {
+                    $query->where('status', '!=', 'ANULADO');
+                }),
+            ],
         ];
     }
 }
