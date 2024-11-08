@@ -59,7 +59,19 @@ class SaleController extends Controller
                     SaleResource::class
                 )->original,
                 'links' => null,
-                'meta' => null,
+                'meta' => [
+                    'current_page' => 1,
+                    'from' => 1,
+                    'last_page' => 1,
+                    'links' => [
+                        ['url' => null, 'label' => '&laquo; Previous', 'active' => false],
+                        ['url' => null, 'label' => 'Next &raquo;', 'active' => false],
+                    ],
+                    'path' => 'https://develop.garzasoft.com/tecnimotors-backend/public/api/noteReason',
+                    'per_page' => 100,
+                    'to' => 10,
+                    'total' => 10,
+                ]
             ];
         }
         return $this->getFilteredResults(
