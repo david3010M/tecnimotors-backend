@@ -22,6 +22,9 @@ class NoteReasonSeeder extends Seeder
             ['code' => '5', 'description' => 'Descuento por ítem'],
             ['code' => '6', 'description' => 'Devolución total'],
             ['code' => '7', 'description' => 'Devolución por ítem'],
+            ['code' => '8', 'description' => 'Bonificación'],
+            ['code' => '9', 'description' => 'Disminución en el valor'],
+            ['code' => '10', 'description' => 'Otros conceptos'],
         ];
 
         foreach ($noteReasons as $noteReason) {
