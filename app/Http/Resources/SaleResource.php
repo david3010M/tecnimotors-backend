@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
@@ -65,7 +66,7 @@ class SaleResource extends JsonResource
         $data = [
             'id' => $this->id,
             'number' => $this->fullNumber,
-            'paymentDate' => $this->paymentDate ? $this->paymentDate->format('Y-m-d') : null,
+            'paymentDate' => $this->paymentDate,
             'documentType' => $this->documentType,
             'saleType' => $this->saleType,
             'detractionCode' => $this->detractionCode,
