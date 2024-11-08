@@ -243,11 +243,8 @@ class BudgetSheetController extends Controller
         $siguienteNum = (int)$resultado;
 
         $percentageDiscount = floatval($request->input('percentageDiscount', 0)) / 100;
-        $subtotal = floatval($attention->total);
-        $discount = $subtotal * $percentageDiscount;
-
-        $igv = ($subtotal - $discount) * 0.18;
-        $total = ($subtotal - $discount) * 1.18;
+        $subtotal = floatval($attention->total) / 1.18;
+        $igv = $subtotal * 0.18;
 
         $data = [
             'number' => $tipo . "-" . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT),
@@ -255,8 +252,8 @@ class BudgetSheetController extends Controller
             'totalService' => $attention->totalService ?? 0.0,
             'totalProducts' => $attention->totalProducts ?? 0.0,
             'debtAmount' => $attention->debtAmount,
-            'total' => $total ?? 0.0,
-            'discount' => $discount ?? 0.0,
+            'total' => $attention->total,
+            'discount' => 0,
             'subtotal' => $subtotal ?? 0.0,
             'igv' => $igv ?? 0.0,
             'attention_id' => $request->input('attention_id'),
