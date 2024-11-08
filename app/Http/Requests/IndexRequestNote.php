@@ -8,8 +8,8 @@ class IndexRequestNote extends IndexRequest
     {
         return [
             'number' => 'nullable|string',
-            'from' => 'nullable|date',
-            'to' => 'nullable|date',
+            'from' => 'nullable|date_format:Y-m-d',
+            'to' => 'nullable|date_format:Y-m-d',
             'sale$number' => 'nullable|string',
             'sale$person_id' => 'nullable|integer',
         ];

@@ -13,10 +13,20 @@ trait Filterable
             $paramName = str_replace('.', '$', $filter);
             $value = $request->query($paramName);
 
+            // Si el filtro usa 'between', verificamos la existencia de 'from' y 'to'
+            if ($operator === 'between') {
+                $from = $request->query('from');
+                $to = $request->query('to');
+
+                if ($from || $to) {
+                    $this->applyFilterCondition($query, $filter, $operator, compact('from', 'to'));
+                    continue; // Saltamos al siguiente filtro ya que se ha aplicado el between
+                }
+            }
+
             if ($value !== null) {
                 if (strpos($filter, '.') !== false) {
                     [$relation, $relationFilter] = explode('.', $filter);
-
                     $query->whereHas($relation, function ($q) use ($relationFilter, $operator, $value) {
                         $this->applyFilterCondition($q, $relationFilter, $operator, $value);
                     });
@@ -31,14 +41,23 @@ trait Filterable
 
     protected function applyFilterCondition($query, $filter, $operator, $value)
     {
+        if ($operator === 'between' && is_array($value)) {
+            $from = $value['from'] ?? null;
+            $to = $value['to'] ?? null;
+
+            if ($from && $to) {
+                $query->whereBetween($filter, [$from, $to]);
+            } elseif ($from) {
+                $query->where($filter, '>=', $from);
+            } elseif ($to) {
+                $query->where($filter, '<=', $to);
+            }
+            return;
+        }
+
         switch ($operator) {
             case 'like':
                 $query->where($filter, 'like', '%' . $value . '%');
-                break;
-            case 'between':
-                if (is_array($value) && count($value) === 2) {
-                    $query->whereBetween($filter, $value);
-                }
                 break;
             case '>':
                 $query->where($filter, '>', $value);
@@ -59,6 +78,7 @@ trait Filterable
                 break;
         }
     }
+
 
     protected function applySorting($query, $request, $sorts)
     {
