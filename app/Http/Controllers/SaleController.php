@@ -282,12 +282,10 @@ class SaleController extends Controller
             ]);
 
         } else if ($sale->paymentType == Constants::SALE_CREDITO) {
-            $sumCommitments = array_sum(
-                array_map(
-                    fn($commitment) => $commitment['price'] * $commitment['quantity'],
-                    $request->input('commitments')
-                )
-            );
+            $sumCommitments = 0;
+            foreach ($request->input('commitments') as $commitment) {
+                $sumCommitments += $commitment['price'] * $commitment['quantity'];
+            }
 
             if (round($sale->total - $sumCommitments, 1) != 0) {
                 return response()->json(['error' => 'La suma de los compromisos no coincide con el total ' . $sale->total . ' diferencia ' . ($sale->total - $sumCommitments)], 422);
