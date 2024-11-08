@@ -7,6 +7,7 @@ use App\Models\Attention;
 use App\Models\budgetSheet;
 use App\Models\Moviment;
 use App\Models\Note;
+use App\Models\NoteReason;
 use App\Models\Person;
 use App\Models\Sale;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -360,18 +361,32 @@ class PdfController extends Controller
         }
         // Inicializar el array de detalles
         $detalles = [];
-        if (($productList) != []) {
-            foreach ($productList as $detalle) {
-                $detalles[] = [
-                    "descripcion" => $detalle->description ?? '-',
-                    "um" => $detalle->unit ?? '-',
-                    "cant" => $detalle->quantity ?? '-',
-                    "vu" => $detalle->unitValue ?? '-',
-                    "pu" => $detalle->unitPrice, // Cantidad fija (es un servicio)
-                    "dscto" => $detalle->discount ?? 0,
-                    // "precioventaunitarioxitem" => $detalle->subTotal ?? 0,
-                    "precioventaunitarioxitem" => $detalle->unitPrice ?? 0,
-                ];
+        if ($object->totalCreditNote < $object->totalDocumentReference) {
+            $reason= NoteReason::find($object->note_reason_id);
+            $detalles[] = [
+                "descripcion" => $reason->description ?? '-',
+                "um" => 'NIU',
+                "cant" => 1 ?? '1',
+                "vu" => $detalle->unitValue ?? '-',
+                "pu" => $object->totalCreditNote, // Cantidad fija (es un servicio)
+                "dscto" => 0,
+                // "precioventaunitarioxitem" => $detalle->subTotal ?? 0,
+                "precioventaunitarioxitem" => $object->totalCreditNote ?? 0,
+            ];
+        } else {
+            if (($productList) != []) {
+                foreach ($productList as $detalle) {
+                    $detalles[] = [
+                        "descripcion" => $detalle->description ?? '-',
+                        "um" => $detalle->unit ?? '-',
+                        "cant" => $detalle->quantity ?? '-',
+                        "vu" => $detalle->unitValue ?? '-',
+                        "pu" => $detalle->unitPrice, // Cantidad fija (es un servicio)
+                        "dscto" => $detalle->discount ?? 0,
+                        // "precioventaunitarioxitem" => $detalle->subTotal ?? 0,
+                        "precioventaunitarioxitem" => $detalle->unitPrice ?? 0,
+                    ];
+                }
             }
         }
         $tipoDocumento = '';
@@ -430,6 +445,7 @@ class PdfController extends Controller
             'detalles' => $detalles,
             'vuelto' => '0.00',
             'totalPagado' => $Movimiento->total,
+            'totalNota' => $object->totalCreditNote,
             'idMovimiento' => $object->id,
 
             'motive' => $object?->noteReason?->description ?? '',
