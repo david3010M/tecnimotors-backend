@@ -6,10 +6,14 @@ use App\Http\Requests\IndexRequestNote;
 use App\Http\Requests\StoreNoteRequest;
 use App\Http\Requests\UpdateNoteRequest;
 use App\Http\Resources\NoteResource;
+use App\Models\Amortization;
+use App\Models\budgetSheet;
+use App\Models\Moviment;
 use App\Models\Note;
 use App\Models\Sale;
 use App\Models\SaleDetail;
 use App\Utils\Constants;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class NoteController extends Controller
@@ -61,6 +65,20 @@ class NoteController extends Controller
      */
     public function store(StoreNoteRequest $request)
     {
+        $movCaja = Moviment::where('status', 'Activa')->where('paymentConcept_id', 1)->first();
+        if (!$movCaja) {
+            if ($request->input('paymentConcept_id') != 1) {
+                return response()->json([
+                    "message" => "Debe Aperturar Caja",
+                ], 422);
+            }
+        } else {
+            if ($request->input('paymentConcept_id') == 1) {
+                return response()->json([
+                    "message" => "Caja Ya Aperturada",
+                ], 422);
+            }
+        }
         $sale = Sale::find($request->sale_id);
         if ($sale->documentType != Constants::SALE_FACTURA && $sale->documentType != Constants::SALE_BOLETA) {
             return response()->json(["message" => "No se puede crear una nota de crédito para una venta de tipo " . $sale->documentType], 422);
@@ -87,6 +105,66 @@ class NoteController extends Controller
         ];
 
         $note = Note::create($data);
+        $saldoNotaPendiente = $request->input('totalCreditNote');
+        $commitments = $sale->commitments;
+
+        if ($sale->paymentType == Constants::SALE_CONTADO && $sale->total == $saldoNotaPendiente) {
+            $movimentOfSale = $sale->moviment;
+            $movimentToDelete = Moviment::find($movimentOfSale->id);
+            $movimentToDelete->delete();
+            $sale->update(['status' => Constants::SALE_STATUS_ANULADO]);
+            $sale->save();
+            if ($sale->budget_sheet_id) {
+                $budgetSheet = budgetSheet::find($sale->budget_sheet_id);
+                $budgetSheet->update(['status' => Constants::BUDGET_SHEET_PENDIENTE]);
+                $budgetSheet->save();
+            }
+        } else {
+            foreach ($commitments as $commitment) {
+                if ($saldoNotaPendiente > 0) {
+                    $montoAmortizar = min($commitment->balance, $saldoNotaPendiente);
+
+//                CREAMOS EL MOVIMIENTO
+                    $tipo = 'M001';
+                    $tipo = str_pad($tipo, 4, '0', STR_PAD_RIGHT);
+                    $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(sequentialNumber, LOCATE("-", sequentialNumber) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM moviments WHERE SUBSTRING(sequentialNumber, 1, 4) = ?', [$tipo])[0]->siguienteNum;
+                    $siguienteNum = (int)$resultado;
+                    $dataMoviment = [
+                        'sequentialNumber' => $tipo . '-' . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT),
+                        'paymentDate' => $note->date,
+                        'total' => $montoAmortizar,
+                        'cash' => $montoAmortizar,
+                        'status' => 'Generada',
+                        'paymentConcept_id' => 8,
+                        'person_id' => $sale->person_id,
+                        'user_id' => auth()->id(),
+                    ];
+                    $moviment = Moviment::create($dataMoviment);
+
+//                CREAMOS LA AMORTIZACION
+                    $tipo = 'AMRT';
+                    $tipo = str_pad($tipo, 4, '0', STR_PAD_RIGHT);
+                    $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(sequentialNumber, LOCATE("-", sequentialNumber) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM amortizations WHERE SUBSTRING(sequentialNumber, 1, 4) = ?', [$tipo])[0]->siguienteNum;
+                    $siguienteNum = (int)$resultado;
+
+                    $dataAmortization = [
+                        'sequentialNumber' => $tipo . '-' . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT),
+                        'amount' => $montoAmortizar,
+                        'paymentDate' => $note->date,
+                        'moviment_id' => $moviment->id,
+                        'commitment_id' => $commitment->id,
+                    ];
+                    Amortization::create($dataAmortization);
+                    $commitment->balance -= $montoAmortizar;
+                    $commitment->amount += $montoAmortizar;
+                    $commitment->status = $commitment->balance == 0 ? Constants::COMMITMENT_PAGADO : Constants::COMMITMENT_PENDIENTE;
+                    $commitment->save();
+
+//                ACTUALIZAMOS EL SALDO DE LA NOTA
+                    $saldoNotaPendiente -= $montoAmortizar;
+                }
+            }
+        }
 
         foreach ($sale->saleDetails as $saleDetail) {
             SaleDetail::create([

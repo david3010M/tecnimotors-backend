@@ -249,10 +249,10 @@ class AmortizationController extends Controller
         }
         if (!$anyCommitmentPending) {
             $sale = Sale::find($commitment->sale_id);
-            $sale->budgetSheet->status = $sale->budgetSheet->status == Constants::BUDGET_SHEET_FACTURADO ? Constants::BUDGET_SHEET_FACTURADO : Constants::BUDGET_SHEET_PAGADO;
-            $sale->budgetSheet->save();
-
-            $sale = Sale::where('budget_sheet_id', $sale->budgetSheet->id)->first();
+            if ($sale->budget_sheet_id) {
+                $sale->budgetSheet->status = $sale->budgetSheet->status == Constants::BUDGET_SHEET_FACTURADO ? Constants::BUDGET_SHEET_FACTURADO : Constants::BUDGET_SHEET_PAGADO;
+                $sale->budgetSheet->save();
+            }
             $sale->status = Constants::SALE_PAGADO;
             $sale->save();
         }

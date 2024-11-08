@@ -53,7 +53,7 @@ class CommitmentResource extends JsonResource
 
         return [
             'id' => $this->id,
-            'number' => $this->sale?->budgetSheet?->number?? null,
+            'number' => $this->sale?->budgetSheet?->number ?? null,
             'client' => $client,
             'payment_date' => $this->payment_date ? Carbon::parse($this->payment_date)->format('d-m-Y') : null,
             'payment_type' => $this->payment_type,
@@ -62,6 +62,7 @@ class CommitmentResource extends JsonResource
             'balance' => $this->balance,
             'numberQuota' => $this->numberQuota,
             'status' => $this->status,
+            'sale' => $this->sale->fullNumber,
             'sale_id' => $this->sale_id,
             'created_at' => Carbon::parse($this->created_at)->format('d-m-Y'),
         ];

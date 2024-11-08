@@ -193,6 +193,7 @@ class SaleController extends Controller
                 'numberQuota' => 1,
                 'price' => $sale->total,
                 'balance' => 0,
+                'amount' => $sale->total,
                 'status' => Constants::COMMITMENT_PAGADO,
                 'payment_type' => Constants::COMMITMENT_CONTADO,
                 'payment_date' => today(),
