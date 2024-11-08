@@ -57,7 +57,9 @@ class SaleController extends Controller
                     Sale::filters,
                     Sale::sorts,
                     SaleResource::class
-                )->original
+                )->original,
+                'links' => null,
+                'meta' => null,
             ];
         }
         return $this->getFilteredResults(
