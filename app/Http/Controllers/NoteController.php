@@ -66,7 +66,7 @@ class NoteController extends Controller
             return response()->json(["message" => "No se puede crear una nota de crédito para una venta de tipo " . $sale->documentType], 422);
         }
         $documentType = $sale->documentType == Constants::SALE_BOLETA ? Constants::SALE_NOTA_CREDITO_BOLETA : Constants::SALE_NOTA_CREDITO_FACTURA;
-
+        logger($documentType);
         $cashId = 1;
         $query = Note::where('documentType', $request->documentType)
             ->where('cash_id', $cashId);
@@ -237,8 +237,8 @@ class NoteController extends Controller
     public function updateFullNumber($note): void
     {
         $documentTypePrefixes = [
-            Constants::SALE_NOTA_CREDITO_BOLETA => 'FC',
-            Constants::SALE_NOTA_CREDITO_FACTURA => 'BC',
+            Constants::SALE_NOTA_CREDITO_BOLETA => 'BC',
+            Constants::SALE_NOTA_CREDITO_FACTURA => 'FC',
         ];
         $series = substr($note->sale->cash->series, -2);
         $fullNumber = $documentTypePrefixes[$note->documentType] . $series . '-' . $note->number;

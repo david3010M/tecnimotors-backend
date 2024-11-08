@@ -67,8 +67,6 @@ class StoreSaleRequest extends StoreRequest
                 'nullable',
                 'integer',
                 'exists:budget_sheets,id',
-                Rule::unique('sales', 'budget_sheet_id')
-                    ->whereNull('deleted_at')
             ],
             'yape' => 'nullable|numeric',
             'deposit' => 'nullable|numeric',
