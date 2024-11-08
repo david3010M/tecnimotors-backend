@@ -15320,6 +15320,90 @@
                 ]
             }
         },
+        "/tecnimotors-backend/public/api/reportNotes": {
+            "get": {
+                "tags": [
+                    "Reporte Excel"
+                ],
+                "summary": "Reporte de Notas",
+                "operationId": "1d5b0140a5a2ac3beaf3cd0c2b583bba",
+                "parameters": [
+                    {
+                        "name": "number",
+                        "in": "query",
+                        "description": "Número de Venta",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "from",
+                        "in": "query",
+                        "description": "Fecha de inicio",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "description": "Fecha de fin",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sale$number",
+                        "in": "query",
+                        "description": "Número de Venta",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sale$person_id",
+                        "in": "query",
+                        "description": "ID de la Persona",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "404": {
+                        "description": "Vehículo no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/tecnimotors-backend/public/api/reportMovementDateRange/{id}": {
             "get": {
                 "tags": [
@@ -15584,6 +15668,51 @@
                 "description": "Listado de ventas",
                 "operationId": "d4f9a6fb5bfb9bd771ad5b4784f36933",
                 "parameters": [
+                    {
+                        "name": "number",
+                        "in": "query",
+                        "description": "Número de la nota de crédito",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "from",
+                        "in": "query",
+                        "description": "Fecha de inicio",
+                        "required": false,
+                        "schema": {
+                            "type": "date"
+                        }
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "description": "Fecha de fin",
+                        "required": false,
+                        "schema": {
+                            "type": "date"
+                        }
+                    },
+                    {
+                        "name": "sale$number",
+                        "in": "query",
+                        "description": "Número de la venta",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sale$person_id",
+                        "in": "query",
+                        "description": "ID de la persona",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
                     {
                         "name": "all",
                         "in": "query",

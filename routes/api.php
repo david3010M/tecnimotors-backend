@@ -265,6 +265,7 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::get('reportCommitment', [ExcelReportController::class, 'reportCommitment'])->name('reportCommitment');
     Route::get('reportSaleProducts', [ExcelReportController::class, 'reportSaleProducts'])->name('reportSaleProducts');
     Route::get('reportSales', [ExcelReportController::class, 'reportSale'])->name('reportSale');
+    Route::get('reportNotes', [ExcelReportController::class, 'reportNote'])->name('reportNote');
 
     Route::get('showAperturaMovements', [MovimentController::class, 'showAperturaMovements']);
 
