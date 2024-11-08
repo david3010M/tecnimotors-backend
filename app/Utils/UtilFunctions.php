@@ -178,15 +178,6 @@ class UtilFunctions
                 $excelUI->changeStyleSelected(false, "C", ExcelUI::$GENERAL, true, ExcelUI::$BACKGROUND_CELL_SECONDARY, true);
             }
             $excelUI->setRowHeight($indexRow, 30);
-            /**
-             * CORRELATIVO
-             * FECHA DE NOTA
-             * FECHA DE VENTA
-             * DOCUMENTO REFERENCIAL
-             * CLIENTE
-             * TOTAL NOTA
-             * TOTAL VENTA
-             */
             $excelUI->setDataCellByIndex($indexRow, $indexCol++, $index++);
             $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->correlativo);
             $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->fechaNota);
@@ -195,19 +186,8 @@ class UtilFunctions
             $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->cliente);
             $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->totalNota);
             $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->totalVenta);
-//            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->metodoPago);
-            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->total);
             $indexRow++;
         }
-
-        $excelUI->changeStyleSelected(true, "C", ExcelUI::$GENERAL, true, ExcelUI::$BACKGROUND_CELL_TOTAL, true);
-
-        $colTotal = $excelUI->getColumnIndex("G");
-        $excelUI->setRowHeight($indexRow, 30);
-        $excelUI->setDataCellByIndex($indexRow, $colTotal, "MONTO TOTAL");
-        $colTotal++;
-        $strCol = $excelUI->getColumnStringFromIndex($colTotal);
-        $excelUI->setFormula($indexRow, $colTotal, "=SUM({$strCol}7:$strCol" . ($indexRow - 1) . ")");
 
         $bytes = $excelUI->save();
         unset($excelUI);

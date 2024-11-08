@@ -80,4 +80,43 @@ class Note extends Model
         return $this->belongsTo(Cash::class);
     }
 
+    public static function getNotes(
+        $number = null,
+        $from = null,
+        $to = null,
+        $saleNumber = null,
+        $salePersonId = null
+    )
+    {
+        $query = Note::with([
+            'noteReason',
+            'sale.person',
+            'saleDetails',
+            'user',
+            'cash',
+        ]);
+
+        if ($number) {
+            $query->where('number', 'like', "%$number%");
+        }
+        if ($from) {
+            $query->where('date', '>=', $from);
+        }
+        if ($to) {
+            $query->where('date', '<=', $to);
+        }
+        if ($saleNumber) {
+            $query->whereHas('sale', function ($query) use ($saleNumber) {
+                $query->where('number', 'like', "%$saleNumber%");
+            });
+        }
+        if ($salePersonId) {
+            $query->whereHas('sale', function ($query) use ($salePersonId) {
+                $query->where('person_id', '=', $salePersonId);
+            });
+        }
+
+        return $query->orderBy('date', 'desc')->get();
+    }
+
 }

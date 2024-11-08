@@ -11,11 +11,13 @@ use App\Http\Requests\SaleReportRequest;
 use App\Http\Resources\CommitmentResource;
 use App\Http\Resources\ReportMovementClientResource;
 use App\Http\Resources\ReportMovementDateRangeResource;
+use App\Http\Resources\ReportNoteResource;
 use App\Http\Resources\ReportSaleResource;
 use App\Http\Resources\ServiceResource;
 use App\Models\Attention;
 use App\Models\Commitment;
 use App\Models\Moviment;
+use App\Models\Note;
 use App\Models\Person;
 use App\Models\Product;
 use App\Models\Sale;
@@ -189,6 +191,51 @@ class ExcelReportController extends Controller
 
         $bytes = UtilFunctions::generateReportSales($sales, $period);
         $nameOfFile = date('d-m-Y') . '_Reporte_Ventas' . '.xlsx';
+
+        return response($bytes, 200, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => 'attachment; filename="' . $nameOfFile . '"',
+            'Content-Length' => strlen($bytes),
+        ]);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/tecnimotors-backend/public/api/reportNotes",
+     *     tags={"Reporte Excel"},
+     *     security={{"bearerAuth":{}}},
+     *     summary="Reporte de Notas",
+     *     @OA\Parameter(name="number", in="query", description="Número de Venta", required=false, @OA\Schema(type="string")),
+     *     @OA\Parameter(name="from", in="query", description="Fecha de inicio", required=false, @OA\Schema(type="string")),
+     *     @OA\Parameter(name="to", in="query", description="Fecha de fin", required=false, @OA\Schema(type="string")),
+     *     @OA\Parameter(name="sale$number", in="query", description="Número de Venta", required=false, @OA\Schema(type="string")),
+     *     @OA\Parameter(name="sale$person_id", in="query", description="ID de la Persona", required=false, @OA\Schema(type="integer")),
+     *     @OA\Response(response=404, description="Vehículo no encontrado", @OA\JsonContent(@OA\Property(property="message", type="string"))),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=422, description="Validation error")
+     * )
+     */
+    public function reportNote(SaleReportRequest $request)
+    {
+        $notes = Note::getNotes(
+            $request->input('number'),
+            $request->input('from'),
+            $request->input('to'),
+            $request->input('sale$number'),
+            $request->input('sale$person_id')
+        );
+        if ($notes->isEmpty()) {
+            return response()->json([
+                "message" => "No hay notas registradas en el rango de fechas proporcionado.",
+            ], 404);
+        }
+        $notes = ReportNoteResource::collection($notes);
+//        return response()->json($notes);
+        $period = ($request->from && $request->to) ? 'Del ' . $request->from . ' al ' . $request->to :
+            ($request->from ? 'Desde ' . $request->from : ($request->to ? 'Hasta ' . $request->to : '-'));
+
+        $bytes = UtilFunctions::generateReportNotes($notes, $period);
+        $nameOfFile = date('d-m-Y') . '_Reporte_Notas' . '.xlsx';
 
         return response($bytes, 200, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

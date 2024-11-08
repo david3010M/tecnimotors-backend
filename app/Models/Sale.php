@@ -48,10 +48,6 @@ class Sale extends Model
         'deleted_at',
     ];
 
-    protected $casts = [
-        'paymentDate' => 'date:Y-m-d',
-    ];
-
     const filters = [
         'number' => 'like',
         'paymentDate' => 'between',
