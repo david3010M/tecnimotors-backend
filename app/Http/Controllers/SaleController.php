@@ -192,7 +192,7 @@ class SaleController extends Controller
                 'yape' => $request->input('yape') ?? 0,
                 'deposit' => $depositAmount ?? 0,
                 'nro_operation' => $request->input('nro_operation'),
-                'cash' => $request->input('cash') ?? 0,
+                'cash' => $request->input('effective') ?? 0,
                 'card' => $request->input('card') ?? 0,
                 'plin' => $request->input('plin') ?? 0,
                 'isBankPayment' => $request->input('isBankPayment'),
