@@ -315,7 +315,7 @@ class PdfController extends Controller
             'typePayment' => $Movimiento->paymentType === 'CONTADO' ? 'Contado' : ($Movimiento->paymentType === 'CREDITO' ? 'Crédito' : '-'),
             'numeroVenta' => $num,
             'porcentaje' => $Movimiento->detractionPercentage,
-            'fechaemision' => $Movimiento->paymentDate->format('d/m/Y'),
+            'fechaemision' => $Movimiento->paymentDate,
             'cliente' => $nombreCliente,
             'detalles' => $detalles,
             'cuentas' => $Movimiento->commitments,
