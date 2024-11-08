@@ -63,8 +63,12 @@ class NoteController extends Controller
         }
         $documentType = $sale->documentType == Constants::SALE_BOLETA ? Constants::SALE_NOTA_CREDITO_BOLETA : Constants::SALE_NOTA_CREDITO_FACTURA;
 
+        $cashId = 1;
+        $query = Note::where('documentType', $request->documentType)
+            ->where('cash_id', $cashId);
+
         $data = [
-            'number' => $this->nextCorrelativeQuery(Note::where('documentType', $documentType), 'number'),
+            'number' => $this->nextCorrelativeQuery($query, 'number'),
             'documentType' => $documentType,
             'date' => $request->input('date'),
             'comment' => $request->input('comment'),
@@ -75,6 +79,8 @@ class NoteController extends Controller
             'note_reason_id' => $request->input('note_reason_id'),
             'sale_id' => $request->input('sale_id'),
             'status' => Constants::CREDIT_NOTE_STATUS_PENDING,
+            'user_id' => auth()->id(),
+            'cash_id' => $cashId,
         ];
 
         $note = Note::create($data);
@@ -95,6 +101,9 @@ class NoteController extends Controller
         $this->updateFullNumber($note);
         $note = Note::find($note->id);
         $sale->update(['status' => Constants::SALE_STATUS_ANULADO]);
+        if ($sale->budget_sheet_id) {
+            $sale->budgetSheet->update(['status' => Constants::BUDGET_SHEET_PENDIENTE]);
+        }
         $this->declararNotaCredito($note->id);
         return response()->json(NoteResource::make($note));
     }
@@ -159,8 +168,8 @@ class NoteController extends Controller
         }
 
         $documentType = $sale->documentType == Constants::SALE_BOLETA
-        ? Constants::SALE_NOTA_CREDITO_BOLETA
-        : Constants::SALE_NOTA_CREDITO_FACTURA;
+            ? Constants::SALE_NOTA_CREDITO_BOLETA
+            : Constants::SALE_NOTA_CREDITO_FACTURA;
 
         // Actualizar los datos de la nota
         $note->update([
@@ -227,7 +236,8 @@ class NoteController extends Controller
             Constants::SALE_NOTA_CREDITO_BOLETA => 'FC',
             Constants::SALE_NOTA_CREDITO_FACTURA => 'BC',
         ];
-        $fullNumber = $documentTypePrefixes[$note->documentType] . $note->sale?->cash?->series . '-' . $note->number;
+        $series = substr($note->sale->cash->series, -2);
+        $fullNumber = $documentTypePrefixes[$note->documentType] . $series . '-' . $note->number;
         $note->update(['fullNumber' => $fullNumber]);
         $note->save();
     }

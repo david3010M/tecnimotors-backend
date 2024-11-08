@@ -43,7 +43,7 @@ class NoteResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'number' => $this->number,
+            'number' => $this->fullNumber,
             'documentType' => $this->documentType,
             'date' => Carbon::parse($this->date)->format('Y-m-d'),
             'comment' => $this->comment,
@@ -56,6 +56,8 @@ class NoteResource extends JsonResource
             'status' => $this->status,
             'sale' => new SaleResource($this->sale),
             'details' => SaleDetailResource::collection($this->saleDetails),
+            'noteReason' => new NoteReasonResource($this->noteReason),
+            'user_id' => $this->user_id,
             'created_at' => $this->created_at,
         ];
     }

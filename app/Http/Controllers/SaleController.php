@@ -105,7 +105,10 @@ class SaleController extends Controller
             'person_id' => $request->input('person_id'),
             'budget_sheet_id' => $request->input('budget_sheet_id'),
             'cash_id' => $cashId,
+            'user_id' => auth()->id(),
         ];
+
+        logger($data);
 
         $sale = Sale::make($data);
 

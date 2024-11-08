@@ -225,7 +225,7 @@ class BudgetSheetController extends Controller
                 }),
             ],
             'percentageDiscount' => 'required|numeric|between:0,100',
-            'paymentType' => 'required|string|in:Contado,Credito',
+            'paymentType' => 'nullable|string|in:Contado,Credito',
         ]);
 
         if ($validator->fails()) {

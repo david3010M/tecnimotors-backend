@@ -24,6 +24,8 @@ class Note extends Model
         'note_reason_id',
         'sale_id',
         'status',
+        'user_id',
+        'cash_id',
         'created_at',
     ];
 
@@ -49,6 +51,7 @@ class Note extends Model
         'totalDocumentReference',
         'note_reason_id',
         'sale_id',
+        'cash_id',
     ];
 
     protected $hidden = [
@@ -70,6 +73,16 @@ class Note extends Model
     public function saleDetails()
     {
         return $this->hasMany(SaleDetail::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function cash()
+    {
+        return $this->belongsTo(Cash::class);
     }
 
 }

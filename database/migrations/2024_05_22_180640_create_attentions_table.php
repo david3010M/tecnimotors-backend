@@ -21,7 +21,7 @@ return new class extends Migration {
             $table->dateTime('deliveryDate')->nullable();
             $table->string('observations')->nullable();
             $table->string('fuelLevel')->nullable();
-            $table->decimal('km')->nullable();
+            $table->string('km')->nullable();
 
             $table->decimal('totalService')->nullable();
             $table->decimal('totalProducts')->nullable();

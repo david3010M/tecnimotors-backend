@@ -26,6 +26,8 @@ return new class extends Migration {
             $table->string('status');
             $table->foreignId('note_reason_id')->nullable()->constrained('note_reasons');
             $table->foreignId('sale_id')->nullable()->constrained('sales'); //ref
+            $table->foreignId('user_id')->nullable()->constrained('users');
+            $table->foreignId('cash_id')->nullable()->constrained('cashes');
             $table->timestamps();
             $table->softDeletes();
         });

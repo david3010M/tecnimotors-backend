@@ -34,4 +34,9 @@ class Cash extends Model
     {
         return $this->hasMany(Sale::class);
     }
+
+    public function notes()
+    {
+        return $this->hasMany(Note::class);
+    }
 }

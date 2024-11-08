@@ -39,6 +39,7 @@ class Sale extends Model
         'person_id',
         'budget_sheet_id',
         'cash_id',
+        'user_id',
         'created_at',
     ];
 
