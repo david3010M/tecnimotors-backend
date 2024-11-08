@@ -23,6 +23,7 @@ class BudgetSheetResource extends JsonResource
             'igv' => $this->igv,
             'status' => $this->status,
             'attention_id' => $this->attention_id,
+            'person_id' => $this->attention?->vehicle?->person?->id,
             'created_at' => $this->created_at,
         ];
     }

@@ -112,15 +112,7 @@ class SaleController extends Controller
         }
         $igv = $subtotal * Constants::IGV;
         $total = $subtotal + $igv;
-
-        logger(
-            [
-                'subtotal' => $subtotal,
-                'igv' => $igv,
-                'total' => $total,
-            ]
-        );
-
+        
         $cashId = 1;
         $query = Sale::where('documentType', $request->documentType)
             ->where('cash_id', $cashId);

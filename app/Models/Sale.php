@@ -54,8 +54,8 @@ class Sale extends Model
 
     const filters = [
         'number' => 'like',
-        'from' => '>=',
-        'to' => '<=',
+        'paymentDate$from' => '>=',
+        'paymentDate$to' => '<=',
         'documentType' => 'like',
         'saleType' => 'like',
         'detractionCode' => 'like',
