@@ -178,13 +178,23 @@ class UtilFunctions
                 $excelUI->changeStyleSelected(false, "C", ExcelUI::$GENERAL, true, ExcelUI::$BACKGROUND_CELL_SECONDARY, true);
             }
             $excelUI->setRowHeight($indexRow, 30);
+            /**
+             * CORRELATIVO
+             * FECHA DE NOTA
+             * FECHA DE VENTA
+             * DOCUMENTO REFERENCIAL
+             * CLIENTE
+             * TOTAL NOTA
+             * TOTAL VENTA
+             */
             $excelUI->setDataCellByIndex($indexRow, $indexCol++, $index++);
             $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->correlativo);
-            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->fecha);
-            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->tipoDocumento);
-            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->tipoPago);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->fechaNota);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->fechaVenta);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->documentoReferencial);
             $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->cliente);
-            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->estado);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->totalNota);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->totalVenta);
 //            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->metodoPago);
             $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->total);
             $indexRow++;
