@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\IndexRequestNote;
-use App\Http\Resources\NoteResource;
-use App\Models\Note;
 use App\Http\Requests\StoreNoteRequest;
 use App\Http\Requests\UpdateNoteRequest;
+use App\Http\Resources\NoteResource;
+use App\Models\Note;
 use App\Models\Sale;
 use App\Models\SaleDetail;
 use App\Utils\Constants;
+use Illuminate\Support\Facades\Log;
 
 class NoteController extends Controller
 {
@@ -58,7 +59,7 @@ class NoteController extends Controller
     {
         $sale = Sale::find($request->sale_id);
         if ($sale->documentType != Constants::SALE_FACTURA && $sale->documentType != Constants::SALE_BOLETA) {
-            return response()->json(["message" => "No se puede crear una nota de crédito para una venta de tipo " . $sale->documentType,], 422);
+            return response()->json(["message" => "No se puede crear una nota de crédito para una venta de tipo " . $sale->documentType], 422);
         }
         $documentType = $sale->documentType == Constants::SALE_BOLETA ? Constants::SALE_NOTA_CREDITO_BOLETA : Constants::SALE_NOTA_CREDITO_FACTURA;
 
@@ -94,6 +95,7 @@ class NoteController extends Controller
         $this->updateFullNumber($note);
         $note = Note::find($note->id);
         $sale->update(['status' => Constants::SALE_STATUS_ANULADO]);
+        $this->declararNotaCredito($note->id);
         return response()->json(NoteResource::make($note));
     }
 
@@ -113,7 +115,10 @@ class NoteController extends Controller
     public function show(int $id)
     {
         $note = Note::find($id);
-        if (!$note) return response()->json(["message" => "Nota de crédito no encontrada"], 404);
+        if (!$note) {
+            return response()->json(["message" => "Nota de crédito no encontrada"], 404);
+        }
+
         return response()->json(NoteResource::make($note));
     }
 
@@ -154,8 +159,8 @@ class NoteController extends Controller
         }
 
         $documentType = $sale->documentType == Constants::SALE_BOLETA
-            ? Constants::SALE_NOTA_CREDITO_BOLETA
-            : Constants::SALE_NOTA_CREDITO_FACTURA;
+        ? Constants::SALE_NOTA_CREDITO_BOLETA
+        : Constants::SALE_NOTA_CREDITO_FACTURA;
 
         // Actualizar los datos de la nota
         $note->update([
@@ -192,7 +197,6 @@ class NoteController extends Controller
         return response()->json(NoteResource::make($note));
     }
 
-
     /**
      * Remove the specified resource from storage.
      * @OA\Delete (
@@ -209,7 +213,10 @@ class NoteController extends Controller
     public function destroy(int $id)
     {
         $note = Note::find($id);
-        if (!$note) return response()->json(["message" => "Nota de crédito no encontrada"], 404);
+        if (!$note) {
+            return response()->json(["message" => "Nota de crédito no encontrada"], 404);
+        }
+
         $note->delete();
         return response()->json(["message" => "Nota de crédito eliminada"]);
     }
@@ -223,5 +230,65 @@ class NoteController extends Controller
         $fullNumber = $documentTypePrefixes[$note->documentType] . $note->sale?->cash?->series . '-' . $note->number;
         $note->update(['fullNumber' => $fullNumber]);
         $note->save();
+    }
+
+    public function declararNotaCredito($idventa)
+    {
+        $funcion = "enviarNotaCredito";
+        $empresa_id = 1;
+
+        $notaCredito = Note::find($idventa);
+
+        if (!$notaCredito) {
+            return response()->json(['message' => 'NOTA DE CREDITO NO ENCONTRADA'], 422);
+        }
+        // if ($notaCredito->status_facturado != 'Pendiente') {
+        //     return response()->json(['message' => 'NOTA DE CREDITO NO SE ENCUENTRA EN PENDIENTE DE ENVÍO'], 422);
+        // }
+
+        // Construir la URL con los parámetros
+        $url = "https://develop.garzasoft.com:81/tecnimotors-facturador/controlador/contComprobante.php";
+        $params = [
+            'funcion' => $funcion,
+            'idventa' => $idventa,
+            'empresa_id' => $empresa_id,
+        ];
+        $url .= '?' . http_build_query($params);
+
+        // Log de inicio de la solicitud
+        Log::error("Iniciando solicitud para enviar Nota de Crédito. ID venta: $idventa, Empresa ID: $empresa_id, URL: $url");
+
+        // Inicializar cURL
+        $ch = curl_init();
+
+        // Configurar opciones cURL
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        // Ejecutar la solicitud y obtener la respuesta
+        $response = curl_exec($ch);
+
+        // Verificar si ocurrió algún error
+        if (curl_errno($ch)) {
+            $error = curl_error($ch);
+            // Registrar el error en el log
+            Log::error("Error en cURL al enviar Nota de Crédito. ID venta: $idventa, Error: $error");
+            // echo 'Error en cURL: ' . $error;
+        } else {
+            // Registrar la respuesta en el log
+            Log::error("Respuesta recibida de Nota de Crédito para ID venta: $idventa, Respuesta: $response");
+            // Mostrar la respuesta
+            // echo 'Respuesta: ' . $response;
+        }
+
+        // Cerrar cURL
+        curl_close($ch);
+
+        // Log del cierre de la solicitud
+        Log::error("Solicitud de Nota de Crédito finalizada para ID venta: $idventa.");
+
+        // $notaCredito->status_facturado = 'Enviado';
+        // $notaCredito->save();
+
     }
 }
