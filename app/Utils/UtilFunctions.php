@@ -160,6 +160,50 @@ class UtilFunctions
         return $bytes;
     }
 
+    public static function generateReportNotes($notes, $period = "-")
+    {
+        $excelUI = new ExcelUI(Constants::REPORTES, Constants::REPORTE_NOTA_EXCEL);
+
+        $excelUI->setTextCell("C4", $period);
+        $col = $excelUI->getColumnIndex("A");
+        $indexRow = 7;
+        $index = 1;
+
+        foreach ($notes as $note) {
+            $movement = json_decode($note->toJson());
+            $indexCol = $col;
+            if ($indexRow % 2 == 0) {
+                $excelUI->changeStyleSelected(false, "C", ExcelUI::$GENERAL, true, ExcelUI::$BACKGROUND_CELL_PRIMARY, true);
+            } else {
+                $excelUI->changeStyleSelected(false, "C", ExcelUI::$GENERAL, true, ExcelUI::$BACKGROUND_CELL_SECONDARY, true);
+            }
+            $excelUI->setRowHeight($indexRow, 30);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $index++);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->correlativo);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->fecha);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->tipoDocumento);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->tipoPago);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->cliente);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->estado);
+//            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->metodoPago);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->total);
+            $indexRow++;
+        }
+
+        $excelUI->changeStyleSelected(true, "C", ExcelUI::$GENERAL, true, ExcelUI::$BACKGROUND_CELL_TOTAL, true);
+
+        $colTotal = $excelUI->getColumnIndex("G");
+        $excelUI->setRowHeight($indexRow, 30);
+        $excelUI->setDataCellByIndex($indexRow, $colTotal, "MONTO TOTAL");
+        $colTotal++;
+        $strCol = $excelUI->getColumnStringFromIndex($colTotal);
+        $excelUI->setFormula($indexRow, $colTotal, "=SUM({$strCol}7:$strCol" . ($indexRow - 1) . ")");
+
+        $bytes = $excelUI->save();
+        unset($excelUI);
+        return $bytes;
+    }
+
     public static function generateReportAttendanceVehicle($months, $period)
     {
         $excelUI = new ExcelUI(Constants::REPORTES, Constants::REPORTE_UNIDADES_ATENDIDAS);

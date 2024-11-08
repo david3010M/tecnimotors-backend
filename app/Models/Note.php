@@ -31,14 +31,10 @@ class Note extends Model
 
     const filters = [
         'number' => 'like',
-        'date' => 'between',
-        'documentType' => 'like',
-        'company' => 'like',
-        'discount' => 'like',
-        'totalCreditNote' => 'like',
-        'totalDocumentReference' => 'like',
-        'note_reason_id' => 'like',
-        'sale_id' => 'like',
+        'from' => '>=',
+        'to' => '<=',
+        'sale.number' => 'like',
+        'sale.person_id' => '=',
     ];
 
     const sorts = [

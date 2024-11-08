@@ -49,6 +49,17 @@ class SaleController extends Controller
      */
     public function index(IndexRequestSale $request)
     {
+        if ($request->all == 'true') {
+            return [
+                'data' => $this->getFilteredResults(
+                    Sale::class,
+                    $request,
+                    Sale::filters,
+                    Sale::sorts,
+                    SaleResource::class
+                )->original
+            ];
+        }
         return $this->getFilteredResults(
             Sale::class,
             $request,

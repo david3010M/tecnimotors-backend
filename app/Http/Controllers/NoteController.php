@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Log;
 class NoteController extends Controller
 {
     /**
-     *
      * Display a listing of the resource.
      * @OA\Get (
      *     path="/tecnimotors-backend/public/api/note",
@@ -23,6 +22,11 @@ class NoteController extends Controller
      *     summary="Listado de ventas",
      *     description="Listado de ventas",
      *     security={{"bearerAuth": {}}},
+     *     @OA\Parameter(name="number", in="query", description="Número de la nota de crédito", required=false, @OA\Schema(type="string")),
+     *     @OA\Parameter(name="from", in="query", description="Fecha de inicio", required=false, @OA\Schema(type="date")),
+     *     @OA\Parameter(name="to", in="query", description="Fecha de fin", required=false, @OA\Schema(type="date")),
+     *     @OA\Parameter(name="sale$number", in="query", description="Número de la venta", required=false, @OA\Schema(type="string")),
+     *     @OA\Parameter(name="sale$person_id", in="query", description="ID de la persona", required=false, @OA\Schema(type="integer")),
      *     @OA\Parameter(name="all", in="query", description="Listar todos los registros", required=false, @OA\Schema(type="string", enum={"true", "false"})),
      *     @OA\Parameter(name="page", in="query", description="Número de página", required=false, @OA\Schema(type="integer")),
      *     @OA\Parameter(name="per_page", in="query", description="Cantidad de registros por página", required=false, @OA\Schema(type="integer")),
