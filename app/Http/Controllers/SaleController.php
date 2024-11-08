@@ -105,10 +105,9 @@ class SaleController extends Controller
     public function store(StoreSaleRequest $request)
     {
         $budgetSheet = budgetSheet::find($request->budget_sheet_id);
-
         $subtotal = 0;
         foreach ($request->saleDetails as $saleDetail) {
-            $subtotal += ($saleDetail['unitPrice'] / 1.18);
+            $subtotal += ($saleDetail['unitPrice'] / 1.18) * $saleDetail['quantity'];
         }
         $igv = $subtotal * Constants::IGV;
         $total = $subtotal + $igv;
@@ -282,11 +281,7 @@ class SaleController extends Controller
             ]);
 
         } else if ($sale->paymentType == Constants::SALE_CREDITO) {
-            $sumCommitments = 0;
-            foreach ($request->input('commitments') as $commitment) {
-                $sumCommitments += $commitment['price'] * $commitment['quantity'];
-            }
-
+            $sumCommitments = array_sum(array_column($request->input('commitments'), 'price'));
             if (round($sale->total - $sumCommitments, 1) != 0) {
                 return response()->json(['error' => 'La suma de los compromisos no coincide con el total ' . $sale->total . ' diferencia ' . ($sale->total - $sumCommitments)], 422);
             }
