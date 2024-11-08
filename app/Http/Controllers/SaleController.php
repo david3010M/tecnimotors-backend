@@ -194,7 +194,7 @@ class SaleController extends Controller
             $commitment = Commitment::create([
                 'numberQuota' => 1,
                 'price' => $sale->total,
-                'balance' => $sale->total,
+                'balance' => 0,
                 'status' => Constants::COMMITMENT_PAGADO,
                 'payment_type' => Constants::COMMITMENT_CONTADO,
                 'payment_date' => today(),

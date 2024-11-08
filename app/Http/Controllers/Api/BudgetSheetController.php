@@ -73,7 +73,7 @@ class BudgetSheetController extends Controller
         $attentionVehicleId = $request->query('attention_vehicle_id');
         $status = $request->query('status');
 
-        // Consulta base
+        // Consulta base, incluyendo las relaciones hasta `person`
         $query = BudgetSheet::with(['attention']);
 
         // Aplicamos filtros si se proporcionan
@@ -92,19 +92,24 @@ class BudgetSheetController extends Controller
 
         // Devolvemos los datos paginados como respuesta JSON
         return response()->json([
-            'total' => $budgetSheets->total(), // Total de registros
-            'data' => $budgetSheets->items(), // Los registros de la página actual
-            'current_page' => $budgetSheets->currentPage(), // Página actual
-            'last_page' => $budgetSheets->lastPage(), // Última página disponible
-            'per_page' => $budgetSheets->perPage(), // Cantidad de registros por página
-            'first_page_url' => $budgetSheets->url(1), // URL de la primera página
-            'from' => $budgetSheets->firstItem(), // Primer registro de la página actual
-            'next_page_url' => $budgetSheets->nextPageUrl(), // URL de la siguiente página
-            'path' => $budgetSheets->path(), // Ruta base de la paginación
-            'prev_page_url' => $budgetSheets->previousPageUrl(), // URL de la página anterior
-            'to' => $budgetSheets->lastItem(), // Último registro de la página actual
+            'total' => $budgetSheets->total(),
+            'data' => $budgetSheets->map(function ($item) {
+                $data = $item->toArray(); // Convertimos el modelo en un array
+                $data['person_id'] = $item->attention->vehicle->person_id ?? null; // Agregamos el campo person_id
+                return $data;
+            })->toArray(),
+            'current_page' => $budgetSheets->currentPage(),
+            'last_page' => $budgetSheets->lastPage(),
+            'per_page' => $budgetSheets->perPage(),
+            'first_page_url' => $budgetSheets->url(1),
+            'from' => $budgetSheets->firstItem(),
+            'next_page_url' => $budgetSheets->nextPageUrl(),
+            'path' => $budgetSheets->path(),
+            'prev_page_url' => $budgetSheets->previousPageUrl(),
+            'to' => $budgetSheets->lastItem(),
         ]);
     }
+
 
     /**
      * Get a single BudgetSheet

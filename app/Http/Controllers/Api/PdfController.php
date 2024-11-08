@@ -317,7 +317,7 @@ class PdfController extends Controller
             'fechaemision' => $Movimiento->paymentDate->format('d/m/Y'),
             'cliente' => $nombreCliente,
             'detalles' => $detalles,
-            'cuentas' => $Movimiento->installments,
+            'cuentas' => $Movimiento->commitments,
             'vuelto' => '0.00',
             'totalPagado' => $Movimiento->total,
             'presupuesto' => $Movimiento?->budgetSheet?->number ?? '-',
@@ -356,7 +356,7 @@ class PdfController extends Controller
         $productList = [];
         if ($Movimiento) {
             $productList = $Movimiento->saleDetails;
-  
+
         }
         // Inicializar el array de detalles
         $detalles = [];
@@ -423,7 +423,7 @@ class PdfController extends Controller
             'typePayment' => $Movimiento->paymentType ?? '-',
             'nroReferencia' => $Movimiento->fullNumber ?? '-',
             'numeroNotaCredito' => $object->fullNumber ?? '',
-            'comment' => $object->comment ,
+            'comment' => $object->comment,
             'numeroVenta' => $num,
             'fechaemision' => $object->created_at->format('Y-m-d'),
             'cliente' => $nombreCliente,
@@ -435,7 +435,7 @@ class PdfController extends Controller
             'motive' => $object?->noteReason?->description ?? '',
             'formaPago' => $Movimiento->formaPago ?? '-',
             'fechaInicio' => $fechaInicio,
-          
+
         ];
 
         $pdf = PDF::loadView('creditNote', $dataE);
