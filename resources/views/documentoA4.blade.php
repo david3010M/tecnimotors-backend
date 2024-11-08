@@ -478,56 +478,57 @@
         @endif
         
 
-            @if ($typePayment == 'Créditos')
-                <tr colspan="1">
-                    <th class="w20 blue">
-                        Cantidad de Cuotas:
-                    </th>
-                    <td class="w20">
+        @if ($typePayment == 'Crédito')
+        <tr colspan="1">
+            <th class="w20 blue">
+                Cantidad de Cuotas:
+            </th>
+            <td class="w20">
+                @php
+                    $totalAmount = $cuentas ? $cuentas->count() : 0; // Validación de $cuentas antes de contar
+                @endphp
+                {{ $totalAmount }}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <!-- Tabla de cuotas -->
+                <table class="">
+                    <thead>
+                        <tr>
+                            <th>Cuota</th>
+                            <th>Fecha Vencimiento</th>
+                            <th>Monto Neto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         @php
-                            $totalAmount = $cuentas ? $cuentas->count() : 0; // Validación de $cuentas antes de contar
+                            $i = 1;
                         @endphp
-                        {{ $totalAmount }}
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <!-- Tabla de cuotas -->
-                        <table class="">
-                            <thead>
-                                <tr>
-                                    <th>Cuota</th>
-                                    <th>Fecha Vencimiento</th>
-                                    <th>Monto Neto</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @php
-                                    $i = 1;
-                                @endphp
-                                @foreach ($cuentas as $cuenta)
-                                    <tr>
-                                        <td>{{ $i++ }}</td> <!-- Número acumulativo -->
-                                        <td>{{ $cuenta->date }}</td> <!-- Fecha -->
-                                        <td>
-                                            @php
-                                                // Verifica que el porcentaje no sea null y sea mayor a 0
-                                                $descuento =
-                                                    !is_null($porcentaje) && $porcentaje > 0
-                                                        ? round(($totalPagado * $porcentaje) / 100)
-                                                        : 0;
-                                            @endphp
-                                            {{ $cuenta->total - $descuento }}.00
-                                        </td> <!-- Monto total -->
-                                    </tr>
-                                @endforeach
+                        @foreach ($cuentas as $cuenta)
+                            <tr>
+                                <td>{{ $i++ }}</td> <!-- Número acumulativo -->
+                                <td>{{ \Carbon\Carbon::parse($cuenta->payment_date)->format('d/m/Y') }}</td> <!-- Fecha -->
 
-                            </tbody>
-                        </table>
-                    </td>
+                                <td>
+                                    @php
+                                        // Verifica que el porcentaje no sea null y sea mayor a 0
+                                        $descuento =
+                                            !is_null($porcentaje) && $porcentaje > 0
+                                                ? round(($totalPagado * $porcentaje) / 100)
+                                                : 0;
+                                    @endphp
+                                    {{ $cuenta->price - $descuento }}.00
+                                </td> <!-- Monto total -->
+                            </tr>
+                        @endforeach
 
-                </tr>
-            @endif
+                    </tbody>
+                </table>
+            </td>
+
+        </tr>
+    @endif
 
             <!-- Si el tipo de pago es a crédito, muestra la tabla de cuotas -->
 
