@@ -108,12 +108,12 @@ class SaleController extends Controller
 
         $subtotal = 0;
         foreach ($request->saleDetails as $saleDetail) {
-            $subtotal += $saleDetail['subTotal'];
+            $subtotal += ($saleDetail['unitPrice'] / 1.18);
         }
         $igv = $subtotal * Constants::IGV;
         $total = $subtotal + $igv;
 
-        $cashId = 1;
+        $cashId = 2;
         $query = Sale::where('documentType', $request->documentType)
             ->where('cash_id', $cashId);
 
@@ -132,8 +132,6 @@ class SaleController extends Controller
             'cash_id' => $cashId,
             'user_id' => auth()->id(),
         ];
-
-        logger($data);
 
         $sale = Sale::make($data);
 
@@ -316,7 +314,7 @@ class SaleController extends Controller
                 'subTotal' => $saleDetail['subTotal'],
                 'sale_id' => $sale->id,
             ]);
-            $taxableOperation += $saleDetail['subTotal'];
+            $taxableOperation += $saleDetail['unitPrice'] / 1.18;
         }
 
         $igv = $taxableOperation * Constants::IGV;

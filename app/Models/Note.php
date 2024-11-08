@@ -31,8 +31,7 @@ class Note extends Model
 
     const filters = [
         'number' => 'like',
-        'from' => '>=',
-        'to' => '<=',
+        'date' => 'between',
         'sale.number' => 'like',
         'sale.person_id' => '=',
     ];

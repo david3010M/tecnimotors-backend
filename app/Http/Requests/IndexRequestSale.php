@@ -8,7 +8,6 @@ class IndexRequestSale extends IndexRequest
     {
         return [
             'number' => 'nullable|string',
-            'paymentDate' => 'nullable|array|size:2',
             'from' => 'nullable|date_format:Y-m-d',
             'to' => 'nullable|date_format:Y-m-d',
             'documentType' => 'nullable|string|in:BOLETA,FACTURA,TICKET',
