@@ -233,6 +233,7 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::get('reportCaja', [PdfController::class, 'reportCaja'])->name('reportCaja');
     Route::get('movimentLast', [MovimentController::class, 'showLastMovPayment']);
     Route::get('getArchivosDocument/{id}/{tipodocumento}', [SaleController::class, 'getArchivosDocument']);
+    Route::get('sendemail/{id}', [SaleController::class, 'sendemail']);
 
 
     Route::get('typeUser/{id}/access', [TypeUserController::class, 'getAccess']);

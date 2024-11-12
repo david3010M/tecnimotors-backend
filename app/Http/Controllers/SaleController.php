@@ -15,6 +15,7 @@ use App\Models\Sale;
 use App\Models\SaleDetail;
 use App\Utils\Constants;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -71,7 +72,7 @@ class SaleController extends Controller
                     'per_page' => 100,
                     'to' => 10,
                     'total' => 10,
-                ]
+                ],
             ];
         }
         return $this->getFilteredResults(
@@ -105,10 +106,9 @@ class SaleController extends Controller
     public function store(StoreSaleRequest $request)
     {
         $budgetSheet = budgetSheet::find($request->budget_sheet_id);
-
         $subtotal = 0;
         foreach ($request->saleDetails as $saleDetail) {
-            $subtotal += ($saleDetail['unitPrice'] / 1.18);
+            $subtotal += ($saleDetail['unitPrice'] / 1.18) * $saleDetail['quantity'];
         }
         $igv = $subtotal * Constants::IGV;
         $total = $subtotal + $igv;
@@ -183,7 +183,7 @@ class SaleController extends Controller
             if (round($sale->total - $total, 1) != 0) {
                 return response()->json([
                     "error" => "El monto a pagar no coincide con el total " . round($sale->total, 1) .
-                        " diferencia " . round($sale->total - $total, 1),
+                    " diferencia " . round($sale->total - $total, 1),
                 ], 422);
             }
 
@@ -204,7 +204,7 @@ class SaleController extends Controller
             $tipo = 'M001';
             $tipo = str_pad($tipo, 4, '0', STR_PAD_RIGHT);
             $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(sequentialNumber, LOCATE("-", sequentialNumber) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM moviments WHERE SUBSTRING(sequentialNumber, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-            $siguienteNum = (int)$resultado;
+            $siguienteNum = (int) $resultado;
 
 //        DATA
             $routeVoucher = null;
@@ -270,7 +270,7 @@ class SaleController extends Controller
             $tipo = 'AMRT';
             $tipo = str_pad($tipo, 4, '0', STR_PAD_RIGHT);
             $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(sequentialNumber, LOCATE("-", sequentialNumber) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM amortizations WHERE SUBSTRING(sequentialNumber, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-            $siguienteNum = (int)$resultado;
+            $siguienteNum = (int) $resultado;
 
             Amortization::create([
                 'sequentialNumber' => $tipo . '-' . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT),
@@ -282,11 +282,7 @@ class SaleController extends Controller
             ]);
 
         } else if ($sale->paymentType == Constants::SALE_CREDITO) {
-            $sumCommitments = 0;
-            foreach ($request->input('commitments') as $commitment) {
-                $sumCommitments += $commitment['price'] * $commitment['quantity'];
-            }
-
+            $sumCommitments = array_sum(array_column($request->input('commitments'), 'price'));
             if (round($sale->total - $sumCommitments, 1) != 0) {
                 return response()->json(['error' => 'La suma de los compromisos no coincide con el total ' . $sale->total . ' diferencia ' . ($sale->total - $sumCommitments)], 422);
             }
@@ -478,7 +474,7 @@ class SaleController extends Controller
             if (round($sale->total - $total, 1) != 0) {
                 return response()->json([
                     "error" => "El monto a pagar no coincide con el total " . number_format($sale->total, 2) .
-                        " diferencia " . number_format($sale->total - $total, 2),
+                    " diferencia " . number_format($sale->total - $total, 2),
                 ], 422);
             }
 
@@ -561,7 +557,6 @@ class SaleController extends Controller
             'total' => $total,
         ]);
         $sale->save();
-
 
         $this->updateFullNumber($sale);
 
@@ -748,5 +743,64 @@ class SaleController extends Controller
         $fullNumber = $documentTypePrefixes[$sale->documentType] . $sale->cash?->series . '-' . $sale->number;
         $sale->update(['fullNumber' => $fullNumber]);
         $sale->save();
+    }
+    public function sendemail(Request $request, $id)
+    {
+        // Base URL de la API
+        $api_url = "https://develop.garzasoft.com:81/tecnimotors-facturador/controlador/contComprobante.php";
+
+        // Recuperar datos del request
+        $emails = $request->input('emails'); // Array de correos electrónicos
+        $comentario = $request->input('comentario', ''); // Comentario opcional
+        $funcion = "enviaremail";
+
+        // Log de la solicitud enviada
+        $url = "https://develop.garzasoft.com:81/tecnimotors-facturador/controlador/contComprobante.php";
+        // Construir los parámetros para la solicitud
+        $params = [
+            'funcion' => $funcion,
+            'token' => 'pdfD3scargar',
+            'idventa' => $id,
+            'comentario' => $comentario,
+        ];
+    
+        // Añadir los correos al array de parámetros
+        if (is_array($emails)) {
+            foreach ($emails as $index => $email) {
+                $params["emails[$index]"] = $email;
+            }
+        }    
+        $url .= '?' . http_build_query($params);
+    
+        // Inicializar cURL
+        $ch = curl_init();
+
+        // Configurar opciones cURL
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        // Ejecutar la solicitud y obtener la respuesta
+        $response = curl_exec($ch);
+
+        // Verificar si ocurrió algún error
+        if (curl_errno($ch)) {
+            $error = curl_error($ch);
+            // Registrar el error en el log
+            Log::error("Error en cURL al enviar VENTA. ID venta: $id,$funcion Error: $error");
+            // echo 'Error en cURL: ' . $error;
+        } else {
+            // Registrar la respuesta en el log
+            Log::error("Respuesta recibida de VENTA para ID venta: $id,$funcion Respuesta: $response");
+            // Mostrar la respuesta
+            // echo 'Respuesta: ' . $response;
+        }
+
+        // Cerrar cURL
+        curl_close($ch);
+
+        return response()->json([
+            'success' => true,
+            'data' => $response,
+        ]);
     }
 }
