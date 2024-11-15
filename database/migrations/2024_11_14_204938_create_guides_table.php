@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->string('date_emision')->nullable();
             $table->string('date_traslado')->nullable();
             $table->string('motive_name')->nullable();
+            $table->string('cod_motive')->nullable();
             $table->string('modality')->nullable();
             $table->string('recipient_names')->nullable();
             $table->string('recipient_document')->nullable();
@@ -29,7 +30,6 @@ return new class extends Migration {
             $table->string('driver_licencia')->nullable();
             $table->integer('nro_paquetes')->nullable();
             $table->boolean('transbordo')->nullable();
-            $table->string('cod_motive')->nullable();
             $table->decimal('net_weight')->nullable();
             $table->string('ubigeo_end')->nullable();
             $table->string('address_end')->nullable();
@@ -38,6 +38,9 @@ return new class extends Migration {
             $table->string('observation')->nullable();
             $table->string('factura')->nullable();
             $table->boolean('status_facturado')->nullable()->default(false);
+            $table->foreignId('guide_motive_id')->nullable()->constrained();
+            $table->foreignId('person_id')->nullable()->constrained('people');
+            $table->foreignId('worker_id')->nullable()->constrained('people');
             $table->foreignId('user_id')->nullable()->constrained();
             $table->foreignId('branch_id')->nullable()->default(1)->constrained();
             $table->timestamps();

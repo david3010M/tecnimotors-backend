@@ -12,15 +12,10 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('guide_details', function (Blueprint $table) {
+        Schema::create('guide_motives', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->nullable();
-            $table->text('description')->nullable();
-            $table->string('unit')->nullable();
-            $table->string('quantity')->nullable();
-            $table->string('weight')->nullable();
-            $table->string('status')->nullable();
-            $table->foreignId('guide_id')->constrained();
+            $table->string('code');
+            $table->string('name');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -33,6 +28,6 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('guide_details');
+        Schema::dropIfExists('guide_motives');
     }
 };

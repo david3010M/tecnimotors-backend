@@ -46,22 +46,24 @@ class StoreGuideRequest extends StoreRequest
     public function rules()
     {
         return [
-            'number' => 'nullable|string',
-            'full_number' => 'nullable|string',
             'date_emision' => 'nullable|date',
             'date_traslado' => 'nullable|date',
-            'motive_name' => 'nullable|string|in:' . implode(',', Guide::motives),
             'modality' => 'nullable|string|in:' . implode(',', Guide::modalities),
+
+//            RECIBIDOR
             'recipient_names' => 'nullable|string',
             'recipient_document' => 'nullable|string',
+
+//            CONDUCTOR
             'driver_names' => 'nullable|string',
             'driver_surnames' => 'nullable|string',
             'driver_document' => 'nullable|string',
-            'vehicle_placa' => 'nullable|string',
             'driver_licencia' => 'nullable|string',
+            'vehicle_placa' => 'nullable|string',
+
+//            GUIA
             'nro_paquetes' => 'nullable|integer',
             'transbordo' => 'nullable|boolean',
-            'cod_motive' => 'nullable|string',
             'net_weight' => 'nullable|numeric',
             'ubigeo_end' => 'nullable|string',
             'address_end' => 'nullable|string',
@@ -69,6 +71,10 @@ class StoreGuideRequest extends StoreRequest
             'address_start' => 'nullable|string',
             'observation' => 'nullable|string',
             'factura' => 'nullable|string',
+
+            'guide_motive_id' => 'nullable|exists:guide_motives,id',
+
+//            DETALLES
             'details' => 'nullable|array',
             'details.*.code' => 'required|string',
             'details.*.description' => 'required|string',

@@ -12474,6 +12474,277 @@
                 ]
             }
         },
+        "/tecnimotors-backend/public/api/departments": {
+            "get": {
+                "tags": [
+                    "Ubigeo"
+                ],
+                "summary": "Get all departments",
+                "description": "Show all departments",
+                "operationId": "a041ee28eb102d4ff10fb3d15e6ac4e5",
+                "responses": {
+                    "200": {
+                        "description": "List of departments",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Amazonas"
+                                            },
+                                            "ubigeo_code": {
+                                                "type": "string",
+                                                "example": "01"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/provinces/{departmentId}": {
+            "get": {
+                "tags": [
+                    "Ubigeo"
+                ],
+                "summary": "Get provinces by department ID",
+                "description": "Show all provinces for a given department ID",
+                "operationId": "6ec35db2c6d84604057a47915cbdaaca",
+                "parameters": [
+                    {
+                        "name": "departmentId",
+                        "in": "path",
+                        "description": "ID of the department",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of provinces",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Chachapoyas"
+                                            },
+                                            "ubigeo_code": {
+                                                "type": "string",
+                                                "example": "0101"
+                                            },
+                                            "department_id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/districts/{provinceId}": {
+            "get": {
+                "tags": [
+                    "Ubigeo"
+                ],
+                "summary": "Get districts by province ID",
+                "description": "Show all districts for a given province ID",
+                "operationId": "5a4c5b27e82c2bc1689c6d34a7d45275",
+                "parameters": [
+                    {
+                        "name": "provinceId",
+                        "in": "path",
+                        "description": "ID of the province",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of districts",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Chachapoyas"
+                                            },
+                                            "ubigeo_code": {
+                                                "type": "string",
+                                                "example": "010101"
+                                            },
+                                            "province_id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/ubigeos": {
+            "get": {
+                "tags": [
+                    "Ubigeo"
+                ],
+                "summary": "Get ubigeo information",
+                "description": "Show a specific ubigeo by combining the ID, province, and department.",
+                "operationId": "4d5ef07963828e81da37f98ea7d83823",
+                "responses": {
+                    "200": {
+                        "description": "Ubigeo details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "province": {
+                                            "type": "string",
+                                            "example": "Trujillo"
+                                        },
+                                        "department": {
+                                            "type": "string",
+                                            "example": "La Libertad"
+                                        },
+                                        "ubigeo": {
+                                            "type": "string",
+                                            "example": "1-Trujillo-La Libertad"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/tecnimotors-backend/public/api/unit": {
             "get": {
                 "tags": [
@@ -17698,6 +17969,42 @@
                         "type": "string",
                         "format": "date-time",
                         "example": "2024-08-19T00:00:00.000000Z"
+                    },
+                    "details": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer",
+                                    "example": "1"
+                                },
+                                "code": {
+                                    "type": "string",
+                                    "example": "001"
+                                },
+                                "description": {
+                                    "type": "string",
+                                    "example": "Producto 1"
+                                },
+                                "unit": {
+                                    "type": "string",
+                                    "example": "UND"
+                                },
+                                "quantity": {
+                                    "type": "integer",
+                                    "example": "1"
+                                },
+                                "weight": {
+                                    "type": "number",
+                                    "example": "1.0"
+                                },
+                                "guide_id": {
+                                    "type": "integer",
+                                    "example": "1"
+                                }
+                            },
+                            "type": "object"
+                        }
                     }
                 },
                 "type": "object"
@@ -20545,6 +20852,10 @@
         {
             "name": "Type Vehicle",
             "description": "Type Vehicle"
+        },
+        {
+            "name": "Ubigeo",
+            "description": "Ubigeo"
         },
         {
             "name": "Unit",

@@ -32,6 +32,7 @@ use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\TypeAttentionController;
 use App\Http\Controllers\Api\TypeUserController;
 use App\Http\Controllers\Api\TypeVehicleController;
+use App\Http\Controllers\Api\UbigeoController;
 use App\Http\Controllers\Api\UnitController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VehicleController;
@@ -310,4 +311,10 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::resource('guide', GuideController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'guide.index', 'store' => 'guide.store', 'show' => 'guide.show',
             'update' => 'guide.update', 'destroy' => 'guide.destroy']);
+
+//    UBIGEO
+    Route::get('departments', [UbigeoController::class, 'indexDepartments'])->name('indexDepartments');
+    Route::get('provinces/{departmentId}', [UbigeoController::class, 'indexProvinces'])->name('indexProvinces');
+    Route::get('districts/{provinceId}', [UbigeoController::class, 'indexDistricts'])->name('indexDistricts');
+    Route::get('ubigeos', [UbigeoController::class, 'ubigeos'])->name('ubigeos');
 });

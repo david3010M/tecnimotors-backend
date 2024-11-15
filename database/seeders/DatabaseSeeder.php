@@ -54,6 +54,8 @@ class DatabaseSeeder extends Seeder
                 Person::create($object);
             }
         }
+
+        $this->call(DepartmentSeeder::class);
         $this->call(FuncitionFormaPagoSeeder::class);
 
         $this->call(GroupMenuSeeder::class);
