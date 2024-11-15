@@ -15659,6 +15659,240 @@
                 ]
             }
         },
+        "/tecnimotors-backend/public/api/guide": {
+            "get": {
+                "tags": [
+                    "Guide"
+                ],
+                "summary": "Listado de guías",
+                "description": "Obtiene un listado de guías",
+                "operationId": "f94b528fb956c5c71688997d4adb0d44",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Número de página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Cantidad de elementos por página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "number",
+                        "in": "query",
+                        "description": "Número de guía",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Listado de guías",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GuideCollection"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Guide"
+                ],
+                "summary": "Crear guía",
+                "description": "Crea una guía",
+                "operationId": "95936d13c6f19c0818ef52185c5824d5",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreGuideRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Guía creada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GuideResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    },
+                    "422": {
+                        "description": "Error de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/guide/{id}": {
+            "get": {
+                "tags": [
+                    "Guide"
+                ],
+                "summary": "Obtener guía",
+                "description": "Obtiene una guía",
+                "operationId": "9d545655f39a47657f9c3777a1b491a9",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la guía",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Guía",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GuideResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    },
+                    "404": {
+                        "description": "Guía no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Guide"
+                ],
+                "summary": "Actualizar guía",
+                "description": "Actualiza una guía",
+                "operationId": "d0623958a98b00db1024703c2d8b2143",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la guía",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateGuideRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Guía actualizada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GuideResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    },
+                    "404": {
+                        "description": "Guía no encontrada"
+                    },
+                    "422": {
+                        "description": "Error de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Guide"
+                ],
+                "summary": "Eliminar guía",
+                "description": "Elimina una guía",
+                "operationId": "930f3267d6e5bd7100e06475fdcb2269",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la guía",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Guía eliminada"
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    },
+                    "404": {
+                        "description": "Guía no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/tecnimotors-backend/public/api/note": {
             "get": {
                 "tags": [
@@ -16669,6 +16903,138 @@
                 },
                 "type": "object"
             },
+            "StoreGuideRequest": {
+                "title": "StoreGuideRequest",
+                "properties": {
+                    "number": {
+                        "type": "string",
+                        "example": "G-0001"
+                    },
+                    "full_number": {
+                        "type": "string",
+                        "example": "G-0001"
+                    },
+                    "date_emision": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2024-08-19"
+                    },
+                    "date_traslado": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2024-08-19"
+                    },
+                    "motive_name": {
+                        "type": "string",
+                        "example": "VENTA"
+                    },
+                    "modality": {
+                        "type": "string",
+                        "example": "TRANSPORTE PRIVADO"
+                    },
+                    "recipient_names": {
+                        "type": "string",
+                        "example": "Juan Perez"
+                    },
+                    "recipient_document": {
+                        "type": "string",
+                        "example": "12345678"
+                    },
+                    "driver_names": {
+                        "type": "string",
+                        "example": "Juan Perez"
+                    },
+                    "driver_surnames": {
+                        "type": "string",
+                        "example": "Perez"
+                    },
+                    "driver_document": {
+                        "type": "string",
+                        "example": "12345678"
+                    },
+                    "vehicle_placa": {
+                        "type": "string",
+                        "example": "12345678"
+                    },
+                    "driver_licencia": {
+                        "type": "string",
+                        "example": "12345678"
+                    },
+                    "nro_paquetes": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "transbordo": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "cod_motive": {
+                        "type": "string",
+                        "example": "01"
+                    },
+                    "net_weight": {
+                        "type": "number",
+                        "example": "1.0"
+                    },
+                    "ubigeo_end": {
+                        "type": "string",
+                        "example": "01"
+                    },
+                    "address_end": {
+                        "type": "string",
+                        "example": "Av. Peru"
+                    },
+                    "ubigeo_start": {
+                        "type": "string",
+                        "example": "01"
+                    },
+                    "address_start": {
+                        "type": "string",
+                        "example": "Av. Peru"
+                    },
+                    "observation": {
+                        "type": "string",
+                        "example": "Observacion"
+                    },
+                    "factura": {
+                        "type": "string",
+                        "example": "F-0001"
+                    },
+                    "status_facturado": {
+                        "type": "boolean",
+                        "example": "false"
+                    },
+                    "details": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "code": {
+                                    "type": "string",
+                                    "example": "001"
+                                },
+                                "description": {
+                                    "type": "string",
+                                    "example": "Producto 1"
+                                },
+                                "unit": {
+                                    "type": "string",
+                                    "example": "UND"
+                                },
+                                "quantity": {
+                                    "type": "integer",
+                                    "example": "1"
+                                },
+                                "weight": {
+                                    "type": "number",
+                                    "example": "1.0"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
             "StoreNoteReasonRequest": {
                 "title": "StoreNoteReasonRequest",
                 "required": [
@@ -16885,6 +17251,138 @@
                 },
                 "type": "object"
             },
+            "UpdateGuideRequest": {
+                "title": "UpdateGuideRequest",
+                "properties": {
+                    "number": {
+                        "type": "string",
+                        "example": "G-0001"
+                    },
+                    "full_number": {
+                        "type": "string",
+                        "example": "G-0001"
+                    },
+                    "date_emision": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2024-08-19"
+                    },
+                    "date_traslado": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2024-08-19"
+                    },
+                    "motive_name": {
+                        "type": "string",
+                        "example": "VENTA"
+                    },
+                    "modality": {
+                        "type": "string",
+                        "example": "TRANSPORTE PRIVADO"
+                    },
+                    "recipient_names": {
+                        "type": "string",
+                        "example": "Juan Perez"
+                    },
+                    "recipient_document": {
+                        "type": "string",
+                        "example": "12345678"
+                    },
+                    "driver_names": {
+                        "type": "string",
+                        "example": "Juan Perez"
+                    },
+                    "driver_surnames": {
+                        "type": "string",
+                        "example": "Perez"
+                    },
+                    "driver_document": {
+                        "type": "string",
+                        "example": "12345678"
+                    },
+                    "vehicle_placa": {
+                        "type": "string",
+                        "example": "12345678"
+                    },
+                    "driver_licencia": {
+                        "type": "string",
+                        "example": "12345678"
+                    },
+                    "nro_paquetes": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "transbordo": {
+                        "type": "string",
+                        "example": "false"
+                    },
+                    "cod_motive": {
+                        "type": "string",
+                        "example": "01"
+                    },
+                    "net_weight": {
+                        "type": "number",
+                        "example": "1.0"
+                    },
+                    "ubigeo_end": {
+                        "type": "string",
+                        "example": "01"
+                    },
+                    "address_end": {
+                        "type": "string",
+                        "example": "Av. Peru"
+                    },
+                    "ubigeo_start": {
+                        "type": "string",
+                        "example": "01"
+                    },
+                    "address_start": {
+                        "type": "string",
+                        "example": "Av. Peru"
+                    },
+                    "observation": {
+                        "type": "string",
+                        "example": "Observacion"
+                    },
+                    "factura": {
+                        "type": "string",
+                        "example": "F-0001"
+                    },
+                    "status_facturado": {
+                        "type": "boolean",
+                        "example": "false"
+                    },
+                    "details": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "code": {
+                                    "type": "string",
+                                    "example": "001"
+                                },
+                                "description": {
+                                    "type": "string",
+                                    "example": "Producto 1"
+                                },
+                                "unit": {
+                                    "type": "string",
+                                    "example": "UND"
+                                },
+                                "quantity": {
+                                    "type": "integer",
+                                    "example": "1"
+                                },
+                                "weight": {
+                                    "type": "number",
+                                    "example": "1.0"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
             "UpdateNoteReasonRequest": {
                 "title": "UpdateNoteReasonRequest",
                 "required": [
@@ -17078,6 +17576,147 @@
                     "to": {
                         "type": "integer",
                         "example": "5"
+                    }
+                },
+                "type": "object"
+            },
+            "GuideResource": {
+                "title": "GuideResource",
+                "description": "Guide resource",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "number": {
+                        "type": "string",
+                        "example": "G-0001"
+                    },
+                    "full_number": {
+                        "type": "string",
+                        "example": "G-0001"
+                    },
+                    "date_emision": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2024-08-19"
+                    },
+                    "date_traslado": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2024-08-19"
+                    },
+                    "motive_name": {
+                        "type": "string",
+                        "example": "Venta"
+                    },
+                    "modality": {
+                        "type": "string",
+                        "example": "Venta"
+                    },
+                    "recipient_names": {
+                        "type": "string",
+                        "example": "Juan Perez"
+                    },
+                    "recipient_document": {
+                        "type": "string",
+                        "example": "12345678"
+                    },
+                    "driver_names": {
+                        "type": "string",
+                        "example": "Juan Perez"
+                    },
+                    "driver_surnames": {
+                        "type": "string",
+                        "example": "Perez"
+                    },
+                    "driver_document": {
+                        "type": "string",
+                        "example": "12345678"
+                    },
+                    "vehicle_placa": {
+                        "type": "string",
+                        "example": "12345678"
+                    },
+                    "driver_licencia": {
+                        "type": "string",
+                        "example": "12345678"
+                    },
+                    "nro_paquetes": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "transbordo": {
+                        "type": "string",
+                        "example": "No"
+                    },
+                    "cod_motive": {
+                        "type": "string",
+                        "example": "01"
+                    },
+                    "net_weight": {
+                        "type": "number",
+                        "example": "1.0"
+                    },
+                    "ubigeo_end": {
+                        "type": "string",
+                        "example": "01"
+                    },
+                    "address_end": {
+                        "type": "string",
+                        "example": "Av. Peru"
+                    },
+                    "ubigeo_start": {
+                        "type": "string",
+                        "example": "01"
+                    },
+                    "address_start": {
+                        "type": "string",
+                        "example": "Av. Peru"
+                    },
+                    "observation": {
+                        "type": "string",
+                        "example": "Observacion"
+                    },
+                    "factura": {
+                        "type": "string",
+                        "example": "F-0001"
+                    },
+                    "status_facturado": {
+                        "type": "boolean",
+                        "example": "false"
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "branch_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-08-19T00:00:00.000000Z"
+                    }
+                },
+                "type": "object"
+            },
+            "GuideCollection": {
+                "title": "GuideCollection",
+                "description": "Guide resource collection",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/GuideResource"
+                        }
+                    },
+                    "links": {
+                        "$ref": "#/components/schemas/PaginationLinks"
+                    },
+                    "meta": {
+                        "$ref": "#/components/schemas/PaginationMeta"
                     }
                 },
                 "type": "object"
@@ -19934,6 +20573,10 @@
         {
             "name": "Reporte Excel",
             "description": "Reporte Excel"
+        },
+        {
+            "name": "Guide",
+            "description": "Guide"
         },
         {
             "name": "Note",

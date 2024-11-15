@@ -39,6 +39,7 @@ use App\Http\Controllers\Api\VehicleModelController;
 use App\Http\Controllers\Api\WorkerController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ExcelReportController;
+use App\Http\Controllers\GuideController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\NoteReasonController;
 use App\Http\Controllers\SaleController;
@@ -304,4 +305,9 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::resource('note', NoteController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'note.index', 'store' => 'note.store', 'show' => 'note.show',
             'update' => 'note.update', 'destroy' => 'note.destroy']);
+
+//    GUIDE
+    Route::resource('guide', GuideController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'guide.index', 'store' => 'guide.store', 'show' => 'guide.show',
+            'update' => 'guide.update', 'destroy' => 'guide.destroy']);
 });
