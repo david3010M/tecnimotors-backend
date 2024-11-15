@@ -17,22 +17,22 @@ class Guide extends Model
         'date_emision',
         'date_traslado',
         'motive_name',
+        'cod_motive',
         'modality',
         'recipient_names',
         'recipient_document',
         'driver_names',
         'driver_surnames',
         'driver_document',
-        'vehicle_placa',
         'driver_licencia',
+        'vehicle_placa',
         'nro_paquetes',
         'transbordo',
-        'cod_motive',
         'net_weight',
-        'ubigeo_end',
-        'address_end',
         'ubigeo_start',
         'address_start',
+        'ubigeo_end',
+        'address_end',
         'observation',
         'factura',
         'status_facturado',
@@ -44,6 +44,11 @@ class Guide extends Model
     protected $hidden = [
         'updated_at',
         'deleted_at',
+    ];
+
+    protected $casts = [
+        'transbordo' => 'boolean',
+        'status_facturado' => 'boolean',
     ];
 
     const filters = [];
@@ -59,6 +64,9 @@ class Guide extends Model
         'TRANSPORTE PRIVADO',
         'TRANSPORTE DE CARGA',
     ];
+
+    const STATUS_PENDING = 'PENDIENTE';
+    const STATUS_SENT = 'ENVIADO';
 
     public function user()
     {

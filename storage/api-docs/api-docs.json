@@ -17177,14 +17177,6 @@
             "StoreGuideRequest": {
                 "title": "StoreGuideRequest",
                 "properties": {
-                    "number": {
-                        "type": "string",
-                        "example": "G-0001"
-                    },
-                    "full_number": {
-                        "type": "string",
-                        "example": "G-0001"
-                    },
                     "date_emision": {
                         "type": "string",
                         "format": "date",
@@ -17195,39 +17187,23 @@
                         "format": "date",
                         "example": "2024-08-19"
                     },
-                    "motive_name": {
-                        "type": "string",
-                        "example": "VENTA"
-                    },
                     "modality": {
                         "type": "string",
                         "example": "TRANSPORTE PRIVADO"
                     },
-                    "recipient_names": {
-                        "type": "string",
-                        "example": "Juan Perez"
+                    "recipient_id": {
+                        "type": "integer",
+                        "example": "1"
                     },
-                    "recipient_document": {
-                        "type": "string",
-                        "example": "12345678"
+                    "worker_id": {
+                        "type": "integer",
+                        "example": "1"
                     },
-                    "driver_names": {
-                        "type": "string",
-                        "example": "Juan Perez"
-                    },
-                    "driver_surnames": {
-                        "type": "string",
-                        "example": "Perez"
-                    },
-                    "driver_document": {
+                    "driver_licencia": {
                         "type": "string",
                         "example": "12345678"
                     },
                     "vehicle_placa": {
-                        "type": "string",
-                        "example": "12345678"
-                    },
-                    "driver_licencia": {
                         "type": "string",
                         "example": "12345678"
                     },
@@ -17239,27 +17215,19 @@
                         "type": "boolean",
                         "example": false
                     },
-                    "cod_motive": {
-                        "type": "string",
-                        "example": "01"
-                    },
-                    "net_weight": {
-                        "type": "number",
-                        "example": "1.0"
-                    },
-                    "ubigeo_end": {
-                        "type": "string",
-                        "example": "01"
-                    },
-                    "address_end": {
-                        "type": "string",
-                        "example": "Av. Peru"
-                    },
-                    "ubigeo_start": {
+                    "district_id_start": {
                         "type": "string",
                         "example": "01"
                     },
                     "address_start": {
+                        "type": "string",
+                        "example": "Av. Peru"
+                    },
+                    "district_id_end": {
+                        "type": "string",
+                        "example": "01"
+                    },
+                    "address_end": {
                         "type": "string",
                         "example": "Av. Peru"
                     },
@@ -17271,9 +17239,9 @@
                         "type": "string",
                         "example": "F-0001"
                     },
-                    "status_facturado": {
-                        "type": "boolean",
-                        "example": "false"
+                    "guide_motive_id": {
+                        "type": "integer",
+                        "example": "1"
                     },
                     "details": {
                         "type": "array",
@@ -17289,7 +17257,7 @@
                                 },
                                 "unit": {
                                     "type": "string",
-                                    "example": "UND"
+                                    "example": "NIU"
                                 },
                                 "quantity": {
                                     "type": "integer",
@@ -17525,14 +17493,6 @@
             "UpdateGuideRequest": {
                 "title": "UpdateGuideRequest",
                 "properties": {
-                    "number": {
-                        "type": "string",
-                        "example": "G-0001"
-                    },
-                    "full_number": {
-                        "type": "string",
-                        "example": "G-0001"
-                    },
                     "date_emision": {
                         "type": "string",
                         "format": "date",
@@ -17543,39 +17503,23 @@
                         "format": "date",
                         "example": "2024-08-19"
                     },
-                    "motive_name": {
-                        "type": "string",
-                        "example": "VENTA"
-                    },
                     "modality": {
                         "type": "string",
                         "example": "TRANSPORTE PRIVADO"
                     },
-                    "recipient_names": {
-                        "type": "string",
-                        "example": "Juan Perez"
+                    "recipient_id": {
+                        "type": "integer",
+                        "example": "1"
                     },
-                    "recipient_document": {
-                        "type": "string",
-                        "example": "12345678"
+                    "worker_id": {
+                        "type": "integer",
+                        "example": "1"
                     },
-                    "driver_names": {
-                        "type": "string",
-                        "example": "Juan Perez"
-                    },
-                    "driver_surnames": {
-                        "type": "string",
-                        "example": "Perez"
-                    },
-                    "driver_document": {
+                    "driver_licencia": {
                         "type": "string",
                         "example": "12345678"
                     },
                     "vehicle_placa": {
-                        "type": "string",
-                        "example": "12345678"
-                    },
-                    "driver_licencia": {
                         "type": "string",
                         "example": "12345678"
                     },
@@ -17584,30 +17528,22 @@
                         "example": "1"
                     },
                     "transbordo": {
-                        "type": "string",
-                        "example": "false"
+                        "type": "boolean",
+                        "example": false
                     },
-                    "cod_motive": {
-                        "type": "string",
-                        "example": "01"
-                    },
-                    "net_weight": {
-                        "type": "number",
-                        "example": "1.0"
-                    },
-                    "ubigeo_end": {
-                        "type": "string",
-                        "example": "01"
-                    },
-                    "address_end": {
-                        "type": "string",
-                        "example": "Av. Peru"
-                    },
-                    "ubigeo_start": {
+                    "district_id_start": {
                         "type": "string",
                         "example": "01"
                     },
                     "address_start": {
+                        "type": "string",
+                        "example": "Av. Peru"
+                    },
+                    "district_id_end": {
+                        "type": "string",
+                        "example": "01"
+                    },
+                    "address_end": {
                         "type": "string",
                         "example": "Av. Peru"
                     },
@@ -17619,9 +17555,9 @@
                         "type": "string",
                         "example": "F-0001"
                     },
-                    "status_facturado": {
-                        "type": "boolean",
-                        "example": "false"
+                    "guide_motive_id": {
+                        "type": "integer",
+                        "example": "1"
                     },
                     "details": {
                         "type": "array",
@@ -17637,7 +17573,7 @@
                                 },
                                 "unit": {
                                     "type": "string",
-                                    "example": "UND"
+                                    "example": "NIU"
                                 },
                                 "quantity": {
                                     "type": "integer",

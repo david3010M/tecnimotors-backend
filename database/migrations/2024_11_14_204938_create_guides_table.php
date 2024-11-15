@@ -42,6 +42,8 @@ return new class extends Migration {
             $table->foreignId('person_id')->nullable()->constrained('people');
             $table->foreignId('worker_id')->nullable()->constrained('people');
             $table->foreignId('user_id')->nullable()->constrained();
+            $table->foreignId('district_id_start')->nullable()->constrained('districts');
+            $table->foreignId('district_id_end')->nullable()->constrained('districts');
             $table->foreignId('branch_id')->nullable()->default(1)->constrained();
             $table->timestamps();
             $table->softDeletes();

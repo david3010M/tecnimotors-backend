@@ -27,6 +27,8 @@ class GuideDetail extends Model
         'deleted_at',
     ];
 
+    const STATUS_PENDING = 'PENDIENTE';
+
     public function guide()
     {
         return $this->belongsTo(Guide::class);

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\GuideDetail;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -19,7 +20,7 @@ return new class extends Migration {
             $table->string('unit')->nullable();
             $table->string('quantity')->nullable();
             $table->string('weight')->nullable();
-            $table->string('status')->nullable();
+            $table->string('status')->nullable()->default(GuideDetail::STATUS_PENDING);
             $table->foreignId('guide_id')->constrained();
             $table->timestamps();
             $table->softDeletes();

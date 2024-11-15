@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\IndexRequestGuide;
 use App\Http\Resources\GuideResource;
+use App\Models\District;
 use App\Models\Guide;
 use App\Http\Requests\StoreGuideRequest;
 use App\Http\Requests\UpdateGuideRequest;
 use App\Models\GuideDetail;
+use App\Models\GuideMotive;
+use App\Models\Person;
 
 class GuideController extends Controller
 {
@@ -53,12 +56,33 @@ class GuideController extends Controller
     public function store(StoreGuideRequest $request)
     {
         $number = $this->nextCorrelative(Guide::class, 'number');
+        $recipient = Person::find($request->input('recipient_id'));
+        $driver = Person::find($request->input('worker_id'));
+        $motive = GuideMotive::find($request->input('guide_motive_id'));
+        $districtStart = District::find($request->input('district_id_start'));
+        $districtEnd = District::find($request->input('district_id_end'));
+        $details = $request->input('details');
+        $netWeight = 0;
+        foreach ($details as $detail) {
+            $netWeight += $detail['weight'] * $detail['quantity'];
+        }
         $request->merge([
             'number' => $number,
             'full_number' => 'T002-' . $number,
+            'motive_name' => $motive->name,
+            'cod_motive' => $motive->code,
+            'recipient_names' => $recipient->typeofDocument === 'DNI' ? $recipient->names . ' ' . $recipient->fatherSurname . ' ' . $driver->motherSurname : $recipient->businessName,
+            'recipient_document' => $recipient->documentNumber,
+            'driver_names' => $driver->names,
+            'driver_surnames' => $driver->fatherSurname . ' ' . $driver->motherSurname,
+            'driver_document' => $driver->documentNumber,
+            'net_weight' => $netWeight,
+            'ubigeo_start' => $districtStart->ubigeo_code,
+            'ubigeo_end' => $districtEnd->ubigeo_code,
             'user_id' => $request->user()->id,
+            'branch_id' => 1,
         ]);
-        $guide = Guide::create($request->validated());
+        $guide = Guide::create($request->all());
 
         $details = $request->details;
         foreach ($details as $detail) {
@@ -115,21 +139,44 @@ class GuideController extends Controller
     {
         $guide = Guide::find($id);
         if (!$guide) return response()->json(['message' => 'Guía no encontrada'], 404);
-        $guide->update($request->validated());
-        $details = $request->details;
-        if ($details) {
-            $guide->details()->delete();
-            foreach ($details as $detail) {
-                GuideDetail::create([
-                    'code' => $detail['code'],
-                    'description' => $detail['description'],
-                    'unit' => $detail['unit'],
-                    'quantity' => $detail['quantity'],
-                    'weight' => $detail['weight'],
-                    'guide_id' => $guide->id,
-                ]);
-            }
+        if ($guide->status_facturado) return response()->json(['message' => 'No se puede modificar una guía facturada'], 422);
+        $recipient = Person::find($request->input('recipient_id'));
+        $driver = Person::find($request->input('worker_id'));
+        $motive = GuideMotive::find($request->input('guide_motive_id'));
+        $districtStart = District::find($request->input('district_id_start'));
+        $districtEnd = District::find($request->input('district_id_end'));
+        $details = $request->input('details');
+        $netWeight = 0;
+        foreach ($details as $detail) {
+            $netWeight += $detail['weight'] * $detail['quantity'];
         }
+        $request->merge([
+            'motive_name' => $motive->name,
+            'cod_motive' => $motive->code,
+            'recipient_names' => $recipient->typeofDocument === 'DNI' ? $recipient->names . ' ' . $recipient->fatherSurname . ' ' . $driver->motherSurname : $recipient->businessName,
+            'recipient_document' => $recipient->documentNumber,
+            'driver_names' => $driver->names,
+            'driver_surnames' => $driver->fatherSurname . ' ' . $driver->motherSurname,
+            'driver_document' => $driver->documentNumber,
+            'net_weight' => $netWeight,
+            'ubigeo_start' => $districtStart->ubigeo_code,
+            'ubigeo_end' => $districtEnd->ubigeo_code,
+        ]);
+        $guide->update($request->all());
+
+        $guide->details()->delete();
+        $details = $request->details;
+        foreach ($details as $detail) {
+            GuideDetail::create([
+                'code' => $detail['code'],
+                'description' => $detail['description'],
+                'unit' => $detail['unit'],
+                'quantity' => $detail['quantity'],
+                'weight' => $detail['weight'],
+                'guide_id' => $guide->id,
+            ]);
+        }
+
         $guide = Guide::find($guide->id);
         return response()->json(GuideResource::make($guide));
     }
