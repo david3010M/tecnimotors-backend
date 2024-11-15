@@ -41,6 +41,7 @@ use App\Http\Controllers\Api\WorkerController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ExcelReportController;
 use App\Http\Controllers\GuideController;
+use App\Http\Controllers\GuideMotiveController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\NoteReasonController;
 use App\Http\Controllers\SaleController;
@@ -317,4 +318,9 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::get('provinces/{departmentId}', [UbigeoController::class, 'indexProvinces'])->name('indexProvinces');
     Route::get('districts/{provinceId}', [UbigeoController::class, 'indexDistricts'])->name('indexDistricts');
     Route::get('ubigeos', [UbigeoController::class, 'ubigeos'])->name('ubigeos');
+
+//    GUIDE MOTIVE
+    Route::resource('guide-motives', GuideMotiveController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'guide-motives.index', 'store' => 'guide-motives.store', 'show' => 'guide-motives.show',
+            'update' => 'guide-motives.update', 'destroy' => 'guide-motives.destroy']);
 });

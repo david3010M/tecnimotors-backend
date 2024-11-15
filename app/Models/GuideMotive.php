@@ -22,6 +22,17 @@ class GuideMotive extends Model
         'deleted_at',
     ];
 
+    const filters = [
+        'code' => 'like',
+        'name' => 'like',
+    ];
+
+    const sorts = [
+        'code',
+        'name',
+        'created_at',
+    ];
+
     public function guides()
     {
         return $this->hasMany(Guide::class);
