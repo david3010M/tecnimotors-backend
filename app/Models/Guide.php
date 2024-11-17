@@ -38,6 +38,10 @@ class Guide extends Model
         'status_facturado',
         'user_id',
         'branch_id',
+        'worker_id',
+        'district_id_start',
+        'district_id_end',
+        'recipient_id',
         'created_at',
     ];
 
@@ -60,7 +64,7 @@ class Guide extends Model
     ];
 
     const modalities = [
-        'TRANSPORTE PÚBLICO',
+        'TRANSPORTE PUBLICO',
         'TRANSPORTE PRIVADO',
         'TRANSPORTE DE CARGA',
     ];
