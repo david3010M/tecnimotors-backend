@@ -58,6 +58,7 @@ class GuideController extends Controller
         $number = $this->nextCorrelative(Guide::class, 'number');
         $recipient = Person::find($request->input('recipient_id'));
         $driver = Person::find($request->input('worker_id'));
+        if (!$driver) return response()->json(['message' => 'El conductor no existe'], 422);
         $motive = GuideMotive::find($request->input('guide_motive_id'));
         $districtStart = District::find($request->input('district_id_start'));
         $districtEnd = District::find($request->input('district_id_end'));
@@ -75,6 +76,7 @@ class GuideController extends Controller
             'recipient_document' => $recipient->documentNumber,
             'driver_names' => $driver->names,
             'driver_surnames' => $driver->fatherSurname . ' ' . $driver->motherSurname,
+            'driver_document' => $driver->documentNumber,
             'driver_licencia' => trim($request->input('driver_licencia')),
             'vehicle_placa' => trim($request->input('vehicle_placa')),
             'net_weight' => $netWeight,

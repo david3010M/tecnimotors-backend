@@ -52,7 +52,6 @@ class Guide extends Model
 
     protected $casts = [
         'transbordo' => 'boolean',
-        'status_facturado' => 'boolean',
     ];
 
     const filters = [];
