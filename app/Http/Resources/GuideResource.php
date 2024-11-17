@@ -93,6 +93,8 @@ class GuideResource extends JsonResource
             'branch_id' => $this->branch_id,
             'created_at' => $this->created_at,
             'details' => $this->details,
+            'districtStart' => $this->districtStart,
+            'districtEnd' => $this->districtEnd,
         ];
 
     }

@@ -88,4 +88,24 @@ class Guide extends Model
     {
         return $this->hasMany(GuideDetail::class);
     }
+
+    public function recipient()
+    {
+        return $this->belongsTo(Person::class);
+    }
+
+    public function worker()
+    {
+        return $this->belongsTo(Person::class);
+    }
+
+    public function districtStart()
+    {
+        return $this->belongsTo(District::class, 'district_id_start');
+    }
+
+    public function districtEnd()
+    {
+        return $this->belongsTo(District::class, 'district_id_end');
+    }
 }

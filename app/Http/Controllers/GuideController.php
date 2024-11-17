@@ -87,6 +87,13 @@ class GuideController extends Controller
         ]);
         $guide = Guide::create($request->all());
 
+        $guide->update([
+            'driver_names' => $driver->names,
+            'driver_surnames' => $driver->fatherSurname . ' ' . $driver->motherSurname,
+            'driver_document' => $driver->documentNumber,
+        ]);
+        $guide->save();
+
         $details = $request->details;
         foreach ($details as $detail) {
             GuideDetail::create([
