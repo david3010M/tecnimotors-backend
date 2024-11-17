@@ -58,7 +58,7 @@ class Guide extends Model
 
     const filters = [
         'number' => 'like',
-        'date_emision' => '',
+        'date_emision' => 'between',
         'recipient_names' => 'like',
         'driver_fullnames' => 'like',
         'worker_id' => '=',
