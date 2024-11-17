@@ -63,6 +63,9 @@ class Guide extends Model
         'COMPRA',
     ];
 
+    const STATUS_FACTURADO = 'FACTURADO';
+    const STATUS_FACTURADO_PENDIENTE = 'PENDIENTE';
+
     const modalities = [
         'TRANSPORTE PUBLICO',
         'TRANSPORTE PRIVADO',

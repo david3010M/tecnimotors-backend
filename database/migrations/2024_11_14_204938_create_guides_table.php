@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Guide;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -37,9 +38,9 @@ return new class extends Migration {
             $table->string('address_start')->nullable();
             $table->string('observation')->nullable();
             $table->string('factura')->nullable();
-            $table->boolean('status_facturado')->nullable()->default(false);
+            $table->string('status_facturado')->nullable()->default(Guide::STATUS_FACTURADO_PENDIENTE);
             $table->foreignId('guide_motive_id')->nullable()->constrained();
-            $table->foreignId('person_id')->nullable()->constrained('people');
+            $table->foreignId('recipient_id')->nullable()->constrained('people');
             $table->foreignId('worker_id')->nullable()->constrained('people');
             $table->foreignId('user_id')->nullable()->constrained();
             $table->foreignId('district_id_start')->nullable()->constrained('districts');
