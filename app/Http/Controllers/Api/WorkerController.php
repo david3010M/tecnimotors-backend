@@ -600,27 +600,13 @@ class WorkerController extends Controller
      */
     public function destroy(int $id)
     {
-        $object = Worker::find($id);
-        if (!$object) return response()->json(['message' => 'Worker not found'], 404);
-
-        if ($object->guides()->count() > 0) {
-            return response()->json(['message' => 'Worker has guides'], 422);
-        }
-
-        //REVISAR ASOCIACIONES
-        $object->state = false;
-        $object->save();
-
-        $object = Person::find($id);
-        if (!$object) {
-            return response()->json(
-                ['message' => 'Person not found'], 404
-            );
-        }
-
-        //REVISAR ASOCIACIONES
-        $object->state = false;
-        $object->save();
-
+        $worker = Worker::find($id);
+        $person = Person::find($worker->person_id);
+        if (!$worker) return response()->json(['message' => 'Worker not found'], 404);
+        if (!$person) return response()->json(['message' => 'Person not found'], 404);
+        if ($worker->guides()->count() > 0) return response()->json(['message' => 'Worker has guides'], 422);
+        $person->delete();
+        $worker->delete();
+        return response()->json(['message' => 'Worker deleted successfully']);
     }
 }
