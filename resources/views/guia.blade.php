@@ -705,7 +705,7 @@
                     Conductor:
                 </th>
                 <td class="w20">
-                    {{ $object->driver_names . '' . $object->driver_surnames ?? '' }}
+                    {{ $object->driver_names . ' ' . $object->driver_surnames ?? '' }}
                 </td>
 
                 <th class="w20 blue">
@@ -753,7 +753,7 @@
                 <th class="w20 blue">
                     Nro. Licencia
                 </th>
-                <td class="w40">{{ $object->driver_document ?? '' }}
+                <td class="w40">{{ $object->driver_licencia ?? '' }}
                 </td>
 
 
@@ -789,7 +789,7 @@
                     Ubigeo Partida:
                 </th>
                 <td style="width: 70%; text-align: left;">
-                    {{ $object->ubigeo_end }}
+                    {{ $object?->districtStart?->cadena ?? '' }}
                 </td>
             </tr>
             <tr>
@@ -805,7 +805,7 @@
                     Ubigeo Llegada:
                 </th>
                 <td style="width: 70%; text-align: left;">
-                    {{ $object->ubigeo_start }}
+                    {{ $object?->districtEnd?->cadena ?? '' }}
                 </td>
             </tr>
             <tr>

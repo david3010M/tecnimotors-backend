@@ -243,7 +243,9 @@ class PdfController extends Controller
 
         $Movimiento = Sale::with(['budgetSheet', 'commitments', 'saleDetails', 'moviment'])
             ->find($idMov);
-
+        if (!$Movimiento) {
+            abort(404, 'Venta No Encontrada');
+        }
         $linkRevisarFact = false;
         $productList = [];
         if ($Movimiento) {
@@ -363,7 +365,7 @@ class PdfController extends Controller
         // Inicializar el array de detalles
         $detalles = [];
         if ($object->totalCreditNote < $object->totalDocumentReference) {
-            $reason= NoteReason::find($object->note_reason_id);
+            $reason = NoteReason::find($object->note_reason_id);
             $detalles[] = [
                 "descripcion" => $reason->description ?? '-',
                 "um" => 'NIU',
@@ -470,22 +472,21 @@ class PdfController extends Controller
     public function guia(Request $request, $idMov = 0)
     {
 
-        $Movimiento = Guide::with(['user', 'details'])->find($idMov);
+        $Movimiento = Guide::with(['user', 'details', 'districtStart', 'districtEnd'])->find($idMov);
 
         if (!$Movimiento) {
             abort(404, 'Guia No Encontrada');
         }
-        
 
         $dataE = [
             'title' => 'GUIA',
             'object' => $Movimiento,
         ];
-        $tipoDocumento="";
+        $tipoDocumento = "";
         // Utiliza el método loadView() directamente en la fachada PDF
         $pdf = PDF::loadView('guia', $dataE);
         $canvas = $pdf->getDomPDF()->get_canvas();
-        $num=$Movimiento->fullNumber;
+        $num = $Movimiento->fullNumber;
         // $contenidoAncho = $canvas->get_width();
         $contenidoAlto = $canvas->get_height();
         if (strpos($num, 'T') === 0) {
