@@ -41,6 +41,7 @@ class Guide extends Model
         'worker_id',
         'district_id_start',
         'district_id_end',
+        'guide_motive_id',
         'recipient_id',
         'created_at',
     ];
@@ -54,7 +55,15 @@ class Guide extends Model
         'transbordo' => 'boolean',
     ];
 
-    const filters = [];
+    const filters = [
+        'number' => 'like',
+        'recipient_names' => 'like',
+        'guide_motive_id' => '=',
+        'worker_id' => '=',
+        'district_id_start' => '=',
+        'district_id_end' => '=',
+        'observation' => 'like',
+    ];
     const sorts = [];
 
     const motives = [

@@ -25,6 +25,12 @@ class GuideController extends Controller
      *     @OA\Parameter(name="page", in="query", description="Número de página", required=false, @OA\Schema(type="integer")),
      *     @OA\Parameter(name="per_page", in="query", description="Cantidad de elementos por página", required=false, @OA\Schema(type="integer")),
      *     @OA\Parameter(name="number", in="query", description="Número de guía", required=false, @OA\Schema(type="string")),
+     *     @OA\Parameter(name="recipient_names", in="query", description="Nombre del destinatario", required=false, @OA\Schema(type="string")),
+     *     @OA\Parameter(name="guide_motive_id", in="query", description="ID del motivo de la guía", required=false, @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="worker_id", in="query", description="ID del conductor", required=false, @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="district_id_start", in="query", description="ID del distrito de inicio", required=false, @OA\Schema(type="string")),
+     *     @OA\Parameter(name="district_id_end", in="query", description="ID del distrito de fin", required=false, @OA\Schema(type="string")),
+     *     @OA\Parameter(name="observation", in="query", description="Observación", required=false, @OA\Schema(type="string")),
      *     @OA\Response(response="200", description="Listado de guías", @OA\JsonContent(ref="#/components/schemas/GuideCollection")),
      *     @OA\Response(response="401", description="No autorizado"),
      * )

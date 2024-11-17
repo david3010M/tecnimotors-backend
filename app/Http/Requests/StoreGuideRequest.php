@@ -55,7 +55,7 @@ class StoreGuideRequest extends StoreRequest
             'address_end' => 'required|string',
             'observation' => 'nullable|string',
             'factura' => 'nullable|string',
-            'guide_motive_id' => 'nullable|exists:guide_motives,id',
+            'guide_motive_id' => 'required|exists:guide_motives,id',
             'recipient_id' => 'required|exists:people,id',
             'worker_id' => 'required|exists:people,id',
 
