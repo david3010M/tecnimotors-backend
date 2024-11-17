@@ -11,6 +11,7 @@ use App\Http\Requests\UpdateGuideRequest;
 use App\Models\GuideDetail;
 use App\Models\GuideMotive;
 use App\Models\Person;
+use App\Models\Worker;
 
 class GuideController extends Controller
 {
@@ -57,7 +58,7 @@ class GuideController extends Controller
     {
         $number = $this->nextCorrelative(Guide::class, 'number');
         $recipient = Person::find($request->input('recipient_id'));
-        $driver = Person::find($request->input('worker_id'));
+        $driver = Worker::find($request->input('worker_id'));
         if (!$driver) return response()->json(['message' => 'El conductor no existe'], 422);
         $motive = GuideMotive::find($request->input('guide_motive_id'));
         $districtStart = District::find($request->input('district_id_start'));
@@ -65,7 +66,7 @@ class GuideController extends Controller
         $details = $request->input('details');
         $netWeight = 0;
         foreach ($details as $detail) {
-            $netWeight += $detail['weight'] * $detail['quantity'];
+            $netWeight += $detail['weight'];
         }
         $request->merge([
             'number' => $number,
@@ -74,9 +75,9 @@ class GuideController extends Controller
             'cod_motive' => $motive->code,
             'recipient_names' => $recipient->typeofDocument === 'DNI' ? $recipient->names . ' ' . $recipient->fatherSurname . ' ' . $driver->motherSurname : $recipient->businessName,
             'recipient_document' => $recipient->documentNumber,
-            'driver_names' => $driver->names,
-            'driver_surnames' => $driver->fatherSurname . ' ' . $driver->motherSurname,
-            'driver_document' => $driver->documentNumber,
+            'driver_names' => $driver->person?->names,
+            'driver_surnames' => $driver->person?->fatherSurname . ' ' . $driver->person?->motherSurname,
+            'driver_document' => $driver->person?->documentNumber,
             'driver_licencia' => trim($request->input('driver_licencia')),
             'vehicle_placa' => trim($request->input('vehicle_placa')),
             'net_weight' => $netWeight,
@@ -86,13 +87,6 @@ class GuideController extends Controller
             'branch_id' => 1,
         ]);
         $guide = Guide::create($request->all());
-
-        $guide->update([
-            'driver_names' => $driver->names,
-            'driver_surnames' => $driver->fatherSurname . ' ' . $driver->motherSurname,
-            'driver_document' => $driver->documentNumber,
-        ]);
-        $guide->save();
 
         $details = $request->details;
         foreach ($details as $detail) {

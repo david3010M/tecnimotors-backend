@@ -41,7 +41,7 @@ return new class extends Migration {
             $table->string('status_facturado')->nullable()->default(Guide::STATUS_FACTURADO_PENDIENTE);
             $table->foreignId('guide_motive_id')->nullable()->constrained();
             $table->foreignId('recipient_id')->nullable()->constrained('people');
-            $table->foreignId('worker_id')->nullable()->constrained('people');
+            $table->foreignId('worker_id')->nullable()->constrained('workers');
             $table->foreignId('user_id')->nullable()->constrained();
             $table->foreignId('district_id_start')->nullable()->constrained('districts');
             $table->foreignId('district_id_end')->nullable()->constrained('districts');
