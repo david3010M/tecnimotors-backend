@@ -96,7 +96,7 @@ class Guide extends Model
 
     public function worker()
     {
-        return $this->belongsTo(Person::class);
+        return $this->belongsTo(Worker::class);
     }
 
     public function districtStart()
