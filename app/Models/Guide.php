@@ -62,6 +62,7 @@ class Guide extends Model
         'recipient_names' => 'like',
         'driver_fullnames' => 'like',
         'worker_id' => '=',
+        'guide_motive_id' => '=',
         'districtStart.name' => 'like',
         'districtEnd.name' => 'like',
         'observation' => 'like',
