@@ -52,6 +52,7 @@ class Worker extends Model
     {
         return $this->belongsTo(Person::class, 'person_id');
     }
+
     public function ocupation()
     {
         return $this->belongsTo(Ocupation::class, 'ocupation_id');
@@ -60,5 +61,10 @@ class Worker extends Model
     public function specialties()
     {
         return $this->belongsToMany(Specialty::class, 'specialty_people');
+    }
+
+    public function guides()
+    {
+        return $this->hasMany(Guide::class);
     }
 }

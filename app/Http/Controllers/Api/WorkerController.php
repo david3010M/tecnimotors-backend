@@ -83,7 +83,7 @@ class WorkerController extends Controller
         // }
 
         // Ejecución de la consulta con paginación y carga de relaciones
-        $workers = $query->with(['person','ocupation'])->where('state', true)->simplePaginate(50);
+        $workers = $query->with(['person', 'ocupation'])->where('state', true)->simplePaginate(50);
 
         return response()->json($workers);
     }
@@ -136,7 +136,7 @@ class WorkerController extends Controller
     public function show(int $id)
     {
 
-        $object = Worker::with(['person','ocupation', 'specialties'])->find($id);
+        $object = Worker::with(['person', 'ocupation', 'specialties'])->find($id);
         if ($object) {
             return response()->json($object, 200);
         }
@@ -208,7 +208,7 @@ class WorkerController extends Controller
         ];
 
         $object = Worker::create($data);
-        $object = Worker::with(['person','ocupation'])->find($object->id);
+        $object = Worker::with(['person', 'ocupation'])->find($object->id);
         return response()->json($object, 200);
 
     }
@@ -273,7 +273,7 @@ class WorkerController extends Controller
             // 'occupation' => 'required|in:Cajero,Mecanico,Asesor',
             'ocupation_id' => 'required|exists:ocupations,id',
         ]);
-        
+
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
@@ -318,7 +318,7 @@ class WorkerController extends Controller
         ];
 
         $worker = Worker::create($dataWorker);
-        $worker = Worker::with(['person','ocupation'])->find($worker->id);
+        $worker = Worker::with(['person', 'ocupation'])->find($worker->id);
 
         return response()->json($worker, 201);
     }
@@ -462,7 +462,7 @@ class WorkerController extends Controller
 
         $worker->update($dataWorker);
 
-        $worker = Worker::with(['person','ocupation'])->find($worker->id);
+        $worker = Worker::with(['person', 'ocupation'])->find($worker->id);
 
         return response()->json($worker, 200);
     }
@@ -512,7 +512,6 @@ class WorkerController extends Controller
      *              @OA\Property(property="message", type="string", example="Unauthenticated.")
      *          )
      *     ),
-
      * )
      *
      */
@@ -544,7 +543,7 @@ class WorkerController extends Controller
         ];
 
         $object->update($data);
-        $object = Worker::with(['person','ocupation'])->find($object->id);
+        $object = Worker::with(['person', 'ocupation'])->find($object->id);
         return response()->json($object, 200);
     }
 
@@ -596,17 +595,16 @@ class WorkerController extends Controller
      *             )
      *         )
      *     ),
-
      * )
      *
      */
     public function destroy(int $id)
     {
         $object = Worker::find($id);
-        if (!$object) {
-            return response()->json(
-                ['message' => 'Worker not found'], 404
-            );
+        if (!$object) return response()->json(['message' => 'Worker not found'], 404);
+
+        if ($object->guides()->count() > 0) {
+            return response()->json(['message' => 'Worker has guides'], 422);
         }
 
         //REVISAR ASOCIACIONES

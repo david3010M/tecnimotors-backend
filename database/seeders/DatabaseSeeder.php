@@ -20,10 +20,9 @@ class DatabaseSeeder extends Seeder
                 'address' => '123 Main St', 'phone' => '903017426',
                 'email' => 'johndoe@gmail.com', 'origin' => 'Lambayeque', 'ocupation' => 'VARIOS'],
 
-            ['id' => '3', 'typeofDocument' => 'RUC', 'documentNumber' => '20600417461',
-                'businessName' => 'INVERSIONES LACTEAS DEL NORTE S.A.C.', 'representativeDni' => '87654321',
-                'representativeNames' => 'Jane Doe', 'address' => '123 Main St', 'phone' => '903017426',
-                'email' => 'inversionelacteas@gmail.com', 'origin' => 'City', 'ocupation' => 'Proveedor'],
+            ['id' => '3', 'typeofDocument' => 'DNI', 'documentNumber' => '87654321',
+                'representativeNames' => 'Jane Doe', 'address' => '456 Elm St', 'phone' => '987654321',
+                'email' => 'johndoe@gmail.com', 'origin' => 'Lambayeque', 'ocupation' => 'Conductor'],
 
             ['id' => '4', 'typeofDocument' => 'DNI', 'documentNumber' => '12345671', 'names' => 'Juan',
                 'fatherSurname' => 'Pérez', 'motherSurname' => 'González', 'address' => '456 Elm St',
