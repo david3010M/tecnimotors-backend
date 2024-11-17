@@ -15985,12 +15985,12 @@
                         }
                     },
                     {
-                        "name": "worker_id",
+                        "name": "driver_names+driver_surnames",
                         "in": "query",
-                        "description": "ID del conductor",
+                        "description": "Nombre del conductor",
                         "required": false,
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     },
                     {

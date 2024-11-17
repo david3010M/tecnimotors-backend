@@ -58,7 +58,7 @@ class Guide extends Model
     const filters = [
         'number' => 'like',
         'recipient_names' => 'like',
-        'guide_motive_id' => '=',
+        'driver_names+driver_surnames' => 'like',
         'worker_id' => '=',
         'districtStart.name' => 'like',
         'districtEnd.name' => 'like',

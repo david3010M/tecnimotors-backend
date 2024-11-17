@@ -27,7 +27,7 @@ class GuideController extends Controller
      *     @OA\Parameter(name="number", in="query", description="Número de guía", required=false, @OA\Schema(type="string")),
      *     @OA\Parameter(name="recipient_names", in="query", description="Nombre del destinatario", required=false, @OA\Schema(type="string")),
      *     @OA\Parameter(name="guide_motive_id", in="query", description="ID del motivo de la guía", required=false, @OA\Schema(type="integer")),
-     *     @OA\Parameter(name="worker_id", in="query", description="ID del conductor", required=false, @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="driver_names+driver_surnames", in="query", description="Nombre del conductor", required=false, @OA\Schema(type="string")),
      *     @OA\Parameter(name="districtStart$name", in="query", description="Nombre del distrito de inicio", required=false, @OA\Schema(type="string")),
      *     @OA\Parameter(name="districtEnd$name", in="query", description="Nombre del distrito de fin", required=false, @OA\Schema(type="string")),
      *     @OA\Parameter(name="observation", in="query", description="Observación", required=false, @OA\Schema(type="string")),

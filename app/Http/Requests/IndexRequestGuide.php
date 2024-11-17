@@ -11,7 +11,7 @@ class IndexRequestGuide extends IndexRequest
             'number' => 'nullable',
             'recipient_names' => 'nullable|string',
             'guide_motive_id' => 'nullable|integer',
-            'worker_id' => 'nullable|integer',
+            'driver_names+driver_surnames' => 'nullable|string',
             'districtStart$name' => 'nullable|string',
             'districtEnd$name' => 'nullable|string',
             'observation' => 'nullable|string',
