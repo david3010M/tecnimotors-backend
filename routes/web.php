@@ -28,6 +28,7 @@ Route::get('evidencias/{id}', [PdfController::class, 'getEvidenceByAttention'])-
 Route::get('pruebaFacturador', [SaleController::class, 'pruebaFacturador'])->name('pruebaFacturador');
 Route::get('documentoA4/{id}', [PdfController::class, 'documentoA4'])->name('documentoA4');
 Route::get('notepdf/{id}', [PdfController::class, 'creditNote'])->name('creditNote');
+Route::get('guiapdf/{id}', [PdfController::class, 'guia'])->name('guia');
 
 // Route::get('reportCaja', [PdfController::class, 'reportCaja'])->name('reportCaja');
 // Route::get('presupuestoInfo/{id}', [PdfController::class, 'getBudgetSheetInfo'])->name('presupuesto.info');

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Attention;
 use App\Models\budgetSheet;
+use App\Models\Guide;
 use App\Models\Moviment;
 use App\Models\Note;
 use App\Models\NoteReason;
@@ -460,9 +461,39 @@ class PdfController extends Controller
         $contenidoAlto = $canvas->get_height();
 
         $tipoDocumento = "07";
-        $fileName = '20605597484-' . $tipoDocumento . '-' . $object->number . '.pdf'; // Formato del nombre
+        $fileName = '20487467139-' . $tipoDocumento . '-' . $object->number . '.pdf'; // Formato del nombre
         $fileName = str_replace(' ', '_', $fileName); // Reemplazar espacios con guiones bajos
         return $pdf->stream($fileName);
 
+    }
+
+    public function guia(Request $request, $idMov = 0)
+    {
+
+        $Movimiento = Guide::with(['user', 'details'])->find($idMov);
+
+        if (!$Movimiento) {
+            abort(404, 'Guia No Encontrada');
+        }
+        
+
+        $dataE = [
+            'title' => 'GUIA',
+            'object' => $Movimiento,
+        ];
+        $tipoDocumento="";
+        // Utiliza el método loadView() directamente en la fachada PDF
+        $pdf = PDF::loadView('guia', $dataE);
+        $canvas = $pdf->getDomPDF()->get_canvas();
+        $num=$Movimiento->fullNumber;
+        // $contenidoAncho = $canvas->get_width();
+        $contenidoAlto = $canvas->get_height();
+        if (strpos($num, 'T') === 0) {
+            $tipoDocumento = '00'; // Ticket
+        }
+
+        $fileName = '20487467139-' . $tipoDocumento . '-' . $num . '.pdf'; // Formato del nombre
+        $fileName = str_replace(' ', '_', $fileName); // Reemplazar espacios con guiones bajos
+        return $pdf->stream($fileName);
     }
 }
