@@ -21,7 +21,8 @@ class DatabaseSeeder extends Seeder
                 'email' => 'johndoe@gmail.com', 'origin' => 'Lambayeque', 'ocupation' => 'VARIOS'],
 
             ['id' => '3', 'typeofDocument' => 'DNI', 'documentNumber' => '87654321',
-                'representativeNames' => 'Jane Doe', 'address' => '456 Elm St', 'phone' => '987654321',
+                'names' => 'John', 'fatherSurname' => 'Doe', 'motherSurname' => 'Smith',
+                'address' => '456 Elm St', 'phone' => '987654321',
                 'email' => 'johndoe@gmail.com', 'origin' => 'Lambayeque', 'ocupation' => 'Conductor'],
 
             ['id' => '4', 'typeofDocument' => 'DNI', 'documentNumber' => '12345671', 'names' => 'Juan',
