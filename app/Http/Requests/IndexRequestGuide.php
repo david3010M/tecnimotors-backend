@@ -12,8 +12,8 @@ class IndexRequestGuide extends IndexRequest
             'recipient_names' => 'nullable|string',
             'guide_motive_id' => 'nullable|integer',
             'worker_id' => 'nullable|integer',
-            'district_id_start' => 'nullable|string',
-            'district_id_end' => 'nullable|string',
+            'districtStart$name' => 'nullable|string',
+            'districtEnd$name' => 'nullable|string',
             'observation' => 'nullable|string',
         ];
     }

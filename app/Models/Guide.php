@@ -60,8 +60,8 @@ class Guide extends Model
         'recipient_names' => 'like',
         'guide_motive_id' => '=',
         'worker_id' => '=',
-        'district_id_start' => '=',
-        'district_id_end' => '=',
+        'districtStart.name' => 'like',
+        'districtEnd.name' => 'like',
         'observation' => 'like',
     ];
     const sorts = [];

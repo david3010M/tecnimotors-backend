@@ -15965,6 +15965,60 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "name": "recipient_names",
+                        "in": "query",
+                        "description": "Nombre del destinatario",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "guide_motive_id",
+                        "in": "query",
+                        "description": "ID del motivo de la guía",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "worker_id",
+                        "in": "query",
+                        "description": "ID del conductor",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "districtStart$name",
+                        "in": "query",
+                        "description": "Nombre del distrito de inicio",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "districtEnd$name",
+                        "in": "query",
+                        "description": "Nombre del distrito de fin",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "observation",
+                        "in": "query",
+                        "description": "Observación",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {

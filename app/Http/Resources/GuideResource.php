@@ -91,6 +91,7 @@ class GuideResource extends JsonResource
             'status_facturado' => $this->status_facturado,
             'user_id' => $this->user_id,
             'branch_id' => $this->branch_id,
+            'guide_motive_id' => $this->guide_motive_id,
             'created_at' => $this->created_at,
             'details' => $this->details,
             'districtStart' => $this->districtStart,
