@@ -73,6 +73,7 @@ class GuideResource extends JsonResource
             'modality' => $this->modality,
             'recipient_names' => $this->recipient_names,
             'recipient_document' => $this->recipient_document,
+            'driver_fullnames' => $this->driver_fullnames,
             'driver_names' => $this->driver_names,
             'driver_surnames' => $this->driver_surnames,
             'driver_document' => $this->driver_document,

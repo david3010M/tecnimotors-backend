@@ -21,6 +21,7 @@ class Guide extends Model
         'modality',
         'recipient_names',
         'recipient_document',
+        'driver_fullnames',
         'driver_names',
         'driver_surnames',
         'driver_document',
@@ -57,8 +58,9 @@ class Guide extends Model
 
     const filters = [
         'number' => 'like',
+        'date_emision' => '',
         'recipient_names' => 'like',
-        'driver_names+driver_surnames' => 'like',
+        'driver_fullnames' => 'like',
         'worker_id' => '=',
         'districtStart.name' => 'like',
         'districtEnd.name' => 'like',

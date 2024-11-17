@@ -24,6 +24,7 @@ return new class extends Migration {
             $table->string('modality')->nullable();
             $table->string('recipient_names')->nullable();
             $table->string('recipient_document')->nullable();
+            $table->string('driver_fullnames')->nullable();
             $table->string('driver_names')->nullable();
             $table->string('driver_surnames')->nullable();
             $table->string('driver_document')->nullable();

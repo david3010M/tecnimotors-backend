@@ -15985,7 +15985,7 @@
                         }
                     },
                     {
-                        "name": "driver_names+driver_surnames",
+                        "name": "driver_fullnames",
                         "in": "query",
                         "description": "Nombre del conductor",
                         "required": false,

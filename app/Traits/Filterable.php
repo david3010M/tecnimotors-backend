@@ -20,19 +20,8 @@ trait Filterable
 
                 if ($from || $to) {
                     $this->applyFilterCondition($query, $filter, $operator, compact('from', 'to'));
-                    continue;
+                    continue; // Saltamos al siguiente filtro ya que se ha aplicado el between
                 }
-            }
-
-            // Detectar filtros compuestos (que usan el operador '+')
-            if (strpos($filter, '+') !== false && $value !== null) {
-                $columns = explode('+', $filter); // Divide el filtro en columnas
-                $concatExpression = implode(", ' ', ", $columns); // Genera CONCAT(column1, ' ', column2, ...)
-                $query->whereRaw(
-                    "CONCAT($concatExpression) LIKE ?",
-                    ['%' . $value . '%']
-                );
-                continue;
             }
 
             if ($value !== null) {
@@ -49,7 +38,6 @@ trait Filterable
 
         return $query;
     }
-
 
     protected function applyFilterCondition($query, $filter, $operator, $value)
     {
