@@ -12,6 +12,8 @@ use App\Models\GuideDetail;
 use App\Models\GuideMotive;
 use App\Models\Person;
 use App\Models\Worker;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class GuideController extends Controller
 {
@@ -109,6 +111,8 @@ class GuideController extends Controller
             ]);
         }
 
+
+        $this->declararGuia($guide->id);
         $guide = Guide::find($guide->id);
         return response()->json(GuideResource::make($guide));
     }
@@ -215,5 +219,102 @@ class GuideController extends Controller
         if ($guide->details()->count() > 0) return response()->json(['message' => 'No se puede eliminar una guía con detalles'], 422);
         $guide->delete();
         return response()->json(['message' => 'Guía eliminada']);
+    }
+
+    public function declararGuia($idventa)
+    {
+        $carrier = Guide::find($idventa);
+        
+  
+        $funcion = "enviarGuiaRemision";
+
+        if (!$carrier) {
+            return response()->json(['message' => 'GUIA NO ENCONTRADA'], 422);
+        }
+        if ($carrier->status_facturado != 'Pendiente') {
+            return response()->json(['message' => 'GUIA NO SE ENCUENTRA EN PENDIENTE DE ENVÍO'], 422);
+        }
+
+        //Construir la URL con los parámetros
+        $url = "https://develop.garzasoft.com:81/tecnimotors-facturador/controlador/contComprobante.php";
+        $params = [
+            'funcion' => $funcion,
+            'idventa' => $idventa,
+            'empresa_id' => 1,
+        ];
+        $url .= '?' . http_build_query($params);
+
+        // Inicializar cURL
+        $ch = curl_init();
+
+        // Configurar opciones cURL
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        // Ejecutar la solicitud y obtener la respuesta
+        $response = curl_exec($ch);
+
+        // Verificar si ocurrió algún error
+        if (curl_errno($ch)) {
+            $error = curl_error($ch);
+            // Registrar el error en el log
+            Log::error("Error en cURL al enviar VENTA. ID venta: $idventa,$funcion Error: $error");
+            // echo 'Error en cURL: ' . $error;
+        } else {
+            // Registrar la respuesta en el log
+            Log::error("Respuesta recibida de VENTA para ID venta: $idventa,$funcion Respuesta: $response");
+            // Mostrar la respuesta
+            // echo 'Respuesta: ' . $response;
+        }
+
+        // Cerrar cURL
+        curl_close($ch);
+        // // Log del cierre de la solicitud
+        Log::error("Solicitud de GUIA finalizada para ID venta: $idventa. $funcion");
+
+        // ----------------------------------------------
+        $carrier->status_facturado = 'Enviado';
+        $carrier->save();
+
+        return response()->json($carrier, 200);
+    }
+    public function generarQrGuia()
+    {
+
+        $funcion = "actualizarEstadoServidor2";
+        $fechaHoy = Carbon::now()->format('Y-m-d');
+        $fechaAyer = Carbon::now()->subDay()->format('Y-m-d');
+        // Construir la URL con los parámetros
+        $url = "https://develop.garzasoft.com:81/tecnimotors-facturador/controlador/contComprobante.php";
+        $params = [
+            'funcion' => $funcion,
+            'fecini' => $fechaAyer,
+            'fecfin' => $fechaHoy,
+            'estado' => 1,
+            'id_empresa' => 437,
+        ];
+        $url .= '?' . http_build_query($params);
+
+        // Inicializar cURL
+        $ch = curl_init();
+
+        // Configurar opciones cURL
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        // Ejecutar la solicitud y obtener la respuesta
+        $response = curl_exec($ch);
+
+        // Verificar si ocurrió algún error
+        if (curl_errno($ch)) {
+            $error = curl_error($ch);
+
+        } else {
+
+        }
+
+        // Cerrar cURL
+        curl_close($ch);
+
     }
 }

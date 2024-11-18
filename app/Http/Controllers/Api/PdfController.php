@@ -477,7 +477,7 @@ class PdfController extends Controller
         if (!$Movimiento) {
             abort(404, 'Guia No Encontrada');
         }
-
+        $this->generarQrGuia();
         $dataE = [
             'title' => 'GUIA',
             'object' => $Movimiento,
