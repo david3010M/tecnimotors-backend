@@ -67,7 +67,7 @@ $(document).ready(function () {
 
 // Ejemplo de cómo llamar la función:
 $(document).ready(function () {
-  declararGuia(3, 1);
+  // declararGuia(3, 1);
   // declararNotaCredito(29, 1);
 });
 

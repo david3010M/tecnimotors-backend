@@ -497,4 +497,43 @@ class PdfController extends Controller
         $fileName = str_replace(' ', '_', $fileName); // Reemplazar espacios con guiones bajos
         return $pdf->stream($fileName);
     }
+    public function generarQrGuia()
+    {
+
+        $funcion = "actualizarEstadoServidor2";
+        $fechaHoy = Carbon::now()->format('Y-m-d');
+        $fechaAyer = Carbon::now()->subDay()->format('Y-m-d');
+        // Construir la URL con los parámetros
+        $url = "https://develop.garzasoft.com:81/tecnimotors-facturador/controlador/contComprobante.php";
+        $params = [
+            'funcion' => $funcion,
+            'fecini' => $fechaAyer,
+            'fecfin' => $fechaHoy,
+            'estado' => 1,
+            'id_empresa' => 1,
+        ];
+        $url .= '?' . http_build_query($params);
+
+        // Inicializar cURL
+        $ch = curl_init();
+
+        // Configurar opciones cURL
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        // Ejecutar la solicitud y obtener la respuesta
+        $response = curl_exec($ch);
+
+        // Verificar si ocurrió algún error
+        if (curl_errno($ch)) {
+            $error = curl_error($ch);
+
+        } else {
+
+        }
+
+        // Cerrar cURL
+        curl_close($ch);
+
+    }
 }

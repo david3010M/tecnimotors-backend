@@ -70,7 +70,7 @@
                     $pngFile .
                     '" alt="Imagen PNG">';
             } else {
-                echo '';
+                echo '-';
             }
         } else {
             echo 'Error en la solicitud.';
