@@ -497,6 +497,18 @@ class PdfController extends Controller
         $fileName = str_replace(' ', '_', $fileName); // Reemplazar espacios con guiones bajos
         return $pdf->stream($fileName);
     }
+    public function facturaprevia(Request $request, $id = 0)
+    {
+        $object = budgetSheet::getBudgetSheet($id);
+
+        $pdf = Pdf::loadView('facturaprevia', [
+            'budgetsheet' => $object,
+        ]);
+
+        return $pdf->stream('facturaprevia' . $object->id . '.pdf');
+//        return $pdf->download('orden-servicio.pdf');
+    }
+
     public function generarQrGuia()
     {
 
