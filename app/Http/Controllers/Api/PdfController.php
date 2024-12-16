@@ -498,6 +498,17 @@ class PdfController extends Controller
         return $pdf->stream($fileName);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/tecnimotors-backend/public/facturaprevia/{id}",
+     *     summary="Exportar Factura Previa",
+     *     tags={"Reporte"},
+     *     description="Genera y descarga una Factura Previa en formato PDF",
+     *     @OA\Parameter( name="id", in="path", required=true, description="ID del presupuesto", @OA\Schema(type="integer")),
+     *     @OA\Response( response=200, description="Factura Previa en formato PDF", @OA\MediaType(mediaType="application/pdf", @OA\Schema(type="string", format="binary"))),
+     *     @OA\Response( response=422, description="Error en los datos", @OA\JsonContent( @OA\Property(property="message", type="string", example="Error en los datos")))
+     * )
+     */
     public function facturaprevia(Request $request, $id = 0)
     {
         $object = budgetSheet::getBudgetSheet($id);

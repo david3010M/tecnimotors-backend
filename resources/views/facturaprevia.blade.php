@@ -75,7 +75,7 @@
 
         .logoImage {
             width: auto;
-            height: 50px;
+            height: 30px;
             text-align: center;
         }
 
@@ -661,7 +661,7 @@
     <table class="tableInfo bordered">
         <tr>
             <td class="center" style="width:20%;">
-                <img class="logoImage" src="{{ asset('img/logoTecnimotors.png') }}" alt="logo">
+                <img class="logoImage" src="{{$budgetsheet->attention->concession->routeImage->route}}" alt="logo">
             </td>
 
             <td class="center" style="width:50%;background-color:rgb(22 0 104);">

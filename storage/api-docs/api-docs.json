@@ -7608,6 +7608,56 @@
                 ]
             }
         },
+        "/tecnimotors-backend/public/facturaprevia/{id}": {
+            "get": {
+                "tags": [
+                    "Reporte"
+                ],
+                "summary": "Exportar Factura Previa",
+                "description": "Genera y descarga una Factura Previa en formato PDF",
+                "operationId": "c9cfcab1d88e3969284ee51c92624d68",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del presupuesto",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Factura Previa en formato PDF",
+                        "content": {
+                            "application/pdf": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error en los datos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error en los datos"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/tecnimotors-backend/public/api/person": {
             "get": {
                 "tags": [
