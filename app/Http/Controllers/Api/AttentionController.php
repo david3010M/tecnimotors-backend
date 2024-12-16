@@ -72,7 +72,7 @@ class AttentionController extends Controller
         $attentionStatus = $request->input('attention_status');
 
         // Consulta base para Attention
-        $query = Attention::with(['worker.person', 'vehicle', 'vehicle.person', 'details', 'routeImages', 'elements']);
+        $query = Attention::with(['worker.person', 'vehicle', 'vehicle.person', 'details', 'routeImages', 'elements', 'concession']);
 
         // Filtra por ID de vehículo si se proporciona
         if ($vehicleId) {
@@ -155,7 +155,7 @@ class AttentionController extends Controller
             return response()->json(['message' => 'Attention not found'], 404);
         }
 
-        $object = Attention::with(['worker.person', 'vehicle', 'vehicle.person', 'details', 'routeImages', 'elements'])->find($id);
+        $object = Attention::with(['worker.person', 'vehicle', 'vehicle.person', 'details', 'routeImages', 'elements', 'concession'])->find($id);
         $object->elements = $object->getElements($object->id);
         $object->details = $object->getDetails($object->id);
         $object->task = $object->getTask($object->id);
@@ -209,7 +209,7 @@ class AttentionController extends Controller
         }
 
         $object = Attention::with(['worker.person', 'vehicle', 'vehicle.person',
-            'details', 'details.product.unit', 'routeImages', 'elements'])
+            'details', 'details.product.unit', 'routeImages', 'elements', 'concession'])
             ->where('number', $number)->first();
         $object->elements = $object->getElements($object->id);
 
@@ -218,74 +218,6 @@ class AttentionController extends Controller
         return response()->json($object);
     }
 
-    // /**
-    //  * Create a new ATTENTION
-    //  * @OA\Post(
-    //  *     path="/tecnimotors-backend/public/api/attention",
-    //  *     tags={"Attention"},
-    //  *     security={{"bearerAuth":{}}},
-    //  *     @OA\RequestBody(
-    //  *         required=true,
-    //  *         description="Attention data",
-    //  *         @OA\MediaType(
-    //  *             mediaType="multipart/form-data",
-    //  *             @OA\Schema(
-    //  *                 @OA\Property(property="arrivalDate", type="string", format="date-time", example="2024-03-13", description="Date Attention"),
-    //  *                 @OA\Property(property="deliveryDate", type="string", format="date-time", example="2024-03-13", description="Date Attention"),
-    //  *                 @OA\Property(property="observations", type="string", example="-"),
-    //  *                 @OA\Property(property="fuelLevel", type="string", example="10"),
-    //  *                 @OA\Property(property="km", type="string", example="0.00"),
-    //  *                 @OA\Property(property="vehicle_id", type="integer", example=1),
-    //  *                 @OA\Property(property="worker_id", type="integer", example=1),
-    //  *                 @OA\Property(
-    //  *                     property="details",
-    //  *                     type="array",
-    //  *                     @OA\Items(
-    //  *                         type="object",
-    //  *                         @OA\Property(property="service_id", type="integer", example=1),
-    //  *                         @OA\Property(property="worker_id", type="integer", example=1)
-    //  *                     )
-    //  *                 ),
-    //  *                 @OA\Property(
-    //  *                     property="elements",
-    //  *                     type="array",
-    //  *                     @OA\Items(type="integer", example=1)
-    //  *                 ),
-    //  *                 @OA\Property(
-    //  *                     property="detailsProducts",
-    //  *                     type="array",
-    //  *                     @OA\Items(type="integer", example=1)
-    //  *                 ),
-    //  *                 @OA\Property(
-    //  *                     property="routeImage",
-    //  *                     type="string",
-    //  *                     format="binary",
-    //  *                     description="Image file"
-    //  *                 )
-    //  *             )
-    //  *         )
-    //  *     ),
-    //  *     @OA\Response(
-    //  *         response=200,
-    //  *         description="Element created",
-    //  *         @OA\JsonContent(ref="#/components/schemas/Attention")
-    //  *     ),
-    //  *     @OA\Response(
-    //  *         response=422,
-    //  *         description="Validation error",
-    //  *         @OA\JsonContent(
-    //  *             @OA\Property(property="error", type="string", example="The name has already been taken.")
-    //  *         )
-    //  *     ),
-    //  *     @OA\Response(
-    //  *         response=401,
-    //  *         description="Unauthorized",
-    //  *         @OA\JsonContent(
-    //  *             @OA\Property(property="message", type="string", example="Unauthenticated")
-    //  *         )
-    //  *     )
-    //  * )
-    //  */
 
     /**
      * Create a new ATTENTION
@@ -305,6 +237,8 @@ class AttentionController extends Controller
      *             @OA\Property(property="km", type="string", example="0.00"),
      *             @OA\Property(property="vehicle_id", type="integer", example=1),
      *             @OA\Property(property="worker_id", type="integer", example=1),
+     *             @OA\Property(property="concession_id", type="integer", example=1),
+     *             @OA\Property(property="typeMaintenance", type="string", example="Preventivo"),
      *      @OA\Property(property="driver", type="string", example="Driver"),
      *             @OA\Property(
      *                 property="details",
@@ -378,7 +312,10 @@ class AttentionController extends Controller
             'routeImage.*' => 'nullable|image|mimes:jpeg,png,jpg,gif',
             'vehicle_id' => 'required|exists:vehicles,id',
             'worker_id' => 'required|exists:workers,id',
+            'concession_id' => 'nullable|exists:concessions,id',
             'driver' => 'nullable|string',
+
+            'typeMaintenance' => 'required|in:' . Attention::MAINTENICE_CORRECTIVE . ',' . Attention::MAINTENICE_PREVENTIVE,
 
             'elements' => 'nullable',
             'elements.*' => 'exists:elements,id',
@@ -411,6 +348,8 @@ class AttentionController extends Controller
             'routeImage' => 'ruta.jpg',
             'vehicle_id' => $request->input('vehicle_id') ?? null,
             'driver' => $request->input('driver') ?? null,
+            'concession_id' => $request->input('concession_id') ?? null,
+            'typeMaintenance' => $request->input('typeMaintenance') ?? null,
 
             'worker_id' => $request->input('worker_id') ?? null,
         ];
@@ -487,7 +426,10 @@ class AttentionController extends Controller
             $object->totalService = $sumServices;
 
         }
+        logger($object->totalService);
+        logger($object->totalProducts);
         $object->total = $object->totalService + $object->totalProducts;
+        logger($object->total);
         $object->save();
 
         //IMAGEN
@@ -516,7 +458,7 @@ class AttentionController extends Controller
             RouteImages::create($dataImage);
         }
 
-        $object = Attention::with(['worker.person', 'vehicle', 'details', 'routeImages'])->find($object->id);
+        $object = Attention::with(['worker.person', 'vehicle', 'details', 'routeImages', 'concession'])->find($object->id);
         $object->elements = $object->getElements($object->id);
         $object->details = $object->getDetails($object->id);
         $object->task = $object->getTask($object->id);
@@ -524,7 +466,7 @@ class AttentionController extends Controller
     }
 
     /**
-     * Update a attention
+     * Update an attention
      * @OA\Put (
      *     path="/tecnimotors-backend/public/api/attention/{id}",
      *     tags={"Attention"},
@@ -543,12 +485,14 @@ class AttentionController extends Controller
      *      @OA\Property(property="arrivalDate", type="string", format="date-time", example="2024-03-13", description="Date Attention"),
      *      @OA\Property(property="deliveryDate", type="string", format="date-time", example="2024-03-13", description="Date Attention"),
      *      @OA\Property(property="observations", type="string", example="-"),
-     *        @OA\Property(property="correlativo", type="string", example="123456"),
+     *     @OA\Property(property="correlativo", type="string", example="123456"),
      *     @OA\Property(property="fuelLevel", type="string", example="2"),
      *     @OA\Property(property="km", type="string", example="0.00"),
-     *      @OA\Property(property="driver", type="string", example="Driver"),
+     *     @OA\Property(property="driver", type="string", example="Driver"),
      *     @OA\Property(property="vehicle_id", type="string", example=1),
      *     @OA\Property(property="worker_id", type="string", example=1),
+     *     @OA\Property(property="concession_id", type="integer", example=1),
+     *     @OA\Property(property="typeMaintenance", type="string", example="Preventivo"),
      *     @OA\Property(
      *                 property="details",
      *                 type="array",
@@ -584,7 +528,7 @@ class AttentionController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="attention updated successfully",
-     *         @OA\JsonContent(ref="#/components/schemas/TypeAttention")
+     *         @OA\JsonContent(ref="#/components/schemas/Attention")
      *     ),
      *     @OA\Response(
      *         response=401,
@@ -632,7 +576,10 @@ class AttentionController extends Controller
 
             'vehicle_id' => 'required|exists:vehicles,id',
             'worker_id' => 'required|exists:workers,id',
+            'concession_id' => 'nullable|exists:concessions,id',
             'driver' => 'nullable|string',
+
+            'typeMaintenance' => 'nullable|in:' . Attention::MAINTENICE_CORRECTIVE . ',' . Attention::MAINTENICE_PREVENTIVE,
 
             'elements' => 'nullable|array',
             'elements.*' => 'exists:elements,id',
@@ -655,6 +602,8 @@ class AttentionController extends Controller
             'routeImage' => 'ruta.jpg',
             'vehicle_id' => $request->input('vehicle_id') ?? null,
             'driver' => $request->input('driver') ?? null,
+            'concession_id' => $request->input('concession_id') ?? null,
+            'typeMaintenance' => $request->input('typeMaintenance') ?? null,
 
             'worker_id' => $request->input('worker_id') ?? null,
         ];
@@ -683,7 +632,7 @@ class AttentionController extends Controller
         $images = $request->file('routeImage') ?? [];
         $object->setImages($object->id, $images);
 
-        $object = Attention::with(['worker.person', 'vehicle', 'details', 'routeImages'])->find($object->id);
+        $object = Attention::with(['worker.person', 'vehicle', 'details', 'routeImages', 'concession'])->find($object->id);
         $object->elements = $object->getElements($object->id);
         $object->details = $object->getDetails($object->id);
         $object->task = $object->getTask($object->id);

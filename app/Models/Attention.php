@@ -28,6 +28,8 @@ use Illuminate\Support\Facades\Storage;
  *     @OA\Property(property="debtAmount", type="number", example="100.00"),
  *     @OA\Property(property="percentage", type="integer", example="1"),
  *     @OA\Property(property="driver", type="string", example="Driver"),
+ *     @OA\Property(property="concession_id", type="integer", example="1"),
+ *     @OA\Property(property="typeMaintenance", type="string", example="Preventivo"),
  *     @OA\Property(property="created_at", type="string", format="date-time", example="2024-05-21 04:09:25"),
  *     @OA\Property(property="worker", ref="#/components/schemas/Worker"),
  *     @OA\Property(property="vehicle", ref="#/components/schemas/Vehicle"),
@@ -81,6 +83,8 @@ class Attention extends Model
         'percentage',
         'debtAmount',
 
+        'typeMaintenance',
+
         'worker_id',
         'vehicle_id',
         'concession_id',
@@ -93,6 +97,9 @@ class Attention extends Model
         'updated_at',
         'deleted_at',
     ];
+
+    const MAINTENICE_PREVENTIVE = 'Preventivo';
+    const MAINTENICE_CORRECTIVE = 'Correctivo';
 
     public function worker()
     {
@@ -111,7 +118,7 @@ class Attention extends Model
 
     public function concession()
     {
-        return $this->belongsTo(Concession::class, 'concession_id');
+        return $this->belongsTo(Concession::class, 'concession_id')->with('client', 'concessionaire', 'routeImage');
     }
 
     public static function updateStatus($attentionId)

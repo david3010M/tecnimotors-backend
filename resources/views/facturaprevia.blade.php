@@ -1,4 +1,4 @@
-@php use Carbon\Carbon; @endphp
+@php use App\Models\Attention;use Carbon\Carbon; @endphp
     <!DOCTYPE html>
 <html lang="es">
 
@@ -33,6 +33,22 @@
             padding: 2px;
         }
 
+        .header, .footer {
+            position: fixed;
+            width: 100%;
+            left: 0;
+        }
+
+        .header {
+            top: 0;
+            height: 80px; /* Ajusta la altura según tu imagen */
+        }
+
+        .footer {
+            bottom: 0;
+            height: 50px; /* Ajusta la altura según tu imagen */
+        }
+
         .headerImage {
             position: absolute;
             top: 0;
@@ -59,7 +75,7 @@
 
         .logoImage {
             width: auto;
-            height: 30px;
+            height: 50px;
             text-align: center;
         }
 
@@ -316,19 +332,29 @@
         .text-blue {
             color: #007AC2;
         }
+
+        .page-break {
+            page-break-after: always;
+        }
     </style>
 </head>
 
 <body>
 
-<img class="headerImage" src="{{ asset('img/degraded.png') }}" alt="degraded">
+<div class="header">
+    <img class="headerImage" src="{{ asset('img/degraded.png') }}" alt="degraded">
+</div>
+
+<div class="footer">
+    <img class="footerImage" src="{{ asset('img/degraded.png') }}" alt="degraded">
+</div>
 
 <div class="content">
 
     <table class="tableInfo bordered">
         <tr>
             <td class="center" style="width:20%;">
-                <img class="logoImage" src="{{ asset('img/logoTecnimotors.png') }}" alt="logoTecnimotors">
+                <img class="logoImage" src="{{$budgetsheet->attention->concession->routeImage->route}}" alt="logo">
             </td>
 
             <td class="center" style="width:50%;background-color:rgb(22 0 104);">
@@ -362,8 +388,8 @@
         <tr>
 
             <td class="left font-9" colspan="2">
-                <div class="">CONCESIÓN: Operación y Mantenimiento de las Obras de Irrigación del Proyecto
-                    Olmos
+                <div class="">
+                    CONCESIÓN: {{ $budgetsheet->attention?->concession?->concession ?? '-' }}
                 </div>
             </td>
             <td class="left font-9">
@@ -374,13 +400,19 @@
         <tr>
 
             <td class="left font-9">
-                <div class="">CONCESIONARIA: H2Olmos S.A.</div>
+                <div class="">
+                    CONCESIONARIA: {{ $budgetsheet->attention?->concession?->concessionaire->businessName ?? '-' }}
+                </div>
             </td>
             <td class="left font-9">
-                <div class="">CLIENTE: Gobierno Regional de Lambayeque</div>
+                <div class="">
+                    CLIENTE: {{ $budgetsheet->attention?->concession?->client?->businessName ?? '-' }}
+                </div>
             </td>
             <td class="left font-9">
-                <div class=""></div>
+                <div class="">
+                    {{ \Carbon\Carbon::parse($budgetsheet->attention?->concession?->registerDate)->format('d/m/Y') ?? '-' }}
+                </div>
             </td>
 
         </tr>
@@ -389,7 +421,7 @@
     <table class="bordered">
         <tr>
             <th colspan="3" class="blueBackground"
-                style="background:#007AC2;color:white;border: 1px solid #bfbfbf; text-align: center;font-size: 10px">
+                style="background:#007AC2;color:white;border: 1px solid #000; text-align: center;font-size: 10px">
                 DATOS GENERALES
             </th>
         </tr>
@@ -402,7 +434,9 @@
                 <div class="">MARCA: {{ $budgetsheet->attention?->vehicle?->vehicleModel?->brand?->name ?? '-' }}</div>
             </td>
             <td class="left font-9" style="width:40%">
-                <div class="">TIPO MANTENIMIENTO</div>
+                <div class="">
+
+                </div>
             </td>
 
         </tr>
@@ -415,20 +449,26 @@
                 <div class="">MODELO: {{ $budgetsheet->attention->vehicle->model }}</div>
             </td>
             <td class="left font-9" style="width:40%">
-                <div class="">PREVENTIVO:</div>
+                <div class="">
+                    PREVENTIVO: {{ $budgetsheet->attention?->typeMaintenance == Attention::MAINTENICE_PREVENTIVE ? 'X' : '' }}
+                </div>
             </td>
 
         </tr>
         <tr>
 
             <td class="left font-9" style="width:30%">
-                <div class="">UA: 67062H11</div>
+                <div class="">
+                    CHASIS: {{ $budgetsheet->attention?->vehicle?->chasis ?? '-' }}
+                </div>
             </td>
             <td class="left font-9" style="width:30%">
                 <div class="">KM DE MANTENIMIENTO:</div>
             </td>
             <td class="left font-9" style="width:40%">
-                <div class="">CORRECTIVO: X</div>
+                <div class="">
+                    CORRECTIVO: {{ $budgetsheet->attention?->typeMaintenance == Attention::MAINTENICE_CORRECTIVE ? 'X' : '' }}
+                </div>
             </td>
 
         </tr>
@@ -438,7 +478,7 @@
     <table class="bordered">
         <tr>
             <th colspan="3" class="blueBackground"
-                style="background:#007AC2;color:white;border: 1px solid #bfbfbf; text-align: center;font-size: 10px">
+                style="background:#007AC2;color:white;border: 1px solid #000; text-align: center;font-size: 10px">
                 TALLER
             </th>
         </tr>
@@ -449,7 +489,9 @@
             </td>
 
             <td class="left font-9" style="width:40%">
-                <div class="">TIPO MANTENIMIENTO</div>
+                <div class="">
+                    RUC: 20487467139
+                </div>
             </td>
 
         </tr>
@@ -486,41 +528,41 @@
 
 
     <!-- Tabla Repuestos e Insumos -->
-    <table class="tableDetail font-9" style="border-collapse: collapse; width: 100%; border: 1px solid #bfbfbf;">
+    <table class="tableDetail font-9" style="border-collapse: collapse; width: 100%; border: 1px solid #000;">
         <thead>
         <tr>
             <th colspan="5" class="blueBackground"
-                style="background:#007AC2;color:white;border: 1px solid #bfbfbf; text-align: center;font-size: 10px">
+                style="background:#007AC2;color:white;border: 1px solid #000; text-align: center;font-size: 10px">
                 OBSERVACIONES
             </th>
         </tr>
         <tr>
-            <th class="id" style="border: 1px solid #bfbfbf; padding: 5px;">ITEM</th>
-            <th class="quantity" style="border: 1px solid #bfbfbf; padding: 5px;">CANT</th>
-            <th class="unit" style="border: 1px solid #bfbfbf; padding: 5px;">UND</th>
-            <th class="description" style="border: 1px solid #bfbfbf; padding: 5px;">DESCRIPCIÓN DE REPUESTOS</th>
-            <th class="unitPrice" style="border: 1px solid #bfbfbf; padding: 5px;">COSTO</th>
+            <th class="id" style="border: 1px solid #000; padding: 5px;">ITEM</th>
+            <th class="quantity" style="border: 1px solid #000; padding: 5px;">CANT</th>
+            <th class="unit" style="border: 1px solid #000; padding: 5px;">UND</th>
+            <th class="description" style="border: 1px solid #000; padding: 5px;">DESCRIPCIÓN DE REPUESTOS</th>
+            <th class="unitPrice" style="border: 1px solid #000; padding: 5px;">COSTO</th>
         </tr>
         </thead>
         <tbody>
         @php
             $idIncremental = 1;
-            $totalRows = 20;
+            $totalRows = 25;
             $filledRows = 0;
         @endphp
 
         @if (!empty($budgetsheet->attention?->details))
             @foreach ($budgetsheet->attention->details as $detail)
-                @if ($detail->type == 'Product' || $detail->type == 'Service')
+                @if ($detail->type == 'Product')
                     <tr>
-                        <td class="id" style="border: 1px solid #bfbfbf; padding: 5px;">{{ $idIncremental }}</td>
+                        <td class="id" style="border: 1px solid #000; padding: 3px;">{{ $idIncremental }}</td>
                         <td class="quantity"
-                            style="border: 1px solid #bfbfbf; padding: 5px;">{{ $detail->quantity ?? '-' }}</td>
+                            style="border: 1px solid #000; padding: 3px;">{{ $detail->quantity ?? '-' }}</td>
                         <td class="unit"
-                            style="border: 1px solid #bfbfbf; padding: 5px;">{{ $detail->product?->unit?->code ?? 'und.' }}</td>
+                            style="border: 1px solid #000; padding: 3px;">{{ $detail->product?->unit?->code ?? 'und.' }}</td>
                         <td class="description"
-                            style="border: 1px solid #bfbfbf; padding: 5px;">{{ $detail->product?->name ?? $detail->service?->name }}</td>
-                        <td class="sailTotal" style="border: 1px solid #bfbfbf; padding: 5px;">
+                            style="border: 1px solid #000; padding: 3px;">{{ $detail->product?->name }}</td>
+                        <td class="sailTotal" style="border: 1px solid #000; padding: 3px;">
                             S/{{ number_format($detail->saleprice * $detail->quantity ?? 0, 2) }}</td>
                     </tr>
                     @php
@@ -533,11 +575,11 @@
 
         @for ($i = $filledRows; $i < $totalRows; $i++)
             <tr>
-                <td class="id" style="border: 1px solid #bfbfbf; padding: 5px;">{{ $idIncremental }}</td>
-                <td class="quantity" style="border: 1px solid #bfbfbf; padding: 5px;"></td>
-                <td class="unit" style="border: 1px solid #bfbfbf; padding: 5px;"></td>
-                <td class="description" style="border: 1px solid #bfbfbf; padding: 5px;"></td>
-                <td class="sailTotal" style="border: 1px solid #bfbfbf; padding: 5px;"></td>
+                <td class="id" style="border: 1px solid #000; padding: 3px;">{{ $idIncremental }}</td>
+                <td class="quantity" style="border: 1px solid #000; padding: 3px;"></td>
+                <td class="unit" style="border: 1px solid #000; padding: 3px;"></td>
+                <td class="description" style="border: 1px solid #000; padding: 3px;"></td>
+                <td class="sailTotal" style="border: 1px solid #000; padding: 3px;"></td>
             </tr>
             @php
                 $idIncremental++;
@@ -569,10 +611,9 @@
                                         <p><strong>Total</strong></p>
                                     </td>
                                     <td style="text-align: right; padding-left: 10px;">
-                                        <p>{{ $budgetsheet->subtotal }}</p>
-                                        <p>{{ $budgetsheet->igv }}</p>
-
-                                        <p>{{ $budgetsheet->total }}</p>
+                                        <p>{{ number_format($budgetsheet->totalProducts / 1.18, 2) }}</p>
+                                        <p>{{ number_format(($budgetsheet->totalProducts / 1.18) * 0.18, 2) }}</p>
+                                        <p>{{ $budgetsheet->totalProducts }}</p>
                                     </td>
                                 </tr>
                             </table>
@@ -613,8 +654,313 @@
 
 </div>
 
+<div class="page-break"></div>
 
-<img class="footerImage" src="{{ asset('img/degraded.png') }}" alt="degraded">
+<div class="content">
+
+    <table class="tableInfo bordered">
+        <tr>
+            <td class="center" style="width:20%;">
+                <img class="logoImage" src="{{ asset('img/logoTecnimotors.png') }}" alt="logo">
+            </td>
+
+            <td class="center" style="width:50%;background-color:rgb(22 0 104);">
+                <div class="titlePresupuesto">REGISTRO DE MANTENIMIENTO VEHICULAR</div>
+            </td>
+
+            <td class="center font-13" style="width:25%;">
+                <table class="bordered innerTable">
+                    <tr>
+                        <td class="font-7" style="width: 60%">CÓDGIO DEL FORMATO</td>
+                        <td class="font-7" style="width: 40%">AD9-SG-027</td>
+                    </tr>
+                    <tr>
+                        <td class="font-7" style="width: 60%">REVISIÓN DEL FORMATO</td>
+                        <td class="font-7" style="width: 40%">00</td>
+                    </tr>
+                    <tr>
+                        <td class="font-7" style="width: 60%">FORMATO VIGENTE DESDE</td>
+                        <td class="font-7" style="width: 40%">12/ABR/2017</td>
+                    </tr>
+                    <tr>
+                        <td class="font-7" style="width: 60%">PÁGINA DEL FORMATO</td>
+                        <td class="font-7" style="width: 40%">1 DE 1</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <br>
+    <table class="bordered">
+        <tr>
+
+            <td class="left font-9" colspan="2">
+                <div class="">
+                    CONCESIÓN: {{ $budgetsheet->attention?->concession?->concession ?? '-' }}
+                </div>
+            </td>
+            <td class="left font-9">
+                <div class="">FECHA DEL REGISTRO</div>
+            </td>
+
+        </tr>
+        <tr>
+
+            <td class="left font-9">
+                <div class="">
+                    CONCESIONARIA: {{ $budgetsheet->attention?->concession?->concessionaire->businessName ?? '-' }}
+                </div>
+            </td>
+            <td class="left font-9">
+                <div class="">
+                    CLIENTE: {{ $budgetsheet->attention?->concession?->client?->businessName ?? '-' }}
+                </div>
+            </td>
+            <td class="left font-9">
+                <div class="">
+                    {{ \Carbon\Carbon::parse($budgetsheet->attention?->concession?->registerDate)->format('d/m/Y') ?? '-' }}
+                </div>
+            </td>
+
+        </tr>
+    </table>
+    <br>
+    <table class="bordered">
+        <tr>
+            <th colspan="3" class="blueBackground"
+                style="background:#007AC2;color:white;border: 1px solid #000; text-align: center;font-size: 10px">
+                DATOS GENERALES
+            </th>
+        </tr>
+        <tr>
+
+            <td class="left font-9" style="width:30%">
+                <div class="">UNIDAD: {{ $budgetsheet->attention?->vehicle?->typeVehicle?->name ?? '-' }}</div>
+            </td>
+            <td class="left font-9" style="width:30%">
+                <div class="">MARCA: {{ $budgetsheet->attention?->vehicle?->vehicleModel?->brand?->name ?? '-' }}</div>
+            </td>
+            <td class="left font-9" style="width:40%">
+                <div class="">
+
+                </div>
+            </td>
+
+        </tr>
+        <tr>
+
+            <td class="left font-9" style="width:30%">
+                <div class="">PLACA: {{ $budgetsheet->attention->vehicle->plate }}</div>
+            </td>
+            <td class="left font-9" style="width:30%">
+                <div class="">MODELO: {{ $budgetsheet->attention->vehicle->model }}</div>
+            </td>
+            <td class="left font-9" style="width:40%">
+                <div class="">
+                    PREVENTIVO: {{ $budgetsheet->attention?->typeMaintenance == Attention::MAINTENICE_PREVENTIVE ? 'X' : '' }}
+                </div>
+            </td>
+
+        </tr>
+        <tr>
+
+            <td class="left font-9" style="width:30%">
+                <div class="">
+                    CHASIS: {{ $budgetsheet->attention?->vehicle?->chasis ?? '-' }}
+                </div>
+            </td>
+            <td class="left font-9" style="width:30%">
+                <div class="">KM DE MANTENIMIENTO:</div>
+            </td>
+            <td class="left font-9" style="width:40%">
+                <div class="">
+                    CORRECTIVO: {{ $budgetsheet->attention?->typeMaintenance == Attention::MAINTENICE_CORRECTIVE ? 'X' : '' }}
+                </div>
+            </td>
+
+        </tr>
+    </table>
+
+    <br>
+    <table class="bordered">
+        <tr>
+            <th colspan="3" class="blueBackground"
+                style="background:#007AC2;color:white;border: 1px solid #000; text-align: center;font-size: 10px">
+                TALLER
+            </th>
+        </tr>
+        <tr>
+
+            <td class="left font-9" colspan="2" style="width:30%">
+                <div class="">EMPRESA: TECNI MOTORS DEL PERÚ E.I.R.L</div>
+            </td>
+
+            <td class="left font-9" style="width:40%">
+                <div class="">
+                    RUC: 20487467139
+                </div>
+            </td>
+
+        </tr>
+        <tr>
+
+            <td class="left font-9" style="width:30%">
+                <div class="">KM DE INGRESO: {{ $budgetsheet->attention?->km ?? '-' }}</div>
+            </td>
+            <td class="left font-9" style="width:30%">
+                <div class="">KM DE SALIDA: {{ $budgetsheet->attention?->km ?? '-' }}</div>
+            </td>
+            <td class="left font-9" style="width:40%">
+                <div class="">TELEFONO: {{ $budgetsheet->attention?->worker?->person?->phone  ?? '-' }}</div>
+            </td>
+
+        </tr>
+        <tr>
+
+            <td class="left font-9" style="width:30%">
+                <div class="">FECHA
+                    INGRESO: {{ \Carbon\Carbon::parse($budgetsheet->attention?->arrivalDate)->format('d/m/Y') ?? '-' }}</div>
+            </td>
+            <td class="left font-9" style="width:30%">
+                <div class="">FECHA
+                    SALIDA:{{ \Carbon\Carbon::parse($budgetsheet->attention?->deliveryDate)->format('d/m/Y') ?? '-' }}</div>
+            </td>
+            <td class="left font-9" style="width:40%">
+                <div class="">
+                    ASESOR:{{ $budgetsheet->attention?->worker?->person?->getFullNameAttribute()  ?? '-' }}</div>
+            </td>
+
+        </tr>
+    </table>
+
+
+    <!-- Tabla Repuestos e Insumos -->
+    <table class="tableDetail font-9" style="border-collapse: collapse; width: 100%; border: 1px solid #000;">
+        <thead>
+        <tr>
+            <th colspan="5" class="blueBackground"
+                style="background:#007AC2;color:white;border: 1px solid #000; text-align: center;font-size: 10px">
+                OBSERVACIONES
+            </th>
+        </tr>
+        <tr>
+            <th class="id" style="border: 1px solid #000; padding: 5px;">ITEM</th>
+            <th class="quantity" style="border: 1px solid #000; padding: 5px;">CANT</th>
+            <th class="unit" style="border: 1px solid #000; padding: 5px;">UND</th>
+            <th class="description" style="border: 1px solid #000; padding: 5px;">DESCRIPCIÓN DE SERVICIOS</th>
+            <th class="unitPrice" style="border: 1px solid #000; padding: 5px;">COSTO</th>
+        </tr>
+        </thead>
+        <tbody>
+        @php
+            $idIncremental = 1;
+            $totalRows = 25;
+            $filledRows = 0;
+        @endphp
+
+        @if (!empty($budgetsheet->attention?->details))
+            @foreach ($budgetsheet->attention->details as $detail)
+                @if ($detail->type == 'Service')
+                    <tr>
+                        <td class="id" style="border: 1px solid #000; padding: 3px;">{{ $idIncremental }}</td>
+                        <td class="quantity"
+                            style="border: 1px solid #000; padding: 3px;">{{ $detail->quantity ?? '-' }}</td>
+                        <td class="unit"
+                            style="border: 1px solid #000; padding: 3px;">{{ $detail->product?->unit?->code ?? 'und.' }}</td>
+                        <td class="description"
+                            style="border: 1px solid #000; padding: 3px;">{{ $detail->service?->name }}</td>
+                        <td class="sailTotal" style="border: 1px solid #000; padding: 3px;">
+                            S/{{ number_format($detail->saleprice * $detail->quantity ?? 0, 2) }}</td>
+                    </tr>
+                    @php
+                        $idIncremental++;
+                        $filledRows++;
+                    @endphp
+                @endif
+            @endforeach
+        @endif
+
+        @for ($i = $filledRows; $i < $totalRows; $i++)
+            <tr>
+                <td class="id" style="border: 1px solid #000; padding: 3px;">{{ $idIncremental }}</td>
+                <td class="quantity" style="border: 1px solid #000; padding: 3px;"></td>
+                <td class="unit" style="border: 1px solid #000; padding: 3px;"></td>
+                <td class="description" style="border: 1px solid #000; padding: 3px;"></td>
+                <td class="sailTotal" style="border: 1px solid #000; padding: 3px;"></td>
+            </tr>
+            @php
+                $idIncremental++;
+            @endphp
+        @endfor
+        </tbody>
+    </table>
+
+
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+            <!-- Tabla de Observaciones (Izquierda) -->
+            <td style="width: 60%; vertical-align: top;">
+
+
+            </td>
+
+            <!-- Tabla de Totales (Derecha) -->
+            <td style="width: 40%; vertical-align: top;">
+                <table class="tableTotal" style="width: 100%; font-size: 12px;">
+                    <tr>
+                        <td class="right totalInfo" style="padding: 5px;">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td style="text-align: right;">
+                                        <p><strong>SUBTOTAL</strong></p>
+                                        <p><strong>IGV 18%</strong></p>
+
+                                        <p><strong>Total</strong></p>
+                                    </td>
+                                    <td style="text-align: right; padding-left: 10px;">
+                                        <p>{{ number_format($budgetsheet->totalService / 1.18, 2) }}</p>
+                                        <p>{{ number_format(($budgetsheet->totalService / 1.18) * 0.18, 2) }}</p>
+                                        <p>{{ $budgetsheet->totalService }}</p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <br>
+    <table style="border-collapse: collapse; width: 100%; border: 1px solid #000;">
+        <thead>
+        <tr>
+            <th style="border: 1px solid #000; padding: 5px; text-align: center;">CONDUCTOR</th>
+            <th style="border: 1px solid #000; padding: 5px; text-align: center;">AUTORIZA</th>
+            <th style="border: 1px solid #000; padding: 5px; text-align: center;">JEFE DE TALLER</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td style="border: 1px solid #000; padding: 5px; width:30%">FIRMA:</td>
+            <td style="border: 1px solid #000; padding: 5px; width:30%">FIRMA:</td>
+            <td style="border: 1px solid #000; padding: 5px; width:30%">FIRMA:</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #000; padding: 5px; width:30%">NOMBRE:</td>
+            <td style="border: 1px solid #000; padding: 5px; width:30%">NOMBRE:</td>
+            <td style="border: 1px solid #000; padding: 5px; width:30%">NOMBRE:</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #000; padding: 5px; width:30%">TELEFONO:</td>
+            <td style="border: 1px solid #000; padding: 5px; width:30%">TELEFONO:</td>
+            <td style="border: 1px solid #000; padding: 5px; width:30%">TELEFONO:</td>
+        </tr>
+        </tbody>
+    </table>
+
+
+</div>
+
 </body>
 
 </html>

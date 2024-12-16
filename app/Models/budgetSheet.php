@@ -88,9 +88,7 @@ class budgetSheet extends Model
             'attention.vehicle.vehicleModel.brand' => function ($query) {
                 $query->withTrashed(); // Incluye marcas eliminadas
             },
-            'attention.details' => function ($query) {
-                $query->withTrashed(); // Incluye detalles eliminados
-            },
+            'attention.details',
             'attention.details.product.unit' => function ($query) {
                 $query->withTrashed(); // Incluye unidades de productos eliminadas
             },
@@ -98,6 +96,7 @@ class budgetSheet extends Model
             'attention.elements' => function ($query) {
                 $query->withTrashed(); // Incluye elementos eliminados
             },
+            'attention.concession',
         ])->find($id);
 
         if (!$object) {

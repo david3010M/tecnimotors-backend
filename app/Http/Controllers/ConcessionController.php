@@ -69,6 +69,7 @@ class ConcessionController extends Controller
         $filename = $currentTime->format('YmdHis') . '_' . $originalName;
         $path = $file->storeAs('public/concessions', $filename);
         $routeImage = 'https://develop.garzasoft.com/tecnimotors-backend/storage/app/' . $path;
+//        $routeImage = 'https://localhost/tecnimotors-backend/storage/app/' . $path;
 
         $dataImage = [
             'route' => $routeImage,
@@ -125,7 +126,7 @@ class ConcessionController extends Controller
         if ($file) {
             $routeImagePrevious = RouteImages::where('concession_id', $concession->id)->first();
             if ($routeImagePrevious) {
-                $path = storage_path(explode('http://localhost/tecnimotors-backend/storage/', $routeImagePrevious->route)[1]);
+                $path = storage_path(explode('https://develop.garzasoft.com/tecnimotors-backend/storage/', $routeImagePrevious->route)[1]);
                 if (file_exists($path)) unlink($path);
                 $routeImagePrevious->delete();
             }
@@ -136,6 +137,7 @@ class ConcessionController extends Controller
             $filename = $currentTime->format('YmdHis') . '_' . $originalName;
             $path = $file->storeAs('public/concessions', $filename);
             $routeImage = 'https://develop.garzasoft.com/tecnimotors-backend/storage/app/' . $path;
+//            $routeImage = 'http://localhost/tecnimotors-backend/storage/app/' . $path;
 
             $dataImage = [
                 'route' => $routeImage,
@@ -165,7 +167,7 @@ class ConcessionController extends Controller
         $concession = Concession::find($id);
         if (!$concession) return response()->json(['message' => 'Concession not found'], 404);
         $routeImagePrevious = RouteImages::where('concession_id', $concession->id)->first();
-        $path = storage_path(explode('http://localhost/tecnimotors-backend/storage/', $routeImagePrevious->route)[1]);
+        $path = storage_path(explode('https://develop.garzasoft.com/tecnimotors-backend/storage/', $routeImagePrevious->route)[1]);
         if (file_exists($path)) unlink($path);
         if ($routeImagePrevious) $routeImagePrevious->delete();
         $concession->delete();

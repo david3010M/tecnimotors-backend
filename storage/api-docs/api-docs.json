@@ -204,6 +204,14 @@
                                         "type": "integer",
                                         "example": 1
                                     },
+                                    "concession_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "typeMaintenance": {
+                                        "type": "string",
+                                        "example": "Preventivo"
+                                    },
                                     "driver": {
                                         "type": "string",
                                         "example": "Driver"
@@ -377,7 +385,7 @@
                 "tags": [
                     "Attention"
                 ],
-                "summary": "Update a attention",
+                "summary": "Update an attention",
                 "operationId": "ecd030130da7640e4c9bcbcfff77d3a8",
                 "parameters": [
                     {
@@ -440,6 +448,14 @@
                                         "type": "string",
                                         "example": 1
                                     },
+                                    "concession_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "typeMaintenance": {
+                                        "type": "string",
+                                        "example": "Preventivo"
+                                    },
                                     "details": {
                                         "type": "array",
                                         "items": {
@@ -499,7 +515,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/TypeAttention"
+                                    "$ref": "#/components/schemas/Attention"
                                 }
                             }
                         }
@@ -19095,6 +19111,14 @@
                     "driver": {
                         "type": "string",
                         "example": "Driver"
+                    },
+                    "concession_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "typeMaintenance": {
+                        "type": "string",
+                        "example": "Preventivo"
                     },
                     "created_at": {
                         "type": "string",
