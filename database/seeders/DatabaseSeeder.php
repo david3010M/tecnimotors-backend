@@ -86,6 +86,8 @@ class DatabaseSeeder extends Seeder
         $this->call(SpecialtyByPersonSeeder::class);
         $this->call(ServiceSeeder::class);
 
+        $this->call(ConcessionSeeder::class);
+
         // $this->call(AttentionSeeder::class);
         $this->call(ElementForAttentionSeeder::class);
         $this->call(DetailAttentionSeeder::class);

@@ -12,14 +12,14 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('route_images', function (Blueprint $table) {
-
+        Schema::create('concessions', function (Blueprint $table) {
             $table->id();
-            $table->string('route');
-            $table->foreignId('attention_id')->nullable()->unsigned()->constrained('attentions');
-            $table->foreignId('task_id')->nullable()->unsigned()->constrained('tasks');
-            $table->foreignId('concession_id')->nullable()->unsigned()->constrained('concessions');
+            $table->text('concession');
+            $table->date('registerDate')->nullable();
+            $table->foreignId('concessionaire_id')->nullable()->unsigned()->constrained('people');
+            $table->foreignId('client_id')->nullable()->unsigned()->constrained('people');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -30,6 +30,6 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('route_images');
+        Schema::dropIfExists('concessions');
     }
 };

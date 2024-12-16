@@ -15273,6 +15273,355 @@
                 ]
             }
         },
+        "/tecnimotors-backend/public/api/concession": {
+            "get": {
+                "tags": [
+                    "Concession"
+                ],
+                "summary": "Get all concessions",
+                "operationId": "f1cc581776e0b8ee65f9b80fc606fa78",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Número de página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Cantidad de elementos por página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "direction",
+                        "in": "query",
+                        "description": "Dirección de la ordenación",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "concession",
+                        "in": "query",
+                        "description": "Nombre de la concesion",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "from",
+                        "in": "query",
+                        "description": "Fecha de inicio",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "description": "Fecha de fin",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "client_id",
+                        "in": "query",
+                        "description": "Id del cliente",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "concessionaire_id",
+                        "in": "query",
+                        "description": "Id del concesionario",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Concessions",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConcessionCollection"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Unauthenticated"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Concession"
+                ],
+                "summary": "Store a new concession",
+                "operationId": "c9e632afc140d38a68c32bcc098101cb",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreConcessionRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Concession created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConcessionResource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/concession/{id}": {
+            "get": {
+                "tags": [
+                    "Concession"
+                ],
+                "summary": "Get a concession",
+                "operationId": "c3a9ae4779f0c5749bdcf0e92ad549f8",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Concession id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Concession",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConcessionResource"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Concession not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Concession not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Concession"
+                ],
+                "summary": "Update a concession",
+                "operationId": "66e5231cdf05c0a1457c1374afd1755b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Concession id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateConcessionRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Concession updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConcessionResource"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Concession not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Concession not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Concession"
+                ],
+                "summary": "Delete a concession",
+                "operationId": "4ba01ead3fc1a9d937e4225e12099913",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Concession id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Concession deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Concession deleted"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Concession not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Concession not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/tecnimotors-backend/public/api/reportMovementClient/{id}": {
             "get": {
                 "tags": [
@@ -15982,6 +16331,24 @@
                         "required": false,
                         "schema": {
                             "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "from",
+                        "in": "query",
+                        "description": "Filter by from",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "description": "Filter by to",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
                         }
                     },
                     {
@@ -17270,6 +17637,38 @@
                 },
                 "type": "object"
             },
+            "StoreConcessionRequest": {
+                "title": "StoreConcessionRequest",
+                "description": "Store concession request",
+                "required": [
+                    "concession",
+                    "client_id",
+                    "concessionaire_id"
+                ],
+                "properties": {
+                    "concession": {
+                        "type": "string",
+                        "example": "Concesion 1"
+                    },
+                    "registerDate": {
+                        "type": "string",
+                        "example": "2021-09-01"
+                    },
+                    "client_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "concessionaire_id": {
+                        "type": "integer",
+                        "example": "2"
+                    },
+                    "logo": {
+                        "type": "file",
+                        "format": "binary"
+                    }
+                },
+                "type": "object"
+            },
             "StoreGuideRequest": {
                 "title": "StoreGuideRequest",
                 "properties": {
@@ -17586,6 +17985,33 @@
                 },
                 "type": "object"
             },
+            "UpdateConcessionRequest": {
+                "title": "UpdateConcessionRequest",
+                "description": "Update concession request",
+                "properties": {
+                    "concession": {
+                        "type": "string",
+                        "example": "Concesion 1"
+                    },
+                    "registerDate": {
+                        "type": "string",
+                        "example": "2021-09-01"
+                    },
+                    "client_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "concessionaire_id": {
+                        "type": "integer",
+                        "example": "2"
+                    },
+                    "logo": {
+                        "type": "file",
+                        "format": "binary"
+                    }
+                },
+                "type": "object"
+            },
             "UpdateGuideRequest": {
                 "title": "UpdateGuideRequest",
                 "properties": {
@@ -17879,6 +18305,59 @@
                     "to": {
                         "type": "integer",
                         "example": "5"
+                    }
+                },
+                "type": "object"
+            },
+            "ConcessionResource": {
+                "title": "ConcessionResource",
+                "description": "Concession resource",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "concession": {
+                        "type": "string",
+                        "example": "Concesion 1"
+                    },
+                    "registerDate": {
+                        "type": "string",
+                        "example": "2021-09-01"
+                    },
+                    "client": {
+                        "$ref": "#/components/schemas/Person"
+                    },
+                    "concessionaire": {
+                        "$ref": "#/components/schemas/Person"
+                    },
+                    "logo": {
+                        "type": "string",
+                        "example": "http://localhost/tecnimotors-backend/storage/app/public/concessions/20210901000000_logo.png"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-01-01T00:00:00Z"
+                    }
+                },
+                "type": "object"
+            },
+            "ConcessionCollection": {
+                "title": "ConcessionCollection",
+                "description": "Concession collection",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ConcessionResource"
+                        }
+                    },
+                    "links": {
+                        "$ref": "#/components/schemas/PaginationLinks"
+                    },
+                    "meta": {
+                        "$ref": "#/components/schemas/PaginationMeta"
                     }
                 },
                 "type": "object"
@@ -20936,6 +21415,10 @@
         {
             "name": "Authentication",
             "description": "Authentication"
+        },
+        {
+            "name": "Concession",
+            "description": "Concession"
         },
         {
             "name": "Reporte Excel",

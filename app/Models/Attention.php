@@ -83,6 +83,7 @@ class Attention extends Model
 
         'worker_id',
         'vehicle_id',
+        'concession_id',
         'driver',
         'status',
         'created_at',
@@ -106,6 +107,11 @@ class Attention extends Model
     public function budgetSheet()
     {
         return $this->hasOne(budgetSheet::class);
+    }
+
+    public function concession()
+    {
+        return $this->belongsTo(Concession::class, 'concession_id');
     }
 
     public static function updateStatus($attentionId)
@@ -192,8 +198,8 @@ class Attention extends Model
     public function getTask($id)
     {
         $list = Task::
-            // with(['detailAttentions.attention'])->
-            whereHas('detailAttentions.attention', function ($query) use ($id) {
+        // with(['detailAttentions.attention'])->
+        whereHas('detailAttentions.attention', function ($query) use ($id) {
             $query->where('id', $id);
         })
             ->get();
@@ -203,7 +209,7 @@ class Attention extends Model
     public function details()
     {
         return $this->hasMany(DetailAttention::class)->
-            orderBy('type', 'desc')
+        orderBy('type', 'desc')
             ->with(['worker', 'service', 'product']);
     }
 

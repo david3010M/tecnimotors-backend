@@ -35,6 +35,7 @@ return new class extends Migration {
             $table->foreignId('worker_id')->nullable()->unsigned()->constrained('workers');
             $table->foreignId('vehicle_id')->nullable()->unsigned()->constrained('vehicles');
             // $table->foreignId('driver_id')->nullable()->unsigned()->constrained('people');
+            $table->foreignId('concession_id')->nullable()->unsigned()->constrained('concessions');
 
             $table->timestamps();
             $table->softDeletes();

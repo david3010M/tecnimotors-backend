@@ -26,6 +26,7 @@ class RouteImages extends Model
         'route',
         'attention_id',
         'task_id',
+        'concession_id',
         'created_at',
     ];
 
@@ -41,5 +42,10 @@ class RouteImages extends Model
     public function task()
     {
         return $this->belongsTo(Task::class);
+    }
+
+    public function concession()
+    {
+        return $this->belongsTo(Concession::class);
     }
 }

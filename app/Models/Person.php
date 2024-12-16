@@ -68,4 +68,9 @@ class Person extends Model
             ->where('status', 'Pendiente');
     }
 
+    public function getFullNameAttribute()
+    {
+        return $this->names . ' ' . $this->fatherSurname . ' ' . $this->motherSurname;
+    }
+
 }

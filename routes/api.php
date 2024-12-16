@@ -39,6 +39,7 @@ use App\Http\Controllers\Api\VehicleController;
 use App\Http\Controllers\Api\VehicleModelController;
 use App\Http\Controllers\Api\WorkerController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\ConcessionController;
 use App\Http\Controllers\ExcelReportController;
 use App\Http\Controllers\GuideController;
 use App\Http\Controllers\GuideMotiveController;
@@ -88,6 +89,11 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     //PERSON
     Route::resource('person', PersonController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'person.index', 'store' => 'person.store', 'show' => 'person.show', 'update' => 'person.update', 'destroy' => 'person.destroy']);
+
+    // CONCESSION
+    Route::resource('concession', ConcessionController::class)->only(['index', 'show', 'store', 'destroy'])
+        ->names(['index' => 'concession.index', 'store' => 'concession.store', 'show' => 'concession.show', 'destroy' => 'concession.destroy']);
+    Route::post('concession/{id}', [ConcessionController::class, 'update'])->name('concession.update');
 
     //OPTION MENU
     Route::resource('optionMenu', OptionMenuController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
