@@ -37,42 +37,61 @@ class PersonController extends Controller
      * )
      */
 
-     public function index(Request $request)
-     {
-         $search = $request->query('search');
- 
-         // Obtener el tamaño de la paginación y la página, con valores predeterminados
-         $perPage = $request->input('per_page', 100);
-         $currentPage = $request->input('page', 1);
- 
-         // Filtrar y paginar los resultados
-         $persons = Person::where('id', '!=', 1)
-             ->where(function ($query) use ($search) {
-                 $query->where('documentNumber', 'like', '%' . $search . '%')
-                     ->orWhere('names', 'like', '%' . $search . '%')
-                     ->orWhere('fatherSurname', 'like', '%' . $search . '%')
-                     ->orWhere('motherSurname', 'like', '%' . $search . '%')
-                     ->orWhere('businessName', 'like', '%' . $search . '%');
-             })
-             ->paginate($perPage, ['*'], 'page', $currentPage);
- 
-         // Estructura de respuesta paginada
-         return response()->json([
-             'total' => $persons->total(),
-             'data' => $persons->items(),
-             'current_page' => $persons->currentPage(),
-             'last_page' => $persons->lastPage(),
-             'per_page' => $persons->perPage(),
-             'pagination' => $perPage,
-             'first_page_url' => $persons->url(1),
-             'from' => $persons->firstItem(),
-             'next_page_url' => $persons->nextPageUrl(),
-             'path' => $persons->path(),
-             'prev_page_url' => $persons->previousPageUrl(),
-             'to' => $persons->lastItem(),
-             'page' => $currentPage,
-         ], 200);
-     }
+    public function index(Request $request)
+    {
+        $search = $request->query('search');
+
+        // Verificar si el parámetro "all" es true
+        $getAll = filter_var($request->query('all', false), FILTER_VALIDATE_BOOLEAN);
+
+        if ($getAll) {
+            // Obtener todos los registros sin paginar
+            $persons = Person::where('id', '!=', 1)
+                ->where(function ($query) use ($search) {
+                    $query->where('documentNumber', 'like', '%' . $search . '%')
+                        ->orWhere('names', 'like', '%' . $search . '%')
+                        ->orWhere('fatherSurname', 'like', '%' . $search . '%')
+                        ->orWhere('motherSurname', 'like', '%' . $search . '%')
+                        ->orWhere('businessName', 'like', '%' . $search . '%');
+                })
+                ->get();
+
+            return response()->json($persons);
+        }
+
+        // Obtener el tamaño de la paginación y la página, con valores predeterminados
+        $perPage = $request->query('per_page', 100);
+        $currentPage = $request->query('page', 1);
+
+        // Filtrar y paginar los resultados
+        $persons = Person::where('id', '!=', 1)
+            ->where(function ($query) use ($search) {
+                $query->where('documentNumber', 'like', '%' . $search . '%')
+                    ->orWhere('names', 'like', '%' . $search . '%')
+                    ->orWhere('fatherSurname', 'like', '%' . $search . '%')
+                    ->orWhere('motherSurname', 'like', '%' . $search . '%')
+                    ->orWhere('businessName', 'like', '%' . $search . '%');
+            })
+            ->paginate($perPage, ['*'], 'page', $currentPage);
+
+        // Estructura de respuesta paginada
+        return response()->json([
+            'total' => $persons->total(),
+            'data' => $persons->items(),
+            'current_page' => $persons->currentPage(),
+            'last_page' => $persons->lastPage(),
+            'per_page' => $persons->perPage(),
+            'pagination' => $perPage,
+            'first_page_url' => $persons->url(1),
+            'from' => $persons->firstItem(),
+            'next_page_url' => $persons->nextPageUrl(),
+            'path' => $persons->path(),
+            'prev_page_url' => $persons->previousPageUrl(),
+            'to' => $persons->lastItem(),
+            'page' => $currentPage,
+        ], 200);
+    }
+
 
     /**
      * @OA\Post(
