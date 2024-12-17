@@ -512,6 +512,9 @@ class PdfController extends Controller
     public function facturaprevia(Request $request, $id = 0)
     {
         $object = budgetSheet::getBudgetSheet($id);
+        if (!$object->attention->concession_id) {
+            abort(404, 'Concesion no encontrada');
+        }
 //        return response()->json($object);
 
         $pdf = Pdf::loadView('facturaprevia', [
