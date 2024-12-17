@@ -56,7 +56,22 @@ class PersonController extends Controller
                 })
                 ->get();
 
-            return response()->json($persons);
+            // Respuesta sin paginación pero con la misma estructura
+            return response()->json([
+                'total' => $persons->count(),
+                'data' => $persons,
+                'current_page' => 1,
+                'last_page' => 1,
+                'per_page' => $persons->count(),
+                'pagination' => null,
+                'first_page_url' => null,
+                'from' => $persons->isEmpty() ? null : 1,
+                'next_page_url' => null,
+                'path' => $request->url(),
+                'prev_page_url' => null,
+                'to' => $persons->isEmpty() ? null : $persons->count(),
+                'page' => 1,
+            ], 200);
         }
 
         // Obtener el tamaño de la paginación y la página, con valores predeterminados
