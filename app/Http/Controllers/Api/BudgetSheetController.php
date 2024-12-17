@@ -74,7 +74,7 @@ class BudgetSheetController extends Controller
         $status = $request->query('status');
 
         // Consulta base, incluyendo las relaciones hasta `person`
-        $query = BudgetSheet::with(['attention']);
+        $query = BudgetSheet::with(['attention','attention.concession']);
 
         // Aplicamos filtros si se proporcionan
         if ($attentionVehicleId) {
