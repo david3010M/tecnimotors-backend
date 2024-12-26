@@ -15688,6 +15688,333 @@
                 ]
             }
         },
+        "/tecnimotors-backend/public/api/docalmacen": {
+            "get": {
+                "tags": [
+                    "Doc Almacen"
+                ],
+                "summary": "Get all documentos almacen",
+                "description": "Get all documentos almacen",
+                "operationId": "689fa82ecb8c041505f7e4b89c1fa8a7",
+                "parameters": [
+                    {
+                        "name": "from",
+                        "in": "query",
+                        "description": "Filter by from",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "description": "Filter by to",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "comment",
+                        "in": "query",
+                        "description": "Filter by comment",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "concepto_mov_name",
+                        "in": "query",
+                        "description": "Filter by concepto_mov_name",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "user_name",
+                        "in": "query",
+                        "description": "Filter by user_name",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "product_name",
+                        "in": "query",
+                        "description": "Filter by product_name",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DocAlmacen"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Doc Almacen"
+                ],
+                "summary": "Create a new Doc Almacen",
+                "description": "Store a new document in the Doc Almacen system",
+                "operationId": "321301ba7a208fd3a138511d8655d326",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "date_moviment",
+                                    "quantity",
+                                    "user_id",
+                                    "concept_mov_id",
+                                    "product_id"
+                                ],
+                                "properties": {
+                                    "date_moviment": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2024-05-22 14:30:00"
+                                    },
+                                    "quantity": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": "1500.75"
+                                    },
+                                    "comment": {
+                                        "type": "string",
+                                        "example": "Pago de factura para el producto X"
+                                    },
+                                    "user_id": {
+                                        "type": "integer",
+                                        "example": "4"
+                                    },
+                                    "concept_mov_id": {
+                                        "type": "integer",
+                                        "example": "2"
+                                    },
+                                    "product_id": {
+                                        "type": "integer",
+                                        "example": "5"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DocAlmacen"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tecnimotors-backend/public/api/docalmacen/{id}": {
+            "get": {
+                "tags": [
+                    "Doc Almacen"
+                ],
+                "summary": "Get a Doc Almacen by ID",
+                "description": "Retrieve a document from the Doc Almacen system by its ID",
+                "operationId": "5b498760833f62d7cb6505cd96059443",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the document to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DocAlmacen"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Doc Almacen not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Doc Almacen"
+                ],
+                "summary": "Update an existing Doc Almacen",
+                "description": "Update an existing document in the Doc Almacen system",
+                "operationId": "cd57c3a22baff96eeef80f2109057d0a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the document to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "date_moviment",
+                                    "quantity",
+                                    "user_id",
+                                    "concept_mov_id",
+                                    "product_id"
+                                ],
+                                "properties": {
+                                    "date_moviment": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2024-05-22 14:30:00"
+                                    },
+                                    "quantity": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": "1500.75"
+                                    },
+                                    "comment": {
+                                        "type": "string",
+                                        "example": "Pago de factura para el producto X"
+                                    },
+                                    "user_id": {
+                                        "type": "integer",
+                                        "example": "4"
+                                    },
+                                    "concept_mov_id": {
+                                        "type": "integer",
+                                        "example": "2"
+                                    },
+                                    "product_id": {
+                                        "type": "integer",
+                                        "example": "5"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DocAlmacen"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Doc Almacen"
+                ],
+                "summary": "Delete a Doc Almacen",
+                "description": "Delete a document from the Doc Almacen system by its ID",
+                "operationId": "96a0606086da104a6e04b096ae1e1352",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the document to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Document successfully deleted"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Doc Almacen not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/tecnimotors-backend/public/api/reportMovementClient/{id}": {
             "get": {
                 "tags": [
@@ -19875,6 +20202,56 @@
                 },
                 "type": "object"
             },
+            "DocAlmacen": {
+                "title": "Documentos de Almacén",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "date_moviment": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2024-05-22"
+                    },
+                    "quantity": {
+                        "type": "number",
+                        "format": "float",
+                        "example": "1500.75"
+                    },
+                    "comment": {
+                        "type": "string",
+                        "example": "Pago de factura para el producto X"
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": "4"
+                    },
+                    "concept_mov_id": {
+                        "type": "integer",
+                        "example": "2"
+                    },
+                    "product_id": {
+                        "type": "integer",
+                        "example": "5"
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/User"
+                    },
+                    "concept_mov": {
+                        "$ref": "#/components/schemas/ConceptMov"
+                    },
+                    "product": {
+                        "$ref": "#/components/schemas/Product"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-05-22 00:43:09"
+                    }
+                },
+                "type": "object"
+            },
             "Element": {
                 "properties": {
                     "id": {
@@ -21332,191 +21709,5 @@
                 "scheme": "bearer"
             }
         }
-    },
-    "tags": [
-        {
-            "name": "Amortization",
-            "description": "Amortization"
-        },
-        {
-            "name": "Attention",
-            "description": "Attention"
-        },
-        {
-            "name": "Bank",
-            "description": "Bank"
-        },
-        {
-            "name": "Branches",
-            "description": "Branches"
-        },
-        {
-            "name": "Brand",
-            "description": "Brand"
-        },
-        {
-            "name": "BudgetSheet",
-            "description": "BudgetSheet"
-        },
-        {
-            "name": "Cash",
-            "description": "Cash"
-        },
-        {
-            "name": "Category",
-            "description": "Category"
-        },
-        {
-            "name": "Commitment",
-            "description": "Commitment"
-        },
-        {
-            "name": "ConceptMovs",
-            "description": "ConceptMovs"
-        },
-        {
-            "name": "ConceptPay",
-            "description": "ConceptPay"
-        },
-        {
-            "name": "DetailAttention",
-            "description": "DetailAttention"
-        },
-        {
-            "name": "Element",
-            "description": "Element"
-        },
-        {
-            "name": "ElementForAttention",
-            "description": "ElementForAttention"
-        },
-        {
-            "name": "Extension",
-            "description": "Extension"
-        },
-        {
-            "name": "Group Menu",
-            "description": "Group Menu"
-        },
-        {
-            "name": "Moviment",
-            "description": "Moviment"
-        },
-        {
-            "name": "Ocupation",
-            "description": "Ocupation"
-        },
-        {
-            "name": "Option Menu",
-            "description": "Option Menu"
-        },
-        {
-            "name": "Reporte",
-            "description": "Reporte"
-        },
-        {
-            "name": "Person",
-            "description": "Person"
-        },
-        {
-            "name": "Product",
-            "description": "Product"
-        },
-        {
-            "name": "Search",
-            "description": "Search"
-        },
-        {
-            "name": "WhatsApp",
-            "description": "WhatsApp"
-        },
-        {
-            "name": "Service",
-            "description": "Service"
-        },
-        {
-            "name": "Specialty",
-            "description": "Specialty"
-        },
-        {
-            "name": "SpecialtyPerson",
-            "description": "SpecialtyPerson"
-        },
-        {
-            "name": "Supplier",
-            "description": "Supplier"
-        },
-        {
-            "name": "Task",
-            "description": "Task"
-        },
-        {
-            "name": "Type Attention",
-            "description": "Type Attention"
-        },
-        {
-            "name": "TypeUser",
-            "description": "TypeUser"
-        },
-        {
-            "name": "Type Vehicle",
-            "description": "Type Vehicle"
-        },
-        {
-            "name": "Ubigeo",
-            "description": "Ubigeo"
-        },
-        {
-            "name": "Unit",
-            "description": "Unit"
-        },
-        {
-            "name": "User",
-            "description": "User"
-        },
-        {
-            "name": "Vehicle",
-            "description": "Vehicle"
-        },
-        {
-            "name": "VehicleModel",
-            "description": "VehicleModel"
-        },
-        {
-            "name": "Worker",
-            "description": "Worker"
-        },
-        {
-            "name": "Authentication",
-            "description": "Authentication"
-        },
-        {
-            "name": "Concession",
-            "description": "Concession"
-        },
-        {
-            "name": "Reporte Excel",
-            "description": "Reporte Excel"
-        },
-        {
-            "name": "Guide",
-            "description": "Guide"
-        },
-        {
-            "name": "GuideMotive",
-            "description": "GuideMotive"
-        },
-        {
-            "name": "Note",
-            "description": "Note"
-        },
-        {
-            "name": "Note Reason",
-            "description": "Note Reason"
-        },
-        {
-            "name": "Sale",
-            "description": "Sale"
-        }
-    ]
+    }
 }
