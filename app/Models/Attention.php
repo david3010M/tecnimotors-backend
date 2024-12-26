@@ -174,7 +174,14 @@ class Attention extends Model
         }
         $technicians = $attention->details()
             ->where('type', 'Service')
-            ->with(['worker.person'])
+            ->with([
+                'worker' => function ($query) {
+                    $query->withTrashed(); // Incluye eliminados
+                },
+                'worker.person' => function ($query) {
+                    $query->withTrashed(); // Incluye eliminados
+                }
+            ])
             ->get()
             ->pluck('worker.person')->unique('id');
         return $technicians;

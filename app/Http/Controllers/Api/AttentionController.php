@@ -70,23 +70,45 @@ class AttentionController extends Controller
         // Obtén el ID del vehículo y el estado de atención desde la solicitud
         $vehicleId = $request->input('vehicle_id');
         $attentionStatus = $request->input('attention_status');
-
-        // Consulta base para Attention
-        $query = Attention::with(['worker.person', 'vehicle', 'vehicle.person', 'details', 'routeImages', 'elements', 'concession']);
-
+    
+        // Consulta base para Attention con relaciones que incluyen eliminados
+        $query = Attention::with([
+            'worker.person' => function ($query) {
+                $query->withTrashed();
+            },
+            'vehicle' => function ($query) {
+                $query->withTrashed();
+            },
+            'vehicle.person' => function ($query) {
+                $query->withTrashed();
+            },
+            'details' => function ($query) {
+                
+            },
+            'routeImages' => function ($query) {
+               
+            },
+            'elements' => function ($query) {
+                $query->withTrashed();
+            },
+            'concession' => function ($query) {
+               
+            },
+        ]);
+    
         // Filtra por ID de vehículo si se proporciona
         if ($vehicleId) {
             $query->where('vehicle_id', $vehicleId);
         }
-
+    
         // Filtra por estado de atención si se proporciona
         if ($attentionStatus) {
             $query->where('status', $attentionStatus);
         }
-
+    
         // Obtén la paginación con 15 registros por página (esto incluye el total)
         $objects = $query->orderBy('id', 'desc')->paginate(15);
-
+    
         // Transforma cada elemento de la colección paginada
         $objects->getCollection()->transform(function ($attention) {
             $attention->elements = $attention->getElements($attention->id);
@@ -94,7 +116,7 @@ class AttentionController extends Controller
             $attention->task = $attention->getTask($attention->id);
             return $attention;
         });
-
+    
         // Devuelve la colección transformada como respuesta JSON, incluyendo toda la información de la paginación
         return response()->json([
             'total' => $objects->total(),               // Total de registros
@@ -110,6 +132,8 @@ class AttentionController extends Controller
             'to' => $objects->lastItem(),               // Último registro de la página actual
         ]);
     }
+    
+    
 
 
     /**

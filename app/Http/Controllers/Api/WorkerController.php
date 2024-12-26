@@ -57,36 +57,34 @@ class WorkerController extends Controller
      * )
      */
 
-    public function index(Request $request)
-    {
-        $speciality_id = $request->input('speciality_id') ?? '';
-        $occupation = $request->input('occupation') ?? '';
-
-        // Consulta base
-        $query = Worker::query();
-
-        // Filtro por occupation si se proporciona
-        if ($occupation != '') {
-            $query->whereRaw('LOWER(occupation) = ?', [strtolower($occupation)]);
-        }
-
-        // Filtro por specialty si se proporciona y existe
-        // if ($speciality_id != '') {
-        //     $specialty = Specialty::find($speciality_id);
-        //     if (!$specialty) {
-        //         return response()->json(['message' => 'Specialty not found'], 404);
-        //     }
-
-        //     $query->whereHas('specialties', function ($query) use ($speciality_id) {
-        //         $query->where('specialties.id', $speciality_id);
-        //     });
-        // }
-
-        // Ejecución de la consulta con paginación y carga de relaciones
-        $workers = $query->with(['person', 'ocupation'])->where('state', true)->simplePaginate(50);
-
-        return response()->json($workers);
-    }
+     public function index(Request $request)
+     {
+         $speciality_id = $request->input('speciality_id') ?? '';
+         $occupations = $request->input('occupation') ?? '';
+     
+         // Convertir a arreglo si se recibe como cadena
+         if (!is_array($occupations)) {
+             $occupations = [$occupations];
+         }
+     
+         // Consulta base
+         $query = Worker::query();
+     
+         // Filtro por occupation si se proporciona
+         if (!empty($occupations)) {
+             $query->where(function ($q) use ($occupations) {
+                 foreach ($occupations as $occupation) {
+                     $q->orWhereRaw('LOWER(occupation) = ?', [strtolower($occupation)]);
+                 }
+             });
+         }
+     
+         // Ejecución de la consulta con paginación y carga de relaciones
+         $workers = $query->with(['person', 'ocupation'])->where('state', true)->simplePaginate(50);
+     
+         return response()->json($workers);
+     }
+     
 
     /**
      * Show the specified Worker
@@ -604,7 +602,8 @@ class WorkerController extends Controller
         $person = Person::find($worker->person_id);
         if (!$worker) return response()->json(['message' => 'Worker not found'], 404);
         if (!$person) return response()->json(['message' => 'Person not found'], 404);
-        if ($worker->guides()->count() > 0) return response()->json(['message' => 'Worker has guides'], 422);
+        if ($worker->guides()->count() > 0) return response()->json(['message' => 'Trabajador Tiene Guias Asignadas'], 422);
+        if ($worker->attentions()->count() > 0) return response()->json(['message' => 'Trabajador Tiene Atenciones Asignadas'], 422);
         $person->delete();
         $worker->delete();
         return response()->json(['message' => 'Worker deleted successfully']);

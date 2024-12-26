@@ -67,4 +67,8 @@ class Worker extends Model
     {
         return $this->hasMany(Guide::class);
     }
+    public function attentions()
+    {
+        return $this->hasMany(Attention::class);
+    }
 }
