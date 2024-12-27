@@ -40,6 +40,7 @@ use App\Http\Controllers\Api\VehicleModelController;
 use App\Http\Controllers\Api\WorkerController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ConcessionController;
+use App\Http\Controllers\DocAlmacenController;
 use App\Http\Controllers\ExcelReportController;
 use App\Http\Controllers\GuideController;
 use App\Http\Controllers\GuideMotiveController;
@@ -329,4 +330,9 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::resource('guide-motives', GuideMotiveController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'guide-motives.index', 'store' => 'guide-motives.store', 'show' => 'guide-motives.show',
             'update' => 'guide-motives.update', 'destroy' => 'guide-motives.destroy']);
+
+//    DOCUMENT ALMACEN
+    Route::resource('doc-almacen', DocAlmacenController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'doc-almacen.index', 'store' => 'doc-almacen.store', 'show' => 'doc-almacen.show',
+            'update' => 'doc-almacen.update', 'destroy' => 'doc-almacen.destroy']);
 });

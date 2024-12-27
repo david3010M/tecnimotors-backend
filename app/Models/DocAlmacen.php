@@ -23,9 +23,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     @OA\Property(property="created_at", type="string", format="date-time", example="2024-05-22 00:43:09")
  * )
  */
-
-
-
 class DocAlmacen extends Model
 {
     use HasFactory;
@@ -47,14 +44,33 @@ class DocAlmacen extends Model
         'deleted_at',
     ];
 
+    const filters = [
+        'date_moviment' => 'between',
+        'comment' => 'like',
+        'user.username' => 'like',
+        'product.name' => 'like',
+        'concept_mov.name' => 'like',
+    ];
+
+    const sorts = [
+        'id',
+        'date_moviment',
+        'quantity',
+        'comment',
+        'user_id',
+        'concept_mov_id',
+    ];
+
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'user_id')->with(['worker.person', 'typeUser']);
     }
+
     public function product()
     {
-        return $this->belongsTo(Product::class, 'product_id');
+        return $this->belongsTo(Product::class, 'product_id')->with(['category', 'unit', 'brand']);
     }
+
     public function concept_mov()
     {
         return $this->belongsTo(ConceptMov::class, 'concept_mov_id');

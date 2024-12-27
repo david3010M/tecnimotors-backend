@@ -4,15 +4,14 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
      * @return void
      */
 
-     protected $fillable = [
+    protected $fillable = [
         'id',
         'date_moviment',
         'quantity',
@@ -28,13 +27,13 @@ return new class extends Migration
         Schema::create('doc_almacens', function (Blueprint $table) {
             $table->id();
             $table->dateTime('date_moviment')->nullable();
-            $table->integer('quantity')->nullable();
+            $table->integer('quantity')->nullable()->default(1);
             $table->string('comment')->nullable();
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('product_id')->constrained('products');
             $table->foreignId('concept_mov_id')->constrained('concept_movs');
-
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
