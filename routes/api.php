@@ -332,7 +332,7 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
             'update' => 'guide-motives.update', 'destroy' => 'guide-motives.destroy']);
 
 //    DOCUMENT ALMACEN
-    Route::resource('doc-almacen', DocAlmacenController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
-        ->names(['index' => 'doc-almacen.index', 'store' => 'doc-almacen.store', 'show' => 'doc-almacen.show',
-            'update' => 'doc-almacen.update', 'destroy' => 'doc-almacen.destroy']);
+    Route::resource('docalmacen', DocAlmacenController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+        ->names(['index' => 'docalmacen.index', 'store' => 'docalmacen.store', 'show' => 'docalmacen.show',
+            'update' => 'docalmacen.update', 'destroy' => 'docalmacen.destroy']);
 });
