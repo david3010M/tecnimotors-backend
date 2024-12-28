@@ -7,7 +7,7 @@ class UpdateRequestDocAlmacen extends UpdateRequest
     public function rules()
     {
         return [
-            'date_moviment' => 'nullable|date_format:Y-m-d H:i:s', // Validar fecha y hora
+            'date_moviment' => 'nullable', // Validar fecha y hora
             'quantity' => 'nullable|numeric|gt:0', // Asegura que la cantidad sea mayor a 0
             'comment' => 'nullable|string|max:255',
             'user_id' => 'nullable|exists:users,id', // Verifica si el usuario existe
