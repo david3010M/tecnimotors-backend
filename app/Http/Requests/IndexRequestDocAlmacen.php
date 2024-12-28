@@ -13,7 +13,7 @@ class IndexRequestDocAlmacen extends IndexRequest
             'to' => 'nullable|date',
             'comment' => 'nullable|string',
             'user$username' => 'nullable|string',
-            'product$name' => 'nullable|string',
+            // 'product$name' => 'nullable|string',
             'concept_mov$name' => 'nullable|string',
         ];
     }

@@ -15777,7 +15777,7 @@
                     "Doc Almacen"
                 ],
                 "summary": "Create a new Doc Almacen",
-                "description": "Store a new document in the Doc Almacen system",
+                "description": "Store a new document in the Doc Almacen system with multiple products.",
                 "operationId": "321301ba7a208fd3a138511d8655d326",
                 "requestBody": {
                     "required": true,
@@ -15786,10 +15786,9 @@
                             "schema": {
                                 "required": [
                                     "date_moviment",
-                                    "quantity",
                                     "user_id",
                                     "concept_mov_id",
-                                    "product_id"
+                                    "products"
                                 ],
                                 "properties": {
                                     "date_moviment": {
@@ -15797,14 +15796,9 @@
                                         "format": "date-time",
                                         "example": "2024-05-22 14:30:00"
                                     },
-                                    "quantity": {
-                                        "type": "number",
-                                        "format": "float",
-                                        "example": "1500.75"
-                                    },
                                     "comment": {
                                         "type": "string",
-                                        "example": "Pago de factura para el producto X"
+                                        "example": "Pago de factura para varios productos"
                                     },
                                     "user_id": {
                                         "type": "integer",
@@ -15814,9 +15808,34 @@
                                         "type": "integer",
                                         "example": "2"
                                     },
-                                    "product_id": {
-                                        "type": "integer",
-                                        "example": "5"
+                                    "products": {
+                                        "description": "List of products associated with the Doc Almacen",
+                                        "type": "array",
+                                        "items": {
+                                            "required": [
+                                                "product_id",
+                                                "quantity"
+                                            ],
+                                            "properties": {
+                                                "product_id": {
+                                                    "description": "The ID of the product",
+                                                    "type": "integer",
+                                                    "example": "5"
+                                                },
+                                                "quantity": {
+                                                    "description": "Quantity of the product",
+                                                    "type": "number",
+                                                    "format": "integer",
+                                                    "example": "100"
+                                                },
+                                                "commnet": {
+                                                    "description": "Comment of the product involved in the movement",
+                                                    "type": "string",
+                                                    "example": "Comment"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
                                     }
                                 },
                                 "type": "object"
@@ -15897,7 +15916,7 @@
                     "Doc Almacen"
                 ],
                 "summary": "Update an existing Doc Almacen",
-                "description": "Update an existing document in the Doc Almacen system",
+                "description": "Update an existing document in the Doc Almacen system, including stock adjustments based on the movement concept",
                 "operationId": "cd57c3a22baff96eeef80f2109057d0a",
                 "parameters": [
                     {
@@ -15917,37 +15936,56 @@
                             "schema": {
                                 "required": [
                                     "date_moviment",
-                                    "quantity",
                                     "user_id",
                                     "concept_mov_id",
-                                    "product_id"
+                                    "products"
                                 ],
                                 "properties": {
                                     "date_moviment": {
+                                        "description": "Date and time of the movement",
                                         "type": "string",
                                         "format": "date-time",
                                         "example": "2024-05-22 14:30:00"
                                     },
-                                    "quantity": {
-                                        "type": "number",
-                                        "format": "float",
-                                        "example": "1500.75"
-                                    },
-                                    "comment": {
-                                        "type": "string",
-                                        "example": "Pago de factura para el producto X"
-                                    },
                                     "user_id": {
+                                        "description": "ID of the user making the update",
                                         "type": "integer",
                                         "example": "4"
                                     },
                                     "concept_mov_id": {
+                                        "description": "ID of the concept of the movement",
                                         "type": "integer",
                                         "example": "2"
                                     },
-                                    "product_id": {
-                                        "type": "integer",
-                                        "example": "5"
+                                    "products": {
+                                        "description": "List of products and quantities involved in the movement",
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "product_id": {
+                                                    "description": "ID of the product",
+                                                    "type": "integer",
+                                                    "example": "5"
+                                                },
+                                                "quantity": {
+                                                    "description": "Quantity of the product involved in the movement",
+                                                    "type": "number",
+                                                    "format": "integer",
+                                                    "example": "15"
+                                                },
+                                                "commnet": {
+                                                    "description": "Comment of the product involved in the movement",
+                                                    "type": "string",
+                                                    "example": "Comment"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "comment": {
+                                        "description": "Optional comment related to the movement",
+                                        "type": "string",
+                                        "example": "Pago de factura para el producto X"
                                     }
                                 },
                                 "type": "object"
@@ -15957,7 +15995,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Success",
+                        "description": "Document updated successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -19806,6 +19844,10 @@
                         "type": "string",
                         "example": "ConceptMov 1"
                     },
+                    "typemov": {
+                        "type": "string",
+                        "example": "INGRESO"
+                    },
                     "created_at": {
                         "type": "string",
                         "format": "date-time",
@@ -20209,6 +20251,10 @@
                         "type": "integer",
                         "example": "1"
                     },
+                    "sequentialnumber": {
+                        "type": "string",
+                        "example": "MA01-00000001"
+                    },
                     "date_moviment": {
                         "type": "string",
                         "format": "date",
@@ -20223,6 +20269,14 @@
                         "type": "string",
                         "example": "Pago de factura para el producto X"
                     },
+                    "typemov": {
+                        "type": "string",
+                        "example": "Tipo de movimiento"
+                    },
+                    "concept": {
+                        "type": "string",
+                        "example": "Nombre Concepto"
+                    },
                     "user_id": {
                         "type": "integer",
                         "example": "4"
@@ -20231,18 +20285,45 @@
                         "type": "integer",
                         "example": "2"
                     },
-                    "product_id": {
-                        "type": "integer",
-                        "example": "5"
-                    },
                     "user": {
                         "$ref": "#/components/schemas/User"
                     },
                     "concept_mov": {
                         "$ref": "#/components/schemas/ConceptMov"
                     },
-                    "product": {
-                        "$ref": "#/components/schemas/Product"
+                    "details": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/DocAlmacenDetails"
+                        }
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-05-22 00:43:09"
+                    }
+                },
+                "type": "object"
+            },
+            "DocAlmacenDetails": {
+                "title": "Detalles del Documento de Almacén",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "sequentialnumber": {
+                        "type": "string",
+                        "example": "DMA1-00000001"
+                    },
+                    "quantity": {
+                        "type": "number",
+                        "format": "integer",
+                        "example": "15"
+                    },
+                    "comment": {
+                        "type": "string",
+                        "example": "Pago de factura para el producto X"
                     },
                     "created_at": {
                         "type": "string",

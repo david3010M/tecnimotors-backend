@@ -26,11 +26,12 @@ return new class extends Migration {
     {
         Schema::create('doc_almacens', function (Blueprint $table) {
             $table->id();
+            $table->string('sequentialnumber')->nullable();
             $table->dateTime('date_moviment')->nullable();
             $table->integer('quantity')->nullable()->default(1);
             $table->string('comment')->nullable();
             $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('product_id')->constrained('products');
+            // $table->foreignId('product_id')->constrained('products');
             $table->foreignId('concept_mov_id')->constrained('concept_movs');
             $table->timestamps();
             $table->softDeletes();
