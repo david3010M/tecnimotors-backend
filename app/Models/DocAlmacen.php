@@ -54,6 +54,8 @@ class DocAlmacen extends Model
         'user.username' => 'like',
         'product.name' => 'like',
         'concept_mov.name' => 'like',
+        'typemov' => 'like',
+        'concept' => 'like',
     ];
 
     const sorts = [
