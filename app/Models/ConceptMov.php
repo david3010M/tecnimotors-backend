@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     title="ConceptMov",
  *     @OA\Property(property="id", type="integer", example="1"),
  *     @OA\Property(property="name", type="string", example="ConceptMov 1"),
+ *     @OA\Property(property="typemov", type="string", example="INGRESO"),
  *     @OA\Property(property="created_at", type="string", format="date-time", example="2024-05-22 00:43:09")
  * )
  *
@@ -31,6 +32,7 @@ class ConceptMov extends Model
 
     protected $fillable = [
         'name',
+        'typemov',
         'created_at',
     ];
 

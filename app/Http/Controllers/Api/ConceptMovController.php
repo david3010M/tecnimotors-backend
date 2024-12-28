@@ -84,8 +84,13 @@ class ConceptMovController extends Controller
             'name' => [
                 'required',
                 'string',
-                Rule::unique('concept_movs', 'name')->whereNull('deleted_at')
-            ]
+                Rule::unique('concept_movs', 'name')->whereNull('deleted_at'),
+            ],
+            'typemov' => [
+                'nullable',
+                'string',
+                Rule::in(['INGRESO', 'EGRESO']), // Asegura que el tipo sea uno de los valores permitidos
+            ],
         ]);
 
         if ($validator->fails()) {
@@ -94,6 +99,7 @@ class ConceptMovController extends Controller
 
         $data = [
             'name' => $request->input('name'),
+            'typemov' => $request->input('typemov'),
         ];
 
         $conceptMov = ConceptMov::create($data);
@@ -210,8 +216,13 @@ class ConceptMovController extends Controller
             'name' => [
                 'required',
                 'string',
-                Rule::unique('concept_movs', 'name')->ignore($conceptMov->id)->whereNull('deleted_at')
-            ]
+                Rule::unique('concept_movs', 'name')->ignore($conceptMov->id)->whereNull('deleted_at'),
+            ],
+            'typemov' => [
+                'nullable',
+                'string',
+                Rule::in(['INGRESO', 'EGRESO']), // Solo acepta INGRESO o EGRESO
+            ],
         ]);
 
         if ($validator->fails()) {
@@ -220,6 +231,7 @@ class ConceptMovController extends Controller
 
         $data = [
             'name' => $request->input('name'),
+            'typemov' => $request->input('typemov')??$conceptMov->typemov,
         ];
 
         $conceptMov->update($data);

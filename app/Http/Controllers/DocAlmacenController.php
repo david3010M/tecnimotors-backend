@@ -6,6 +6,7 @@ use App\Http\Requests\IndexRequestDocAlmacen;
 use App\Http\Requests\StoreRequestDocAlmacen;
 use App\Http\Requests\UpdateRequestDocAlmacen;
 use App\Http\Resources\DocAlmacenResource;
+use App\Models\ConceptMov;
 use App\Models\DocAlmacen;
 use App\Models\Product;
 
@@ -71,8 +72,23 @@ class DocAlmacenController extends Controller
     {
         $docAlmacen = DocAlmacen::create($request->validated());
         $docAlmacen = DocAlmacen::find($docAlmacen->id);
+        $concepto = ConceptMov::find($docAlmacen->concept_mov_id);
+
+        $docAlmacen->typemov=$concepto->typemov;
+        $docAlmacen->concept=$concepto->concept;
+        $docAlmacen->save();
+
         $product = Product::find($docAlmacen->product_id);
-        $product->stock += $docAlmacen->quantity;
+        
+        if ($concepto->typemov === 'INGRESO') {
+            // Si es un ingreso, sumamos al stock
+            $product->stock += $docAlmacen->quantity;
+        } elseif ($concepto->typemov === 'EGRESO') {
+            // Si es un egreso, restamos del stock
+            $product->stock -= $docAlmacen->quantity;
+        }
+        $product->save();
+        
         return response()->json(DocAlmacenResource::make($docAlmacen));
     }
 
@@ -140,15 +156,43 @@ class DocAlmacenController extends Controller
     public function update(UpdateRequestDocAlmacen $request, $id)
     {
         $docAlmacen = DocAlmacen::find($id);
-        if (!$docAlmacen) return response()->json(['message' => 'Documento de almacén no encontrado'], 404);
+        if (!$docAlmacen) {
+            return response()->json(['message' => 'Documento de almacén no encontrado'], 404);
+        }
+    
         $product = Product::find($docAlmacen->product_id);
-        if (!$product) return response()->json(['message' => 'Producto asociado no encontrado'], 404);
-        $originalQuantity = $docAlmacen->quantity;
+        if (!$product) {
+            return response()->json(['message' => 'Producto asociado no encontrado'], 404);
+        }
+    
+        $conceptOriginal = ConceptMov::find($docAlmacen->concept_mov_id);
+        if (!$conceptOriginal) {
+            return response()->json(['message' => 'Concepto de movimiento original no encontrado'], 404);
+        }
+
+        $docAlmacen->typemov=$conceptOriginal->typemov;
+        $docAlmacen->concept=$conceptOriginal->concept;
+        $docAlmacen->save();
+    
+        // Revertir stock según el movimiento original
+        $product->stock += ($conceptOriginal->typemov === 'INGRESO' ? -$docAlmacen->quantity : $docAlmacen->quantity);
+    
+        // Actualizar el documento
         $docAlmacen->update($request->validated());
-        $product->stock += $docAlmacen->quantity - $originalQuantity;
+    
+        $conceptUpdated = ConceptMov::find($docAlmacen->concept_mov_id);
+        if (!$conceptUpdated) {
+            return response()->json(['message' => 'Concepto de movimiento actualizado no encontrado'], 404);
+        }
+    
+        // Aplicar stock según el movimiento actualizado
+        $product->stock += ($conceptUpdated->typemov === 'INGRESO' ? $docAlmacen->quantity : -$docAlmacen->quantity);
+    
         $product->save();
+    
         return response()->json(DocAlmacenResource::make($docAlmacen));
     }
+    
 
 
     /**
