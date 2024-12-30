@@ -8,7 +8,7 @@ class StoreRequestDocAlmacen extends StoreRequest
     {
         return [
             'date_moviment' => 'required', // Validar fecha y hora
-            'quantity' => 'required|numeric|gt:0', // Asegura que la cantidad sea mayor a 0
+            'quantity' => 'nullable|numeric|gt:0', // Asegura que la cantidad sea mayor a 0
             'comment' => 'nullable|string|max:255',
             'user_id' => 'required|exists:users,id', // Verifica si el usuario existe
             'concept_mov_id' => 'required|exists:concept_movs,id', // Verifica si el concepto de movimiento existe
