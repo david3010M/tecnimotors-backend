@@ -30,8 +30,10 @@ return new class extends Migration {
             $table->dateTime('date_moviment')->nullable();
             $table->integer('quantity')->nullable()->default(1);
             $table->string('comment')->nullable();
+            $table->string('typemov')->default('INGRESO');
+            $table->string('concept')->nullable();
             $table->foreignId('user_id')->constrained('users');
-            // $table->foreignId('product_id')->constrained('products');
+            $table->foreignId('person_id')->constrained('people');
             $table->foreignId('concept_mov_id')->constrained('concept_movs');
             $table->timestamps();
             $table->softDeletes();

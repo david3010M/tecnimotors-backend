@@ -55,4 +55,9 @@ class Docalmacen_details extends Model
     {
         return $this->belongsTo(DocAlmacen::class, 'doc_almacen_id')->with(['user', 'concept_mov']);
     }
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
 }

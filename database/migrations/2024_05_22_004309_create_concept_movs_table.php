@@ -14,6 +14,7 @@ return new class extends Migration {
     {
         Schema::create('concept_movs', function (Blueprint $table) {
             $table->id();
+            $table->string('typemov')->default('INGRESO');
             $table->string('name');
             $table->timestamps();
             $table->softDeletes();

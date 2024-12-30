@@ -22,8 +22,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
  *     @OA\Property(property="user", ref="#/components/schemas/User"),
  *     @OA\Property(property="concept_mov", ref="#/components/schemas/ConceptMov"),
- *     @OA\Property(property="details", type="array", 
- *         @OA\Items(ref="#/components/schemas/DocAlmacenDetails") 
+ *     @OA\Property(property="details", type="array",
+ *         @OA\Items(ref="#/components/schemas/DocAlmacenDetails")
  *     ),
  *     @OA\Property(property="created_at", type="string", format="date-time", example="2024-05-22 00:43:09")
  * )
@@ -42,6 +42,7 @@ class DocAlmacen extends Model
         'typemov',
         'concept',
         'user_id',
+        'person_id',
         'concept_mov_id',
         // 'product_id',
         'created_at',
@@ -79,17 +80,17 @@ class DocAlmacen extends Model
         return $this->belongsTo(User::class, 'user_id')->with(['worker.person', 'typeUser']);
     }
 
-    // public function product()
-    // {
-    //     return $this->belongsTo(Product::class, 'product_id')->with(['category', 'unit', 'brand']);
-    // }
-
     public function concept_mov()
     {
         return $this->belongsTo(ConceptMov::class, 'concept_mov_id');
     }
     public function details()
     {
-        return $this->hasMany(Docalmacen_details::class);
+        return $this->hasMany(Docalmacen_details::class,'doc_almacen_id');
+    }
+
+    public function person()
+    {
+        return $this->belongsTo(Person::class, 'person_id');
     }
 }

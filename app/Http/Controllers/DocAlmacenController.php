@@ -52,28 +52,7 @@ class DocAlmacenController extends Controller
      *     description="Store a new document in the Doc Almacen system with multiple products.",
      *     security={{"bearerAuth": {}}},
      *
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"date_moviment", "user_id", "concept_mov_id", "products"},
-     *             @OA\Property(property="date_moviment", type="string", format="date-time", example="2024-05-22 14:30:00"),
-     *             @OA\Property(property="comment", type="string", example="Pago de factura para varios productos"),
-     *             @OA\Property(property="user_id", type="integer", example="4"),
-     *             @OA\Property(property="concept_mov_id", type="integer", example="2"),
-     *             @OA\Property(
-     *                 property="products",
-     *                 type="array",
-     *                 description="List of products associated with the Doc Almacen",
-     *                 @OA\Items(
-     *                     type="object",
-     *                     required={"product_id", "quantity"},
-     *                     @OA\Property(property="product_id", type="integer", example="5", description="The ID of the product"),
-     *                     @OA\Property(property="quantity", type="number", format="integer", example="100", description="Quantity of the product"),
-     *         @OA\Property(property="commnet", type="string", example="Comment", description="Comment of the product involved in the movement")
-     *                 )
-     *             )
-     *         )
-     *     ),
+     *     @OA\RequestBody( required=true, @OA\JsonContent(ref="#/components/schemas/StoreRequestDocAlmacen")),
      *     @OA\Response(response="200", description="Success", @OA\JsonContent(ref="#/components/schemas/DocAlmacen")),
      *     @OA\Response(response="401", description="Unauthenticated"),
      *     @OA\Response(response="422", description="Unprocessable Entity")
@@ -113,7 +92,7 @@ class DocAlmacenController extends Controller
                 // Si el producto ya está en los detalles, sumar la cantidad
                 $existingDetail = Docalmacen_details::find($existingDetail->id);
                 $existingDetail->quantity += $productData['quantity'];
-                $existingDetail->comment = $existingDetail->comment . ' ' . $productData['comment'];
+                $existingDetail->comment = $existingDetail->comment . ' ' . ($productData['comment'] ?? '');
 
                 $existingDetail->save();
 
@@ -125,12 +104,12 @@ class DocAlmacenController extends Controller
                 $lastDetailCorrelativo = Docalmacen_details::max('id') ? Docalmacen_details::orderBy('id', 'desc')->value('sequentialnumber') : 'DMA1-00000000';
                 $nextDetailCorrelativo = 'DMA1-' . str_pad((int)substr($lastDetailCorrelativo, -8) + 1, 8, '0', STR_PAD_LEFT);
 
-                
+
                 Docalmacen_details::create([
                     'doc_almacen_id' => $docAlmacen->id,
                     'product_id' => $productData['product_id'],
                     'quantity' => $productData['quantity'],
-                    'comment' => $productData['comment'],
+                    'comment' => $productData['comment'] ?? '',
                     'sequentialnumber' => $nextDetailCorrelativo, // Añadir el correlativo con la serie DMA1
                 ]);
 
@@ -192,22 +171,7 @@ class DocAlmacenController extends Controller
      *         @OA\Schema(type="integer")
      *     ),
      *
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"date_moviment", "user_id", "concept_mov_id", "products"},
-     *             @OA\Property(property="date_moviment", type="string", format="date-time", example="2024-05-22 14:30:00", description="Date and time of the movement"),
-     *             @OA\Property(property="user_id", type="integer", example="4", description="ID of the user making the update"),
-     *             @OA\Property(property="concept_mov_id", type="integer", example="2", description="ID of the concept of the movement"),
-     *             @OA\Property(property="products", type="array", @OA\Items(
-     *                 @OA\Property(property="product_id", type="integer", example="5", description="ID of the product"),
-     *                 @OA\Property(property="quantity", type="number", format="integer", example="15", description="Quantity of the product involved in the movement"),
-     *   @OA\Property(property="commnet", type="string", example="Comment", description="Comment of the product involved in the movement")
-     *             ), description="List of products and quantities involved in the movement"),
-     *             @OA\Property(property="comment", type="string", example="Pago de factura para el producto X", description="Optional comment related to the movement")
-     *         )
-     *     ),
-     *
+     *     @OA\RequestBody(required=true, @OA\JsonContent(ref="#/components/schemas/UpdateRequestDocAlmacen")),
      *     @OA\Response(
      *         response="200",
      *         description="Document updated successfully",
@@ -268,7 +232,7 @@ class DocAlmacenController extends Controller
                 $existingDetail = Docalmacen_details::find($existingDetail->id);
                 $quantityDifference = $productData['quantity'];
                 $existingDetail->quantity += $productData['quantity'];
-                $existingDetail->comment = $existingDetail->comment . ' ' . $productData['comment'];
+                $existingDetail->comment = $existingDetail->comment . ' ' . ($productData['comment'] ?? '');
                 $existingDetail->save();
 
                 // Actualizar el stock basado en el tipo de movimiento
@@ -283,7 +247,7 @@ class DocAlmacenController extends Controller
                     'doc_almacen_id' => $docAlmacen->id,
                     'product_id' => $productData['product_id'],
                     'quantity' => $productData['quantity'],
-                    'comment' => $productData['comment'],
+                    'comment' => $productData['comment'] ?? '',
                     'sequentialnumber' => $nextDetailCorrelativo,
                 ]);
 
