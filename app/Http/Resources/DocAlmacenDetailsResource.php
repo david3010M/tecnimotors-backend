@@ -20,7 +20,7 @@ class DocAlmacenDetailsResource extends JsonResource
             'quantity' => $this->quantity,
             'comment' => $this->comment,
             'product_id' => $this->product_id,
-            'docalmacen_id' => $this->docalmacen_id,
+            'doc_almacen_id' => $this->doc_almacen_id,
             'created_at' => $this->created_at,
             'product' => $this->product,
         ];

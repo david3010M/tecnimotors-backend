@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('comment')->nullable();
 
             $table->foreignId('product_id')->constrained('products');
-            $table->foreignId('docalmacen_id')->constrained('doc_almacens');
+            $table->foreignId('doc_almacen_id')->constrained('doc_almacens');
             $table->timestamps();
             $table->softDeletes();
         });
