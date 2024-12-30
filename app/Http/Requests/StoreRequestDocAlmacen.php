@@ -16,7 +16,7 @@ class StoreRequestDocAlmacen extends StoreRequest
             'products' => 'required|array|min:1', // Valida que sea un array con al menos un elemento
             'products.*.product_id' => 'required|exists:products,id', // id del producto
             'products.*.quantity' => 'required|integer|min:1', // cantidad del producto
-            'products.*.comment' => 'required|string|max:255', // comentario del producto
+            'products.*.comment' => 'nullable|string|max:255', // comentario del producto
         ];
     }
 }

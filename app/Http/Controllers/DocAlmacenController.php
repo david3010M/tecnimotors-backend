@@ -125,12 +125,12 @@ class DocAlmacenController extends Controller
                 $lastDetailCorrelativo = Docalmacen_details::max('id') ? Docalmacen_details::orderBy('id', 'desc')->value('sequentialnumber') : 'DMA1-00000000';
                 $nextDetailCorrelativo = 'DMA1-' . str_pad((int)substr($lastDetailCorrelativo, -8) + 1, 8, '0', STR_PAD_LEFT);
 
-                
+
                 Docalmacen_details::create([
                     'doc_almacen_id' => $docAlmacen->id,
                     'product_id' => $productData['product_id'],
                     'quantity' => $productData['quantity'],
-                    'comment' => $productData['comment'],
+                    'comment' => $productData['comment'] ?? '',
                     'sequentialnumber' => $nextDetailCorrelativo, // Añadir el correlativo con la serie DMA1
                 ]);
 
@@ -283,7 +283,7 @@ class DocAlmacenController extends Controller
                     'doc_almacen_id' => $docAlmacen->id,
                     'product_id' => $productData['product_id'],
                     'quantity' => $productData['quantity'],
-                    'comment' => $productData['comment'],
+                    'comment' => $productData['comment'] ?? '',
                     'sequentialnumber' => $nextDetailCorrelativo,
                 ]);
 

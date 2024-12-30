@@ -31,6 +31,8 @@ return new class extends Migration {
             $table->integer('quantity')->nullable()->default(1);
             $table->string('comment')->nullable();
             $table->foreignId('user_id')->constrained('users');
+            $table->string('typemov')->default('INGRESO');
+            $table->string('concept')->nullable();
             // $table->foreignId('product_id')->constrained('products');
             $table->foreignId('concept_mov_id')->constrained('concept_movs');
             $table->timestamps();

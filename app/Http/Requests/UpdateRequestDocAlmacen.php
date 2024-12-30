@@ -17,7 +17,7 @@ class UpdateRequestDocAlmacen extends UpdateRequest
             'products' => 'required|array|min:1', // Debe ser un array con al menos un elemento
             'products.*.product_id' => 'required|exists:products,id', // Cada elemento debe tener un product_id válido
             'products.*.quantity' => 'required|numeric|gt:0', // Cada producto debe tener una cantidad válida
-            'products.*.comment' => 'required|string|max:255', // comentario del producto
+            'products.*.comment' => 'nullable|string|max:255', // comentario del producto
         ];
     }
 }
