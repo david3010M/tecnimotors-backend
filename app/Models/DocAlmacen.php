@@ -42,6 +42,7 @@ class DocAlmacen extends Model
         'typemov',
         'concept',
         'user_id',
+        'person_id',
         'concept_mov_id',
         // 'product_id',
         'created_at',
@@ -79,11 +80,6 @@ class DocAlmacen extends Model
         return $this->belongsTo(User::class, 'user_id')->with(['worker.person', 'typeUser']);
     }
 
-    // public function product()
-    // {
-    //     return $this->belongsTo(Product::class, 'product_id')->with(['category', 'unit', 'brand']);
-    // }
-
     public function concept_mov()
     {
         return $this->belongsTo(ConceptMov::class, 'concept_mov_id');
@@ -91,5 +87,10 @@ class DocAlmacen extends Model
     public function details()
     {
         return $this->hasMany(Docalmacen_details::class,'doc_almacen_id');
+    }
+
+    public function person()
+    {
+        return $this->belongsTo(Person::class, 'person_id');
     }
 }

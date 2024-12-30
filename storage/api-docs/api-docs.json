@@ -15784,61 +15784,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": [
-                                    "date_moviment",
-                                    "user_id",
-                                    "concept_mov_id",
-                                    "products"
-                                ],
-                                "properties": {
-                                    "date_moviment": {
-                                        "type": "string",
-                                        "format": "date-time",
-                                        "example": "2024-05-22 14:30:00"
-                                    },
-                                    "comment": {
-                                        "type": "string",
-                                        "example": "Pago de factura para varios productos"
-                                    },
-                                    "user_id": {
-                                        "type": "integer",
-                                        "example": "4"
-                                    },
-                                    "concept_mov_id": {
-                                        "type": "integer",
-                                        "example": "2"
-                                    },
-                                    "products": {
-                                        "description": "List of products associated with the Doc Almacen",
-                                        "type": "array",
-                                        "items": {
-                                            "required": [
-                                                "product_id",
-                                                "quantity"
-                                            ],
-                                            "properties": {
-                                                "product_id": {
-                                                    "description": "The ID of the product",
-                                                    "type": "integer",
-                                                    "example": "5"
-                                                },
-                                                "quantity": {
-                                                    "description": "Quantity of the product",
-                                                    "type": "number",
-                                                    "format": "integer",
-                                                    "example": "100"
-                                                },
-                                                "commnet": {
-                                                    "description": "Comment of the product involved in the movement",
-                                                    "type": "string",
-                                                    "example": "Comment"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    }
-                                },
-                                "type": "object"
+                                "$ref": "#/components/schemas/StoreRequestDocAlmacen"
                             }
                         }
                     }
@@ -15934,61 +15880,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": [
-                                    "date_moviment",
-                                    "user_id",
-                                    "concept_mov_id",
-                                    "products"
-                                ],
-                                "properties": {
-                                    "date_moviment": {
-                                        "description": "Date and time of the movement",
-                                        "type": "string",
-                                        "format": "date-time",
-                                        "example": "2024-05-22 14:30:00"
-                                    },
-                                    "user_id": {
-                                        "description": "ID of the user making the update",
-                                        "type": "integer",
-                                        "example": "4"
-                                    },
-                                    "concept_mov_id": {
-                                        "description": "ID of the concept of the movement",
-                                        "type": "integer",
-                                        "example": "2"
-                                    },
-                                    "products": {
-                                        "description": "List of products and quantities involved in the movement",
-                                        "type": "array",
-                                        "items": {
-                                            "properties": {
-                                                "product_id": {
-                                                    "description": "ID of the product",
-                                                    "type": "integer",
-                                                    "example": "5"
-                                                },
-                                                "quantity": {
-                                                    "description": "Quantity of the product involved in the movement",
-                                                    "type": "number",
-                                                    "format": "integer",
-                                                    "example": "15"
-                                                },
-                                                "commnet": {
-                                                    "description": "Comment of the product involved in the movement",
-                                                    "type": "string",
-                                                    "example": "Comment"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "comment": {
-                                        "description": "Optional comment related to the movement",
-                                        "type": "string",
-                                        "example": "Pago de factura para el producto X"
-                                    }
-                                },
-                                "type": "object"
+                                "$ref": "#/components/schemas/UpdateRequestDocAlmacen"
                             }
                         }
                     }
@@ -18262,6 +18154,66 @@
                 },
                 "type": "object"
             },
+            "StoreRequestDocAlmacen": {
+                "title": "StoreRequestDocAlmacen",
+                "description": "Store Request Doc Almacen",
+                "required": [
+                    "date_moviment",
+                    "quantity",
+                    "person_id",
+                    "user_id",
+                    "concept_mov_id",
+                    "products"
+                ],
+                "properties": {
+                    "date_moviment": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2021-09-30 12:00:00"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "comment": {
+                        "type": "string",
+                        "example": "Comentario"
+                    },
+                    "person_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "concept_mov_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "products": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "product_id": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "quantity": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "comment": {
+                                    "type": "string",
+                                    "example": "Comentario"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
             "StoreSaleRequest": {
                 "title": "StoreSaleRequest",
                 "required": [
@@ -18595,6 +18547,58 @@
                     "sale_id": {
                         "type": "integer",
                         "example": "1"
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateRequestDocAlmacen": {
+                "title": "UpdateRequestDocAlmacen",
+                "description": "Update Request Doc Almacen",
+                "properties": {
+                    "date_moviment": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2021-09-30 12:00:00"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "comment": {
+                        "type": "string",
+                        "example": "Comentario"
+                    },
+                    "person_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "concept_mov_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "products": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "product_id": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "quantity": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "comment": {
+                                    "type": "string",
+                                    "example": "Comentario"
+                                }
+                            },
+                            "type": "object"
+                        }
                     }
                 },
                 "type": "object"
@@ -21790,5 +21794,195 @@
                 "scheme": "bearer"
             }
         }
-    }
+    },
+    "tags": [
+        {
+            "name": "Amortization",
+            "description": "Amortization"
+        },
+        {
+            "name": "Attention",
+            "description": "Attention"
+        },
+        {
+            "name": "Bank",
+            "description": "Bank"
+        },
+        {
+            "name": "Branches",
+            "description": "Branches"
+        },
+        {
+            "name": "Brand",
+            "description": "Brand"
+        },
+        {
+            "name": "BudgetSheet",
+            "description": "BudgetSheet"
+        },
+        {
+            "name": "Cash",
+            "description": "Cash"
+        },
+        {
+            "name": "Category",
+            "description": "Category"
+        },
+        {
+            "name": "Commitment",
+            "description": "Commitment"
+        },
+        {
+            "name": "ConceptMovs",
+            "description": "ConceptMovs"
+        },
+        {
+            "name": "ConceptPay",
+            "description": "ConceptPay"
+        },
+        {
+            "name": "DetailAttention",
+            "description": "DetailAttention"
+        },
+        {
+            "name": "Element",
+            "description": "Element"
+        },
+        {
+            "name": "ElementForAttention",
+            "description": "ElementForAttention"
+        },
+        {
+            "name": "Extension",
+            "description": "Extension"
+        },
+        {
+            "name": "Group Menu",
+            "description": "Group Menu"
+        },
+        {
+            "name": "Moviment",
+            "description": "Moviment"
+        },
+        {
+            "name": "Ocupation",
+            "description": "Ocupation"
+        },
+        {
+            "name": "Option Menu",
+            "description": "Option Menu"
+        },
+        {
+            "name": "Reporte",
+            "description": "Reporte"
+        },
+        {
+            "name": "Person",
+            "description": "Person"
+        },
+        {
+            "name": "Product",
+            "description": "Product"
+        },
+        {
+            "name": "Search",
+            "description": "Search"
+        },
+        {
+            "name": "WhatsApp",
+            "description": "WhatsApp"
+        },
+        {
+            "name": "Service",
+            "description": "Service"
+        },
+        {
+            "name": "Specialty",
+            "description": "Specialty"
+        },
+        {
+            "name": "SpecialtyPerson",
+            "description": "SpecialtyPerson"
+        },
+        {
+            "name": "Supplier",
+            "description": "Supplier"
+        },
+        {
+            "name": "Task",
+            "description": "Task"
+        },
+        {
+            "name": "Type Attention",
+            "description": "Type Attention"
+        },
+        {
+            "name": "TypeUser",
+            "description": "TypeUser"
+        },
+        {
+            "name": "Type Vehicle",
+            "description": "Type Vehicle"
+        },
+        {
+            "name": "Ubigeo",
+            "description": "Ubigeo"
+        },
+        {
+            "name": "Unit",
+            "description": "Unit"
+        },
+        {
+            "name": "User",
+            "description": "User"
+        },
+        {
+            "name": "Vehicle",
+            "description": "Vehicle"
+        },
+        {
+            "name": "VehicleModel",
+            "description": "VehicleModel"
+        },
+        {
+            "name": "Worker",
+            "description": "Worker"
+        },
+        {
+            "name": "Authentication",
+            "description": "Authentication"
+        },
+        {
+            "name": "Concession",
+            "description": "Concession"
+        },
+        {
+            "name": "Doc Almacen",
+            "description": "Doc Almacen"
+        },
+        {
+            "name": "Reporte Excel",
+            "description": "Reporte Excel"
+        },
+        {
+            "name": "Guide",
+            "description": "Guide"
+        },
+        {
+            "name": "GuideMotive",
+            "description": "GuideMotive"
+        },
+        {
+            "name": "Note",
+            "description": "Note"
+        },
+        {
+            "name": "Note Reason",
+            "description": "Note Reason"
+        },
+        {
+            "name": "Sale",
+            "description": "Sale"
+        }
+    ]
 }
