@@ -26,6 +26,7 @@ class Docalmacen_details extends Model
         'id',
         'sequentialnumber',
         'quantity',
+        'doc_almacen_id',
         'product_id',
         'comment',
         'created_at',
@@ -52,6 +53,6 @@ class Docalmacen_details extends Model
 
     public function docalmacen()
     {
-        return $this->belongsTo(DocAlmacen::class, 'docalmacen_id')->with(['user', 'concept_mov']);
+        return $this->belongsTo(DocAlmacen::class, 'doc_almacen_id')->with(['user', 'concept_mov']);
     }
 }
