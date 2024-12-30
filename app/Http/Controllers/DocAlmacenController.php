@@ -113,7 +113,7 @@ class DocAlmacenController extends Controller
                 // Si el producto ya está en los detalles, sumar la cantidad
                 $existingDetail = Docalmacen_details::find($existingDetail->id);
                 $existingDetail->quantity += $productData['quantity'];
-                $existingDetail->comment = $existingDetail->comment . ' ' . $productData['comment'];
+                $existingDetail->comment = $existingDetail->comment . ' ' . ($productData['comment'] ?? '');
 
                 $existingDetail->save();
 
@@ -268,7 +268,7 @@ class DocAlmacenController extends Controller
                 $existingDetail = Docalmacen_details::find($existingDetail->id);
                 $quantityDifference = $productData['quantity'];
                 $existingDetail->quantity += $productData['quantity'];
-                $existingDetail->comment = $existingDetail->comment . ' ' . $productData['comment'];
+                $existingDetail->comment = $existingDetail->comment . ' ' . ($productData['comment'] ?? '');
                 $existingDetail->save();
 
                 // Actualizar el stock basado en el tipo de movimiento

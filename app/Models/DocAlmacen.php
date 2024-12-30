@@ -22,8 +22,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
  *     @OA\Property(property="user", ref="#/components/schemas/User"),
  *     @OA\Property(property="concept_mov", ref="#/components/schemas/ConceptMov"),
- *     @OA\Property(property="details", type="array", 
- *         @OA\Items(ref="#/components/schemas/DocAlmacenDetails") 
+ *     @OA\Property(property="details", type="array",
+ *         @OA\Items(ref="#/components/schemas/DocAlmacenDetails")
  *     ),
  *     @OA\Property(property="created_at", type="string", format="date-time", example="2024-05-22 00:43:09")
  * )
@@ -90,6 +90,6 @@ class DocAlmacen extends Model
     }
     public function details()
     {
-        return $this->hasMany(Docalmacen_details::class);
+        return $this->hasMany(Docalmacen_details::class,'doc_almacen_id');
     }
 }
