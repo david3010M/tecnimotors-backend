@@ -19,7 +19,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *     @OA\Property(property="concept", type="string", example="Nombre Concepto"),
  *     @OA\Property(property="user_id", type="integer", example="4"),
  *     @OA\Property(property="concept_mov_id", type="integer", example="2"),
-
  *     @OA\Property(property="user", ref="#/components/schemas/User"),
  *     @OA\Property(property="concept_mov", ref="#/components/schemas/ConceptMov"),
  *     @OA\Property(property="details", type="array",
@@ -84,9 +83,10 @@ class DocAlmacen extends Model
     {
         return $this->belongsTo(ConceptMov::class, 'concept_mov_id');
     }
+
     public function details()
     {
-        return $this->hasMany(Docalmacen_details::class,'doc_almacen_id');
+        return $this->hasMany(Docalmacen_details::class, 'doc_almacen_id')->with('product');
     }
 
     public function person()
