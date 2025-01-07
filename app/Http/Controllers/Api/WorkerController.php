@@ -71,13 +71,14 @@ class WorkerController extends Controller
          $query = Worker::query();
      
          // Filtro por occupation si se proporciona
-         if (!empty($occupations)) {
-             $query->where(function ($q) use ($occupations) {
-                 foreach ($occupations as $occupation) {
-                     $q->orWhereRaw('LOWER(occupation) = ?', [strtolower($occupation)]);
-                 }
-             });
-         }
+         if (!empty($occupations[0])) {
+          
+            $query->where(function ($q) use ($occupations) {
+                foreach ($occupations as $occupation) {
+                    $q->orWhereRaw('LOWER(occupation) = ?', [strtolower($occupation)]);
+                }
+            });
+        }
      
          // Ejecución de la consulta con paginación y carga de relaciones
          $workers = $query->with(['person', 'ocupation'])->where('state', true)->simplePaginate(50);
