@@ -11,6 +11,7 @@ class DocAlmacenResource extends JsonResource
         return [
             'id' => $this->id,
             'date_moviment' => $this->date_moviment,
+            'sequentialnumber' => 'DOCA-' . $this->sequentialnumber,
             'quantity' => $this->quantity,
             'comment' => $this->comment,
             'typemov' => $this->typemov,

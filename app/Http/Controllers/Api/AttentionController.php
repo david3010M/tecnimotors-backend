@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attention;
+use App\Models\budgetSheet;
 use App\Models\ConceptMov;
 use App\Models\DetailAttention;
 use App\Models\DocAlmacen;
@@ -399,6 +400,8 @@ class AttentionController extends Controller
 
         $object = Attention::create($data);
 
+        $totalQuantityProducts = 0;
+
         if ($object) {
             //ASIGNAR ELEMENTS
             $elements = $request->input('elements') ?? [];
@@ -438,6 +441,7 @@ class AttentionController extends Controller
                     ];
                     $detailProd = DetailAttention::create($objectData);
                     $sumProducts += $detailProd->saleprice * $quantity;
+                    $totalQuantityProducts += $quantity;
                 }
 
                 $object->totalProducts = $sumProducts;
@@ -513,7 +517,7 @@ class AttentionController extends Controller
             $docAlmacen = DocAlmacen::create([
                 'sequentialnumber' => $this->nextCorrelative(DocAlmacen::class, 'sequentialnumber'),
                 'date_moviment' => $object->deliveryDate,
-                'quantity' => $quantity,
+                'quantity' => $totalQuantityProducts,
                 'comment' => 'Salida de Producto por Atención',
                 'typemov' => DocAlmacen::TIPOMOV_EGRESO,
                 'concept' => $conceptMov->name,
@@ -663,7 +667,25 @@ class AttentionController extends Controller
             'elements.*' => 'exists:elements,id',
             'details' => 'nullable',
             'detailsProducts' => 'nullable',
+            'detailsProducts.*.idProduct' => 'required|exists:products,id',
         ]);
+
+        $validator->after(function ($validator) use ($request) {
+            foreach ($request->input('detailsProducts', []) as $index => $detail) {
+                $productId = $detail['idProduct'] ?? null;
+                $quantity = $detail['quantity'] ?? 0;
+
+                if ($productId) {
+                    $product = Product::find($productId);
+                    if ($product && $product->stock < $quantity) {
+                        $validator->errors()->add(
+                            "detailsProducts.{$index}.quantity",
+                            "The requested quantity for product {$product->name} exceeds the available stock ({$product->stock})."
+                        );
+                    }
+                }
+            }
+        });
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
@@ -685,6 +707,7 @@ class AttentionController extends Controller
 
             'worker_id' => $request->input('worker_id') ?? null,
         ];
+        $totalQuantityProducts = 0;
 
         $object->update($data);
 
@@ -699,6 +722,11 @@ class AttentionController extends Controller
         // Verificar si $detailsProducts tiene registros
         if ($detailsProducts != []) {
             $object->setDetailProducts($object->id, $detailsProducts);
+
+            foreach ($detailsProducts as $productDetail) {
+                $quantity = $productDetail['quantity'] ?? 1;
+                $totalQuantityProducts += $quantity;
+            }
         }
 
 
@@ -715,6 +743,48 @@ class AttentionController extends Controller
         $object->details = $object->getDetails($object->id);
         $object->task = $object->getTask($object->id);
 
+        if ($detailsProducts != []) {
+
+            $conceptMov = ConceptMov::find(3);
+            $docAlmacen = DocAlmacen::create([
+                'sequentialnumber' => $this->nextCorrelative(DocAlmacen::class, 'sequentialnumber'),
+                'date_moviment' => $object->deliveryDate,
+                'quantity' => $totalQuantityProducts,
+                'comment' => 'Salida de Producto por Atención',
+                'typemov' => DocAlmacen::TIPOMOV_EGRESO,
+                'concept' => $conceptMov->name,
+                'user_id' => auth()->user()->id,
+                'person_id' => $object->vehicle->person->id,
+                'concept_mov_id' => $conceptMov->id,
+                'attention_id' => $object->id,
+            ]);
+
+            foreach ($detailsProducts as $productDetail) {
+                $idProduct = $productDetail['idProduct'];
+                $quantity = $productDetail['quantity'] ?? 1;
+                $product = Product::find($idProduct);
+                Docalmacen_details::create([
+                    'sequentialnumber' => $this->nextCorrelative(Docalmacen_details::class, 'sequentialnumber'),
+                    'quantity' => $quantity,
+                    'comment' => 'Detalle de Salida de Producto por Atención',
+                    'product_id' => $product->id,
+                    'doc_almacen_id' => $docAlmacen->id,
+                ]);
+                $product->stock -= $quantity;
+                $product->save();
+            }
+        }
+
+        $budgetSheet = budgetSheet::where('attention_id', $object->id);
+        if ($budgetSheet->exists()) {
+            $budgetSheet->totalService = $object->totalService;
+            $budgetSheet->totalProducts = $object->totalProducts;
+            $budgetSheet->subtotal = floatval($object->total) / 1.18;
+            $subtotal = floatval($object->total) / 1.18;
+            $budgetSheet->igv = $subtotal * 0.18;
+            $budgetSheet->total = $object->total;
+            $budgetSheet->save();
+        }
         return response()->json($object);
     }
 

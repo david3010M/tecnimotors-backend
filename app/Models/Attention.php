@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Controllers\Controller;
 use App\Http\Resources\ReportAttendanceVehicleResource;
 use App\Utils\Constants;
 use Carbon\Carbon;
@@ -212,8 +213,8 @@ class Attention extends Model
     public function getTask($id)
     {
         $list = Task::
-            // with(['detailAttentions.attention'])->
-            whereHas('detailAttentions.attention', function ($query) use ($id) {
+        // with(['detailAttentions.attention'])->
+        whereHas('detailAttentions.attention', function ($query) use ($id) {
             $query->where('id', $id);
         })
             ->get();
@@ -223,7 +224,7 @@ class Attention extends Model
     public function details()
     {
         return $this->hasMany(DetailAttention::class)->
-            orderBy('type', 'desc')
+        orderBy('type', 'desc')
             ->with(['worker', 'service', 'product']);
     }
 
@@ -345,6 +346,7 @@ class Attention extends Model
     public function setDetailProducts($id, $detailsAtId)
     {
         $attention = Attention::find($id);
+        $docAlmacen = DocAlmacen::where('attention_id', $attention->id)->first();
         $currentDetailsIds = $attention->details()->where('type', 'Product')->pluck('id')->toArray();
         $detailsUpdate = $detailsAtId;
 
@@ -353,18 +355,33 @@ class Attention extends Model
         foreach ($detailsUpdate as $detailData) {
             $idDetail = isset($detailData['idDetail']) == false ? 'null' : $detailData['idDetail'];
 
+
             if (($idDetail != 'null')) {
                 $newDetailIds[] = $idDetail;
-
                 $detail = DetailAttention::find($idDetail);
 
                 if ($detail) {
+                    $quantityBefore = $detail->quantity;
                     $data = [
                         'quantity' => $detailData['quantity'],
                         'product_id' => $detailData['idProduct'],
                         'service_id' => null,
                     ];
                     $detail->update($data);
+
+                    $docAlmacenDetail = Docalmacen_details::where('product_id', $detail->product_id)
+                        ->where('doc_almacen_id', $docAlmacen->id)
+                        ->first();
+
+                    if ($docAlmacenDetail) {
+                        $docAlmacenDetail->quantity = $detailData['quantity'];
+                        $docAlmacenDetail->save();
+
+                        $product = Product::find($docAlmacenDetail->product_id);
+
+                        $product->stock -= $detailData['quantity'] + $quantityBefore;
+                        $product->save();
+                    }
 
                 }
             } else {
@@ -387,6 +404,18 @@ class Attention extends Model
                     'attention_id' => $attention->id,
                 ];
                 $detailProd = DetailAttention::create($objectData);
+
+                $product = Product::find($idProduct);
+                Docalmacen_details::create([
+                    'sequentialnumber' => (new Controller())->nextCorrelative(Docalmacen_details::class, 'sequentialnumber'),
+                    'quantity' => $quantity,
+                    'comment' => 'Detalle de Salida de Producto por Atención',
+                    'product_id' => $product->id,
+                    'doc_almacen_id' => $docAlmacen->id,
+                ]);
+                $product->stock -= $quantity;
+                $product->save();
+
                 $newDetailIds[] = $detailProd->id;
             }
         }

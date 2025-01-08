@@ -74,7 +74,7 @@ class BudgetSheetController extends Controller
         $status = $request->query('status');
 
         // Consulta base, incluyendo las relaciones hasta `person`
-        $query = BudgetSheet::with(['attention','attention.concession']);
+        $query = BudgetSheet::with(['attention', 'attention.concession']);
 
         // Aplicamos filtros si se proporcionan
         if ($attentionVehicleId) {
@@ -242,7 +242,6 @@ class BudgetSheetController extends Controller
         $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM budget_sheets a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
         $siguienteNum = (int)$resultado;
 
-        $percentageDiscount = floatval($request->input('percentageDiscount', 0)) / 100;
         $subtotal = floatval($attention->total) / 1.18;
         $igv = $subtotal * 0.18;
 

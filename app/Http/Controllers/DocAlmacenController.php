@@ -64,9 +64,7 @@ class DocAlmacenController extends Controller
         // Crear el registro principal en la tabla DocAlmacen
         $docAlmacen = DocAlmacen::create($request->validated());
 
-        $lastCorrelativo = DocAlmacen::max('id') ? DocAlmacen::orderBy('id', 'desc')->value('sequentialnumber') : 'MA01-00000000';
-        $nextCorrelativo = 'MA01-' . str_pad((int)substr($lastCorrelativo, -8) + 1, 8, '0', STR_PAD_LEFT);
-        $docAlmacen->sequentialnumber = $nextCorrelativo;
+        $docAlmacen->sequentialnumber = $this->nextCorrelative(DocAlmacen::class, 'sequentialnumber');
         $docAlmacen->save();
 
         // Obtener el concepto de movimiento asociado
@@ -100,17 +98,12 @@ class DocAlmacenController extends Controller
                 $quantityDifference = $productData['quantity']; // La cantidad que se va a agregar
                 $product->stock += ($concepto->typemov === 'INGRESO' ? $quantityDifference : -$quantityDifference);
             } else {
-                // Si el producto no existe, agregar un nuevo detalle
-                $lastDetailCorrelativo = Docalmacen_details::max('id') ? Docalmacen_details::orderBy('id', 'desc')->value('sequentialnumber') : 'DMA1-00000000';
-                $nextDetailCorrelativo = 'DMA1-' . str_pad((int)substr($lastDetailCorrelativo, -8) + 1, 8, '0', STR_PAD_LEFT);
-
-
                 Docalmacen_details::create([
                     'doc_almacen_id' => $docAlmacen->id,
                     'product_id' => $productData['product_id'],
                     'quantity' => $productData['quantity'],
                     'comment' => $productData['comment'] ?? '',
-                    'sequentialnumber' => $nextDetailCorrelativo, // Añadir el correlativo con la serie DMA1
+                    'sequentialnumber' => $this->nextCorrelative(Docalmacen_details::class, 'sequentialnumber'),
                 ]);
 
                 // Actualizar el stock según el tipo de movimiento
