@@ -180,7 +180,7 @@ class Attention extends Model
                 },
                 'worker.person' => function ($query) {
                     $query->withTrashed(); // Incluye eliminados
-                }
+                },
             ])
             ->get()
             ->pluck('worker.person')->unique('id');
@@ -212,8 +212,8 @@ class Attention extends Model
     public function getTask($id)
     {
         $list = Task::
-        // with(['detailAttentions.attention'])->
-        whereHas('detailAttentions.attention', function ($query) use ($id) {
+            // with(['detailAttentions.attention'])->
+            whereHas('detailAttentions.attention', function ($query) use ($id) {
             $query->where('id', $id);
         })
             ->get();
@@ -223,7 +223,7 @@ class Attention extends Model
     public function details()
     {
         return $this->hasMany(DetailAttention::class)->
-        orderBy('type', 'desc')
+            orderBy('type', 'desc')
             ->with(['worker', 'service', 'product']);
     }
 
@@ -393,9 +393,13 @@ class Attention extends Model
 
         $detailsToDelete = array_diff($currentDetailsIds, $newDetailIds);
         $attention->details()->where('type', 'Product')->whereIn('id', $detailsToDelete)->delete();
-        $sumaPrecios = $attention->details()->where('type', 'Product')->sum('saleprice');
-        $sumaCantidades = $attention->details()->where('type', 'Product')->sum('quantity');
-        $attention->totalProducts = $sumaPrecios * $sumaCantidades;
+        $sumaTotal = $attention->details()->where('type', 'Product')->get()
+            ->sum(function ($detail) {
+                return $detail->saleprice * $detail->quantity;
+            });
+
+        $attention->totalProducts = $sumaTotal;
+
         $attention->save();
     }
 
