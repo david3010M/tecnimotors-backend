@@ -43,9 +43,12 @@ class DocAlmacen extends Model
         'user_id',
         'person_id',
         'concept_mov_id',
-        // 'product_id',
+        'attention_id',
         'created_at',
     ];
+
+    const TIPOMOV_INGRESO = 'Ingreso';
+    const TIPOMOV_EGRESO = 'Egreso';
 
     protected $hidden = [
         'updated_at',

@@ -17,7 +17,7 @@ class DocAlmacenResource extends JsonResource
             'concept' => $this->concept,
 
             'user_id' => $this->user_id,
-            'product_id' => $this->product_id,
+            'attention_id' => $this->attention_id,
             'person_id' => $this->person_id,
             'concept_mov_id' => $this->concept_mov_id,
             'created_at' => $this->created_at,

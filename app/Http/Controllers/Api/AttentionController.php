@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attention;
+use App\Models\ConceptMov;
 use App\Models\DetailAttention;
+use App\Models\DocAlmacen;
+use App\Models\Docalmacen_details;
 use App\Models\Element;
 use App\Models\ElementForAttention;
 use App\Models\Product;
@@ -70,7 +73,7 @@ class AttentionController extends Controller
         // Obtén el ID del vehículo y el estado de atención desde la solicitud
         $vehicleId = $request->input('vehicle_id');
         $attentionStatus = $request->input('attention_status');
-    
+
         // Consulta base para Attention con relaciones que incluyen eliminados
         $query = Attention::with([
             'worker.person' => function ($query) {
@@ -83,32 +86,32 @@ class AttentionController extends Controller
                 $query->withTrashed();
             },
             'details' => function ($query) {
-                
+
             },
             'routeImages' => function ($query) {
-               
+
             },
             'elements' => function ($query) {
                 $query->withTrashed();
             },
             'concession' => function ($query) {
-               
+
             },
         ]);
-    
+
         // Filtra por ID de vehículo si se proporciona
         if ($vehicleId) {
             $query->where('vehicle_id', $vehicleId);
         }
-    
+
         // Filtra por estado de atención si se proporciona
         if ($attentionStatus) {
             $query->where('status', $attentionStatus);
         }
-    
+
         // Obtén la paginación con 15 registros por página (esto incluye el total)
         $objects = $query->orderBy('id', 'desc')->paginate(15);
-    
+
         // Transforma cada elemento de la colección paginada
         $objects->getCollection()->transform(function ($attention) {
             $attention->elements = $attention->getElements($attention->id);
@@ -116,7 +119,7 @@ class AttentionController extends Controller
             $attention->task = $attention->getTask($attention->id);
             return $attention;
         });
-    
+
         // Devuelve la colección transformada como respuesta JSON, incluyendo toda la información de la paginación
         return response()->json([
             'total' => $objects->total(),               // Total de registros
@@ -132,8 +135,6 @@ class AttentionController extends Controller
             'to' => $objects->lastItem(),               // Último registro de la página actual
         ]);
     }
-    
-    
 
 
     /**
@@ -345,12 +346,30 @@ class AttentionController extends Controller
             'elements.*' => 'exists:elements,id',
             'details' => 'nullable',
             'detailsProducts' => 'nullable',
-
+            'detailsProducts.*.idProduct' => 'required|exists:products,id',
         ]);
 
         if (!$request->input('details')) {
             return response()->json(['error' => 'Atención sin Servicios'], 409);
         }
+
+
+        $validator->after(function ($validator) use ($request) {
+            foreach ($request->input('detailsProducts', []) as $index => $detail) {
+                $productId = $detail['idProduct'] ?? null;
+                $quantity = $detail['quantity'] ?? 0;
+
+                if ($productId) {
+                    $product = Product::find($productId);
+                    if ($product && $product->stock < $quantity) {
+                        $validator->errors()->add(
+                            "detailsProducts.{$index}.quantity",
+                            "The requested quantity for product {$product->name} exceeds the available stock ({$product->stock})."
+                        );
+                    }
+                }
+            }
+        });
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
@@ -403,6 +422,7 @@ class AttentionController extends Controller
                     $quantity = $productDetail['quantity'] ?? 1;
 
                     $product = Product::find($idProduct);
+
                     $objectData = [
                         'saleprice' => $product->sale_price ?? '0.00',
                         'type' => 'Product',
@@ -486,6 +506,40 @@ class AttentionController extends Controller
         $object->elements = $object->getElements($object->id);
         $object->details = $object->getDetails($object->id);
         $object->task = $object->getTask($object->id);
+
+        if ($detailsProducts != []) {
+
+            $conceptMov = ConceptMov::find(3);
+            $docAlmacen = DocAlmacen::create([
+                'sequentialnumber' => $this->nextCorrelative(DocAlmacen::class, 'sequentialnumber'),
+                'date_moviment' => $object->deliveryDate,
+                'quantity' => $quantity,
+                'comment' => 'Salida de Producto por Atención',
+                'typemov' => DocAlmacen::TIPOMOV_EGRESO,
+                'concept' => $conceptMov->name,
+                'user_id' => auth()->user()->id,
+                'person_id' => $object->vehicle->person->id,
+                'concept_mov_id' => $conceptMov->id,
+                'attention_id' => $object->id,
+            ]);
+
+            foreach ($detailsProducts as $productDetail) {
+                $idProduct = $productDetail['idProduct'];
+                $quantity = $productDetail['quantity'] ?? 1;
+                $product = Product::find($idProduct);
+                Docalmacen_details::create([
+                    'sequentialnumber' => $this->nextCorrelative(Docalmacen_details::class, 'sequentialnumber'),
+                    'quantity' => $quantity,
+                    'comment' => 'Detalle de Salida de Producto por Atención',
+                    'product_id' => $product->id,
+                    'doc_almacen_id' => $docAlmacen->id,
+                ]);
+                $product->stock -= $quantity;
+                $product->save();
+            }
+        }
+
+
         return response()->json($object);
     }
 

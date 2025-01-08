@@ -17,9 +17,9 @@ class ConceptMovSeeder extends Seeder
     public function run()
     {
         $array = [
-            ['name' => 'Venta'],
-            ['name' => 'Compra'],
-            ['name' => 'Documento Almacen'],
+            ['id' => 1, 'name' => 'Venta'],
+            ['id' => 2, 'name' => 'Compra'],
+            ['id' => 3, 'name' => 'Documento Almacen'],
 
         ];
 
