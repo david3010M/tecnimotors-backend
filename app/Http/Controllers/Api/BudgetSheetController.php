@@ -96,6 +96,8 @@ class BudgetSheetController extends Controller
             'data' => $budgetSheets->map(function ($item) {
                 $data = $item->toArray(); // Convertimos el modelo en un array
                 $data['person_id'] = $item->attention->vehicle->person_id ?? null; // Agregamos el campo person_id
+                $data['number'] = 'PRES' . substr($item->attention->number, 4);
+
                 return $data;
             })->toArray(),
             'current_page' => $budgetSheets->currentPage(),

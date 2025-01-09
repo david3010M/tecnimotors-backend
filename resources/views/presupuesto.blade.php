@@ -312,7 +312,9 @@
             </td>
             <td class="right">
                 <div class="titlePresupuesto">PRESUPUESTO</div>
-                <div class="numberPresupuesto">N° {{ $budgetsheet->number }}</div>
+                <div class="numberPresupuesto">
+                    N° PRES{{ substr($budgetsheet->attention->number, 4) }}
+                </div>
             </td>
         </tr>
         <tr>
