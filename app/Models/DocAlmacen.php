@@ -56,7 +56,8 @@ class DocAlmacen extends Model
     ];
 
     const filters = [
-        'sequentialnumber' => 'between',
+        'sequentialnumber' => 'like',
+        'date_moviment' => 'between',
         'comment' => 'like',
         'user.username' => 'like',
         // 'product.name' => 'like',
