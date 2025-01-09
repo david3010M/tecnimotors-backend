@@ -622,7 +622,7 @@
                         <td class="quantity" style="border: 1px solid #bfbfbf; padding: 5px;">
                             {{ $detail->quantity ?? '-' }}</td>
                         <td class="unitPrice" style="border: 1px solid #bfbfbf; padding: 5px;">S/
-                            {{ number_format($detail->product?->sale_price ?? 0, 2) }}</td>
+                            {{ number_format($detail->sale_price ?? 0, 2) }}</td>
                         <td class="sailTotal" style="border: 1px solid #bfbfbf; padding: 5px;">S/
                             {{ number_format($detail->saleprice*$detail->quantity ?? 0, 2) }}</td>
                     </tr>
