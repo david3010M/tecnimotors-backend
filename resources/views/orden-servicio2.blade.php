@@ -512,7 +512,7 @@
                     <td class="unit">{{ $detail->product->unit->code }}</td>
                     <td class="quantity">{{ $detail->quantity }}</td>
                     <td class="unitPrice">S/ {{ $detail->saleprice }}</td>
-                    <td class="sailTotal">S/ {{ number_format($detail->saleprice, 2) }}</td>
+                    <td class="sailTotal">S/ {{ number_format(($detail->saleprice*$detail->quantity), 2) }}</td>
 
                 </tr>
             @endif
