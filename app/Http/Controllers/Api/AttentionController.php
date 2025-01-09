@@ -722,16 +722,51 @@ class AttentionController extends Controller
         // Verificar si $detailsProducts tiene registros
         if ($detailsProducts != []) {
             $object->setDetailProducts($object->id, $detailsProducts);
+            $docAlmacen = DocAlmacen::where('attention_id', $object->id)->first();
+            if (!isset($docAlmacen)) {
+                if ($detailsProducts != []) {
 
-            foreach ($detailsProducts as $productDetail) {
-                $quantity = $productDetail['quantity'] ?? 1;
-                $totalQuantityProducts += $quantity;
-                $docAlmacen = DocAlmacen::where('attention_id', $object->id)->first();
-                if ($docAlmacen) {
-                    $docAlmacen->quantity = $totalQuantityProducts;
-                    $docAlmacen->save();
+                    $conceptMov = ConceptMov::find(1);
+                    $docAlmacen = DocAlmacen::create([
+                        'sequentialnumber' => $this->nextCorrelative(DocAlmacen::class, 'sequentialnumber'),
+                        'date_moviment' => $object->deliveryDate,
+                        'quantity' => $totalQuantityProducts,
+                        'comment' => 'Salida de Producto por Atención',
+                        'typemov' => DocAlmacen::TIPOMOV_EGRESO,
+                        'concept' => $conceptMov->name,
+                        'user_id' => auth()->user()->id,
+                        'person_id' => $object->vehicle->person->id,
+                        'concept_mov_id' => $conceptMov->id,
+                        'attention_id' => $object->id,
+                    ]);
+
+                    foreach ($detailsProducts as $productDetail) {
+                        $idProduct = $productDetail['idProduct'];
+                        $quantity = $productDetail['quantity'] ?? 1;
+                        $product = Product::find($idProduct);
+                        Docalmacen_details::create([
+                            'sequentialnumber' => $this->nextCorrelative(Docalmacen_details::class, 'sequentialnumber'),
+                            'quantity' => $quantity,
+                            'comment' => 'Detalle de Salida de Producto por Atención',
+                            'product_id' => $product->id,
+                            'doc_almacen_id' => $docAlmacen->id,
+                        ]);
+                        $product->stock -= $quantity;
+                        $product->save();
+                    }
+                }
+            }else{
+                foreach ($detailsProducts as $productDetail) {
+                    $quantity = $productDetail['quantity'] ?? 1;
+                    $totalQuantityProducts += $quantity;
+    
+                    if ($docAlmacen) {
+                        $docAlmacen->quantity = $totalQuantityProducts;
+                        $docAlmacen->save();
+                    }
                 }
             }
+          
         }
 
 
