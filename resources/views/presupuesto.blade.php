@@ -624,7 +624,7 @@
                         <td class="unitPrice" style="border: 1px solid #bfbfbf; padding: 5px;">S/
                             {{ number_format($detail->saleprice ?? 0, 2) }}</td>
                         <td class="sailTotal" style="border: 1px solid #bfbfbf; padding: 5px;">S/
-                            {{ number_format($detail->saleprice*$detail->quantity ?? 0, 2) }}</td>
+                            {{ number_format(($detail->saleprice*$detail->quantity) ?? 0, 2) }}</td>
                     </tr>
                     @php
                         $idIncremental++;
