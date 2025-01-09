@@ -213,8 +213,8 @@ class Attention extends Model
     public function getTask($id)
     {
         $list = Task::
-            // with(['detailAttentions.attention'])->
-            whereHas('detailAttentions.attention', function ($query) use ($id) {
+        // with(['detailAttentions.attention'])->
+        whereHas('detailAttentions.attention', function ($query) use ($id) {
             $query->where('id', $id);
         })
             ->get();
@@ -224,7 +224,7 @@ class Attention extends Model
     public function details()
     {
         return $this->hasMany(DetailAttention::class)->
-            orderBy('type', 'desc')
+        orderBy('type', 'desc')
             ->with(['worker', 'service', 'product']);
     }
 
@@ -378,8 +378,8 @@ class Attention extends Model
                             $docAlmacenDetail->save();
 
                             $product = Product::find($docAlmacenDetail->product_id);
-
-                            $product->stock -= $detailData['quantity'] + $quantityBefore;
+                            $product->stock += $quantityBefore;
+                            $product->stock -= $detailData['quantity'];
                             $product->save();
                         }
                     }
@@ -407,7 +407,7 @@ class Attention extends Model
                 $detailProd = DetailAttention::create($objectData);
 
                 $product = Product::find($idProduct);
-                if($docAlmacen){
+                if ($docAlmacen) {
                     Docalmacen_details::create([
                         'sequentialnumber' => (new Controller())->nextCorrelative(Docalmacen_details::class, 'sequentialnumber'),
                         'quantity' => $quantity,
