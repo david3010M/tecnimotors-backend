@@ -487,7 +487,7 @@
                     <td class="id">{{ $idIncremental }}</td>
                     <td class="description" colspan="2">{{ $detail->service->name }}</td>
                     <td class="quantity">{{ $detail->quantity }}</td>
-                    <td class="sailPrice">S/ {{ $detail->service->saleprice }}</td>
+                    <td class="sailPrice">S/ {{ $detail->saleprice }}</td>
                     <td class="sailTotal">S/ {{ number_format($detail->saleprice, 2) }}</td>
                 </tr>
                 @php
@@ -511,7 +511,7 @@
                     <td class="description">{{ $detail->product->name }}</td>
                     <td class="unit">{{ $detail->product->unit->code }}</td>
                     <td class="quantity">{{ $detail->quantity }}</td>
-                    <td class="unitPrice">S/ {{ $detail->product->sale_price }}</td>
+                    <td class="unitPrice">S/ {{ $detail->sale_price }}</td>
                     <td class="sailTotal">S/ {{ number_format($detail->saleprice, 2) }}</td>
 
                 </tr>
