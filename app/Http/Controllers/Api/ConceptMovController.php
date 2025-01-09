@@ -213,11 +213,6 @@ class ConceptMovController extends Controller
         }
 
         $validator = validator()->make($request->all(), [
-            'name' => [
-                'required',
-                'string',
-                Rule::unique('concept_movs', 'name')->ignore($conceptMov->id)->whereNull('deleted_at'),
-            ],
             'typemov' => [
                 'nullable',
                 'string',
@@ -230,8 +225,7 @@ class ConceptMovController extends Controller
         }
 
         $data = [
-            'name' => $request->input('name'),
-            'typemov' => $request->input('typemov')??$conceptMov->typemov,
+            'typemov' => $request->input('typemov') ?? $conceptMov->typemov,
         ];
 
         $conceptMov->update($data);
@@ -284,11 +278,14 @@ class ConceptMovController extends Controller
         $conceptMov = ConceptMov::find($id);
 
         if (!$conceptMov) {
-            return response()->json(['message' => 'ConceptMov not found'], 404);
+            return response()->json(['message' => 'El concepto de movimiento no se encontró'], 404);
+        }
+        if ($conceptMov->docAlmacens()->count() > 0) {
+            return response()->json(['message' => 'El concepto de movimiento no puede ser eliminado porque tiene documentos de almacén asociados'], 422);
         }
 
         $conceptMov->delete();
 
-        return response()->json(['message' => 'ConceptMov deleted successfully']);
+        return response()->json(['message' => 'El concepto de movimiento se eliminó correctamente']);
     }
 }

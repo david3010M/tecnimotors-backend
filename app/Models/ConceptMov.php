@@ -41,4 +41,9 @@ class ConceptMov extends Model
         'deleted_at',
     ];
 
+    public function docAlmacens()
+    {
+        return $this->hasMany(DocAlmacen::class);
+    }
+
 }
