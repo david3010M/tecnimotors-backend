@@ -355,22 +355,22 @@ class AttentionController extends Controller
         }
 
 
-        $validator->after(function ($validator) use ($request) {
-            foreach ($request->input('detailsProducts', []) as $index => $detail) {
-                $productId = $detail['idProduct'] ?? null;
-                $quantity = $detail['quantity'] ?? 0;
+        // $validator->after(function ($validator) use ($request) {
+        //     foreach ($request->input('detailsProducts', []) as $index => $detail) {
+        //         $productId = $detail['idProduct'] ?? null;
+        //         $quantity = $detail['quantity'] ?? 0;
 
-                if ($productId) {
-                    $product = Product::find($productId);
-                    if ($product && $product->stock < $quantity) {
-                        $validator->errors()->add(
-                            "detailsProducts.{$index}.quantity",
-                            "The requested quantity for product {$product->name} exceeds the available stock ({$product->stock})."
-                        );
-                    }
-                }
-            }
-        });
+        //         if ($productId) {
+        //             $product = Product::find($productId);
+        //             if ($product && $product->stock < $quantity) {
+        //                 $validator->errors()->add(
+        //                     "detailsProducts.{$index}.quantity",
+        //                     "The requested quantity for product {$product->name} exceeds the available stock ({$product->stock})."
+        //                 );
+        //             }
+        //         }
+        //     }
+        // });
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
@@ -670,22 +670,22 @@ class AttentionController extends Controller
             'detailsProducts.*.idProduct' => 'required|exists:products,id',
         ]);
 
-        $validator->after(function ($validator) use ($request) {
-            foreach ($request->input('detailsProducts', []) as $index => $detail) {
-                $productId = $detail['idProduct'] ?? null;
-                $quantity = $detail['quantity'] ?? 0;
+        // $validator->after(function ($validator) use ($request) {
+        //     foreach ($request->input('detailsProducts', []) as $index => $detail) {
+        //         $productId = $detail['idProduct'] ?? null;
+        //         $quantity = $detail['quantity'] ?? 0;
 
-                if ($productId) {
-                    $product = Product::find($productId);
-                    if ($product && $product->stock < $quantity) {
-                        $validator->errors()->add(
-                            "detailsProducts.{$index}.quantity",
-                            "The requested quantity for product {$product->name} exceeds the available stock ({$product->stock})."
-                        );
-                    }
-                }
-            }
-        });
+        //         if ($productId) {
+        //             $product = Product::find($productId);
+        //             if ($product && $product->stock < $quantity) {
+        //                 $validator->errors()->add(
+        //                     "detailsProducts.{$index}.quantity",
+        //                     "The requested quantity for product {$product->name} exceeds the available stock ({$product->stock})."
+        //                 );
+        //             }
+        //         }
+        //     }
+        // });
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
@@ -775,7 +775,7 @@ class AttentionController extends Controller
             }
         }
 
-        $budgetSheet = budgetSheet::where('attention_id', $object->id);
+        $budgetSheet = budgetSheet::where('attention_id', $object->id)->first();
         if ($budgetSheet->exists()) {
             $budgetSheet->totalService = $object->totalService;
             $budgetSheet->totalProducts = $object->totalProducts;
