@@ -409,11 +409,7 @@ class BudgetSheetController extends Controller
         if (!$budgetSheet) {
             return response()->json(['message' => 'BudgetSheet not found'], 404);
         }
-
-        if ($budgetSheet->commitments()->count() > 0) {
-            return response()->json(['message' => 'El presupuesto tiene compromisos asociados'], 409);
-        }
-
+        
         $budgetSheet->delete();
 
         return response()->json(['message' => 'BudgetSheet deleted']);
