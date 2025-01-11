@@ -103,7 +103,9 @@ class BrandController extends Controller
             'name' => [
                 'required',
                 'string',
-                Rule::unique('brands')->whereNull('deleted_at'),
+                Rule::unique('brands')
+                    ->where('type', $request->input('type'))
+                    ->whereNull('deleted_at'),
             ],
             'type' => 'required|string|in:vehicle,product',
         ]);
