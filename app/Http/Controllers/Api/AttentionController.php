@@ -16,7 +16,6 @@ use App\Models\Service;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 
 class AttentionController extends Controller
 {
@@ -322,7 +321,7 @@ class AttentionController extends Controller
 
         $validator = validator()->make($request->all(), [
 
-            'correlativo'            => 'required|numeric|unique:attentions,correlativo,NULL,id,deleted_at,NULL',
+            'correlativo'                 => 'required|numeric|unique:attentions,correlativo,NULL,id,deleted_at,NULL',
 
             'arrivalDate'                 => 'required',
             'deliveryDate'                => 'required',
@@ -635,7 +634,7 @@ class AttentionController extends Controller
         $validator = validator()->make($request->all(), [
             'arrivalDate'                 => 'required',
 
-            'correlativo'            => "required|numeric|unique:attentions,correlativo,{$id},id,deleted_at,NULL",
+            'correlativo'                 => "required|numeric|unique:attentions,correlativo,{$id},id,deleted_at,NULL",
 
             'deliveryDate'                => 'required',
             'observations'                => 'nullable',
@@ -837,6 +836,11 @@ class AttentionController extends Controller
             return response()->json(['message' => 'Exiten Servicios que ya estan siendo Procesados'], 409);
         }
 
+        if ($object->documentoscarga()->exists()) {
+            return response()->json(['message' => 'Existen documentos de almacén asociados'], 409);
+        }
+        
+        
         $budgetSheet = $object->budgetSheet()->exists();
         if ($budgetSheet) {
             return response()->json(['message' => 'Orden de Servicio ya presupuestada'], 409);
@@ -887,11 +891,8 @@ class AttentionController extends Controller
      */
     public function getCorrelativo()
     {
-        $tipo         = 'OTRS';
-        $resultado    = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM attentions a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-        $siguienteNum = (int) $resultado;
         return response()->json([
-            'correlativo' => $siguienteNum,
+            'correlativo' => Attention::getNextCorrelativo(),
         ]);
     }
 

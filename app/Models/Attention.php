@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -485,6 +486,29 @@ class Attention extends Model
             $index++;
         }
 
+    }
+    public static function getNextCorrelativo(): int
+    {
+        // Obtener todos los registros ordenados por correlativo
+        $correlativos = Attention::orderBy('correlativo', 'asc')
+            ->pluck('correlativo')
+            ->toArray();
+    
+        // Buscar el primer número faltante en la secuencia
+        $siguienteNum = 1;
+        foreach ($correlativos as $num) {
+            if ($num == $siguienteNum) {
+                $siguienteNum++;
+            } else {
+                break; // Encontramos el primer hueco
+            }
+        }
+    
+        return $siguienteNum;
+    }
+    public function documentoscarga()
+    {
+        return $this->hasMany(DocAlmacen::class);
     }
 
 }
