@@ -50,17 +50,15 @@ class BrandController extends Controller
      */
     public function index(Request $request)
     {
-        $validator = validator()->make($request->all(), [
-            'type' => 'string|in:vehicle,product',
-        ]);
+        $query = Brand::query();
 
-        $typeVehicle = $request->input('type');
-
-        if ($validator->fails() || $typeVehicle == null) {
-            return response()->json(Brand::paginate(50));
+        if ($request->filled('type') && in_array($request->input('type'), ['vehicle', 'product'])) {
+            $query->where('type', $request->input('type'));
         }
-        return response()->json(Brand::where('type', $typeVehicle)->simplePaginate(50));
+
+        return response()->json($query->paginate(50));
     }
+
 
     /**
      * Create a new Brand
@@ -299,7 +297,7 @@ class BrandController extends Controller
             return response()->json(['error' => 'Brand not found'], 404);
         }
 
-//        if ($brand->vehicles()->count() > 0) {
+        //        if ($brand->vehicles()->count() > 0) {
 //            return response()->json(['error' => 'Brand has vehicles'], 409);
 //        }
 //

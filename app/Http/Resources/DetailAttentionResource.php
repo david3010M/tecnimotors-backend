@@ -16,7 +16,7 @@ class DetailAttentionResource extends JsonResource
             $percentageDiference = round(($daysDiference / $totalDays) * 100);
 
             // Determinar las luces del semáforo
-            if ($daysDiference >= $totalDays) {
+            if ($daysDiference > $totalDays) {
                 $lights = ['rojo', 'rojo', 'rojo'];
                 $statusColor = 'vencido';
             } elseif ($percentageDiference < 33) {
@@ -40,7 +40,7 @@ class DetailAttentionResource extends JsonResource
 
         $clientName = $this->attention?->vehicle?->person;
         $clientFullName = $clientName
-            ? trim("{$clientName->names} {$clientName->fatherSurname} {$clientName->motherSurname}")
+            ?  trim("{$clientName->names} {$clientName->fatherSurname} {$clientName->motherSurname} {$clientName->businessName}")
             : null;
 
         return [

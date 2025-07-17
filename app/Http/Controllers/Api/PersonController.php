@@ -40,23 +40,27 @@ class PersonController extends Controller
     public function index(Request $request)
     {
         $search = $request->query('search');
-
-        // Verificar si el parámetro "all" es true
+        $ocupation = $request->query('ocupation');
         $getAll = filter_var($request->query('all', false), FILTER_VALIDATE_BOOLEAN);
 
-        if ($getAll) {
-            // Obtener todos los registros sin paginar
-            $persons = Person::where('id', '!=', 1)
-                ->where(function ($query) use ($search) {
-                    $query->where('documentNumber', 'like', '%' . $search . '%')
+        // Base query
+        $query = Person::where('id', '!=', 1)
+            ->when($search, function ($q) use ($search) {
+                $q->where(function ($subQuery) use ($search) {
+                    $subQuery->where('documentNumber', 'like', '%' . $search . '%')
                         ->orWhere('names', 'like', '%' . $search . '%')
                         ->orWhere('fatherSurname', 'like', '%' . $search . '%')
                         ->orWhere('motherSurname', 'like', '%' . $search . '%')
                         ->orWhere('businessName', 'like', '%' . $search . '%');
-                })
-                ->get();
+                });
+            })
+            ->when(!empty($ocupation), function ($q) use ($ocupation) {
+                $q->whereRaw('LOWER(ocupation) = ?', [strtolower($ocupation)]);
+            });
 
-            // Respuesta sin paginación pero con la misma estructura
+        if ($getAll) {
+            $persons = $query->get();
+
             return response()->json([
                 'total' => $persons->count(),
                 'data' => $persons,
@@ -74,22 +78,12 @@ class PersonController extends Controller
             ], 200);
         }
 
-        // Obtener el tamaño de la paginación y la página, con valores predeterminados
+        // Paginación
         $perPage = $request->query('per_page', 100);
         $currentPage = $request->query('page', 1);
 
-        // Filtrar y paginar los resultados
-        $persons = Person::where('id', '!=', 1)
-            ->where(function ($query) use ($search) {
-                $query->where('documentNumber', 'like', '%' . $search . '%')
-                    ->orWhere('names', 'like', '%' . $search . '%')
-                    ->orWhere('fatherSurname', 'like', '%' . $search . '%')
-                    ->orWhere('motherSurname', 'like', '%' . $search . '%')
-                    ->orWhere('businessName', 'like', '%' . $search . '%');
-            })
-            ->paginate($perPage, ['*'], 'page', $currentPage);
+        $persons = $query->paginate($perPage, ['*'], 'page', $currentPage);
 
-        // Estructura de respuesta paginada
         return response()->json([
             'total' => $persons->total(),
             'data' => $persons->items(),
@@ -106,6 +100,7 @@ class PersonController extends Controller
             'page' => $currentPage,
         ], 200);
     }
+
 
 
     /**
@@ -255,7 +250,8 @@ class PersonController extends Controller
             return response()->json($object, 200);
         }
         return response()->json(
-            ['message' => 'Person not found'], 404
+            ['message' => 'Person not found'],
+            404
         );
 
     }
@@ -321,7 +317,8 @@ class PersonController extends Controller
         }
 
         return response()->json(
-            ['message' => 'Person not found'], 404
+            ['message' => 'Person not found'],
+            404
         );
     }
 
@@ -351,7 +348,8 @@ class PersonController extends Controller
         }
 
         return response()->json(
-            ['message' => 'Person not found'], 404
+            ['message' => 'Person not found'],
+            404
         );
     }
 
@@ -420,7 +418,8 @@ class PersonController extends Controller
 
         if (!$object) {
             return response()->json(
-                ['message' => 'User not found'], 404
+                ['message' => 'User not found'],
+                404
             );
         }
         $validator = validator()->make($request->all(), [
