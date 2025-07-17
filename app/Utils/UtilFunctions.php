@@ -141,7 +141,7 @@ class UtilFunctions
             $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->tipoPago);
             $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->cliente);
             $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->estado);
-//            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->metodoPago);
+            //            $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->metodoPago);
             $excelUI->setDataCellByIndex($indexRow, $indexCol++, $movement->total);
             $indexRow++;
         }
@@ -396,11 +396,11 @@ class UtilFunctions
             $excelUI->setDataCellByIndex($indexRow, $indexCol++, $index++);
             $excelUI->setDataCellByIndex($indexRow, $indexCol++, $product->name);
             $excelUI->setDataCellByIndex($indexRow, $indexCol++, $product->date);
-            $excelUI->setDataCellByIndex($indexRow, $indexCol++, (float)$product->purchase_price);
-            $excelUI->setDataCellByIndex($indexRow, $indexCol++, (float)$product->sale_price);
-            $excelUI->setDataCellByIndex($indexRow, $indexCol++, (int)$product->quantity);
-            $excelUI->setDataCellByIndex($indexRow, $indexCol++, (float)$product->total);
-            $excelUI->setDataCellByIndex($indexRow, $indexCol++, (int)$product->stock);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, (float) $product->purchase_price);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, (float) $product->sale_price);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, (int) $product->quantity);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, (float) $product->total);
+            $excelUI->setDataCellByIndex($indexRow, $indexCol++, (int) $product->stock);
             $excelUI->setDataCellByIndex($indexRow, $indexCol++, $product->type);
             $excelUI->setDataCellByIndex($indexRow, $indexCol++, $product->category);
             $excelUI->setDataCellByIndex($indexRow, $indexCol++, $product->unit);
@@ -461,6 +461,57 @@ class UtilFunctions
         unset($excelUI);
         return $bytes;
     }
+
+
+public static function generateReportServiceExcel($details, $client, $period = "-")
+{
+    $excelUI = new ExcelUI(Constants::REPORTES, Constants::REPORTE_SERVICIOS_EXCEL_SEMAFORO);
+
+    $col = $excelUI->getColumnIndex("C"); // Empezamos desde la columna C
+    $indexRow = 6;
+    $index = 1;
+
+    foreach ($details as $detail) {
+        // ⚠️ Cambiado de objeto a array
+        $fecha = \Carbon\Carbon::parse($detail['date_register']);
+        $dias = $detail['period_detail']['days_diference'] ?? '-';
+        $totalPeriodo = $detail['period'] ?? 0;
+        $periodoTexto = is_numeric($dias) && is_numeric($totalPeriodo) && $totalPeriodo > 0 
+                        ? "$dias de $totalPeriodo"
+                        : "- de $totalPeriodo";
+
+        $luces = $detail['period_detail']['lights'] ?? ['gris', 'gris', 'gris'];
+        $estado = match (true) {
+            in_array('rojo', $luces) => 'Rojo',
+            in_array('amarillo', $luces) => 'Amarillo',
+            in_array('verde', $luces) => 'Verde',
+            default => 'Sin estado',
+        };
+
+        $indexCol = $col;
+
+        // Alternar fondo de fila
+        $bgColor = $indexRow % 2 == 0 ? ExcelUI::$BACKGROUND_CELL_PRIMARY : ExcelUI::$BACKGROUND_CELL_SECONDARY;
+        $excelUI->changeStyleSelected(false, "C", ExcelUI::$GENERAL, true, $bgColor, true);
+        $excelUI->setRowHeight($indexRow, 30);
+
+        // ✅ Orden correcto de columnas con arrays
+        $excelUI->setDataCellByIndex($indexRow, $indexCol++, $detail['attention_code'] ?? '-'); // Nro° Atención
+        $excelUI->setDataCellByIndex($indexRow, $indexCol++, $detail['client_name'] ?? '-');     // Cliente
+        $excelUI->setDataCellByIndex($indexRow, $indexCol++, $detail['plate'] ?? '-');           // Placa
+        $excelUI->setDataCellByIndex($indexRow, $indexCol++, $detail['service_name'] ?? '-');    // Servicio
+        $excelUI->setDataCellByIndex($indexRow, $indexCol++, $fecha->format('Y-m-d'));           // Fecha Atención
+        $excelUI->setDataCellByIndex($indexRow, $indexCol++, $periodoTexto);                     // Periodo
+        $excelUI->setDataCellByIndex($indexRow, $indexCol++, $estado);                           // Semáforo
+
+        $indexRow++;
+    }
+
+    $bytes = $excelUI->save();
+    unset($excelUI);
+
+    return $bytes;
+}
 
 
 }

@@ -86,6 +86,7 @@ class ServiceController extends Controller
             'quantity' => 'required|integer',
             'saleprice' => 'required|numeric',
             'time' => 'required|string',
+            'period' => 'nullable|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -97,6 +98,7 @@ class ServiceController extends Controller
             'quantity' => $request->input('quantity'),
             'saleprice' => $request->input('saleprice'),
             'time' => $request->input('time'),
+            'period' => $request->input('period'),
         ];
 
         $service = Service::create($data);
@@ -216,6 +218,7 @@ class ServiceController extends Controller
             'quantity' => 'required|integer',
             'saleprice' => 'required|numeric',
             'time' => 'required|string',
+            'period' => 'nullable|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -227,6 +230,7 @@ class ServiceController extends Controller
             'quantity' => $request->input('quantity'),
             'saleprice' => $request->input('saleprice'),
             'time' => $request->input('time'),
+            'period' => $request->input('period'),
         ];
 
         $service->update($data);

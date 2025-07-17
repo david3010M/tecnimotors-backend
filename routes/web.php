@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\BudgetSheetController;
+use App\Http\Controllers\Api\DetailAttentionController;
 use App\Http\Controllers\Api\PdfController;
 use App\Http\Controllers\SaleController;
 use Illuminate\Support\Facades\Route;

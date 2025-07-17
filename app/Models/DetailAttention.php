@@ -135,6 +135,7 @@ class DetailAttention extends Model
         'dateMax',
         'dateCurrent',
         'percentage',
+        'period',
         'service_id',
         'product_id',
         'worker_id',
@@ -144,6 +145,27 @@ class DetailAttention extends Model
     protected $hidden = [
         'updated_at',
         'deleted_at',
+    ];
+
+    const filters = [
+        'saleprice' => 'like',
+        'quantity' => 'like',
+        'type' => 'like',
+        'comment' => 'like',
+        'status' => 'like',
+        'dateRegister' => 'date',
+        'dateMax' => 'date',
+        'dateCurrent' => 'date',
+        'percentage' => 'like',
+        'period' => '=',
+        'service_id' => '=',
+        'product_id' => '=',
+        'worker_id' => '=',
+        'attention_id' => '=',
+    ];
+
+    const sorts = [
+        'id',
     ];
 
     public static function boot()

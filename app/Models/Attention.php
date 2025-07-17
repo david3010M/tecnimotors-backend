@@ -226,7 +226,7 @@ class Attention extends Model
     {
         return $this->hasMany(DetailAttention::class)->
         orderBy('type', 'desc')
-            ->with(['worker', 'service', 'product']);
+            ->with(['worker','attention','attention.vehicle','attention.vehicle.person', 'service', 'product']);
     }
 
     public function routeImages()

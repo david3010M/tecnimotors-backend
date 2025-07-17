@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->integer('quantity');
+            $table->integer('period')->default(0)->nullable();
             $table->decimal('saleprice', 10, 2);
             $table->string('time');
             $table->foreignId('specialty_id')->nullable()->unsigned()->constrained('specialties');

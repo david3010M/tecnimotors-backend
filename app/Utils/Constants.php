@@ -62,6 +62,7 @@ class Constants
     public const REPORTE_CAJA_EXCEL = 'REPORTE_CAJA.xlsx';
     public const REPORTE_COMPROMISOS = 'REPORTE_COMPROMISOS.xlsx';
 
+    public const REPORTE_SERVICIOS_EXCEL_SEMAFORO = 'REPORTE_SERVICIOS_SEMAFORO.xlsx';
     public const REPORTES = 'reportes';
 
     const ES_MONTHS = [

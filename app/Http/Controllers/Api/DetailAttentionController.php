@@ -2,14 +2,99 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exports\Attention\DetailAttentionExport;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\DetailAttention\IndexDetailAttentionRequest;
+use App\Http\Resources\DetailAttentionResource;
 use App\Models\Attention;
 use App\Models\DetailAttention;
+use App\Utils\UtilFunctions;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 class DetailAttentionController extends Controller
 {
+
+
+    public function index(IndexDetailAttentionRequest $request)
+    {
+        $query = DetailAttention::query()
+            ->with(['attention.vehicle', 'attention.vehicle.person']) // relaciones necesarias
+            ->when($request->filled('plate'), function ($q) use ($request) {
+                $q->whereHas('attention.vehicle', function ($subQuery) use ($request) {
+                    $subQuery->whereRaw('UPPER(plate) LIKE ?', ['%' . strtoupper($request->input('plate')) . '%']);
+                });
+            })
+            ->when($request->filled('client'), function ($q) use ($request) {
+                $search = strtoupper($request->input('client'));
+                $q->whereHas('attention.vehicle.person', function ($subQuery) use ($search) {
+                    $subQuery->whereRaw("
+                    UPPER(CONCAT_WS(' ', names, fatherSurname, motherSurname, businessName)) LIKE ?
+                ", ["%$search%"]);
+                });
+            })
+            ->when($request->filled('correlativo'), function ($q) use ($request) {
+                $correlativo = strtoupper($request->input('correlativo'));
+                $q->whereHas('attention', function ($subQuery) use ($correlativo) {
+                    $subQuery->whereRaw('UPPER(correlativo) LIKE ?', ["%$correlativo%"]);
+                });
+            });
+
+        return $this->getFilteredResults(
+            $query,
+            $request,
+            DetailAttention::filters,
+            DetailAttention::sorts,
+            DetailAttentionResource::class
+        );
+    }
+
+    private function getServiciosData(IndexDetailAttentionRequest $request)
+    {
+        $request['all'] = true;
+        $request['type'] = "Service";
+
+        $resourceCollection = $this->index($request);
+        return $resourceCollection->toArray($request);
+    }
+
+    public function report(IndexDetailAttentionRequest $request)
+    {
+        $dataArray = $this->getServiciosData($request);
+
+        $pdf = Pdf::loadView('details-semaforo', [
+            'details' => $dataArray,
+        ]);
+
+        return $pdf->download('details-semaforo.pdf');
+    }
+    public function exportExcel(IndexDetailAttentionRequest $request)
+    {
+        // Forzamos los parámetros necesarios
+        $clonedRequest = clone $request;
+        $clonedRequest->offsetSet('all', true);
+        $clonedRequest->offsetSet('type', 'Service');
+
+        // Obtenemos los datos
+        $dataArray = $this->getServiciosData($clonedRequest);
+
+        // 🔍 Filtramos para asegurarnos que solo queden los de tipo 'Service'
+        $filteredData = array_filter($dataArray, function ($item) {
+            return isset($item['type']) && $item['type'] === 'Service';
+        });
+
+        // Generamos el Excel
+        $bytes = UtilFunctions::generateReportServiceExcel($filteredData, auth()->user(), '-');
+
+        return response($bytes)
+            ->header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            ->header('Content-Disposition', 'attachment; filename="reporte_servicios.xlsx"');
+    }
+
+
     /**
      * @OA\Get (
      *     path="/tecnimotors-backend/public/api/detailAttention/{id}",

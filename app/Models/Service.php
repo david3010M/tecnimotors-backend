@@ -39,6 +39,7 @@ class Service extends Model
         'quantity',
         'saleprice',
         'time',
+        'period',
         'created_at'
     ];
 

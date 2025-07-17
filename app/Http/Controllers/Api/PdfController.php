@@ -24,15 +24,15 @@ class PdfController extends Controller
     {
         $object = Attention::getAttention($id);
 
-//        HORIZONTAL
+        //        HORIZONTAL
         $pdf = Pdf::loadView('orden-servicio', [
             'order' => $object,
         ]);
-//        $pdf->setPaper('a3', 'landscape');
+        //        $pdf->setPaper('a3', 'landscape');
 
-//        return $object;
+        //        return $object;
         return $pdf->stream('orden-servicio.pdf');
-//        return $pdf->download('orden-servicio.pdf');
+        //        return $pdf->download('orden-servicio.pdf');
     }
 
     public function getBudgetSheet($id)
@@ -43,15 +43,15 @@ class PdfController extends Controller
             'budgetsheet' => $object,
         ]);
 
-//        $pdf->setPaper('a4', 'landscape');
+        //        $pdf->setPaper('a4', 'landscape');
 
-//        return view not pdf
+        //        return view not pdf
 //        return view('presupuesto', [
 //            'budgetsheet' => $object,
 //        ]);
 
         return $pdf->stream('presupuesto' . $object->id . '.pdf');
-//        return $pdf->download('orden-servicio.pdf');
+        //        return $pdf->download('orden-servicio.pdf');
     }
 
     public function getServiceOrder2($id)
@@ -212,8 +212,14 @@ class PdfController extends Controller
 
     public function getBudgetSheetInfo($id)
     {
-        $object = budgetSheet::with(['attention.worker.person', 'attention.vehicle.person', 'attention.vehicle.brand',
-            'attention.details', 'attention.routeImages', 'attention.elements'])->find($id);
+        $object = budgetSheet::with([
+            'attention.worker.person',
+            'attention.vehicle.person',
+            'attention.vehicle.brand',
+            'attention.details',
+            'attention.routeImages',
+            'attention.elements'
+        ])->find($id);
         return $object;
     }
 
@@ -515,15 +521,16 @@ class PdfController extends Controller
         if (!$object->attention->concession_id) {
             abort(404, 'Concesion no encontrada');
         }
-//        return response()->json($object);
+        //        return response()->json($object);
 
         $pdf = Pdf::loadView('facturaprevia', [
             'budgetsheet' => $object,
         ]);
 
         return $pdf->stream('facturaprevia' . $object->id . '.pdf');
-//        return $pdf->download('orden-servicio.pdf');
+        //        return $pdf->download('orden-servicio.pdf');
     }
+
 
     public function generarQrGuia()
     {

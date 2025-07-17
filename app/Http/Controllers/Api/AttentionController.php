@@ -347,22 +347,6 @@ class AttentionController extends Controller
             return response()->json(['error' => 'Atención sin Servicios'], 409);
         }
 
-        // $validator->after(function ($validator) use ($request) {
-        //     foreach ($request->input('detailsProducts', []) as $index => $detail) {
-        //         $productId = $detail['idProduct'] ?? null;
-        //         $quantity = $detail['quantity'] ?? 0;
-
-        //         if ($productId) {
-        //             $product = Product::find($productId);
-        //             if ($product && $product->stock < $quantity) {
-        //                 $validator->errors()->add(
-        //                     "detailsProducts.{$index}.quantity",
-        //                     "The requested quantity for product {$product->name} exceeds the available stock ({$product->stock})."
-        //                 );
-        //             }
-        //         }
-        //     }
-        // });
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
@@ -457,6 +441,7 @@ class AttentionController extends Controller
                     'product_id'   => $detail['product_id'] ?? null,
                     'service_id'   => $detail['service_id'],
                     'attention_id' => $object->id,
+                    'period'       => isset($detail['period']) ? $detail['period'] : 0,
                 ];
                 $detailService = DetailAttention::create($objectData);
                 $sumServices += $detailService->saleprice;
