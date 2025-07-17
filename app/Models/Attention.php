@@ -214,10 +214,10 @@ class Attention extends Model
     public function getTask($id)
     {
         $list = Task::
-        // with(['detailAttentions.attention'])->
-        whereHas('detailAttentions.attention', function ($query) use ($id) {
-            $query->where('id', $id);
-        })
+            // with(['detailAttentions.attention'])->
+            whereHas('detailAttentions.attention', function ($query) use ($id) {
+                $query->where('id', $id);
+            })
             ->get();
         return $list;
     }
@@ -225,8 +225,8 @@ class Attention extends Model
     public function details()
     {
         return $this->hasMany(DetailAttention::class)->
-        orderBy('type', 'desc')
-            ->with(['worker','attention','attention.vehicle','attention.vehicle.person', 'service', 'product']);
+            orderBy('type', 'desc')
+            ->with(['worker', 'attention', 'attention.vehicle', 'attention.vehicle.person', 'service', 'product']);
     }
 
     public function routeImages()
@@ -312,8 +312,11 @@ class Attention extends Model
                     $data = [
                         'service_id' => $detailData['service_id'],
                         'worker_id' => $detailData['worker_id'],
+                        'period' => isset($detailData['period']) ? $detailData['period'] : 0,
+
                         'dateMax' => $deliveryDate,
                         'product_id' => null,
+
                     ];
                     $detail->update($data);
                 }
@@ -330,6 +333,8 @@ class Attention extends Model
                     'worker_id' => $detail['worker_id'],
                     'product_id' => $detail['product_id'] ?? null,
                     'service_id' => $detail['service_id'],
+                    'period' => isset($detail['period']) ? $detail['period'] : 0,
+
                     'attention_id' => $attention->id,
                 ];
                 $detailService = DetailAttention::create($objectData);
@@ -493,7 +498,7 @@ class Attention extends Model
         $correlativos = Attention::orderBy('correlativo', 'asc')
             ->pluck('correlativo')
             ->toArray();
-    
+
         // Buscar el primer número faltante en la secuencia
         $siguienteNum = 1;
         foreach ($correlativos as $num) {
@@ -503,7 +508,7 @@ class Attention extends Model
                 break; // Encontramos el primer hueco
             }
         }
-    
+
         return $siguienteNum;
     }
     public function documentoscarga()
