@@ -25,6 +25,7 @@ class RouteImages extends Model
     protected $fillable = [
         'route',
         'attention_id',
+        'product_id',
         'task_id',
         'concession_id',
         'created_at',
@@ -47,5 +48,9 @@ class RouteImages extends Model
     public function concession()
     {
         return $this->belongsTo(Concession::class);
+    }
+     public function product()
+    {
+        return $this->belongsTo(Product::class);
     }
 }

@@ -185,7 +185,10 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
 
     //    PRODUCT
     Route::resource('product', ProductController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
-        ->names(['index' => 'product.index', 'store' => 'product.store', 'show' => 'product.show', 'update' => 'product.update', 'destroy' => 'product.destroy']);
+        ->names(['index' => 'product.index', 'store' => 'product.store', 'show' => 'product.show', 'destroy' => 'product.destroy']);
+
+        Route::post('product/{id}', [ProductController::class, 'update'])->name('product.update');
+
 
     //    SUPPLIER
     Route::resource('supplier', SupplierController::class)->only(['index', 'show', 'store', 'update', 'destroy'])

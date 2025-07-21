@@ -4,11 +4,18 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Services\ProductService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class ProductController extends Controller
 {
+    protected $productService;
+
+    public function __construct(ProductService $productService)
+    {
+        $this->productService = $productService;
+    }
     /**
      * Get all products with simple pagination
      * @OA\Get(
@@ -44,7 +51,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return response()->json(Product::with('category', 'unit', 'brand')->simplePaginate(15));
+        return response()->json(Product::with('category', 'unit', 'brand', 'images')->simplePaginate(15));
     }
 
     /**
@@ -96,6 +103,8 @@ class ProductController extends Controller
             'category_id' => 'required|integer|exists:categories,id',
             'unit_id' => 'required|integer|exists:units,id',
             'brand_id' => 'required|integer|exists:brands,id',
+            'images' => 'nullable|array',
+            'images.*' => 'file|image|mimes:jpg,jpeg,png,webp|max:5120', // Máx 5 MB por imagen
         ]);
 
         if ($validator->fails()) {
@@ -113,10 +122,11 @@ class ProductController extends Controller
             'category_id' => $request->input('category_id'),
             'unit_id' => $request->input('unit_id'),
             'brand_id' => $request->input('brand_id'),
+            'images'         => $request->file('images')
         ];
 
-        $product = Product::create($data);
-        $product = Product::with('category', 'unit', 'brand')->find($product->id);
+        $product = $this->productService->createProduct($data);
+        $product = Product::with('category', 'unit', 'brand','images')->find($product->id);
 
         return response()->json($product);
     }
@@ -162,7 +172,7 @@ class ProductController extends Controller
         if ($product) {
             return response()->json($product);
         }
-        $product = Product::with('category', 'unit', 'brand')->find($id);
+        $product = Product::with('category', 'unit', 'brand','images')->find($id);
         return response()->json(['message' => 'Product not found'], 404);
     }
 
@@ -235,6 +245,7 @@ class ProductController extends Controller
             'category_id' => 'required|integer|exists:categories,id',
             'unit_id' => 'required|integer|exists:units,id',
             'brand_id' => 'required|integer|exists:brands,id',
+            
         ]);
 
         if ($validator->fails()) {
@@ -252,10 +263,11 @@ class ProductController extends Controller
             'category_id' => $request->input('category_id'),
             'unit_id' => $request->input('unit_id'),
             'brand_id' => $request->input('brand_id'),
+            'images'         => $request->file('images')
         ];
 
-        $product->update($data);
-        $product = Product::with('category', 'unit', 'brand')->find($id);
+        $this->productService->updateProduct($product ,$data);
+        $product = Product::with('category', 'unit', 'brand','images')->find($id);
 
         return response()->json($product);
 
@@ -312,7 +324,7 @@ class ProductController extends Controller
             return response()->json(['message' => 'Product not found'], 404);
         }
 
-//        if ($product->stock > 0) {
+        //        if ($product->stock > 0) {
 //            return response()->json(['message' => 'Product has stock'], 422);
 //        }
 

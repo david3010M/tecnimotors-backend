@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->foreignId('attention_id')->nullable()->unsigned()->constrained('attentions');
             $table->foreignId('task_id')->nullable()->unsigned()->constrained('tasks');
             $table->foreignId('concession_id')->nullable()->unsigned()->constrained('concessions');
+            $table->foreignId('product_id')->nullable()->unsigned()->constrained('products');
             $table->timestamps();
         });
     }

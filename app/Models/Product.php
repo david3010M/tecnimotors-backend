@@ -108,6 +108,11 @@ class Product extends Model
     {
         return $this->hasMany(DetailAttention::class);
     }
+     public function images()
+    {
+        return $this->hasMany(RouteImages::class);
+    }
+
 
     public static function getSaleProducts($plate = null, $productId = null, $from = null, $to = null)
     {
