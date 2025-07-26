@@ -153,7 +153,7 @@ class DetailAttention extends Model
         'type' => 'like',
         'comment' => 'like',
         'status' => 'like',
-        'dateRegister' => 'date',
+        'dateRegister' => 'between',
         'dateMax' => 'date',
         'dateCurrent' => 'date',
         'percentage' => 'like',

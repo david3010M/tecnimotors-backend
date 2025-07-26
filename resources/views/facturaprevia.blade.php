@@ -353,9 +353,14 @@
 
     <table class="tableInfo bordered">
         <tr>
-            <td class="center" style="width:20%;">
-                <img class="logoImage" src="{{$budgetsheet->attention->concession->routeImage->route}}" alt="logo">
-            </td>
+         <td class="center" style="width:20%;">
+            @if(optional($budgetsheet->attention?->concession?->routeImage)->route)
+                <img class="logoImage" src="{{ $budgetsheet->attention->concession->routeImage->route }}" alt="logo">
+            @else
+                <span>No hay imagen</span>
+            @endif
+        </td>
+
 
             <td class="center" style="width:50%;background-color:rgb(22 0 104);">
                 <div class="titlePresupuesto">REGISTRO DE MANTENIMIENTO VEHICULAR</div>

@@ -1,12 +1,39 @@
 <?php
+
 namespace App\Http\Resources;
 
-use Illuminate\Http\Resources\Json\JsonResource;
 use Carbon\Carbon;
+use Illuminate\Http\Resources\Json\JsonResource;
 
-class DetailAttentionResource extends JsonResource
+/**
+ * @OA\Schema(
+ *     schema="DetailBudgetResource",
+ *     @OA\Property(property="id", type="integer"),
+ *     @OA\Property(property="saleprice", type="number", format="float"),
+ *     @OA\Property(property="quantity", type="integer"),
+ *     @OA\Property(property="type", type="string"),
+ *     @OA\Property(property="comment", type="string", nullable=true),
+ *     @OA\Property(property="status", type="string", nullable=true),
+ *     @OA\Property(property="dateRegister", type="string", format="date", nullable=true),
+ *     @OA\Property(property="dateMax", type="string", format="date", nullable=true),
+ *     @OA\Property(property="dateCurrent", type="string", format="date", nullable=true),
+ *     @OA\Property(property="percentage", type="integer"),
+ *     @OA\Property(property="period", type="integer"),
+ *     @OA\Property(property="budget_sheet_id", type="integer"),
+ *     @OA\Property(property="budget_sheet_number", type="string", nullable=true),
+ *     @OA\Property(property="worker_id", type="integer"),
+ *     @OA\Property(property="worker_name", type="string", nullable=true),
+ *     @OA\Property(property="service_id", type="integer"),
+ *     @OA\Property(property="service_name", type="string", nullable=true),
+ *     @OA\Property(property="product_id", type="integer"),
+ *     @OA\Property(property="product_name", type="string", nullable=true),
+ *     @OA\Property(property="created_at", type="string", format="date-time", nullable=true)
+ * )
+ */
+
+class DetailBudgetResource extends JsonResource
 {
-    public function toArray($request)
+     public function toArray($request)
     {
         $periodDetail = null;
 
@@ -38,7 +65,7 @@ class DetailAttentionResource extends JsonResource
             ];
         }
 
-        $clientName = $this->attention?->vehicle?->person;
+        $clientName = $this?->budget_sheet?->attention?->vehicle?->person;
         $clientFullName = $clientName
             ?  trim("{$clientName->names} {$clientName->fatherSurname} {$clientName->motherSurname} {$clientName->businessName}")
             : null;
@@ -53,7 +80,6 @@ class DetailAttentionResource extends JsonResource
             'percentage' => $this->percentage,
             'quantity' => $this->quantity,
             'date_register' => $this->dateRegister,
-            'date_current' => $this->dateCurrent,
             'period' => $this->period,
             'period_detail' => $periodDetail,
 
@@ -64,9 +90,9 @@ class DetailAttentionResource extends JsonResource
                 : null,
                 
             'product_name' => $this->product?->name,
-            'attention_id' => $this->attention_id,
-            'attention_code' => $this->attention?->correlativo,
-            'plate' => $this->attention?->vehicle?->plate,
+            'budget_sheet_id' => $this->budget_sheet_id,
+            'budget_sheet_number' => $this->budget_sheet?->number,
+            'plate' => $this->budget_sheet?->attention?->vehicle?->plate,
             'client_name' => $clientFullName,
 
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),

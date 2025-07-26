@@ -72,6 +72,12 @@ class budgetSheet extends Model
         return $this->belongsTo(Attention::class, 'attention_id');
     }
 
+    public function getDetails($id)
+    {
+        $list = DetailBudget::where('budget_sheet_id', $id)->with(['worker', 'service', 'product'])->get();
+        return $list;
+    }
+
     public static function getBudgetSheet($id)
     {
         // Consulta para recuperar el presupuesto y relaciones, incluyendo registros eliminados

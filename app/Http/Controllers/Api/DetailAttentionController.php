@@ -13,6 +13,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 
 class DetailAttentionController extends Controller
@@ -22,7 +23,7 @@ class DetailAttentionController extends Controller
     public function index(IndexDetailAttentionRequest $request)
     {
         $query = DetailAttention::query()
-            ->with(['attention.vehicle', 'attention.vehicle.person']) // relaciones necesarias
+            ->with(['attention.vehicle', 'attention.vehicle.person', 'service']) // añade 'service' a los with
             ->when($request->filled('plate'), function ($q) use ($request) {
                 $q->whereHas('attention.vehicle', function ($subQuery) use ($request) {
                     $subQuery->whereRaw('UPPER(plate) LIKE ?', ['%' . strtoupper($request->input('plate')) . '%']);
@@ -41,6 +42,12 @@ class DetailAttentionController extends Controller
                 $q->whereHas('attention', function ($subQuery) use ($correlativo) {
                     $subQuery->whereRaw('UPPER(correlativo) LIKE ?', ["%$correlativo%"]);
                 });
+            })
+            ->when($request->filled('service_name'), function ($q) use ($request) {
+                $service = strtoupper($request->input('service_name'));
+                $q->whereHas('service', function ($subQuery) use ($service) {
+                    $subQuery->whereRaw('UPPER(name) LIKE ?', ["%$service%"]);
+                });
             });
 
         return $this->getFilteredResults(
@@ -51,6 +58,7 @@ class DetailAttentionController extends Controller
             DetailAttentionResource::class
         );
     }
+
 
     private function getServiciosData(IndexDetailAttentionRequest $request)
     {
@@ -399,49 +407,65 @@ class DetailAttentionController extends Controller
      * )
      */
 
+
+
     public function update(Request $request, int $id)
     {
         $detail = DetailAttention::find($id);
 
-        if ($detail === null) {
+        if (!$detail) {
             return response()->json(['message' => 'Detail not found'], 404);
         }
 
         $validator = validator()->make($request->all(), [
-            'quantity' => 'required|numeric',
-            'salePrice' => 'required|numeric',
+            'quantity' => 'sometimes|required|numeric',
+            'salePrice' => 'sometimes|required|numeric',
+            'status' => ['nullable', 'string', Rule::in(['Pendiente', 'En Curso', 'Finalizado'])],
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
-        $data = [
-            'quantity' => $request->input('quantity'),
-            'saleprice' => $request->input('salePrice'),
-        ];
+        $data = [];
 
-        $detail->update($data);
+        if ($request->has('quantity')) {
+            $data['quantity'] = $request->input('quantity');
+        }
 
-        $object = Attention::find($detail->attention_id);
+        if ($request->has('salePrice')) {
+            $data['saleprice'] = $request->input('salePrice');
+        }
 
-        $object->totalProducts = $object->details()->where('type', 'Product')->get()->sum(function ($detail) {
-            return $detail->saleprice * $detail->quantity;
-        });
+        if ($request->has('status')) {
+            $data['status'] = $request->input('status');
+        }
 
+        // Solo actualiza si se envió al menos un campo
+        if (!empty($data)) {
+            $detail->update($data);
 
-        $object->totalService = $object->details()->where('type', 'Service')->get()->sum(function ($detail) {
-            return $detail->saleprice * $detail->quantity;
-        });
+            // Recalcular totales solo si se actualizó cantidad o precio
+            if (isset($data['quantity']) || isset($data['saleprice'])) {
+                $object = Attention::find($detail->attention_id);
 
-        $object->total = $object->details()->get()->sum(function ($detail) {
-            return $detail->saleprice * $detail->quantity;
-        });
-        $object->save();
+                $details = $object->details()->get();
 
-        $detail = DetailAttention::find($detail->id);
+                $object->totalProducts = $details->where('type', 'Product')
+                    ->sum(fn($d) => $d->saleprice * $d->quantity);
 
-        return response()->json($detail);
+                $object->totalService = $details->where('type', 'Service')
+                    ->sum(fn($d) => $d->saleprice * $d->quantity);
+
+                $object->total = $details->sum(fn($d) => $d->saleprice * $d->quantity);
+
+                $object->save();
+            }
+        }
+
+        return response()->json($detail->fresh());
     }
+
+
 
 }

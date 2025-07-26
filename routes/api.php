@@ -425,4 +425,8 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
             'update' => 'docalmacen.update',
             'destroy' => 'docalmacen.destroy'
         ]);
+
+        require __DIR__ . '/Api/DetailBudgetApi.php';     //SCNNER
+
+        
 });
