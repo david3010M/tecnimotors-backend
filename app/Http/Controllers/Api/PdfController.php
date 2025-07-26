@@ -25,7 +25,7 @@ class PdfController extends Controller
         $object = Attention::getAttention($id);
 
         //        HORIZONTAL
-        $pdf = Pdf::loadView('orden-servicio', [
+        $pdf = Pdf::loadView('orden-servicio2', [
             'order' => $object,
         ]);
         //        $pdf->setPaper('a3', 'landscape');
@@ -54,14 +54,14 @@ class PdfController extends Controller
         //        return $pdf->download('orden-servicio.pdf');
     }
 
-    public function getServiceOrder2($id)
-    {
-        $object = Attention::getAttention($id);
-        $pdf = Pdf::loadView('orden-servicio2', [
-            'attention' => $object,
-        ]);
-        return $pdf->stream('orden-servicio2.pdf');
-    }
+    // public function getServiceOrder2($id)
+    // {
+    //     $object = Attention::getAttention($id);
+    //     $pdf = Pdf::loadView('orden-servicio2', [
+    //         'attention' => $object,
+    //     ]);
+    //     return $pdf->stream('orden-servicio2.pdf');
+    // }
 
     /**
      * @OA\Get(

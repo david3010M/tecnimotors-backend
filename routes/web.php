@@ -24,7 +24,7 @@ Route::get('/', function () {
 //Route::get('ordenservicio', [PdfController::class, 'index']);
 Route::get('ordenservicio2/{id}', [PdfController::class, 'getServiceOrder'])->name('ordenservicio2');
 Route::get('presupuesto/{id}', [PdfController::class, 'getBudgetSheet'])->name('presupuesto');
-Route::get('ordenservicio/{id}', [PdfController::class, 'getServiceOrder2'])->name('ordenservicio');
+Route::get('ordenservicio/{id}', [PdfController::class, 'getServiceOrder'])->name('ordenservicio');
 Route::get('evidencias/{id}', [PdfController::class, 'getEvidenceByAttention'])->name('evidencias');
 Route::get('pruebaFacturador', [SaleController::class, 'pruebaFacturador'])->name('pruebaFacturador');
 Route::get('documentoA4/{id}', [PdfController::class, 'documentoA4'])->name('documentoA4');

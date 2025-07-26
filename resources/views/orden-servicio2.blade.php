@@ -1,553 +1,393 @@
-@php use Carbon\Carbon; @endphp
 @php
-    function fuelLevelToFraction($fuelLevel)
+    use Carbon\Carbon;
+
+    function fuelLevelToFractionText($fuelLevel)
     {
         $fractions = [
-            0 => 'Tanque Vacio',
-            2 => '20% Tanque',
-            4 => '40% Tanque',
-            6 => '60% Tanque',
-            8 => '80% Tanque',
+            0 => 'Tanque Vacío',
+            2 => '20%',
+            4 => '40%',
+            6 => '60%',
+            8 => '80%',
             10 => 'Tanque Lleno',
         ];
-
         return $fractions[$fuelLevel] ?? 'N/A';
     }
+
+    function fuelColor($level)
+    {
+        return match (true) {
+            $level <= 2 => '#e74c3c', // rojo
+            $level <= 4 => '#e67e22', // naranja
+            $level <= 6 => '#f1c40f', // amarillo
+            $level <= 8 => '#2ecc71', // verde claro
+            default => '#27ae60',     // verde
+        };
+    }
+
+    $fuelLevel = $order->fuelLevel;
+    $fuelHeight = ($fuelLevel / 10) * 100; // en porcentaje
+    $fuelText = fuelLevelToFractionText($fuelLevel);
+    $fuelColor = fuelColor($fuelLevel);
 @endphp
-    <!DOCTYPE html>
+
+
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hoja de Servicio</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>Orden de Trabajo</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-            letter-spacing: 0.5px;
-        }
-
-        html,
         body {
-            width: 100%;
-            height: 100%;
+            font-family: Arial, sans-serif;
+            font-size: 10px;
+            margin: 5px;
         }
 
-        body {
-            padding-top: 30px;
-            padding-bottom: 30px;
-        }
-
-        td,
-        th {
-            padding: 2px;
-        }
-
-        .headerImage {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-        }
-
-        .footerImage {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-        }
-
-        .content {
-            padding-left: 30px;
-            padding-right: 30px;
-        }
-
-        .contentImage {
-            width: 100%;
-            text-align: right;
-        }
-
-        .logoImage {
-            width: auto;
-            height: 60px;
-        }
-
-        .titlePresupuesto {
-            font-size: 25px;
-            font-weight: bolder;
-            text-align: right;
-            /*margin-top: 20px;*/
-            /*margin-bottom: 20px;*/
-            color: #007AC2;
-        }
-
-        .numberPresupuesto {
-            font-size: 17px;
-            font-weight: bolder;
-            text-align: right;
-            /*margin-top: 20px;*/
-            /*margin-bottom: 20px;*/
-            color: #007AC2;
-        }
-
-        .blue {
-            color: #007AC2;
-        }
-
-        .strong {
-            font-weight: bolder;
-        }
-
-        .gris {
-            color: #3b3b3b;
+        .title,
+        .number {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 10px;
+            margin-bottom: 15px;
         }
 
-        .tableInfo {
-            margin-top: 30px;
+        th,
+        td {
+            border: 1px solid #000;
+            padding: 3px;
         }
 
-        .tablePeople {
-            margin-top: 30px;
-            font-size: 10px;
-            border: 1px solid #007AC2;
-        }
-
-        .tablePeople td,
-        .tablePeople th {
-            border: 1px solid #007AC2;
-        }
-
-        .tablePeople th {
-            background-color: #007AC2;
-            color: white;
-            text-align: left;
-        }
-
-        .tableDetail {
-            margin-top: 25px;
-        }
-
-        .p10 {
-            padding: 10px;
-        }
-
-        .right {
-            text-align: right;
-        }
-
-        .left {
-            text-align: left;
+        .no-border {
+            border: none;
         }
 
         .center {
             text-align: center;
         }
 
-        .font-10 {
-            font-size: 10px;
-        }
-
-        .font-12 {
-            font-size: 12px;
-        }
-
-        .font-14 {
-            font-size: 14px;
-        }
-
-        .font-16 {
-            font-size: 16px;
-        }
-
-        .margin20 {
-            margin-top: 20px;
-        }
-
-        .bolder {
-            font-weight: bolder;
-        }
-
-        .tablePeople td.left {
-            padding: 2px;
-        }
-
-        .tablePeople td.right {
-            padding: 2px;
-        }
-
-        .tableDetail th {
-            background-color: #007AC2;
-            color: white;
-            padding: 5px;
-            font-weight: bolder;
-        }
-
-        .tableDetail td {
-            border-bottom: 1px solid #3b3b3b;
-        }
-
-        .id {
-            width: 5%;
-            text-align: center;
-        }
-
-        .description {
-            width: 50%;
-        }
-
-        .unit {
-            width: 10%;
-            text-align: center;
-        }
-
-        .quantity {
-            width: 10%;
-            text-align: center;
-        }
-
-        .unitPrice {
-            width: 10%;
+        .right {
             text-align: right;
         }
 
-        .sailPrice {
-            width: 15%;
-            text-align: right;
+        .bold {
+            font-weight: bold;
         }
 
-        .sailTotal {
-            width: 15%;
-            text-align: right;
+        .header-table td {
+            border: none;
         }
 
-        .tableTotal {
-            margin-top: 30px;
+        .logo {
+            height: 50px;
         }
 
-        .w50 {
-            width: 50%;
-        }
 
-        .w40 {
-            width: 40%;
-        }
+    .firmas-container {
+        text-align: center;
+        margin-top: 25px;
+    }
 
-        .w20 {
-            width: 20%;
-        }
+    .firmas-container .firma {
+        display: inline-block;
+        width: 40%;
+        margin: 30px 20px 0 20px;
+        border-top: 1px solid #000;
+        padding-top: 6px;
+        font-size: 14px;
+    }
 
-        .totalInfo {
-            border-collapse: collapse;
-            font-size: 16px;
-            background-color: #f2f2f2;
-        }
 
-        .observaciones {
-            margin-top: 30px;
-        }
-
-        .listaObservaciones {
-            padding-left: 20px;
-            color: #3b3b3b;
-        }
-
-        .listaObservaciones li {
-            margin-top: 2px;
+        .footer p {
+            margin: 20ox;
             text-align: justify;
         }
 
-        .tableFirmas {
-            margin-top: 100px;
+        .checkboxes label {
+            width: 24%;
+            display: inline-block;
+            margin-bottom: 3px;
         }
 
-        .borderTop {
-            border-top: 1px solid #3b3b3b;
-        }
-
-        .text-sm {
-            font-size: 9px;
-        }
-
-        .w40 {
-            width: 40%;
-        }
-
-        .w25 {
-            width: 25%;
-        }
-
-        .w10 {
-            width: 10%;
-        }
-
-        .w30 {
-            width: 30%;
-        }
+        .tank-container {
+    width: 70px;
+    height: 40px;
+    border: 2px solid #333;
+    border-radius: 10px;
+    position: relative;
+    background-color: #f0f0f0;
+    overflow: hidden;
+    margin: auto;
+    margin-top: 5px;
+}
+.tank-fill {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: {{ $fuelColor }};
+    transition: height 0.3s ease-in-out;
+    height: {{ $fuelHeight }}%;
+}
+.tank-label {
+    text-align: center;
+    font-weight: bold;
+    margin-top: 5px;
+}
     </style>
 </head>
 
 <body>
-
-<img class="headerImage" src="{{ asset('img/degraded.png') }}" alt="degraded">
-
-<div class="content">
-
-    <table class="tableInfo">
+    {{-- Cabecera --}}
+    <table class="header-table">
         <tr>
+            <td style="width: 10%">
+                <img src="{{ asset('img/logoTecnimotors.png') }}" width="130" class="logo" alt="Logo">
+            </td>
             <td class="center">
-                <img class="logoImage" src="{{ asset('img/logoTecnimotors.png') }}" alt="logoTecnimotors">
+                <div class="bold">TECNI MOTORS DEL PERÚ</div>
+                <div>División Mantenimiento</div>
+                <div class="bold">Líderes en Gestión del Mantenimiento Automotriz</div>
+                <div>AV. FRANCISCO CUNEO N° 1150 - URB. PATACZA - CHICLAYO</div>
+                <div>Cel: 952085190 - RPC: 979392964 - Telf: 237348</div>
+                <div>Email: cesargutierrez@tecnimotorsdelperu.com</div>
             </td>
             <td class="right">
-                <div class="titlePresupuesto">ORDEN ATENCIÓN</div>
-                <div class="numberPresupuesto">N° {{ $attention->number }}</div>
-            </td>
-        </tr>
-        <tr>
-            <td class="center gray w40">
-                <div class="text-sm">RUC: 20546989656</div>
-                <div class="text-sm">Dir: Mz. A Lt. 7 Urb. San Manuel - Prolongación Bolognesi</div>
-                <div class="text-sm">Telfono: 986202388 - 941515301</div>
-            </td>
-            <td class="right">
-                <div><strong>{{ Carbon::parse($attention->created_at)->format('d-m-Y') }}</strong></div>
+                <div class="title">ORDEN DE TRABAJO</div>
+                <div class="number" >N° {{ $order->number }}</div>
+                <div>Fecha: {{ Carbon::parse($order->created_at)->format('d/m/Y') }}</div>
             </td>
         </tr>
     </table>
 
-    {{-- <table class="tablePeople font-14">
+    {{-- Información del Cliente --}}
+    <table style="width: 100%;">
         <tr>
-            <td class="left w50 font-12 gris">
-                <strong>CLIENTE</strong>
+            <th style="text-align: left;">Cliente</th>
+            <td colspan="5">
+                @if ($order->vehicle->person->typeofDocument == 'DNI')
+                    {{ $order->vehicle->person->names }} {{ $order->vehicle->person->fatherSurname }}
+                    {{ $order->vehicle->person->motherSurname }}
+                @else
+                    {{ $order->vehicle->person->businessName }}
+                @endif
             </td>
-            <td class="right w50 font-12 gris">
-                <strong>AUTOMOVIL</strong>
-            </td>
+        </tr>
+        <tr>
+            <th style="text-align: left;">Dirección</th>
+            <td colspan="5">{{ $order->vehicle->person->address }}</td>
         </tr>
 
         <tr>
-            <td class="left w50 blue bolder">
-                <strong style="text-transform: uppercase;">
-                    @if ($attention->vehicle->person->typeofDocument == 'DNI')
-                        {{ $attention->vehicle->person->names .
-                            ' ' .
-                            $attention->vehicle->person->fatherSurname .
-                            ' ' .
-                            $attention->vehicle->person->motherSurname }}
-                    @elseif($attention->vehicle->person->typeofDocument == 'RUC')
-                        {{ $attention->vehicle->person->businessName }}
+            <th style="text-align: left;">Responsable</th>
+            <td colspan="5">{{ $order->vehicle->person->representativeNames }}</td>
+        </tr>
+        <tr>
+            <th style="text-align: left;">RUC / DNI</th>
+            <td>{{ $order->vehicle->person->documentNumber }}</td>
+            <th style="text-align: left;">Teléfono</th>
+            <td colspan="3">{{ $order->vehicle->person->phone }}</td>
+        </tr>
+        <tr>
+            <th style="text-align: left;">Email</th>
+            <td colspan="5">{{ $order->vehicle->person->email }}</td>
+        </tr>
+    </table>
+
+
+    {{-- Información del Vehículo --}}
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+            <th style="text-align: left;">Tipo</th>
+            <td>{{ $order->vehicle->typeVehicle?->name ?? '' }}</td>
+
+            <th style="text-align: left;">Marca</th>
+            <td>{{ $order->vehicle->vehicleModel?->brand?->name ?? '' }}</td>
+
+            <th style="text-align: left;">Modelo</th>
+            <td>{{ $order->vehicle->vehicleModel?->name ?? '' }}</td>
+        </tr>
+        <tr>
+            <th style="text-align: left;">Placa</th>
+            <td>{{ $order->vehicle?->plate ?? '' }}</td>
+
+            <th style="text-align: left;">Chasis</th>
+            <td>{{ $order->vehicle?->chasis ?? '' }}</td>
+
+            <th style="text-align: left;">Motor</th>
+            <td>{{ $order->vehicle?->motor ?? '' }}</td>
+        </tr>
+        <tr>
+            <th style="text-align: left;">Kilometraje</th>
+            <td>{{ intval($order->km) }}</td>
+
+            <th style="text-align: left;">Año</th>
+            <td>{{ $order->vehicle?->year ?? '' }}</td>
+
+            <th style="text-align: left;">Bin</th>
+            <td>{{ $order->vehicle?->codeBin ?? '' }}</td>
+        </tr>
+    </table>
+
+{{-- Detalles de servicios --}}
+<table style="width: 100%; border-collapse: collapse;">
+    <thead>
+        <tr>
+            <th style="width: 5%; text-align: center;">N°</th>
+            <th style="text-align: left;">Descripción</th>
+            <th style="width: 20%; text-align: center;">Monto</th>
+        </tr>
+    </thead>
+    <tbody>
+        @php
+            $minRows = 12;
+            $totalRows = max($order->details->count(), $minRows);
+        @endphp
+
+        @for ($i = 0; $i < $totalRows; $i++)
+            <tr>
+                <td style="text-align: center;">
+                    {{ $i + 1 }}
+                </td>
+                <td>
+                    {{ $order->details[$i]->service->name ?? $order->details[$i]->product->name ?? '' }}
+                </td>
+                <td style="text-align: center;">
+                    @if (isset($order->details[$i]))
+                        S/ {{ number_format($order->details[$i]->amount ?? 0, 2) }}
                     @endif
-                </strong>
-            </td>
-            <td style="text-transform: uppercase;" class="right w50 blue bolder">
-                <strong>{{ $attention->vehicle->brand->name }}</strong></td>
-        </tr>
-        <br>
-        <tr>
-            <td class="left w50">{{ $attention->vehicle->person->documentNumber }}</td>
-            <td class="right w50">
-                {{ $attention->vehicle->plate }}
-            </td>
-        </tr>
+                </td>
+            </tr>
+        @endfor
+    </tbody>
+</table>
 
+<br>
+{{-- ELEMENTOS --}}
+<table class="table table-bordered">
+    <thead>
         <tr>
-            <td class="left w50">{{ $attention->vehicle->person->address }}</td>
-            <td class="right w50">{{ $attention->vehicle->model }}</td>
+            <th colspan="7" class="text-center">Elementos Verificados</th>
         </tr>
-
-        <tr>
-            <td class="left w50">{{ $attention->vehicle->person->phone }}</td>
-            <td class="right w50">{{ $attention->vehicle->chasis }}</td>
-        </tr>
-
-        <tr>
-            <td class="left w50">
-                @if ($attention->vehicle->person->typeofDocument == 'DNI')
-                    {{ $attention->vehicle->person->email }}
-                @elseif($attention->vehicle->person->typeofDocument == 'RUC')
-                    {{ $attention->vehicle->person->representativeNames .' '.$attention->vehicle->person->representativeDni }}
-                @endif
-            </td>
-            <td class="right w50">{{ $attention->vehicle->motor }}</td>
-        </tr>
-        <tr>
-            <
-            <td class="left w50">{{ $attention->arrivalDate }}</td>
-            <td class="right w50">{{ $attention->vehicle->km }}</td>
-        </tr>
-        <tr>
-            <td class="left w50">{{ $attention->deliveryDate }}</td>
-            <td class="right w50">{{ $attention->vehicle->year }}</td>
-        </tr>
-    </table> --}}
-
-    <table class="tablePeople font-12">
-        <tr>
-            <th class="w10 blue">
-                Cliente
-            </th>
-            <td class="w50">
-                @if ($attention->vehicle->person->typeofDocument == 'DNI')
-                    {{ $attention->vehicle->person->names .
-                        ' ' .
-                        $attention->vehicle->person->fatherSurname .
-                        ' ' .
-                        $attention->vehicle->person->motherSurname}}
-                @elseif($attention->vehicle->person->typeofDocument == 'RUC')
-                    {{ $attention->vehicle->person->businessName}}
-                @endif
-            </td>
-            <th class="w20 blue">
-                Fecha de Entrada
-            </th>
-            <td class="w20">
-                {{ Carbon::parse($attention->entryDate)->format('d/m/Y') }}
-            </td>
-        </tr>
-
-        <tr>
-            <th class="w10 blue">
-                Placa
-            </th>
-            <td class="w50">
-                {{ $attention->vehicle->plate }}
-            </td>
-            <th class="w20 blue">
-                Fecha de Entrega
-            </th>
-            <td class="w20">
-                {{ Carbon::parse($attention->deliveryDate)->format('d/m/Y') }}
-            </td>
-        </tr>
-
-        <tr>
-            <th class="w10 blue">
-                Marca
-            </th>
-            <td class="w50">
-                {{ $attention->vehicle->vehicleModel->brand->name }}
-            </td>
-            <th class="w20 blue">
-                Km
-            </th>
-            <td class="w20">
-                {{ intval($attention->km) }}
-            </td>
-        </tr>
-
-        <tr>
-            <th class="w10 blue">
-                Modelo
-            </th>
-            <td class="w50">
-                {{ $attention->vehicle->model }}
-            </td>
-            <th class="w20 blue">
-                Año
-            </th>
-            <td class="w20">
-                {{ $attention->vehicle->year }}
-            </td>
-        </tr>
-
-    </table>
-
-
-    <table class="tableDetail font-10">
-        <tr>
-            <th class="id">ITEM</th>
-            <th class="description">DESCRIPCIÓN DE SERVICIOS Y REPUESTOS</th>
-            <th class="unit">UND</th>
-            <th class="quantity">CANT</th>
-            <th class="unitPrice">V. UNIT</th>
-            <th class="sailPrice">V. VENTA</th>
-        </tr>
-
-        <tr>
-            <td colspan="6" class="blue strong center">MANO DE OBRA Y FACTORÍA</td>
-        </tr>
-
+    </thead>
+    <tbody>
         @php
-            $idIncremental = 1;
+            $items = \App\Models\Element::get();
+            $selectedElements = $order->elements->pluck('element_id')->toArray();
+            $chunks = $items->chunk(7);
         @endphp
 
-        @foreach ($attention->details as $detail)
-            @if ($detail->type == 'Service')
-                <tr>
-                    <td class="id">{{ $idIncremental }}</td>
-                    <td class="description" colspan="2">{{ $detail->service->name }}</td>
-                    <td class="quantity">{{ $detail->quantity }}</td>
-                    <td class="sailPrice">S/ {{ $detail->saleprice }}</td>
-                    <td class="sailTotal">S/ {{ number_format($detail->saleprice, 2) }}</td>
-                </tr>
-                @php
-                    $idIncremental++;
-                @endphp
-            @endif
+        @foreach ($chunks as $row)
+            <tr>
+                @foreach ($row as $item)
+                    @php
+                        $isChecked = in_array($item->id, $selectedElements);
+                    @endphp
+                    <td>
+                        <label style="color: black; {{ $isChecked ? 'font-weight: bold;' : '' }}">
+                            <input type="checkbox" name="elements[]" value="{{ $item->id }}"
+                                {{ $isChecked ? 'checked' : '' }}
+                                style="{{ $isChecked ? 'accent-color: green;' : '' }}">
+                            {{ $item->name }}
+                        </label>
+                    </td>
+                @endforeach
+                @for ($i = count($row); $i < 7; $i++)
+                    <td></td>
+                @endfor
+            </tr>
         @endforeach
+    </tbody>
+</table>
 
-        <tr>
-            <td colspan="6" class="blue strong center">REPUESTOS E INSUMOS</td>
-        </tr>
-
-        @php
-            $idIncremental = 1;
-        @endphp
-
-        @foreach ($attention->details as $detail)
-            @if ($detail->type == 'Product')
+<br>
+{{-- Observaciones --}}
+<table style="width: 100%; border: none; border-collapse: collapse;">
+    <tr>
+        <!-- Columna izquierda: Fechas y Asesor -->
+        <td style="vertical-align: top; width: 70%;">
+            <table class="left-data" style="width: 100%; border: 1px solid #ccc; border-collapse: collapse;">
                 <tr>
-                    <td class="id">{{ $idIncremental }}</td>
-                    <td class="description">{{ $detail->product->name }}</td>
-                    <td class="unit">{{ $detail->product->unit->code }}</td>
-                    <td class="quantity">{{ $detail->quantity }}</td>
-                    <td class="unitPrice">S/ {{ $detail->saleprice }}</td>
-                    <td class="sailTotal">S/ {{ number_format(($detail->saleprice*$detail->quantity), 2) }}</td>
-
+                    <th style="border: 1px solid #ccc;">Fecha Ingreso</th>
+                    <td style="border: 1px solid #ccc;">{{ Carbon::parse($order->arrivalDate)->format('d/m/Y') }}</td>
+                    <th style="border: 1px solid #ccc;">Hora Ingreso</th>
+                    <td style="border: 1px solid #ccc;">{{ Carbon::parse($order->arrivalDate)->format('H:i') }}</td>
                 </tr>
-            @endif
-        @endforeach
-    </table>
+                <tr>
+                    <th style="border: 1px solid #ccc;">Fecha Entrega</th>
+                    <td style="border: 1px solid #ccc;">{{ Carbon::parse($order->deliveryDate)->format('d/m/Y') }}</td>
+                    <th style="border: 1px solid #ccc;">Hora Entrega</th>
+                    <td style="border: 1px solid #ccc;">{{ Carbon::parse($order->deliveryDate)->format('H:i') }}</td>
+                </tr>
+                <tr>
+                    <th style="border: 1px solid #ccc;">Asesor del Servicio</th>
+                    <td style="border: 1px solid #ccc;" colspan="3">
+                        {{ $order->worker->person->names }}
+                        {{ $order->worker->person->fatherSurname }}
+                        {{ $order->worker->person->motherSurname }}
+                    </td>
+                </tr>
+            </table>
+        </td>
 
-
-    <div class="observaciones">
-        <p class="p10 bolder gris font-14">OBSERVACIONES</p>
-        <ul class="listaObservaciones font-12">
-            <li> {{ $attention->observations }}</li>
-
-        </ul>
+        <!-- Columna derecha: Combustible -->
+       <td style="vertical-align: top; text-align: center;">
+    <div style="width: 30px; height: 60px; border: 2px solid #999; border-radius: 8px; margin: 0 auto; position: relative; background: #f5f5f5; display: flex; align-items: flex-end; justify-content: center; overflow: hidden;">
+        <div style="
+            width: 100%; 
+            height: {{ ($order->fuelLevel / 10) * 100 }}%; 
+            background-color:
+                {{ 
+                    match (true) {
+                        $order->fuelLevel <= 2 => '#e74c3c',    // rojo
+                        $order->fuelLevel <= 4 => '#e67e22',    // naranja
+                        $order->fuelLevel <= 6 => '#f1c40f',    // amarillo
+                        $order->fuelLevel <= 8 => '#2ecc71',    // verde claro
+                        default => '#27ae60'                    // verde lleno
+                    } 
+                }};
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: bold;
+            font-size: 14px;
+        ">
+            {{ $fuelText }}
+        </div>
     </div>
-    <div class="observaciones">
-        <p class="p10 bolder gris font-14">ELEMENTOS</p>
-        <ul class="listaObservaciones font-12">
-            @foreach ($attention->elements as $element)
-                <li>{{ $element->element->name }}</li>
-            @endforeach
-        </ul>
-    </div>
+</td>
 
-    <div class="observaciones">
-        <p class="p10 gris font-14"> <span style="font-weight:bold;">NIVEL DE COMBUSTIBLE:
-                </span> {{ fuelLevelToFraction($attention->fuelLevel) }}</p>
-        <p class="p10 gris font-14"> <span style="font-weight:bold;">ASESOR DE SERVICIO:
-                </span> {{ $attention->worker->person->names . ' ' . $attention->worker->person->fatherSurname }}</p>
-    </div>
+    </tr>
+</table>
 
 
-</div>
 
+<br>
+    {{-- Footer y firmas --}}
+    <div class="footer">
+        <p><strong>POR LA PRESENTE AUTORIZO</strong> LAS REPARACIONES AQUÍ DESCRITAS CONJUNTAMENTE CON EL MATERIAL
+            QUE SEA NECESARIO USAR EN ELLAS. TAMBIÉN AUTORIZO A USTEDES Y A SUS EMPLEADOS PARA QUE AFIEREN ESTE
+            VEHÍCULO POR LAS CALLES, CARRETERAS U OTROS SITIOS A FIN DE ASEGURAR LAS PRUEBAS O INSPECCIONES
+            PERTINENTES QUE GARANTICEN EL TRABAJO.</p>
+        <p><strong>NOTA:</strong> SE COBRARÁ DERECHO DE GUARDANÍA SI EL VEHÍCULO NO ES RETIRADO EN LAS 48
+            HORAS DESPUÉS DE TERMINADO EL TRABAJO.</p>
 
-<img class="footerImage" src="{{ asset('img/degraded.png') }}" alt="degraded">
+        <div class="firmas-container">
+            <div class="firma">FIRMA ASESOR DE SERVICIO</div>
+            <div class="firma">FIRMA AUTORIZADA DEL CLIENTE</div>
+        </div>
+
+        </div>
+
+   
 </body>
 
 </html>
