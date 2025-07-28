@@ -184,11 +184,11 @@
             <th style="text-align: left;">Dirección</th>
             <td colspan="5">{{ $order->vehicle->person->address }}</td>
         </tr>
-
+<!-- 
         <tr>
             <th style="text-align: left;">Responsable</th>
             <td colspan="5">{{ $order->vehicle->person->representativeNames }}</td>
-        </tr>
+        </tr> -->
         <tr>
             <th style="text-align: left;">RUC / DNI</th>
             <td>{{ $order->vehicle->person->documentNumber }}</td>

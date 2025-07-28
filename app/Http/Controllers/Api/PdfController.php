@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Attention;
 use App\Models\budgetSheet;
+use App\Models\DetailBudget;
 use App\Models\Guide;
 use App\Models\Moviment;
 use App\Models\Note;
@@ -38,9 +39,13 @@ class PdfController extends Controller
     public function getBudgetSheet($id)
     {
         $object = budgetSheet::getBudgetSheet($id);
+         $details = DetailBudget::with(['service', 'product'])
+                ->where('budget_sheet_id', $id)
+                ->get();
 
         $pdf = Pdf::loadView('presupuesto', [
             'budgetsheet' => $object,
+            'details' => $details,
         ]);
 
         //        $pdf->setPaper('a4', 'landscape');
