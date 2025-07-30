@@ -86,6 +86,9 @@ class BudgetSheetController extends Controller
         $personId = $request->query('person_id');
         $vehiclePlate = $request->query('vehicle_plate');
 
+        $from = $request->query('from');
+        $to = $request->query('to');
+
         // Consulta base, incluyendo las relaciones necesarias
         $query = BudgetSheet::with(['attention.vehicle.person', 'attention.concession']);
 
@@ -112,6 +115,19 @@ class BudgetSheetController extends Controller
                 $q->whereRaw('LOWER(plate) LIKE ?', ['%' . strtolower($vehiclePlate) . '%']);
             });
         }
+
+        // Filtro por fecha (created_at)
+        if ($from && $to) {
+            $query->whereBetween('created_at', [
+                Carbon::parse($from)->startOfDay(),
+                Carbon::parse($to)->endOfDay()
+            ]);
+        } elseif ($from) {
+            $query->where('created_at', '>=', Carbon::parse($from)->startOfDay());
+        } elseif ($to) {
+            $query->where('created_at', '<=', Carbon::parse($to)->endOfDay());
+        }
+
 
         // Obtenemos la paginación completa con los filtros aplicados
         $budgetSheets = $query->orderBy('id', 'desc')->paginate(15);

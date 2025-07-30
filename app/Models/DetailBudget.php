@@ -58,7 +58,7 @@ class DetailBudget extends Model
 
     public function budget_sheet()
     {
-        return $this->belongsTo(BudgetSheet::class, 'budget_sheet_id');
+        return $this->belongsTo(budgetSheet::class, 'budget_sheet_id');
     }
 
     public function worker()
