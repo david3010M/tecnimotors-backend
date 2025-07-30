@@ -439,6 +439,12 @@ class DetailAttentionController extends Controller
 
         if ($request->has('status')) {
             $data['status'] = $request->input('status');
+
+            if ($request->input('status') === 'Finalizado') {
+                $data['dateCurrent'] = now(); // Usa Carbon::now() o helper now()
+            }else{
+                $data['dateCurrent'] = null;
+            }
         }
 
         // Solo actualiza si se envió al menos un campo

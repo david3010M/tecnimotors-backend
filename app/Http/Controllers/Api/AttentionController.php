@@ -71,7 +71,7 @@ class AttentionController extends Controller
         // Obtén el ID del vehículo y el estado de atención desde la solicitud
         $vehicleId = $request->input('vehicle_id');
         $attentionStatus = $request->input('attention_status');
-        $isBudgetActive = $request->input('is_budget_active');
+        $isBudgetActive = $request->input('is_budget_active', '');
         $number = $request->input('number');
 
         // Consulta base para Attention con relaciones que incluyen eliminados
@@ -116,17 +116,21 @@ class AttentionController extends Controller
         }
 
 
-        if (!is_null($isBudgetActive)) {
-            if ($isBudgetActive) {
+        if (($isBudgetActive!='')) {
+         
+            if ($isBudgetActive == '1') {
                 $query->whereHas('budgetSheet', function ($q) {
                     $q->whereNull('deleted_at');
                 });
             } else {
-                $query->whereDoesntHave('budgetSheet', function ($q) {
-                    $q->whereNull('deleted_at');
-                });
+                $query->whereDoesntHave('budgetSheet')
+                    ->orWhereHas('budgetSheet', function ($q) {
+                        $q->whereNotNull('deleted_at');
+                    });
             }
         }
+
+
 
         // Obtén la paginación con 15 registros por página (esto incluye el total)
         $objects = $query->orderBy('id', 'desc')->paginate(15);
