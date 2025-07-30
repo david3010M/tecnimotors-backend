@@ -81,21 +81,36 @@ class BudgetSheetController extends Controller
     public function index(Request $request)
     {
         // Obtenemos los filtros de la solicitud
-        $attentionVehicleId = $request->query('attention_vehicle_id');
         $status = $request->query('status');
+        $number = $request->query('number');
+        $personId = $request->query('person_id');
+        $vehiclePlate = $request->query('vehicle_plate');
 
-        // Consulta base, incluyendo las relaciones hasta `person`
-        $query = BudgetSheet::with(['attention', 'attention.concession']);
+        // Consulta base, incluyendo las relaciones necesarias
+        $query = BudgetSheet::with(['attention.vehicle.person', 'attention.concession']);
 
-        // Aplicamos filtros si se proporcionan
-        if ($attentionVehicleId) {
-            $query->whereHas('attention', function ($q) use ($attentionVehicleId) {
-                $q->where('vehicle_id', $attentionVehicleId);
+        // Filtro por estado
+        if (!empty($status)) {
+            $query->where('status', $status);
+        }
+
+        // Filtro por número (insensible a mayúsculas/minúsculas)
+        if (!empty($number)) {
+            $query->whereRaw('LOWER(number) LIKE ?', ['%' . strtolower($number) . '%']);
+        }
+
+        // Filtro por person_id (desde relación attention->vehicle)
+        if (!empty($personId)) {
+            $query->whereHas('attention.vehicle', function ($q) use ($personId) {
+                $q->where('person_id', $personId);
             });
         }
 
-        if ($status) {
-            $query->where('status', $status);
+        // Filtro por placa del vehículo (insensible a mayúsculas/minúsculas)
+        if (!empty($vehiclePlate)) {
+            $query->whereHas('attention.vehicle', function ($q) use ($vehiclePlate) {
+                $q->whereRaw('LOWER(plate) LIKE ?', ['%' . strtolower($vehiclePlate) . '%']);
+            });
         }
 
         // Obtenemos la paginación completa con los filtros aplicados
@@ -104,8 +119,7 @@ class BudgetSheetController extends Controller
         // Devolvemos los datos paginados como respuesta JSON
         return response()->json([
             'total' => $budgetSheets->total(),
-           'data' => BudgetSheetResource::collection($budgetSheets->items())->toArray($request),
-
+            'data' => BudgetSheetResource::collection($budgetSheets->items())->toArray($request),
             'current_page' => $budgetSheets->currentPage(),
             'last_page' => $budgetSheets->lastPage(),
             'per_page' => $budgetSheets->perPage(),
@@ -117,6 +131,7 @@ class BudgetSheetController extends Controller
             'to' => $budgetSheets->lastItem(),
         ]);
     }
+
 
 
     /**

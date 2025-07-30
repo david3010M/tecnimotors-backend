@@ -36,7 +36,7 @@ class StoreBudgetSheetRequest extends StoreRequest
             'details.*.saleprice.numeric' => 'El campo saleprice debe ser un número.',
             'details.*.quantity.required' => 'El campo quantity es obligatorio.',
             'details.*.quantity.integer' => 'El campo quantity debe ser un número entero.',
-            'details.*.comment.string' => 'El campo comment debe ser una cadena de texto.',
+            // 'details.*.comment.string' => 'El campo comment debe ser una cadena de texto.',
             'details.*.service_id.exists' => 'El campo service_id debe existir en la tabla services.',
             'details.*.product_id.exists' => 'El campo product_id debe existir en la tabla products.',
             'attention_id.required' => 'El campo attention_id es obligatorio.',
