@@ -69,32 +69,35 @@ class AttentionController extends Controller
     public function index(Request $request)
     {
         // Obtén el ID del vehículo y el estado de atención desde la solicitud
-        $vehicleId       = $request->input('vehicle_id');
+        $vehicleId = $request->input('vehicle_id');
         $attentionStatus = $request->input('attention_status');
+        $isBudgetActive = $request->input('is_budget_active');
+        $number = $request->input('number');
 
         // Consulta base para Attention con relaciones que incluyen eliminados
         $query = Attention::with([
-            'worker.person'  => function ($query) {
+            'worker.person' => function ($query) {
                 $query->withTrashed();
             },
-            'vehicle'        => function ($query) {
+            'vehicle' => function ($query) {
                 $query->withTrashed();
             },
             'vehicle.person' => function ($query) {
                 $query->withTrashed();
             },
-            'details'        => function ($query) {
+            'details' => function ($query) {
 
             },
-            'routeImages'    => function ($query) {
+            'routeImages' => function ($query) {
 
             },
-            'elements'       => function ($query) {
+            'elements' => function ($query) {
                 $query->withTrashed();
             },
-            'concession'     => function ($query) {
+            'concession' => function ($query) {
 
             },
+            'budgetSheet'
         ]);
 
         // Filtra por ID de vehículo si se proporciona
@@ -107,30 +110,48 @@ class AttentionController extends Controller
             $query->where('status', $attentionStatus);
         }
 
+        // Filtra por número de atención si se proporciona
+        if ($number) {
+            $query->whereRaw('LOWER(number) LIKE ?', ['%' . strtolower($number) . '%']);
+        }
+
+
+        if (!is_null($isBudgetActive)) {
+            if ($isBudgetActive) {
+                $query->whereHas('budgetSheet', function ($q) {
+                    $q->whereNull('deleted_at');
+                });
+            } else {
+                $query->whereDoesntHave('budgetSheet', function ($q) {
+                    $q->whereNull('deleted_at');
+                });
+            }
+        }
+
         // Obtén la paginación con 15 registros por página (esto incluye el total)
         $objects = $query->orderBy('id', 'desc')->paginate(15);
 
         // Transforma cada elemento de la colección paginada
         $objects->getCollection()->transform(function ($attention) {
             $attention->elements = $attention->getElements($attention->id);
-            $attention->details  = $attention->getDetails($attention->id);
-            $attention->task     = $attention->getTask($attention->id);
+            $attention->details = $attention->getDetails($attention->id);
+            $attention->task = $attention->getTask($attention->id);
             return $attention;
         });
 
         // Devuelve la colección transformada como respuesta JSON, incluyendo toda la información de la paginación
         return response()->json([
-            'total'          => $objects->total(),           // Total de registros
-            'data'           => $objects->items(),           // Los registros de la página actual
-            'current_page'   => $objects->currentPage(),     // Página actual
-            'last_page'      => $objects->lastPage(),        // Última página disponible
-            'per_page'       => $objects->perPage(),         // Cantidad de registros por página
+            'total' => $objects->total(),           // Total de registros
+            'data' => $objects->items(),           // Los registros de la página actual
+            'current_page' => $objects->currentPage(),     // Página actual
+            'last_page' => $objects->lastPage(),        // Última página disponible
+            'per_page' => $objects->perPage(),         // Cantidad de registros por página
             'first_page_url' => $objects->url(1),            // URL de la primera página
-            'from'           => $objects->firstItem(),       // Primer registro de la página actual
-            'next_page_url'  => $objects->nextPageUrl(),     // URL de la siguiente página
-            'path'           => $objects->path(),            // Ruta base de la paginación
-            'prev_page_url'  => $objects->previousPageUrl(), // URL de la página anterior
-            'to'             => $objects->lastItem(),        // Último registro de la página actual
+            'from' => $objects->firstItem(),       // Primer registro de la página actual
+            'next_page_url' => $objects->nextPageUrl(),     // URL de la siguiente página
+            'path' => $objects->path(),            // Ruta base de la paginación
+            'prev_page_url' => $objects->previousPageUrl(), // URL de la página anterior
+            'to' => $objects->lastItem(),        // Último registro de la página actual
         ]);
     }
 
@@ -173,14 +194,14 @@ class AttentionController extends Controller
     public function show(int $id)
     {
         $object = Attention::find($id);
-        if (! $object) {
+        if (!$object) {
             return response()->json(['message' => 'Attention not found'], 404);
         }
 
-        $object           = Attention::with(['worker.person', 'vehicle', 'vehicle.person', 'details', 'routeImages', 'elements', 'concession'])->find($id);
+        $object = Attention::with(['worker.person', 'vehicle', 'vehicle.person', 'details', 'routeImages', 'elements', 'concession'])->find($id);
         $object->elements = $object->getElements($object->id);
-        $object->details  = $object->getDetails($object->id);
-        $object->task     = $object->getTask($object->id);
+        $object->details = $object->getDetails($object->id);
+        $object->task = $object->getTask($object->id);
         return response()->json($object);
     }
 
@@ -226,12 +247,20 @@ class AttentionController extends Controller
 
         $attention = Attention::where('number', $number)->first();
 
-        if (! $attention) {
+        if (!$attention) {
             return response()->json(['message' => 'Attention not found'], 404);
         }
 
-        $object = Attention::with(['worker.person', 'vehicle', 'vehicle.person',
-            'details', 'details.product.unit', 'routeImages', 'elements', 'concession'])
+        $object = Attention::with([
+            'worker.person',
+            'vehicle',
+            'vehicle.person',
+            'details',
+            'details.product.unit',
+            'routeImages',
+            'elements',
+            'concession'
+        ])
             ->where('number', $number)->first();
         $object->elements = $object->getElements($object->id);
 
@@ -321,29 +350,29 @@ class AttentionController extends Controller
 
         $validator = validator()->make($request->all(), [
 
-            'correlativo'                 => 'required|numeric|unique:attentions,correlativo,NULL,id,deleted_at,NULL',
+            'correlativo' => 'required|numeric|unique:attentions,correlativo,NULL,id,deleted_at,NULL',
 
-            'arrivalDate'                 => 'required',
-            'deliveryDate'                => 'required',
-            'observations'                => 'nullable',
-            'fuelLevel'                   => 'required|in:0,2,4,6,8,10',
-            'km'                          => 'required',
-            'routeImage.*'                => 'nullable|image|mimes:jpeg,png,jpg,gif',
-            'vehicle_id'                  => 'required|exists:vehicles,id',
-            'worker_id'                   => 'required|exists:workers,id',
-            'concession_id'               => 'nullable|exists:concessions,id',
-            'driver'                      => 'nullable|string',
+            'arrivalDate' => 'required',
+            'deliveryDate' => 'required',
+            'observations' => 'nullable',
+            'fuelLevel' => 'required|in:0,2,4,6,8,10',
+            'km' => 'required',
+            'routeImage.*' => 'nullable|image|mimes:jpeg,png,jpg,gif',
+            'vehicle_id' => 'required|exists:vehicles,id',
+            'worker_id' => 'required|exists:workers,id',
+            'concession_id' => 'nullable|exists:concessions,id',
+            'driver' => 'nullable|string',
 
-            'typeMaintenance'             => 'required|in:' . Attention::MAINTENICE_CORRECTIVE . ',' . Attention::MAINTENICE_PREVENTIVE,
+            'typeMaintenance' => 'required|in:' . Attention::MAINTENICE_CORRECTIVE . ',' . Attention::MAINTENICE_PREVENTIVE,
 
-            'elements'                    => 'nullable',
-            'elements.*'                  => 'exists:elements,id',
-            'details'                     => 'nullable',
-            'detailsProducts'             => 'nullable',
+            'elements' => 'nullable',
+            'elements.*' => 'exists:elements,id',
+            'details' => 'nullable',
+            'detailsProducts' => 'nullable',
             'detailsProducts.*.idProduct' => 'required|exists:products,id',
         ]);
 
-        if (! $request->input('details')) {
+        if (!$request->input('details')) {
             return response()->json(['error' => 'Atención sin Servicios'], 409);
         }
 
@@ -352,26 +381,26 @@ class AttentionController extends Controller
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
-        $tipo         = 'OTRS';
-        $resultado    = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM attentions a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
+        $tipo = 'OTRS';
+        $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM attentions a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
         $siguienteNum = (int) $resultado;
 
         $data = [
-            'number'          => $tipo . "-" . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT),
-            'correlativo'     => $request->input('correlativo') ?? null,
-            'arrivalDate'     => $request->input('arrivalDate') ?? null,
-            'deliveryDate'    => $request->input('deliveryDate') ?? null,
-            'observations'    => $request->input('observations') ?? null,
-            'typeofDocument'  => $request->input('typeofDocument') ?? null,
-            'fuelLevel'       => $request->input('fuelLevel') ?? null,
-            'km'              => $request->input('km') ?? null,
-            'routeImage'      => 'ruta.jpg',
-            'vehicle_id'      => $request->input('vehicle_id') ?? null,
-            'driver'          => $request->input('driver') ?? null,
-            'concession_id'   => $request->input('concession_id') ?? null,
+            'number' => $tipo . "-" . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT),
+            'correlativo' => $request->input('correlativo') ?? null,
+            'arrivalDate' => $request->input('arrivalDate') ?? null,
+            'deliveryDate' => $request->input('deliveryDate') ?? null,
+            'observations' => $request->input('observations') ?? null,
+            'typeofDocument' => $request->input('typeofDocument') ?? null,
+            'fuelLevel' => $request->input('fuelLevel') ?? null,
+            'km' => $request->input('km') ?? null,
+            'routeImage' => 'ruta.jpg',
+            'vehicle_id' => $request->input('vehicle_id') ?? null,
+            'driver' => $request->input('driver') ?? null,
+            'concession_id' => $request->input('concession_id') ?? null,
             'typeMaintenance' => $request->input('typeMaintenance') ?? null,
 
-            'worker_id'       => $request->input('worker_id') ?? null,
+            'worker_id' => $request->input('worker_id') ?? null,
         ];
 
         $object = Attention::create($data);
@@ -383,7 +412,7 @@ class AttentionController extends Controller
             $elements = $request->input('elements') ?? [];
             foreach ($elements as $element) {
                 $objectData = [
-                    'element_id'   => $element,
+                    'element_id' => $element,
                     'attention_id' => $object->id,
                 ];
                 ElementForAttention::create($objectData);
@@ -398,21 +427,21 @@ class AttentionController extends Controller
             if ($detailsProducts != []) {
                 foreach ($detailsProducts as $productDetail) {
                     $idProduct = $productDetail['idProduct'];
-                    $quantity  = $productDetail['quantity'] ?? 1;
+                    $quantity = $productDetail['quantity'] ?? 1;
 
                     $product = Product::find($idProduct);
 
                     $objectData = [
-                        'saleprice'    => $product->sale_price ?? '0.00',
-                        'type'         => 'Product',
-                        'quantity'     => $quantity,
-                        'comment'      => '-',
-                        'status'       => 'Generada',
+                        'saleprice' => $product->sale_price ?? '0.00',
+                        'type' => 'Product',
+                        'quantity' => $quantity,
+                        'comment' => '-',
+                        'status' => 'Generada',
                         'dateRegister' => Carbon::now(),
-                        'dateMax'      => null,
-                        'worker_id'    => null,
-                        'product_id'   => $product->id ?? null,
-                        'service_id'   => null,
+                        'dateMax' => null,
+                        'worker_id' => null,
+                        'product_id' => $product->id ?? null,
+                        'service_id' => null,
                         'attention_id' => $object->id,
                     ];
                     $detailProd = DetailAttention::create($objectData);
@@ -425,23 +454,23 @@ class AttentionController extends Controller
 
             //ASIGNAR DETAILS
             $detailsAttentions = $request->input('details') ?? [];
-            $sumServices       = 0;
+            $sumServices = 0;
             foreach ($detailsAttentions as $detail) {
 
-                $service    = Service::find($detail['service_id']);
+                $service = Service::find($detail['service_id']);
                 $objectData = [
-                    'saleprice'    => $service->saleprice ?? '0.00',
-                    'type'         => 'Service',
-                    'comment'      => $detail['comment'] ?? '-',
-                    'status'       => $detail['status'] ?? 'Generada',
+                    'saleprice' => $service->saleprice ?? '0.00',
+                    'type' => 'Service',
+                    'comment' => $detail['comment'] ?? '-',
+                    'status' => $detail['status'] ?? 'Pendiente',
                     'dateRegister' => Carbon::now(),
-                    'dateMax'      => $request->input('deliveryDate') ?? null,
+                    'dateMax' => $request->input('deliveryDate') ?? null,
 
-                    'worker_id'    => $detail['worker_id'],
-                    'product_id'   => $detail['product_id'] ?? null,
-                    'service_id'   => $detail['service_id'],
+                    'worker_id' => $detail['worker_id'],
+                    'product_id' => $detail['product_id'] ?? null,
+                    'service_id' => $detail['service_id'],
                     'attention_id' => $object->id,
-                    'period'       => isset($detail['period']) ? $detail['period'] : 0,
+                    'period' => isset($detail['period']) ? $detail['period'] : 0,
                 ];
                 $detailService = DetailAttention::create($objectData);
                 $sumServices += $detailService->saleprice;
@@ -458,60 +487,60 @@ class AttentionController extends Controller
 
         //IMAGEN
         $images = $request->file('routeImage') ?? [];
-        $index  = 1;
+        $index = 1;
         foreach ($images as $image) {
 
-            $file        = $image;
+            $file = $image;
             $currentTime = now();
-            $filename    = $index . '-' . $currentTime->format('YmdHis') . '_' . $file->getClientOriginalName();
+            $filename = $index . '-' . $currentTime->format('YmdHis') . '_' . $file->getClientOriginalName();
 
             $originalName = str_replace(' ', '_', $file->getClientOriginalName());
-            $filename     = $index . '-' . $currentTime->format('YmdHis') . '_' . $originalName;
-            $path         = $file->storeAs('public/photosSheetService', $filename);
-            $routeImage   = 'https://develop.garzasoft.com/tecnimotors-backend/storage/app/' . $path;
+            $filename = $index . '-' . $currentTime->format('YmdHis') . '_' . $originalName;
+            $path = $file->storeAs('public/photosSheetService', $filename);
+            $routeImage = 'https://develop.garzasoft.com/tecnimotors-backend/storage/app/' . $path;
 
             // $rutaImagen = Storage::url($path);
             $object->routeImage = $routeImage;
             $object->save();
             $index++;
             $dataImage = [
-                'route'        => $routeImage,
+                'route' => $routeImage,
                 'attention_id' => $object->id,
             ];
             RouteImages::create($dataImage);
         }
 
-        $object           = Attention::with(['worker.person', 'vehicle', 'details', 'routeImages', 'concession'])->find($object->id);
+        $object = Attention::with(['worker.person', 'vehicle', 'details', 'routeImages', 'concession'])->find($object->id);
         $object->elements = $object->getElements($object->id);
-        $object->details  = $object->getDetails($object->id);
-        $object->task     = $object->getTask($object->id);
+        $object->details = $object->getDetails($object->id);
+        $object->task = $object->getTask($object->id);
 
         if ($detailsProducts != []) {
 
             $conceptMov = ConceptMov::find(3);
             $docAlmacen = DocAlmacen::create([
                 'sequentialnumber' => $this->nextCorrelative(DocAlmacen::class, 'sequentialnumber'),
-                'date_moviment'    => $object->deliveryDate,
-                'quantity'         => $totalQuantityProducts,
-                'comment'          => 'Salida de Producto por Atención',
-                'typemov'          => DocAlmacen::TIPOMOV_EGRESO,
-                'concept'          => $conceptMov->name,
-                'user_id'          => auth()->user()->id,
-                'person_id'        => $object->vehicle->person->id,
-                'concept_mov_id'   => $conceptMov->id,
-                'attention_id'     => $object->id,
+                'date_moviment' => $object->deliveryDate,
+                'quantity' => $totalQuantityProducts,
+                'comment' => 'Salida de Producto por Atención',
+                'typemov' => DocAlmacen::TIPOMOV_EGRESO,
+                'concept' => $conceptMov->name,
+                'user_id' => auth()->user()->id,
+                'person_id' => $object->vehicle->person->id,
+                'concept_mov_id' => $conceptMov->id,
+                'attention_id' => $object->id,
             ]);
 
             foreach ($detailsProducts as $productDetail) {
                 $idProduct = $productDetail['idProduct'];
-                $quantity  = $productDetail['quantity'] ?? 1;
-                $product   = Product::find($idProduct);
+                $quantity = $productDetail['quantity'] ?? 1;
+                $product = Product::find($idProduct);
                 Docalmacen_details::create([
                     'sequentialnumber' => $this->nextCorrelative(Docalmacen_details::class, 'sequentialnumber'),
-                    'quantity'         => $quantity,
-                    'comment'          => 'Detalle de Salida de Producto por Atención',
-                    'product_id'       => $product->id,
-                    'doc_almacen_id'   => $docAlmacen->id,
+                    'quantity' => $quantity,
+                    'comment' => 'Detalle de Salida de Producto por Atención',
+                    'product_id' => $product->id,
+                    'doc_almacen_id' => $docAlmacen->id,
                 ]);
                 $product->stock -= $quantity;
                 $product->save();
@@ -612,31 +641,31 @@ class AttentionController extends Controller
     public function update(Request $request, int $id)
     {
         $object = Attention::find($id);
-        if (! $object) {
+        if (!$object) {
             return response()->json(['message' => 'attention not found.'], 404);
         }
 
         $validator = validator()->make($request->all(), [
-            'arrivalDate'                 => 'required',
+            'arrivalDate' => 'required',
 
-            'correlativo'                 => "required|numeric|unique:attentions,correlativo,{$id},id,deleted_at,NULL",
+            'correlativo' => "required|numeric|unique:attentions,correlativo,{$id},id,deleted_at,NULL",
 
-            'deliveryDate'                => 'required',
-            'observations'                => 'nullable',
-            'fuelLevel'                   => 'required',
-            'km'                          => 'required',
+            'deliveryDate' => 'required',
+            'observations' => 'nullable',
+            'fuelLevel' => 'required',
+            'km' => 'required',
 
-            'vehicle_id'                  => 'required|exists:vehicles,id',
-            'worker_id'                   => 'required|exists:workers,id',
-            'concession_id'               => 'nullable|exists:concessions,id',
-            'driver'                      => 'nullable|string',
+            'vehicle_id' => 'required|exists:vehicles,id',
+            'worker_id' => 'required|exists:workers,id',
+            'concession_id' => 'nullable|exists:concessions,id',
+            'driver' => 'nullable|string',
 
-            'typeMaintenance'             => 'nullable|in:' . Attention::MAINTENICE_CORRECTIVE . ',' . Attention::MAINTENICE_PREVENTIVE,
+            'typeMaintenance' => 'nullable|in:' . Attention::MAINTENICE_CORRECTIVE . ',' . Attention::MAINTENICE_PREVENTIVE,
 
-            'elements'                    => 'nullable|array',
-            'elements.*'                  => 'exists:elements,id',
-            'details'                     => 'nullable',
-            'detailsProducts'             => 'nullable',
+            'elements' => 'nullable|array',
+            'elements.*' => 'exists:elements,id',
+            'details' => 'nullable',
+            'detailsProducts' => 'nullable',
             'detailsProducts.*.idProduct' => 'required|exists:products,id',
         ]);
 
@@ -662,20 +691,20 @@ class AttentionController extends Controller
         }
 
         $data = [
-            'correlativo'     => $request->input('correlativo') ?? null,
-            'arrivalDate'     => $request->input('arrivalDate') ?? null,
-            'deliveryDate'    => $request->input('deliveryDate') ?? null,
-            'observations'    => $request->input('observations') ?? null,
-            'typeofDocument'  => $request->input('typeofDocument') ?? null,
-            'fuelLevel'       => $request->input('fuelLevel') ?? null,
-            'km'              => $request->input('km') ?? null,
-            'routeImage'      => 'ruta.jpg',
-            'vehicle_id'      => $request->input('vehicle_id') ?? null,
-            'driver'          => $request->input('driver') ?? null,
-            'concession_id'   => $request->input('concession_id') ?? null,
+            'correlativo' => $request->input('correlativo') ?? null,
+            'arrivalDate' => $request->input('arrivalDate') ?? null,
+            'deliveryDate' => $request->input('deliveryDate') ?? null,
+            'observations' => $request->input('observations') ?? null,
+            'typeofDocument' => $request->input('typeofDocument') ?? null,
+            'fuelLevel' => $request->input('fuelLevel') ?? null,
+            'km' => $request->input('km') ?? null,
+            'routeImage' => 'ruta.jpg',
+            'vehicle_id' => $request->input('vehicle_id') ?? null,
+            'driver' => $request->input('driver') ?? null,
+            'concession_id' => $request->input('concession_id') ?? null,
             'typeMaintenance' => $request->input('typeMaintenance') ?? null,
 
-            'worker_id'       => $request->input('worker_id') ?? null,
+            'worker_id' => $request->input('worker_id') ?? null,
         ];
         $totalQuantityProducts = 0;
 
@@ -693,33 +722,33 @@ class AttentionController extends Controller
         if ($detailsProducts != []) {
             $object->setDetailProducts($object->id, $detailsProducts);
             $docAlmacen = DocAlmacen::where('attention_id', $object->id)->first();
-            if (! isset($docAlmacen)) {
+            if (!isset($docAlmacen)) {
                 if ($detailsProducts != []) {
 
                     $conceptMov = ConceptMov::find(1);
                     $docAlmacen = DocAlmacen::create([
                         'sequentialnumber' => $this->nextCorrelative(DocAlmacen::class, 'sequentialnumber'),
-                        'date_moviment'    => $object->deliveryDate,
-                        'quantity'         => $totalQuantityProducts,
-                        'comment'          => 'Salida de Producto por Atención',
-                        'typemov'          => DocAlmacen::TIPOMOV_EGRESO,
-                        'concept'          => $conceptMov->name,
-                        'user_id'          => auth()->user()->id,
-                        'person_id'        => $object->vehicle->person->id,
-                        'concept_mov_id'   => $conceptMov->id,
-                        'attention_id'     => $object->id,
+                        'date_moviment' => $object->deliveryDate,
+                        'quantity' => $totalQuantityProducts,
+                        'comment' => 'Salida de Producto por Atención',
+                        'typemov' => DocAlmacen::TIPOMOV_EGRESO,
+                        'concept' => $conceptMov->name,
+                        'user_id' => auth()->user()->id,
+                        'person_id' => $object->vehicle->person->id,
+                        'concept_mov_id' => $conceptMov->id,
+                        'attention_id' => $object->id,
                     ]);
 
                     foreach ($detailsProducts as $productDetail) {
                         $idProduct = $productDetail['idProduct'];
-                        $quantity  = $productDetail['quantity'] ?? 1;
-                        $product   = Product::find($idProduct);
+                        $quantity = $productDetail['quantity'] ?? 1;
+                        $product = Product::find($idProduct);
                         Docalmacen_details::create([
                             'sequentialnumber' => $this->nextCorrelative(Docalmacen_details::class, 'sequentialnumber'),
-                            'quantity'         => $quantity,
-                            'comment'          => 'Detalle de Salida de Producto por Atención',
-                            'product_id'       => $product->id,
-                            'doc_almacen_id'   => $docAlmacen->id,
+                            'quantity' => $quantity,
+                            'comment' => 'Detalle de Salida de Producto por Atención',
+                            'product_id' => $product->id,
+                            'doc_almacen_id' => $docAlmacen->id,
                         ]);
                         $product->stock -= $quantity;
                         $product->save();
@@ -747,19 +776,19 @@ class AttentionController extends Controller
         $images = $request->file('routeImage') ?? [];
         $object->setImages($object->id, $images);
 
-        $object           = Attention::with(['worker.person', 'vehicle', 'details', 'routeImages', 'concession'])->find($object->id);
+        $object = Attention::with(['worker.person', 'vehicle', 'details', 'routeImages', 'concession'])->find($object->id);
         $object->elements = $object->getElements($object->id);
-        $object->details  = $object->getDetails($object->id);
-        $object->task     = $object->getTask($object->id);
+        $object->details = $object->getDetails($object->id);
+        $object->task = $object->getTask($object->id);
 
         $budgetSheet = budgetSheet::where('attention_id', $object->id)->first();
         if ($budgetSheet) {
-            $budgetSheet->totalService  = $object->totalService;
+            $budgetSheet->totalService = $object->totalService;
             $budgetSheet->totalProducts = $object->totalProducts;
-            $budgetSheet->subtotal      = floatval($object->total) / 1.18;
-            $subtotal                   = floatval($object->total) / 1.18;
-            $budgetSheet->igv           = $subtotal * 0.18;
-            $budgetSheet->total         = $object->total;
+            $budgetSheet->subtotal = floatval($object->total) / 1.18;
+            $subtotal = floatval($object->total) / 1.18;
+            $budgetSheet->igv = $subtotal * 0.18;
+            $budgetSheet->total = $object->total;
             $budgetSheet->save();
         }
         return response()->json($object);
@@ -811,7 +840,7 @@ class AttentionController extends Controller
     public function destroy(int $id)
     {
         $object = Attention::find($id);
-        if (! $object) {
+        if (!$object) {
             return response()->json(['message' => 'Attention not found'], 404);
         }
         $detailsNotGenerated = $object->details()->where('type', 'Service')
@@ -824,8 +853,8 @@ class AttentionController extends Controller
         if ($object->documentoscarga()->exists()) {
             return response()->json(['message' => 'Existen documentos de almacén asociados'], 409);
         }
-        
-        
+
+
         $budgetSheet = $object->budgetSheet()->exists();
         if ($budgetSheet) {
             return response()->json(['message' => 'Orden de Servicio ya presupuestada'], 409);

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @OA\Schema(
@@ -46,6 +47,7 @@ use Illuminate\Database\Eloquent\Model;
 class budgetSheet extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'number',
@@ -60,6 +62,7 @@ class budgetSheet extends Model
         'status',
         'attention_id',
         'created_at',
+        'deleted_at',
     ];
 
     protected $hidden = [
@@ -70,6 +73,10 @@ class budgetSheet extends Model
     public function attention()
     {
         return $this->belongsTo(Attention::class, 'attention_id');
+    }
+    public function details()
+    {
+        return $this->hasMany(DetailBudget::class);
     }
 
     public function getDetails($id)

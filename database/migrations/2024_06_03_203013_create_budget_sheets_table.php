@@ -26,6 +26,7 @@ return new class extends Migration {
             $table->decimal('igv', 10, 2)->nullable();
             $table->string('status')->nullable()->default(Constants::BUDGET_SHEET_PENDIENTE);
             $table->foreignId('attention_id')->nullable()->unsigned()->constrained('attentions');
+            $table->softDeletes(); // Add soft deletes column
             $table->timestamps();
         });
     }

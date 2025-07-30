@@ -3,19 +3,30 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BudgetSheetRequest\StoreBudgetSheetRequest;
 use App\Http\Resources\BudgetSheetDetailsResource;
 use App\Http\Resources\BudgetSheetResource;
 use App\Models\Attention;
 use App\Models\budgetSheet;
 use App\Models\Commitment;
+use App\Services\DetailBudgetService;
 use App\Utils\Constants;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class BudgetSheetController extends Controller
 {
+    protected $detail_budgetService;
+
+    public function __construct(DetailBudgetService $service)
+    {
+        $this->detail_budgetService = $service;
+    }
+
+
     /**
      * Get all BudgetSheets with optional filters
      *
@@ -93,13 +104,8 @@ class BudgetSheetController extends Controller
         // Devolvemos los datos paginados como respuesta JSON
         return response()->json([
             'total' => $budgetSheets->total(),
-            'data' => $budgetSheets->map(function ($item) {
-                $data = $item->toArray(); // Convertimos el modelo en un array
-                $data['person_id'] = $item->attention->vehicle->person_id ?? null; // Agregamos el campo person_id
-                $data['number'] = 'PRES' . substr($item->attention->number, 4);
+           'data' => BudgetSheetResource::collection($budgetSheets->items())->toArray($request),
 
-                return $data;
-            })->toArray(),
             'current_page' => $budgetSheets->currentPage(),
             'last_page' => $budgetSheets->lastPage(),
             'per_page' => $budgetSheets->perPage(),
@@ -221,50 +227,94 @@ class BudgetSheetController extends Controller
      *     )
      * )
      */
-    public function store(Request $request)
+
+
+    public function store(StoreBudgetSheetRequest $request)
     {
-        $validator = validator()->make($request->all(), [
-            'attention_id' => [
-                'required',
-                'exists:attentions,id',
-                Rule::unique('budget_sheets')->where(function ($query) use ($request) {
-                    return $query->where('attention_id', $request->input('attention_id'));
-                }),
-            ],
-            'percentageDiscount' => 'required|numeric|between:0,100',
-            'paymentType' => 'nullable|string|in:Contado,Credito',
-        ]);
+        try {
+            return DB::transaction(function () use ($request) {
 
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()->first()], 422);
+                $attention = Attention::findOrFail($request->input('attention_id'));
+
+                // Generar número de presupuesto
+                $tipo = 'PRES';
+                $resultado = DB::selectOne("
+                SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE('-', number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum
+                FROM budget_sheets
+                WHERE SUBSTRING(number, 1, 4) = ?
+            ", [$tipo]);
+
+                $siguienteNum = (int) $resultado->siguienteNum;
+                $numeroPresupuesto = $tipo . "-" . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT);
+
+                // Calcular subtotal e IGV inicial (0)
+                $subtotal = 0.0;
+                $igv = 0.0;
+
+                // Crear presupuesto (totales en cero)
+                $data = [
+                    'number' => $numeroPresupuesto,
+                    'paymentType' => $request->input('paymentType', 'Contado'),
+                    'totalService' => 0.0,
+                    'totalProducts' => 0.0,
+                    'debtAmount' => 0.0,
+                    'total' => 0.0,
+                    'discount' => 0.0,
+                    'subtotal' => $subtotal,
+                    'igv' => $igv,
+                    'attention_id' => $attention->id,
+                ];
+
+                $budget = BudgetSheet::create($data);
+
+                // Crear detalles
+                foreach ($request->input('details') as $item) {
+                    $item['budget_sheet_id'] = $budget->id;
+                    $this->detail_budgetService->createDetailBudget($item);
+                }
+
+                // Recalcular totales desde detalles
+                $budget->load('details');
+
+                $totalProducts = $budget->details
+                    ->where('type', 'Producto')
+                    ->sum(fn($detail) => $detail->saleprice * $detail->quantity);
+
+                $totalService = $budget->details
+                    ->where('type', 'Service')
+                    ->sum(fn($detail) => $detail->saleprice * $detail->quantity);
+
+                $total = $totalProducts + $totalService;
+                $subtotal = round($total / 1.18, 2);
+                $igv = round($subtotal * 0.18, 2);
+
+                // Actualizar con totales reales
+                $budget->update([
+                    'totalProducts' => $totalProducts,
+                    'totalService' => $totalService,
+                    'total' => $total,
+                    'debtAmount' => $total,
+                    'subtotal' => $subtotal,
+                    'igv' => $igv,
+                ]);
+
+                $budget->load(['attention', 'details']);
+
+                return new BudgetSheetResource($budget);
+            });
+
+        } catch (\Throwable $e) {
+            Log::error('Error al crear presupuesto: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'message' => 'Ocurrió un error al guardar el presupuesto.',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-        $attention = Attention::find($request->input('attention_id'));
-
-        $tipo = 'PRES';
-        $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM budget_sheets a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-        $siguienteNum = (int)$resultado;
-
-        $subtotal = floatval($attention->total) / 1.18;
-        $igv = $subtotal * 0.18;
-
-        $data = [
-            'number' => $tipo . "-" . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT),
-            'paymentType' => $request->input('paymentType'),
-            'totalService' => $attention->totalService ?? 0.0,
-            'totalProducts' => $attention->totalProducts ?? 0.0,
-            'debtAmount' => $attention->debtAmount,
-            'total' => $attention->total,
-            'discount' => 0,
-            'subtotal' => $subtotal ?? 0.0,
-            'igv' => $igv ?? 0.0,
-            'attention_id' => $request->input('attention_id'),
-        ];
-
-        $object = budgetSheet::create($data);
-
-        $object = budgetSheet::with(['attention'])->find($object->id);
-        return response()->json($object);
     }
+
 
     /**
      * Update a budgetSheet
@@ -357,7 +407,7 @@ class BudgetSheetController extends Controller
 
         $object = budgetSheet::with(['attention'])->find($object->id);
 
-        return response()->json($object);
+        return new BudgetSheetResource($object);
     }
 
     /**
@@ -409,7 +459,7 @@ class BudgetSheetController extends Controller
         if (!$budgetSheet) {
             return response()->json(['message' => 'BudgetSheet not found'], 404);
         }
-        
+
         $budgetSheet->delete();
 
         return response()->json(['message' => 'BudgetSheet deleted']);
