@@ -128,92 +128,90 @@
         </tr>
     </table>
     {{-- DESCRIPCIÓN DE SERVICIOS Y REPUESTOS --}}
-    <table class="items-table">
-        <thead>
-            <tr>
-                <th>ITEM</th>
-                <th>DESCRIPCIÓN DE SERVICIOS Y REPUESTOS</th>
-                <th>UND</th>
-                <th>CANT</th>
-                <th>V. UNIT</th>
-                <th>V. VENTA</th>
-            </tr>
-        </thead>
-        <tbody>
-            @php
-                $i = 1;
-                $total = 0;
-                $servicios = $details->whereNotNull('service_id');
-            @endphp
+    {{-- DESCRIPCIÓN DE SERVICIOS Y REPUESTOS --}}
+<table class="items-table">
+    <thead>
+        <tr>
+            <th>ITEM</th>
+            <th>DESCRIPCIÓN DE SERVICIOS Y REPUESTOS</th>
+            <th>UND</th>
+            <th>CANT</th>
+            <th>V. UNIT</th>
+            <th>V. VENTA</th>
+        </tr>
+    </thead>
+    <tbody>
+        @php
+            $i = 1;
+            $total = 0;
+            $servicios = $details->whereNotNull('service_id');
+            $productos = $details->whereNotNull('product_id');
+        @endphp
 
-            {{-- MANO DE OBRA Y FACTORÍA --}}
-            @if ($servicios->count())
-                <tr style="background-color: #f0f0f0;">
-                    <td colspan="6" class="bold center">MANO DE OBRA Y FACTORÍA</td>
+        {{-- MANO DE OBRA Y FACTORÍA --}}
+        @if ($servicios->count())
+            <tr style="background-color: #f0f0f0;">
+                <td colspan="6" class="bold center">MANO DE OBRA Y FACTORÍA</td>
+            </tr>
+            @foreach ($servicios as $item)
+                @php
+                    $desc = $item?->service?->name ?? 'Servicio';
+                    $unit = '---';
+                    $quantity = $item?->quantity;
+                    $price = $item?->saleprice;
+                    $subtotal = $quantity * $price;
+                    $total += $subtotal;
+                @endphp
+                <tr>
+                    <td class="center">{{ $i++ }}</td>
+                    <td colspan="4">{{ $desc }}</td>
+                    <td class="right">S/ {{ number_format($subtotal, 2) }}</td>
                 </tr>
-                @foreach ($servicios as $item)
-                    @php
-                        $desc = $item?->service?->name ?? 'Servicio';
-                        $unit = '---';
-                        $quantity = $item?->quantity;
-                        $price = $item?->saleprice;
-                        $subtotal = $quantity * $price;
-                        $total += $subtotal;
-                    @endphp
-                    <tr>
-                        <td class="center">{{ $i++ }}</td>
-                        <td colspan="4">{{ $desc }}</td>
-                        <td class="right">S/ {{ number_format($subtotal, 2) }}</td>
-                    </tr>
-                @endforeach
-            @endif
-            @php
-                $i = 1;
-                $total = 0;
-                $productos = $details->whereNotNull('product_id');
-            @endphp
+            @endforeach
+        @endif
 
-            {{-- REPUESTOS E INSUMOS --}}
-            @if ($productos->count())
-                <tr style="background-color: #f0f0f0;">
-                    <td colspan="6" class="bold center">REPUESTOS E INSUMOS</td>
+        {{-- REPUESTOS E INSUMOS --}}
+        @if ($productos->count())
+            <tr style="background-color: #f0f0f0;">
+                <td colspan="6" class="bold center">REPUESTOS E INSUMOS</td>
+            </tr>
+            @foreach ($productos as $item)
+                @php
+                    $desc = $item?->product?->name ?? 'Producto';
+                    $unit = $item?->product?->unit?->code ?? 'und';
+                    $quantity = $item?->quantity;
+                    $price = $item?->saleprice;
+                    $subtotal = $quantity * $price;
+                    $total += $subtotal;
+                @endphp
+                <tr>
+                    <td class="center">{{ $i++ }}</td>
+                    <td>{{ $desc }}</td>
+                    <td class="center">{{ $unit }}</td>
+                    <td class="center">{{ $quantity }}</td>
+                    <td class="right">S/ {{ number_format($price, 2) }}</td>
+                    <td class="right">S/ {{ number_format($subtotal, 2) }}</td>
                 </tr>
-                @foreach ($productos as $item)
-                    @php
-                        $desc = $item?->product?->name ?? 'Producto';
-                        $unit = $item?->product?->unit?->code ?? 'und';
-                        $quantity = $item?->quantity;
-                        $price = $item?->saleprice;
-                        $subtotal = $quantity * $price;
-                        $total += $subtotal;
-                    @endphp
-                    <tr>
-                        <td class="center">{{ $i++ }}</td>
-                        <td>{{ $desc }}</td>
-                        <td class="center">{{ $unit }}</td>
-                        <td class="center">{{ $quantity }}</td>
-                        <td class="right">S/ {{ number_format($price, 2) }}</td>
-                        <td class="right">S/ {{ number_format($subtotal, 2) }}</td>
-                    </tr>
-                @endforeach
-            @endif
-        </tbody>
+            @endforeach
+        @endif
+    </tbody>
 
-        <tfoot class="totales">
-            <tr>
-                <td colspan="5" class="right">SUBTOTAL</td>
-                <td class="right">S/ {{ number_format($total, 2) }}</td>
-            </tr>
-            <tr>
-                <td colspan="5" class="right">I.G.V. (18%)</td>
-                <td class="right">S/ {{ number_format($total * 0.18, 2) }}</td>
-            </tr>
-            <tr>
-                <td colspan="5" class="right">TOTAL</td>
-                <td class="right">S/ {{ number_format($total * 1.18, 2) }}</td>
-            </tr>
-        </tfoot>
-    </table>
+    <tfoot class="totales">
+        <tr>
+            <td colspan="5" class="right">SUBTOTAL</td>
+            <td class="right">S/ {{ number_format($total, 2) }}</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="right">I.G.V. (18%)</td>
+            <td class="right">S/ {{ number_format($total * 0.18, 2) }}</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="right">TOTAL</td>
+            <td class="right">S/ {{ number_format($total * 1.18, 2) }}</td>
+        </tr>
+    </tfoot>
+</table>
+
 
     <br>
 

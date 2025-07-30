@@ -254,10 +254,11 @@ class BudgetSheetController extends Controller
                 // Generar número de presupuesto
                 $tipo = 'PRES';
                 $resultado = DB::selectOne("
-                SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE('-', number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum
-                FROM budget_sheets
-                WHERE SUBSTRING(number, 1, 4) = ?
-            ", [$tipo]);
+    SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE('-', number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum
+    FROM budget_sheets
+    WHERE SUBSTRING(number, 1, 4) = ?
+      AND deleted_at IS NULL
+", [$tipo]);
 
                 $siguienteNum = (int) $resultado->siguienteNum;
                 $numeroPresupuesto = $tipo . "-" . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT);
@@ -288,30 +289,7 @@ class BudgetSheetController extends Controller
                     $this->detail_budgetService->createDetailBudget($item);
                 }
 
-                // Recalcular totales desde detalles
-                $budget->load('details');
-
-                $totalProducts = $budget->details
-                    ->where('type', 'Producto')
-                    ->sum(fn($detail) => $detail->saleprice * $detail->quantity);
-
-                $totalService = $budget->details
-                    ->where('type', 'Service')
-                    ->sum(fn($detail) => $detail->saleprice * $detail->quantity);
-
-                $total = $totalProducts + $totalService;
-                $subtotal = round($total / 1.18, 2);
-                $igv = round($subtotal * 0.18, 2);
-
-                // Actualizar con totales reales
-                $budget->update([
-                    'totalProducts' => $totalProducts,
-                    'totalService' => $totalService,
-                    'total' => $total,
-                    'debtAmount' => $total,
-                    'subtotal' => $subtotal,
-                    'igv' => $igv,
-                ]);
+                $this->detail_budgetService->calculateAndUpdateTotals($budget);
 
                 $budget->load(['attention', 'details']);
 
