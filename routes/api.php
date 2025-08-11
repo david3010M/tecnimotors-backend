@@ -187,7 +187,8 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::resource('product', ProductController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'product.index', 'store' => 'product.store', 'show' => 'product.show', 'destroy' => 'product.destroy']);
 
-        Route::post('product/{id}', [ProductController::class, 'update'])->name('product.update');
+    Route::post('product/{id}', [ProductController::class, 'update'])->name('product.update');
+    Route::delete('product/{id}/destroy_image', [ProductController::class, 'destroy_image'])->name('product.destroy_image');
 
 
     //    SUPPLIER
@@ -426,7 +427,7 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
             'destroy' => 'docalmacen.destroy'
         ]);
 
-        require __DIR__ . '/Api/DetailBudgetApi.php';     //SCNNER
+    require __DIR__ . '/Api/DetailBudgetApi.php';     //SCNNER
 
-        
+
 });

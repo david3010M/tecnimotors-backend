@@ -5,16 +5,21 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Services\ProductService;
+use App\Services\RouteImagesService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class ProductController extends Controller
 {
     protected $productService;
+    protected $routeImagesService;
 
-    public function __construct(ProductService $productService)
-    {
+    public function __construct(
+        ProductService $productService,
+        RouteImagesService $routeImagesService
+    ) {
         $this->productService = $productService;
+        $this->routeImagesService = $routeImagesService;
     }
     /**
      * Get all products with simple pagination
@@ -122,11 +127,11 @@ class ProductController extends Controller
             'category_id' => $request->input('category_id'),
             'unit_id' => $request->input('unit_id'),
             'brand_id' => $request->input('brand_id'),
-            'images'         => $request->file('images')
+            'images' => $request->file('images')
         ];
 
         $product = $this->productService->createProduct($data);
-        $product = Product::with('category', 'unit', 'brand','images')->find($product->id);
+        $product = Product::with('category', 'unit', 'brand', 'images')->find($product->id);
 
         return response()->json($product);
     }
@@ -151,9 +156,9 @@ class ProductController extends Controller
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Product not found",
+     *         description="Producto No Encontrado",
      *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Product not found")
+     *             @OA\Property(property="message", type="string", example="Producto No Encontrado")
      *         )
      *     ),
      *     @OA\Response(
@@ -172,8 +177,8 @@ class ProductController extends Controller
         if ($product) {
             return response()->json($product);
         }
-        $product = Product::with('category', 'unit', 'brand','images')->find($id);
-        return response()->json(['message' => 'Product not found'], 404);
+        $product = Product::with('category', 'unit', 'brand', 'images')->find($id);
+        return response()->json(['message' => 'Producto No Encontrado'], 404);
     }
 
     /**
@@ -200,9 +205,9 @@ class ProductController extends Controller
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Product not found",
+     *         description="Producto No Encontrado",
      *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Product not found")
+     *             @OA\Property(property="message", type="string", example="Producto No Encontrado")
      *         )
      *     ),
      *     @OA\Response(
@@ -226,7 +231,7 @@ class ProductController extends Controller
         $product = Product::find($id);
 
         if (!$product) {
-            return response()->json(['message' => 'Product not found'], 404);
+            return response()->json(['message' => 'Producto No Encontrado'], 404);
         }
 
         $validator = validator()->make($request->all(), [
@@ -245,7 +250,7 @@ class ProductController extends Controller
             'category_id' => 'required|integer|exists:categories,id',
             'unit_id' => 'required|integer|exists:units,id',
             'brand_id' => 'required|integer|exists:brands,id',
-            
+
         ]);
 
         if ($validator->fails()) {
@@ -263,11 +268,11 @@ class ProductController extends Controller
             'category_id' => $request->input('category_id'),
             'unit_id' => $request->input('unit_id'),
             'brand_id' => $request->input('brand_id'),
-            'images'         => $request->file('images')
+            'images' => $request->file('images')
         ];
 
-        $this->productService->updateProduct($product ,$data);
-        $product = Product::with('category', 'unit', 'brand','images')->find($id);
+        $this->productService->updateProduct($product, $data);
+        $product = Product::with('category', 'unit', 'brand', 'images')->find($id);
 
         return response()->json($product);
 
@@ -288,16 +293,16 @@ class ProductController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Product deleted",
+     *         description="Producto Eliminado",
      *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Product deleted")
+     *             @OA\Property(property="message", type="string", example="Producto Eliminado")
      *         )
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Product not found",
+     *         description="Producto No Encontrado",
      *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Product not found")
+     *             @OA\Property(property="message", type="string", example="Producto No Encontrado")
      *         )
      *     ),
      *     @OA\Response(
@@ -321,7 +326,7 @@ class ProductController extends Controller
         $product = Product::find($id);
 
         if (!$product) {
-            return response()->json(['message' => 'Product not found'], 404);
+            return response()->json(['message' => 'Producto No Encontrado'], 404);
         }
 
         //        if ($product->stock > 0) {
@@ -329,7 +334,18 @@ class ProductController extends Controller
 //        }
 
         $product->delete();
-        return response()->json(['message' => 'Product deleted']);
+        return response()->json(['message' => 'Producto Eliminado']);
+
+    }
+
+    public function destroy_image(int $id)
+    {
+        $route_image = $this->routeImagesService->getImageById($id);
+        if (!$route_image) {
+            return response()->json(['message' => 'Imagen del Producto No Encontrado'], 404);
+        }
+        $route_image->delete();
+        return response()->json(['message' => 'Imagen del Producto Eliminado']);
 
     }
 }
