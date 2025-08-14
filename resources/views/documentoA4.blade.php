@@ -380,7 +380,7 @@
         <table class="tableInfo">
             <tr>
                 <div class="contentImage">
-                    <img class="logoImage" src="{{ asset('img/logoTecnimotors.png') }}" alt="logoTransporte">
+                    <img src="{{ asset('img/logo.jpg') }}" width="150" class="logo" alt="Logo">
                 </div>
 
 
@@ -467,68 +467,69 @@
                 </td>
             </tr>
             @if($presupuesto !== '-')
-            <tr colspan="1">
-                <th class="w20 blue">
-                    Presupuesto:
-                </th>
-                <td class="w20">
-                    {{ $presupuesto }}
-                </td>
-            </tr>
-        @endif
-        
+                <tr colspan="1">
+                    <th class="w20 blue">
+                        Presupuesto:
+                    </th>
+                    <td class="w20">
+                        {{ $presupuesto }}
+                    </td>
+                </tr>
+            @endif
 
-        @if ($typePayment == 'Crédito')
-        <tr colspan="1">
-            <th class="w20 blue">
-                Cantidad de Cuotas:
-            </th>
-            <td class="w20">
-                @php
-                    $totalAmount = $cuentas ? $cuentas->count() : 0; // Validación de $cuentas antes de contar
-                @endphp
-                {{ $totalAmount }}
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <!-- Tabla de cuotas -->
-                <table class="">
-                    <thead>
-                        <tr>
-                            <th>Cuota</th>
-                            <th>Fecha Vencimiento</th>
-                            <th>Monto Neto</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+
+            @if ($typePayment == 'Crédito')
+                <tr colspan="1">
+                    <th class="w20 blue">
+                        Cantidad de Cuotas:
+                    </th>
+                    <td class="w20">
                         @php
-                            $i = 1;
+                            $totalAmount = $cuentas ? $cuentas->count() : 0; // Validación de $cuentas antes de contar
                         @endphp
-                        @foreach ($cuentas as $cuenta)
-                            <tr>
-                                <td>{{ $i++ }}</td> <!-- Número acumulativo -->
-                                <td>{{ \Carbon\Carbon::parse($cuenta->payment_date)->format('d/m/Y') }}</td> <!-- Fecha -->
+                        {{ $totalAmount }}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <!-- Tabla de cuotas -->
+                        <table class="">
+                            <thead>
+                                <tr>
+                                    <th>Cuota</th>
+                                    <th>Fecha Vencimiento</th>
+                                    <th>Monto Neto</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @php
+                                    $i = 1;
+                                @endphp
+                                @foreach ($cuentas as $cuenta)
+                                    <tr>
+                                        <td>{{ $i++ }}</td> <!-- Número acumulativo -->
+                                        <td>{{ \Carbon\Carbon::parse($cuenta->payment_date)->format('d/m/Y') }}</td>
+                                        <!-- Fecha -->
 
-                                <td>
-                                    @php
-                                        // Verifica que el porcentaje no sea null y sea mayor a 0
-                                        $descuento =
-                                            !is_null($porcentaje) && $porcentaje > 0
-                                                ? round(($totalPagado * $porcentaje) / 100)
-                                                : 0;
-                                    @endphp
-                                    {{ $cuenta->price - $descuento }}.00
-                                </td> <!-- Monto total -->
-                            </tr>
-                        @endforeach
+                                        <td>
+                                            @php
+                                                // Verifica que el porcentaje no sea null y sea mayor a 0
+                                                $descuento =
+                                                    !is_null($porcentaje) && $porcentaje > 0
+                                                    ? round(($totalPagado * $porcentaje) / 100)
+                                                    : 0;
+                                            @endphp
+                                            {{ $cuenta->price - $descuento }}.00
+                                        </td> <!-- Monto total -->
+                                    </tr>
+                                @endforeach
 
-                    </tbody>
-                </table>
-            </td>
+                            </tbody>
+                        </table>
+                    </td>
 
-        </tr>
-    @endif
+                </tr>
+            @endif
 
             <!-- Si el tipo de pago es a crédito, muestra la tabla de cuotas -->
 
@@ -550,26 +551,28 @@
 
             </tr>
             <?php
-              $totalDetalle = $totalPagado;
-              $subtotal = $totalPagado;
-              $iterador=1;
-            foreach ($detalles as $detHab) :
-                // $subtotal = $detHab['precioventaunitarioxitem'] * $detHab['cantidad'];
-                // $totalDetalle += $subtotal;
+$totalDetalle = $totalPagado;
+$subtotal = $totalPagado;
+$iterador = 1;
+foreach ($detalles as $detHab):
+    // $subtotal = $detHab['precioventaunitarioxitem'] * $detHab['cantidad'];
+    // $totalDetalle += $subtotal;
           
             
             ?>
 
             <tr>
-                <td class="center"><?php echo $iterador++; ?></td>
+                <td class="center"><?php    echo $iterador++; ?></td>
 
-                <td class="center font-10"> <?php echo $detHab['descripcion']; ?> </td>
-                <td class="center font-10"> <?php echo $detHab['um']; ?> </td>
-                <td class="center font-10"><?php echo $detHab['cant']; ?></td>
-                <td class="center font-10"><?php echo number_format($detHab['precioventaunitarioxitem'] / 1.18, 2); ?></td>
-                <td class="center font-10"><?php echo number_format($detHab['precioventaunitarioxitem'], 2); ?></td>
-                <td class="center font-10"><?php echo $detHab['dscto']; ?></td>
-                <td class="center font-10"><?php echo number_format($detHab['precioventaunitarioxitem'] / 1.18, 2); ?></td>
+                <td class="center font-10"> <?php    echo $detHab['descripcion']; ?> </td>
+                <td class="center font-10"> <?php    echo $detHab['um']; ?> </td>
+                <td class="center font-10"><?php    echo $detHab['cant']; ?></td>
+                <td class="center font-10"><?php    echo number_format($detHab['precioventaunitarioxitem'] / 1.18, 2); ?>
+                </td>
+                <td class="center font-10"><?php    echo number_format($detHab['precioventaunitarioxitem'], 2); ?></td>
+                <td class="center font-10"><?php    echo $detHab['dscto']; ?></td>
+                <td class="center font-10"><?php    echo number_format($detHab['precioventaunitarioxitem'] / 1.18, 2); ?>
+                </td>
             </tr>
 
             <?php endforeach; ?>
@@ -581,17 +584,17 @@
 
         <table class="detTabla" style="width:200px; margin:10px;">
             <?php
-            
-            if ($linkRevisarFact) {
-                echo '
+
+if ($linkRevisarFact) {
+    echo '
                                                                                                                                                                                                                                                         <tr>
                                                                                                                                                                                                                                                             <td style="text-align: left;">
                                                                                                                                                                                                                                                                 <b>Op. Gravada:</b>
                                                                                                                                                                                                                                                             </td>
                                                                                                                                                                                                                                                             <td style="text-align: right;">
                                                                                                                                                                                                                                                                 ' .
-                    number_format($totalDetalle / 1.18, 2) .
-                    '
+        number_format($totalDetalle / 1.18, 2) .
+        '
                                                                                                                                                                                                                                                             </td>
                                                                                                                                                                                                                                                         </tr>
                                                                                                                                                                                                                                                         <tr>
@@ -600,8 +603,8 @@
                                                                                                                                                                                                                                                             </td>
                                                                                                                                                                                                                                                             <td style="text-align: right;">
                                                                                                                                                                                                                                                                 <label for="igv">' .
-                    number_format($totalDetalle - $totalDetalle / 1.18, 2) .
-                    '
+        number_format($totalDetalle - $totalDetalle / 1.18, 2) .
+        '
                                                                                                                                                                                                                                                             </td>
                                                                                                                                                                                                                                                         </tr>
                                                                                                                                                                                                                                                         <tr>
@@ -624,10 +627,10 @@
                                                                                                                                                                                                                                                             <td style="text-align: left;"><b>Importe Total</b></td>
                                                                                                                                                                                                                                         
                                                                                                                                                                                                                                                                  <td style="text-align: right;"><b>' .
-                    number_format($totalDetalle, 2) .
-                    '</b></td>
+        number_format($totalDetalle, 2) .
+        '</b></td>
                                                                                                                                                                                                                                                         </tr>';
-            }
+}
             ?>
 
         </table>
@@ -670,14 +673,14 @@
             <tr>
                 <td class="w10 blue left">
                     <label for="total"><b>SON:<?php
-                    $formatter = new NumberFormatter('es', NumberFormatter::SPELLOUT);
-                    $totalEnPalabras = $formatter->format(floor($totalDetalle)); // Redondeamos hacia abajo para quitar la parte decimal
-                    if ($totalDetalle != floor($totalDetalle)) {
-                        $parteDecimal = round(($totalDetalle - floor($totalDetalle)) * 100); // Convertimos la parte decimal a centavos
-                        echo ucfirst($totalEnPalabras) . " CON $parteDecimal/100 SOLES";
-                    } else {
-                        echo ucfirst($totalEnPalabras) . ' CON 00/100 SOLES';
-                    }
+$formatter = new NumberFormatter('es', NumberFormatter::SPELLOUT);
+$totalEnPalabras = $formatter->format(floor($totalDetalle)); // Redondeamos hacia abajo para quitar la parte decimal
+if ($totalDetalle != floor($totalDetalle)) {
+    $parteDecimal = round(($totalDetalle - floor($totalDetalle)) * 100); // Convertimos la parte decimal a centavos
+    echo ucfirst($totalEnPalabras) . " CON $parteDecimal/100 SOLES";
+} else {
+    echo ucfirst($totalEnPalabras) . ' CON 00/100 SOLES';
+}
                     ?></b></label>
                 </td>
             </tr>

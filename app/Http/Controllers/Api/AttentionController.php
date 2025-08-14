@@ -15,6 +15,7 @@ use App\Models\RouteImages;
 use App\Models\Service;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class AttentionController extends Controller
@@ -519,37 +520,39 @@ class AttentionController extends Controller
         $object->details = $object->getDetails($object->id);
         $object->task = $object->getTask($object->id);
 
-        if ($detailsProducts != []) {
+        // $correlative= $this->nextCorrelative(DocAlmacen::class, 'sequentialnumber');
 
-            $conceptMov = ConceptMov::find(3);
-            $docAlmacen = DocAlmacen::create([
-                'sequentialnumber' => $this->nextCorrelative(DocAlmacen::class, 'sequentialnumber'),
-                'date_moviment' => $object->deliveryDate,
-                'quantity' => $totalQuantityProducts,
-                'comment' => 'Salida de Producto por Atención',
-                'typemov' => DocAlmacen::TIPOMOV_EGRESO,
-                'concept' => $conceptMov->name,
-                'user_id' => auth()->user()->id,
-                'person_id' => $object->vehicle->person->id,
-                'concept_mov_id' => $conceptMov->id,
-                'attention_id' => $object->id,
-            ]);
+        // if ($detailsProducts != []) {
 
-            foreach ($detailsProducts as $productDetail) {
-                $idProduct = $productDetail['idProduct'];
-                $quantity = $productDetail['quantity'] ?? 1;
-                $product = Product::find($idProduct);
-                Docalmacen_details::create([
-                    'sequentialnumber' => $this->nextCorrelative(Docalmacen_details::class, 'sequentialnumber'),
-                    'quantity' => $quantity,
-                    'comment' => 'Detalle de Salida de Producto por Atención',
-                    'product_id' => $product->id,
-                    'doc_almacen_id' => $docAlmacen->id,
-                ]);
-                $product->stock -= $quantity;
-                $product->save();
-            }
-        }
+        //     $conceptMov = ConceptMov::find(3);
+        //     $docAlmacen = DocAlmacen::create([
+        //         'sequentialnumber' => $this->nextCorrelative(DocAlmacen::class, 'sequentialnumber'),
+        //         'date_moviment' => $object->deliveryDate,
+        //         'quantity' => $totalQuantityProducts,
+        //         'comment' => 'Salida de Producto por Atención',
+        //         'typemov' => DocAlmacen::TIPOMOV_EGRESO,
+        //         'concept' => $conceptMov->name,
+        //         'user_id' => Auth::user()->id,
+        //         'person_id' => $object->vehicle->person->id,
+        //         'concept_mov_id' => $conceptMov->id,
+        //         'attention_id' => $object->id,
+        //     ]);
+
+        //     foreach ($detailsProducts as $productDetail) {
+        //         $idProduct = $productDetail['idProduct'];
+        //         $quantity = $productDetail['quantity'] ?? 1;
+        //         $product = Product::find($idProduct);
+        //         Docalmacen_details::create([
+        //             'sequentialnumber' => $this->nextCorrelative(Docalmacen_details::class, 'sequentialnumber'),
+        //             'quantity' => $quantity,
+        //             'comment' => 'Detalle de Salida de Producto por Atención',
+        //             'product_id' => $product->id,
+        //             'doc_almacen_id' => $docAlmacen->id,
+        //         ]);
+        //         $product->stock -= $quantity;
+        //         $product->save();
+        //     }
+        // }
 
         return response()->json($object);
     }
@@ -721,56 +724,6 @@ class AttentionController extends Controller
         $object->setDetails($object->id, $detailsAt, $request->input('deliveryDate'));
 
         $detailsProducts = $request->input('detailsProducts') ?? [];
-
-        // Verificar si $detailsProducts tiene registros
-        if ($detailsProducts != []) {
-            $object->setDetailProducts($object->id, $detailsProducts);
-            $docAlmacen = DocAlmacen::where('attention_id', $object->id)->first();
-            if (!isset($docAlmacen)) {
-                if ($detailsProducts != []) {
-
-                    $conceptMov = ConceptMov::find(1);
-                    $docAlmacen = DocAlmacen::create([
-                        'sequentialnumber' => $this->nextCorrelative(DocAlmacen::class, 'sequentialnumber'),
-                        'date_moviment' => $object->deliveryDate,
-                        'quantity' => $totalQuantityProducts,
-                        'comment' => 'Salida de Producto por Atención',
-                        'typemov' => DocAlmacen::TIPOMOV_EGRESO,
-                        'concept' => $conceptMov->name,
-                        'user_id' => auth()->user()->id,
-                        'person_id' => $object->vehicle->person->id,
-                        'concept_mov_id' => $conceptMov->id,
-                        'attention_id' => $object->id,
-                    ]);
-
-                    foreach ($detailsProducts as $productDetail) {
-                        $idProduct = $productDetail['idProduct'];
-                        $quantity = $productDetail['quantity'] ?? 1;
-                        $product = Product::find($idProduct);
-                        Docalmacen_details::create([
-                            'sequentialnumber' => $this->nextCorrelative(Docalmacen_details::class, 'sequentialnumber'),
-                            'quantity' => $quantity,
-                            'comment' => 'Detalle de Salida de Producto por Atención',
-                            'product_id' => $product->id,
-                            'doc_almacen_id' => $docAlmacen->id,
-                        ]);
-                        $product->stock -= $quantity;
-                        $product->save();
-                    }
-                }
-            } else {
-                foreach ($detailsProducts as $productDetail) {
-                    $quantity = $productDetail['quantity'] ?? 1;
-                    $totalQuantityProducts += $quantity;
-
-                    if ($docAlmacen) {
-                        $docAlmacen->quantity = $totalQuantityProducts;
-                        $docAlmacen->save();
-                    }
-                }
-            }
-
-        }
 
         $object->total = $object->details()->get()->sum(function ($detail) {
             return $detail->saleprice * $detail->quantity;

@@ -149,8 +149,9 @@
     <table class="header-table">
         <tr>
             <td style="width: 10%">
-                <img src="{{ asset('img/logoTecnimotors.png') }}" width="130" class="logo" alt="Logo">
+                <img src="{{ asset('img/logo.jpg') }}" width="150" class="logo" alt="Logo">
             </td>
+            
             <td class="center">
                 <div class="bold">TECNI MOTORS DEL PERÚ</div>
                 <div>División Mantenimiento</div>
@@ -231,7 +232,7 @@
             <th style="text-align: left;">Año</th>
             <td>{{ $order->vehicle?->year ?? '' }}</td>
 
-            <th style="text-align: left;">Bin</th>
+            <th style="text-align: left;">VIN</th>
             <td>{{ $order->vehicle?->codeBin ?? '' }}</td>
         </tr>
     </table>
@@ -247,7 +248,7 @@
     </thead>
     <tbody>
         @php
-            $minRows = 12;
+            $minRows = 10;
             $totalRows = max($order->details->count(), $minRows);
         @endphp
 

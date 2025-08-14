@@ -409,8 +409,7 @@
         <table class="tableInfo">
             <tr>
                 <div class="contentImage">
-                    <img class="logoImage" src="{{ asset('storage/img/logoTecnimotors.png') }}" alt="logoTransporte">
-
+                    <img src="{{ asset('img/logo.jpg') }}" width="150" class="logo" alt="Logo">
                 </div>
 
 

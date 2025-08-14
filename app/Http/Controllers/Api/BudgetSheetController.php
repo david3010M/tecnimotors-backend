@@ -9,21 +9,28 @@ use App\Http\Resources\BudgetSheetResource;
 use App\Models\Attention;
 use App\Models\budgetSheet;
 use App\Models\Commitment;
+use App\Models\DocAlmacen;
 use App\Services\DetailBudgetService;
+use App\Services\DocAlmacenService;
 use App\Utils\Constants;
 use Carbon\Carbon;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
+use Throwable;
 
 class BudgetSheetController extends Controller
 {
     protected $detail_budgetService;
+    protected $doc_almacen_service;
 
-    public function __construct(DetailBudgetService $service)
+    public function __construct(private DocAlmacenService $docAlmacenService, DetailBudgetService $service)
     {
         $this->detail_budgetService = $service;
+        $this->doc_almacen_service = $docAlmacenService;
     }
 
 
@@ -262,29 +269,28 @@ class BudgetSheetController extends Controller
 
     public function store(StoreBudgetSheetRequest $request)
     {
+        $traceId = (string) Str::uuid();
+
         try {
-            return DB::transaction(function () use ($request) {
+            // 1) Transacción principal: guarda presupuesto y detalles
+            $result = DB::transaction(function () use ($request) {
 
                 $attention = Attention::findOrFail($request->input('attention_id'));
 
-                // Generar número de presupuesto
+                // Generar número correlativo de presupuesto
                 $tipo = 'PRES';
                 $resultado = DB::selectOne("
-    SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE('-', number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum
-    FROM budget_sheets
-    WHERE SUBSTRING(number, 1, 4) = ?
-      AND deleted_at IS NULL
-", [$tipo]);
+                SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE('-', number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum
+                FROM budget_sheets
+                WHERE SUBSTRING(number, 1, 4) = ?
+                  AND deleted_at IS NULL
+            ", [$tipo]);
 
                 $siguienteNum = (int) $resultado->siguienteNum;
-                $numeroPresupuesto = $tipo . "-" . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT);
+                $numeroPresupuesto = $tipo . '-' . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT);
 
-                // Calcular subtotal e IGV inicial (0)
-                $subtotal = 0.0;
-                $igv = 0.0;
-
-                // Crear presupuesto (totales en cero)
-                $data = [
+                // Crear presupuesto (persistido de inmediato)
+                $budget = BudgetSheet::create([
                     'number' => $numeroPresupuesto,
                     'paymentType' => $request->input('paymentType', 'Contado'),
                     'totalService' => 0.0,
@@ -292,37 +298,102 @@ class BudgetSheetController extends Controller
                     'debtAmount' => 0.0,
                     'total' => 0.0,
                     'discount' => 0.0,
-                    'subtotal' => $subtotal,
-                    'igv' => $igv,
+                    'subtotal' => 0.0,
+                    'igv' => 0.0,
                     'attention_id' => $attention->id,
-                ];
+                ]);
 
-                $budget = BudgetSheet::create($data);
+                // Asegurar ID poblado (por triggers/defaults)
+                $budget->refresh();
 
-                // Crear detalles
-                foreach ($request->input('details') as $item) {
+                // Verificación fuerte de existencia (en la misma conexión/tx)
+                if (!$budget->exists || empty($budget->id) || !BudgetSheet::whereKey($budget->id)->exists()) {
+                    throw new \RuntimeException('No se pudo persistir el presupuesto.');
+                }
+
+                // Crear detalles del presupuesto
+                $details = $request->input('details', []);
+                foreach ($details as $item) {
                     $item['budget_sheet_id'] = $budget->id;
                     $this->detail_budgetService->createDetailBudget($item);
                 }
 
+                // Recalcular totales del presupuesto
                 $this->detail_budgetService->calculateAndUpdateTotals($budget);
 
-                $budget->load(['attention', 'details']);
+                // Preparar líneas de productos válidas para Doc Almacén
+                $productLines = collect($details)
+                    ->filter(fn($i) => !empty($i['product_id']) && (int) ($i['quantity'] ?? 0) > 0)
+                    ->map(fn($i) => [
+                        'product_id' => (int) $i['product_id'],
+                        'quantity' => (int) $i['quantity'],
+                    ])
+                    ->values()
+                    ->all();
 
-                return new BudgetSheetResource($budget);
+                // Guardamos lo necesario para usar luego del commit
+                return [
+                    'budget_id' => $budget->id,
+                    'budget_num' => $budget->number,
+                    'attention_id' => $attention->id,
+                    'productLines' => $productLines,
+                ];
             });
 
+            // 2) Después del COMMIT: crea el Doc Almacén ya con FK garantizada
+            DB::afterCommit(function () use ($result, $traceId) {
+                try {
+                    // Rehidratar modelos mínimos (evita pasar instancias viejas por cierre)
+                    $budget = BudgetSheet::findOrFail($result['budget_id']);
+                    $attention = Attention::findOrFail($result['attention_id']);
+
+                    if (!empty($result['productLines'])) {
+                        // Evitar duplicado por seguridad (si ya existe, no crear otro)
+                        $exists = DocAlmacen::where('budget_sheet_id', $budget->id)->lockForUpdate()->first();
+                        if (!$exists) {
+                            $this->docAlmacenService->generate(
+                                budgetProductLines: $result['productLines'],
+                                attention: $attention,
+                                budget: $budget
+                            );
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    // Log controlado; no exponemos detalle al cliente
+                    Log::error('[BudgetSheet.store.afterCommit] Error al generar DocAlmacén', [
+                        'trace_id' => $traceId,
+                        'message' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString(),
+                        'budget_id' => $result['budget_id'] ?? null,
+                    ]);
+                    // No relanzamos: el presupuesto ya quedó OK; el Doc Almacén se puede reintentar luego.
+                }
+            });
+
+            // 3) Respuesta al cliente (sin esperar afterCommit; ya está encolado para este request)
+            $budget = BudgetSheet::with(['attention', 'details'])->findOrFail($result['budget_id']);
+            return new BudgetSheetResource($budget);
+
         } catch (\Throwable $e) {
-            Log::error('Error al crear presupuesto: ' . $e->getMessage(), [
+            Log::error('[BudgetSheet.store] Error al crear presupuesto', [
+                'trace_id' => $traceId,
+                'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
+                'payload' => [
+                    'attention_id' => $request->input('attention_id'),
+                    'details_count' => count($request->input('details', [])),
+                ],
             ]);
 
+            [$status, $clientMessage] = $this->toClientError($e);
             return response()->json([
-                'message' => 'Ocurrió un error al guardar el presupuesto.',
-                'error' => $e->getMessage(),
-            ], 500);
+                'message' => $clientMessage,
+                'trace_id' => $traceId,
+            ], $status);
         }
     }
+
+
 
 
     /**
@@ -530,4 +601,30 @@ class BudgetSheetController extends Controller
         return response()->json(BudgetSheetResource::collection($budgetSheets));
     }
 
+
+    private function toClientError(Throwable $e): array
+    {
+        // Error de validación o de lógica de negocio conocido
+        if ($e instanceof \InvalidArgumentException) {
+            return [422, 'Datos incompletos o no válidos. Revisa los productos y vuelve a intentar.'];
+        }
+
+        // Errores de base de datos con FK/únicos, etc.
+        if ($e instanceof QueryException) {
+            // Código SQLSTATE de integridad (23000), ej. FK 1452
+            if ($e->getCode() === '23000') {
+                return [422, 'No se pudo registrar la operación por una inconsistencia de relaciones. Verifica la atención, el presupuesto y los productos.'];
+            }
+            // Otros errores de consulta
+            return [422, 'No se pudo completar la operación por un error de base de datos.'];
+        }
+
+        // Errores de stock insuficiente u otros de servicio que lances como RuntimeException
+        if ($e instanceof \RuntimeException) {
+            return [409, 'No hay stock suficiente para completar la salida de productos.'];
+        }
+
+        // Genérico (evitar detalles)
+        return [500, 'Ocurrió un error al guardar el presupuesto. Inténtalo nuevamente.'];
+    }
 }

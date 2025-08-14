@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
@@ -12,8 +13,8 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::table('doc_almacens', function (Blueprint $table) {
-            $table->foreignId('attention_id')->nullable()->constrained('attentions');
+        Schema::table('people', function (Blueprint $table) {
+            $table->string('category')->nullable();
         });
     }
 
@@ -24,9 +25,8 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::table('doc_almacens', function (Blueprint $table) {
-            $table->dropForeign(['attention_id']);
-            $table->dropColumn('attention_id');
+        Schema::table('people', function (Blueprint $table) {
+            $table->dropColumn('category');
         });
     }
 };

@@ -374,21 +374,21 @@ class Attention extends Model
                     ];
                     $detail->update($data);
 
-                    if ($docAlmacen) {
-                        $docAlmacenDetail = Docalmacen_details::where('product_id', $detail->product_id)
-                            ->where('doc_almacen_id', $docAlmacen->id)
-                            ->first();
+                    // if ($docAlmacen) {
+                    //     $docAlmacenDetail = Docalmacen_details::where('product_id', $detail->product_id)
+                    //         ->where('doc_almacen_id', $docAlmacen->id)
+                    //         ->first();
 
-                        if ($docAlmacenDetail) {
-                            $docAlmacenDetail->quantity = $detailData['quantity'];
-                            $docAlmacenDetail->save();
+                    //     if ($docAlmacenDetail) {
+                    //         $docAlmacenDetail->quantity = $detailData['quantity'];
+                    //         $docAlmacenDetail->save();
 
-                            $product = Product::find($docAlmacenDetail->product_id);
-                            $product->stock += $quantityBefore;
-                            $product->stock -= $detailData['quantity'];
-                            $product->save();
-                        }
-                    }
+                    //         $product = Product::find($docAlmacenDetail->product_id);
+                    //         $product->stock += $quantityBefore;
+                    //         $product->stock -= $detailData['quantity'];
+                    //         $product->save();
+                    //     }
+                    // }
 
                 }
             } else {
@@ -412,18 +412,18 @@ class Attention extends Model
                 ];
                 $detailProd = DetailAttention::create($objectData);
 
-                $product = Product::find($idProduct);
-                if ($docAlmacen) {
-                    Docalmacen_details::create([
-                        'sequentialnumber' => (new Controller())->nextCorrelative(Docalmacen_details::class, 'sequentialnumber'),
-                        'quantity' => $quantity,
-                        'comment' => 'Detalle de Salida de Producto por Atención',
-                        'product_id' => $product->id,
-                        'doc_almacen_id' => $docAlmacen->id,
-                    ]);
-                }
-                $product->stock -= $quantity;
-                $product->save();
+                // $product = Product::find($idProduct);
+                // if ($docAlmacen) {
+                //     Docalmacen_details::create([
+                //         'sequentialnumber' => (new Controller())->nextCorrelative(Docalmacen_details::class, 'sequentialnumber'),
+                //         'quantity' => $quantity,
+                //         'comment' => 'Detalle de Salida de Producto por Atención',
+                //         'product_id' => $product->id,
+                //         'doc_almacen_id' => $docAlmacen->id,
+                //     ]);
+                // }
+                // $product->stock -= $quantity;
+                // $product->save();
 
                 $newDetailIds[] = $detailProd->id;
             }

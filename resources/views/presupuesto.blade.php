@@ -81,7 +81,7 @@
     <table class="header-table">
         <tr>
             <td style="width: 10%">
-                <img src="{{ asset('img/logoTecnimotors.png') }}" width="130" class="logo" alt="Logo">
+                <img src="{{ asset('img/logo.jpg') }}" width="150" class="logo" alt="Logo">
             </td>
             <td class="center">
                 <div class="bold">TECNI MOTORS DEL PERÚ</div>

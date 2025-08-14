@@ -58,33 +58,40 @@ class WorkerController extends Controller
      */
 
      public function index(Request $request)
-     {
-         $speciality_id = $request->input('speciality_id') ?? '';
-         $occupations = $request->input('occupation') ?? '';
-     
-         // Convertir a arreglo si se recibe como cadena
-         if (!is_array($occupations)) {
-             $occupations = [$occupations];
-         }
-     
-         // Consulta base
-         $query = Worker::query();
-     
-         // Filtro por occupation si se proporciona
-         if (!empty($occupations[0])) {
-          
-            $query->where(function ($q) use ($occupations) {
-                foreach ($occupations as $occupation) {
-                    $q->orWhereRaw('LOWER(occupation) = ?', [strtolower($occupation)]);
-                }
-            });
-        }
-     
-         // Ejecución de la consulta con paginación y carga de relaciones
-         $workers = $query->with(['person', 'ocupation'])->where('state', true)->simplePaginate(50);
-     
-         return response()->json($workers);
-     }
+{
+    $speciality_id = $request->input('speciality_id') ?? '';
+    $occupations = $request->input('occupation') ?? '';
+
+    // Convertir a arreglo si viene como string
+    if (!is_array($occupations)) {
+        $occupations = [$occupations];
+    }
+
+    // Consulta base
+    $query = Worker::query();
+
+    // Filtrar solo workers cuyo 'person' no esté eliminado
+    $query->whereHas('person', function ($q) {
+        $q->whereNull('deleted_at');
+    });
+
+    // Filtro por occupation si se proporciona
+    if (!empty($occupations[0])) {
+        $query->where(function ($q) use ($occupations) {
+            foreach ($occupations as $occupation) {
+                $q->orWhereRaw('LOWER(occupation) = ?', [strtolower($occupation)]);
+            }
+        });
+    }
+
+    // Ejecutar consulta con relaciones
+    $workers = $query->with(['person', 'ocupation'])
+        ->where('state', true)
+        ->simplePaginate(50);
+
+    return response()->json($workers);
+}
+
      
 
     /**

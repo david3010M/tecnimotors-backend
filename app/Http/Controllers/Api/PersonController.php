@@ -41,10 +41,13 @@ class PersonController extends Controller
     {
         $search = $request->query('search');
         $ocupation = $request->query('ocupation');
+        $category = $request->query('category');
         $getAll = filter_var($request->query('all', false), FILTER_VALIDATE_BOOLEAN);
 
         // Base query
         $query = Person::where('id', '!=', 1)
+            ->whereNull('deleted_at')
+            ->whereDoesntHave('worker') // <-- si tu relación es hasMany, usa 'workers'
             ->when($search, function ($q) use ($search) {
                 $q->where(function ($subQuery) use ($search) {
                     $subQuery->where('documentNumber', 'like', '%' . $search . '%')
@@ -56,7 +59,11 @@ class PersonController extends Controller
             })
             ->when(!empty($ocupation), function ($q) use ($ocupation) {
                 $q->whereRaw('LOWER(ocupation) = ?', [strtolower($ocupation)]);
+            })
+            ->when(!empty($category), function ($q) use ($category) {
+                $q->whereRaw('LOWER(category) LIKE ?', ['%' . strtolower($category) . '%']);
             });
+
 
         if ($getAll) {
             $persons = $query->get();
@@ -173,6 +180,7 @@ class PersonController extends Controller
             'email' => $request->input('email') ?? null,
             'origin' => $request->input('origin') ?? null,
             'ocupation' => $request->input('ocupation') ?? null,
+            'category' => $request->input('category') ?? null,
             'names' => null,
             'fatherSurname' => null,
             'motherSurname' => null,
@@ -442,6 +450,7 @@ class PersonController extends Controller
             'email' => $request->input('email') ?? null,
             'origin' => $request->input('origin') ?? null,
             'ocupation' => $request->input('ocupation') ?? null,
+            'category' => $request->input('category') ?? null,
         ];
 
         if ($request->input('typeofDocument') == 'DNI') {

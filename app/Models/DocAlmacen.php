@@ -44,6 +44,7 @@ class DocAlmacen extends Model
         'person_id',
         'concept_mov_id',
         'attention_id',
+        'budget_sheet_id',
         'created_at',
     ];
 
@@ -62,6 +63,7 @@ class DocAlmacen extends Model
         'user.username' => 'like',
         // 'product.name' => 'like',
         'concept_mov.name' => 'like',
+        'budget_sheet_id',
         'typemov' => 'like',
         'concept' => 'like',
     ];
@@ -96,5 +98,10 @@ class DocAlmacen extends Model
     public function person()
     {
         return $this->belongsTo(Person::class, 'person_id');
+    }
+
+    public function budget_sheet()
+    {
+        return $this->belongsTo(budgetSheet::class, 'budget_sheet_id');
     }
 }

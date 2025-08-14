@@ -242,6 +242,9 @@ class MovimentController extends Controller
             'bank_id' => 'nullable|exists:banks,id',
             'person_id' => 'required|exists:people,id',
 
+            'vehicle_id' => 'nullable|exists:vehicles,id',
+            'proveedor_id' => 'nullable|exists:people,id',
+
         ]);
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
@@ -345,6 +348,10 @@ class MovimentController extends Controller
             'paymentConcept_id' => $request->input('paymentConcept_id'),
 
             'person_id' => $request->input('person_id'),
+
+            'proveedor_id' => $request->input('proveedor_id'),
+            'vehicle_id' => $request->input('vehicle_id'),
+
             'user_id' => auth()->id(),
             'bank_id' => $bank_id,
         ];
@@ -369,8 +376,14 @@ class MovimentController extends Controller
             }
         }
 
-        $object = Moviment::with(['bank', 'paymentConcept',
-            'person', 'user.worker.person'])->find($object->id);
+        $object = Moviment::with([
+            'bank',
+            'paymentConcept',
+            'person',
+            'vehicle',
+            'proveedor',
+            'user.worker.person'
+        ])->find($object->id);
         return response()->json($object, 200);
 
     }
@@ -395,7 +408,8 @@ class MovimentController extends Controller
             $query = Moviment::select(['*', DB::raw('(SELECT obtenerFormaPagoPorCaja(moviments.id)) AS formaPago')])
                 ->where('id', '>=', $movCajaAperturada->id)
                 ->orderBy('id', 'desc')
-                ->with(['paymentConcept', 'person', 'user.worker.person', 'budgetSheet']);
+                ->with(['paymentConcept', 'person', 'vehicle',
+            'proveedor','user.worker.person', 'budgetSheet']);
 
             $query->where(function ($query) use ($paymentConcept, $numberBudget) {
 
@@ -452,7 +466,8 @@ class MovimentController extends Controller
                 ->where('branchOffice_id', $movCajaAperturada->branchOffice_id)
                 ->where('id', '<', $movCajaCierre->id)
                 ->orderBy('id', 'desc')
-                ->with(['paymentConcept', 'person', 'user.worker.person', 'budgetSheet'])
+                ->with(['paymentConcept', 'person', 'vehicle',
+            'proveedor','user.worker.person', 'budgetSheet'])
                 ->simplePaginate();
 
             $resumenCaja = Moviment::selectRaw('
@@ -530,7 +545,8 @@ class MovimentController extends Controller
      */
     public function show($id)
     {
-        $object = Moviment::with(['paymentConcept', 'person', 'user.worker.person', 'budgetSheet'])->find($id);
+        $object = Moviment::with(['paymentConcept', 'person', 'vehicle',
+            'proveedor','user.worker.person', 'budgetSheet'])->find($id);
 
         if (!$object) {
             return response()->json(['message' => 'Moviment not found'], 422);
@@ -733,6 +749,9 @@ class MovimentController extends Controller
             'bank_id' => 'nullable|exists:banks,id',
             'person_id' => 'required|exists:people,id',
 
+            'vehicle_id' => 'nullable|exists:vehicles,id',
+            'proveedor_id' => 'nullable|exists:people,id',
+
         ]);
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
@@ -804,6 +823,10 @@ class MovimentController extends Controller
             'paymentConcept_id' => $paymentConcetp->id,
 
             'person_id' => $request->input('person_id'),
+
+            'proveedor_id' => $request->input('proveedor_id'),
+            'vehicle_id' => $request->input('vehicle_id'),
+
             'user_id' => auth()->id(),
             'bank_id' => $bank_id,
         ];
@@ -825,7 +848,8 @@ class MovimentController extends Controller
             Log::info('Imagen guardada en la base de datos con ruta: ' . $rutaImagen);
         }
 
-        $object = Moviment::with(['paymentConcept', 'user.worker.person'])->find($object->id);
+        $object = Moviment::with(['paymentConcept', 'vehicle',
+            'proveedor','user.worker.person'])->find($object->id);
 
         $object->detalle = $this->detalleCajaAperturada($movCaja->id, '', '')->original;
 
@@ -867,7 +891,8 @@ class MovimentController extends Controller
     public function showLastMovPayment()
     {
 
-        $object = Moviment::with(['paymentConcept', 'person', 'user.worker.person'])
+        $object = Moviment::with(['paymentConcept', 'person', 'vehicle',
+            'proveedor','user.worker.person'])
             ->where('paymentConcept_id', 2)
             ->orderBy('created_at', 'desc')
             ->first();
@@ -879,53 +904,54 @@ class MovimentController extends Controller
         return response()->json($object, 200);
     }
 
-/**
- * @OA\Get(
- *     path="/tecnimotors-backend/public/api/showAperturaMovements",
- *     summary="Listado de Aperturas",
- *     tags={"Moviment"},
- *     description="Por cada apertura, muestra su reporte con un filtro opcional por fechas basado en el campo created_at.",
- *     security={{"bearerAuth":{}}},
- *     @OA\Parameter(
- *         name="start_date",
- *         in="query",
- *         description="Fecha de inicio para filtrar los movimientos (YYYY-MM-DD)",
- *         required=false,
- *         @OA\Schema(type="string", format="date")
- *     ),
- *     @OA\Parameter(
- *         name="end_date",
- *         in="query",
- *         description="Fecha de fin para filtrar los movimientos (YYYY-MM-DD)",
- *         required=false,
- *         @OA\Schema(type="string", format="date")
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Movimientos obtenidos con éxito.",
- *         @OA\JsonContent(
- *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/MovimentRequest"))
- *         )
- *     ),
- *     @OA\Response(
- *         response=422,
- *         description="Error de validación.",
- *         @OA\JsonContent(
- *             @OA\Property(property="error", type="string", example="Movements not found.")
- *         )
- *     ),
- *     @OA\Response(
- *         response=401,
- *         description="No autenticado.",
- *         @OA\JsonContent(
- *             @OA\Property(property="msg", type="string", example="Unauthenticated.")
- *         )
- *     ),
- * )
- */
+    /**
+     * @OA\Get(
+     *     path="/tecnimotors-backend/public/api/showAperturaMovements",
+     *     summary="Listado de Aperturas",
+     *     tags={"Moviment"},
+     *     description="Por cada apertura, muestra su reporte con un filtro opcional por fechas basado en el campo created_at.",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="start_date",
+     *         in="query",
+     *         description="Fecha de inicio para filtrar los movimientos (YYYY-MM-DD)",
+     *         required=false,
+     *         @OA\Schema(type="string", format="date")
+     *     ),
+     *     @OA\Parameter(
+     *         name="end_date",
+     *         in="query",
+     *         description="Fecha de fin para filtrar los movimientos (YYYY-MM-DD)",
+     *         required=false,
+     *         @OA\Schema(type="string", format="date")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Movimientos obtenidos con éxito.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/MovimentRequest"))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Error de validación.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Movements not found.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="No autenticado.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="msg", type="string", example="Unauthenticated.")
+     *         )
+     *     ),
+     * )
+     */
     public function showAperturaMovements(Request $request)
     {
-        $query = Moviment::with(['paymentConcept', 'person', 'user.worker.person'])
+        $query = Moviment::with(['paymentConcept', 'person', 'vehicle',
+            'proveedor','user.worker.person'])
             ->where('paymentConcept_id', 1)
             ->orderBy('id', 'desc');
 

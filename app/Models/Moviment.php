@@ -160,6 +160,11 @@ class Moviment extends Model
         'created_at',
 
         'person_id',
+        
+        //proveedor y placa
+        'proveedor_id',
+        'vehicle_id',
+
         'user_id',
         'bank_id',
         'paymentConcept_id',
@@ -253,6 +258,14 @@ class Moviment extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+    public function vehicle()
+    {
+        return $this->belongsTo(Vehicle::class, 'vehicle_id');
+    }
+    public function proveedor()
+    {
+        return $this->belongsTo(Person::class, 'proveedor_id');
     }
 
     public function person()

@@ -48,6 +48,7 @@ class Person extends Model
         'email',
         'origin',
         'ocupation',
+        'category',
         'created_at',
     ];
 
@@ -71,6 +72,10 @@ class Person extends Model
     public function getFullNameAttribute()
     {
         return $this->names . ' ' . $this->fatherSurname . ' ' . $this->motherSurname;
+    }
+    public function worker()
+    {
+        return $this->hasOne(Worker::class);
     }
 
 }

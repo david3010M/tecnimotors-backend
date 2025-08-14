@@ -13,7 +13,7 @@ return new class extends Migration {
     public function up()
     {
         Schema::table('doc_almacens', function (Blueprint $table) {
-            $table->foreignId('attention_id')->nullable()->constrained('attentions');
+            $table->foreignId('budget_sheet_id')->nullable()->constrained('budget_sheets');
         });
     }
 
@@ -25,8 +25,8 @@ return new class extends Migration {
     public function down()
     {
         Schema::table('doc_almacens', function (Blueprint $table) {
-            $table->dropForeign(['attention_id']);
-            $table->dropColumn('attention_id');
+            $table->dropForeign(['budget_sheet_id']);
+            $table->dropColumn('budget_sheet_id');
         });
     }
 };
