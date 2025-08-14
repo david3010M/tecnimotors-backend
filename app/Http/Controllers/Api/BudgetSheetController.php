@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BudgetSheetRequest\StoreBudgetSheetRequest;
+use App\Http\Requests\BudgetSheetRequest\UpdateBudgetSheetRequest;
 use App\Http\Resources\BudgetSheetDetailsResource;
 use App\Http\Resources\BudgetSheetResource;
 use App\Models\Attention;
 use App\Models\budgetSheet;
 use App\Models\Commitment;
 use App\Models\DocAlmacen;
+use App\Models\Product;
 use App\Services\DetailBudgetService;
 use App\Services\DocAlmacenService;
 use App\Utils\Constants;
@@ -396,6 +398,7 @@ class BudgetSheetController extends Controller
 
 
 
+
     /**
      * Update a budgetSheet
      * @OA\Put (
@@ -446,49 +449,105 @@ class BudgetSheetController extends Controller
      *     )
      * )
      */
-    public function update(Request $request, int $id)
+
+    public function update(UpdateBudgetSheetRequest $request, $id)
     {
+        $traceId = (string) Str::uuid();
 
-        $object = budgetSheet::find($id);
-        if (!$object) {
-            return response()->json(['message' => 'Budget Sheet not found.'], 404);
+        try {
+            return DB::transaction(function () use ($request, $id) {
+
+                // 0) Cargar presupuesto (y bloquear fila)
+                /** @var \App\Models\BudgetSheet $budget */
+                $budget = BudgetSheet::with(['attention', 'details'])
+                    ->lockForUpdate()
+                    ->findOrFail((int) $id);
+
+                $attention = $budget->attention; // no cambia en este endpoint (solo detalles)
+
+                // 1) Reemplazar detalles del presupuesto
+                $incomingDetails = $request->input('details', []);
+
+                $budget->details()->delete();
+                foreach ($incomingDetails as $item) {
+                    $item['budget_sheet_id'] = $budget->id;
+                    $this->detail_budgetService->createDetailBudget($item);
+                }
+
+                // 2) Recalcular totales
+                $this->detail_budgetService->calculateAndUpdateTotals($budget);
+
+                // 3) Preparar productos para Doc Almacén (ignora servicios)
+                $productLines = collect($incomingDetails)
+                    ->filter(fn($i) => !empty($i['product_id']) && (int) ($i['quantity'] ?? 0) > 0)
+                    ->map(fn($i) => [
+                        'product_id' => (int) $i['product_id'],
+                        'quantity' => (int) $i['quantity'],
+                    ])
+                    ->values()
+                    ->all();
+
+                // 4) Sincronizar Doc Almacén
+                if (!empty($productLines)) {
+                    // a) Hay productos → sincroniza diferencias y stock
+                    $this->docAlmacenService->update(
+                        detailsProducts: $productLines,
+                        object: $attention,
+                        budget: $budget
+                    );
+                } else {
+                    // b) Solo servicios → devolver stock y eliminar Doc Almacén si existe
+                    $doc = DocAlmacen::where('budget_sheet_id', $budget->id)->lockForUpdate()->first();
+                    if ($doc) {
+                        foreach ($doc->details as $d) {
+                            $p = Product::query()->lockForUpdate()->find($d->product_id);
+                            if ($p) {
+                                $p->increment('stock', (int) $d->quantity);
+                            }
+                        }
+                        $doc->details()->delete();
+                        $doc->delete();
+                    }
+                }
+
+                // 5) Respuesta
+                $budget->load(['attention', 'details']);
+                return new BudgetSheetResource($budget);
+            });
+        } catch (\Throwable $e) {
+            Log::error('[BudgetSheet.update] Error al actualizar presupuesto', [
+                'trace_id' => $traceId,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'payload' => [
+                    'budget_id' => $id,
+                    'details_count' => count($request->input('details', [])),
+                ],
+            ]);
+
+            // Mensaje controlado (no exponer SQL); usa tu helper si lo tienes
+            if ($e instanceof \RuntimeException) {
+                return response()->json([
+                    'message' => 'No se pudo completar la actualización (verifica stock).',
+                    'trace_id' => $traceId,
+                ], 409);
+            }
+
+            if ($e instanceof \Illuminate\Database\QueryException) {
+                return response()->json([
+                    'message' => 'No se pudo completar la operación por un error de base de datos.',
+                    'trace_id' => $traceId,
+                ], 422);
+            }
+
+            return response()->json([
+                'message' => 'Ocurrió un error al actualizar el presupuesto.',
+                'trace_id' => $traceId,
+            ], 500);
         }
-
-        $validator = validator()->make($request->all(), [
-            'attention_id' => 'nullable|exists:attentions,id',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()->first()], 422);
-        }
-
-        $attention = Attention::find($object->attention_id);
-
-        $percentageDiscount = floatval($request->input('percentageDiscount', 0)) / 100;
-        $subtotal = floatval($attention->total);
-        $discount = $subtotal * $percentageDiscount;
-
-        $igv = ($subtotal - $discount) * 0.18;
-        $total = ($subtotal - $discount) * 1.18;
-
-        $data = [
-            'paymentType' => $request->input('paymentType'),
-            'totalService' => $attention->totalService ?? 0.0,
-            'totalProducts' => $attention->totalProducts ?? 0.0,
-            'debtAmount' => $attention->debtAmount,
-            'total' => $total ?? 0.0,
-            'discount' => $discount ?? 0.0,
-            'subtotal' => $subtotal ?? 0.0,
-            'igv' => $igv ?? 0.0,
-
-        ];
-
-        $object->update($data);
-
-        $object = budgetSheet::with(['attention'])->find($object->id);
-
-        return new BudgetSheetResource($object);
     }
+
+
 
     /**
      * Delete an BudgetSheet
