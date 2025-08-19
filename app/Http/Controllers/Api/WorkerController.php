@@ -57,42 +57,42 @@ class WorkerController extends Controller
      * )
      */
 
-     public function index(Request $request)
-{
-    $speciality_id = $request->input('speciality_id') ?? '';
-    $occupations = $request->input('occupation') ?? '';
+    public function index(Request $request)
+    {
+        $speciality_id = $request->input('speciality_id') ?? '';
+        $occupations = $request->input('occupation') ?? '';
 
-    // Convertir a arreglo si viene como string
-    if (!is_array($occupations)) {
-        $occupations = [$occupations];
-    }
+        // Convertir a arreglo si viene como string
+        if (!is_array($occupations)) {
+            $occupations = [$occupations];
+        }
 
-    // Consulta base
-    $query = Worker::query();
+        // Consulta base
+        $query = Worker::query();
 
-    // Filtrar solo workers cuyo 'person' no esté eliminado
-    $query->whereHas('person', function ($q) {
-        $q->whereNull('deleted_at');
-    });
-
-    // Filtro por occupation si se proporciona
-    if (!empty($occupations[0])) {
-        $query->where(function ($q) use ($occupations) {
-            foreach ($occupations as $occupation) {
-                $q->orWhereRaw('LOWER(occupation) = ?', [strtolower($occupation)]);
-            }
+        // Filtrar solo workers cuyo 'person' no esté eliminado
+        $query->whereHas('person', function ($q) {
+            $q->whereNull('deleted_at');
         });
+
+        // Filtro por occupation si se proporciona
+        if (!empty($occupations[0])) {
+            $query->where(function ($q) use ($occupations) {
+                foreach ($occupations as $occupation) {
+                    $q->orWhereRaw('LOWER(occupation) = ?', [strtolower($occupation)]);
+                }
+            });
+        }
+
+        // Ejecutar consulta con relaciones
+        $workers = $query->with(['person', 'ocupation'])
+            ->where('state', true)
+            ->simplePaginate(50);
+
+        return response()->json($workers);
     }
 
-    // Ejecutar consulta con relaciones
-    $workers = $query->with(['person', 'ocupation'])
-        ->where('state', true)
-        ->simplePaginate(50);
 
-    return response()->json($workers);
-}
-
-     
 
     /**
      * Show the specified Worker
@@ -147,7 +147,8 @@ class WorkerController extends Controller
             return response()->json($object, 200);
         }
         return response()->json(
-            ['message' => 'Worker not found'], 404
+            ['message' => 'Worker not found'],
+            404
         );
 
     }
@@ -528,7 +529,8 @@ class WorkerController extends Controller
 
         if (!$object) {
             return response()->json(
-                ['message' => 'User not found'], 404
+                ['message' => 'User not found'],
+                404
             );
         }
         $validator = validator()->make($request->all(), [
@@ -608,10 +610,14 @@ class WorkerController extends Controller
     {
         $worker = Worker::find($id);
         $person = Person::find($worker->person_id);
-        if (!$worker) return response()->json(['message' => 'Worker not found'], 404);
-        if (!$person) return response()->json(['message' => 'Person not found'], 404);
-        if ($worker->guides()->count() > 0) return response()->json(['message' => 'Trabajador Tiene Guias Asignadas'], 422);
-        if ($worker->attentions()->count() > 0) return response()->json(['message' => 'Trabajador Tiene Atenciones Asignadas'], 422);
+        if (!$worker)
+            return response()->json(['message' => 'Worker not found'], 404);
+        if (!$person)
+            return response()->json(['message' => 'Person not found'], 404);
+        if ($worker->guides()->count() > 0)
+            return response()->json(['message' => 'Trabajador Tiene Guias Asignadas'], 422);
+        if ($worker->attentions()->count() > 0)
+            return response()->json(['message' => 'Trabajador Tiene Atenciones Asignadas'], 422);
         $person->delete();
         $worker->delete();
         return response()->json(['message' => 'Worker deleted successfully']);

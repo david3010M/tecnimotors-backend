@@ -31,17 +31,14 @@ class UpdateSaleRequest extends UpdateRequest
                 Constants::SALE_TICKET . ',' .
                 Constants::SALE_NOTA_CREDITO_BOLETA . ',' .
                 Constants::SALE_NOTA_CREDITO_FACTURA,
-            'saleType' => 'required|string|in:' .
-                Constants::SALE_NORMAL . ',' .
-                Constants::SALE_DETRACCION,
-            'detractionCode' => 'nullable|required_if:saleType,' . Constants::SALE_DETRACCION . '|string',
-            'detractionPercentage' => 'nullable|required_if:saleType,' . Constants::SALE_DETRACCION . '|numeric',
+
+
             'paymentType' => 'required|string|in:' .
                 Constants::SALE_CONTADO . ',' .
                 Constants::SALE_CREDITO,
             'person_id' => 'required|integer|exists:people,id',
             'budget_sheet_id' => [
-                'required',
+                'nullable',
                 'integer',
                 'exists:budget_sheets,id',
                 Rule::unique('sales', 'budget_sheet_id')
@@ -68,6 +65,18 @@ class UpdateSaleRequest extends UpdateRequest
             'commitments' => 'required_if:paymentType,' . Constants::SALE_CREDITO . '|array',
             'commitments.*.price' => 'required|numeric',
             'commitments.*.paymentDate' => 'required|int',
+
+            'saleType' => 'required|string|in:' .
+                Constants::SALE_NORMAL . ',' .
+                Constants::SALE_DETRACCION . ',' .
+                Constants::SALE_RETENCION,
+            'retencion' => 'nullable|numeric|min:0|max:100|required_if:saleType,' . Constants::SALE_RETENCION . '|string',
+            'detractionCode' => 'nullable|required_if:saleType,' . Constants::SALE_DETRACCION . '|string',
+            'detractionPercentage' => 'nullable|min:0|max:100|required_if:saleType,' . Constants::SALE_DETRACCION . '|numeric',
+
+
+
+
         ];
 
         return $data;

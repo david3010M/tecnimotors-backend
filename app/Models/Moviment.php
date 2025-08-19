@@ -160,7 +160,7 @@ class Moviment extends Model
         'created_at',
 
         'person_id',
-        
+
         //proveedor y placa
         'proveedor_id',
         'vehicle_id',
@@ -177,8 +177,9 @@ class Moviment extends Model
     ];
 
     protected $casts = [
-        'paymentDate' => 'date:Y-m-d',
+        'paymentDate' => 'datetime:Y-m-d H:i',
     ];
+
 
     public function sale()
     {

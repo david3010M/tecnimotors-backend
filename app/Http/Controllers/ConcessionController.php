@@ -61,7 +61,8 @@ class ConcessionController extends Controller
     public function store(StoreConcessionRequest $request)
     {
         $file = $request->file('logo');
-        if (!$file) return response()->json(['message' => 'Logo is required'], 422);
+        if (!$file)
+            return response()->json(['message' => 'Logo is required'], 422);
         $concession = Concession::create($request->validated());
         $currentTime = now();
         $originalName = str_replace(' ', '_', $file->getClientOriginalName());
@@ -69,7 +70,7 @@ class ConcessionController extends Controller
         $filename = $currentTime->format('YmdHis') . '_' . $originalName;
         $path = $file->storeAs('public/concessions', $filename);
         $routeImage = 'https://develop.garzasoft.com/tecnimotors-backend/storage/app/' . $path;
-//        $routeImage = 'https://localhost/tecnimotors-backend/storage/app/' . $path;
+        //        $routeImage = 'https://localhost/tecnimotors-backend/storage/app/' . $path;
 
         $dataImage = [
             'route' => $routeImage,
@@ -88,14 +89,15 @@ class ConcessionController extends Controller
      *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(name="id", in="path", description="Concession id", required=true, @OA\Schema(type="integer")),
      *     @OA\Response(response=200, description="Concession", @OA\JsonContent(ref="#/components/schemas/ConcessionResource")),
-     *     @OA\Response(response=404, description="Concession not found", @OA\JsonContent(type="object", @OA\Property(property="message", type="string", example="Concession not found")))
+     *     @OA\Response(response=404, description="Concession No encontrada", @OA\JsonContent(type="object", @OA\Property(property="message", type="string", example="Concession No encontrada")))
      * )
      *
      */
     public function show(int $id)
     {
         $concession = Concession::find($id);
-        if (!$concession) return response()->json(['message' => 'Concession not found'], 404);
+        if (!$concession)
+            return response()->json(['message' => 'Concession No encontrada'], 404);
         return response()->json(new ConcessionResource($concession));
     }
 
@@ -113,7 +115,7 @@ class ConcessionController extends Controller
      *          )
      *      ),
      *     @OA\Response(response=200, description="Concession updated", @OA\JsonContent(ref="#/components/schemas/ConcessionResource")),
-     *     @OA\Response(response=404, description="Concession not found", @OA\JsonContent(type="object", @OA\Property(property="message", type="string", example="Concession not found"))),
+     *     @OA\Response(response=404, description="Concession No encontrada", @OA\JsonContent(type="object", @OA\Property(property="message", type="string", example="Concession No encontrada"))),
      *     @OA\Response(response=422, description="Validation error", @OA\JsonContent(ref="#/components/schemas/ValidationError"))
      * )
      *
@@ -121,13 +123,15 @@ class ConcessionController extends Controller
     public function update(UpdateConcessionRequest $request, int $id)
     {
         $concession = Concession::find($id);
-        if (!$concession) return response()->json(['message' => 'Concession not found'], 404);
+        if (!$concession)
+            return response()->json(['message' => 'Concession No encontrada'], 404);
         $file = $request->file('logo');
         if ($file) {
             $routeImagePrevious = RouteImages::where('concession_id', $concession->id)->first();
             if ($routeImagePrevious) {
                 $path = storage_path(explode('https://develop.garzasoft.com/tecnimotors-backend/storage/', $routeImagePrevious->route)[1]);
-                if (file_exists($path)) unlink($path);
+                if (file_exists($path))
+                    unlink($path);
                 $routeImagePrevious->delete();
             }
 
@@ -137,7 +141,7 @@ class ConcessionController extends Controller
             $filename = $currentTime->format('YmdHis') . '_' . $originalName;
             $path = $file->storeAs('public/concessions', $filename);
             $routeImage = 'https://develop.garzasoft.com/tecnimotors-backend/storage/app/' . $path;
-//            $routeImage = 'http://localhost/tecnimotors-backend/storage/app/' . $path;
+            //            $routeImage = 'http://localhost/tecnimotors-backend/storage/app/' . $path;
 
             $dataImage = [
                 'route' => $routeImage,
@@ -158,19 +162,39 @@ class ConcessionController extends Controller
      *     summary="Delete a concession",
      *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(name="id", in="path", description="Concession id", required=true, @OA\Schema(type="integer")),
-     *     @OA\Response(response=200, description="Concession deleted", @OA\JsonContent(type="object", @OA\Property(property="message", type="string", example="Concession deleted"))),
-     *     @OA\Response(response=404, description="Concession not found", @OA\JsonContent(type="object", @OA\Property(property="message", type="string", example="Concession not found")))
+     *     @OA\Response(response=200, description="Concession eliminada", @OA\JsonContent(type="object", @OA\Property(property="message", type="string", example="Concession eliminada"))),
+     *     @OA\Response(response=404, description="Concession No encontrada", @OA\JsonContent(type="object", @OA\Property(property="message", type="string", example="Concession No encontrada")))
      * )
      */
     public function destroy(int $id)
     {
         $concession = Concession::find($id);
-        if (!$concession) return response()->json(['message' => 'Concession not found'], 404);
+
+        if (!$concession) {
+            return response()->json(['message' => 'Concession No encontrada'], 404);
+        }
+
         $routeImagePrevious = RouteImages::where('concession_id', $concession->id)->first();
-        $path = storage_path(explode('https://develop.garzasoft.com/tecnimotors-backend/storage/', $routeImagePrevious->route)[1]);
-        if (file_exists($path)) unlink($path);
-        if ($routeImagePrevious) $routeImagePrevious->delete();
+
+        if ($routeImagePrevious && $routeImagePrevious->route) {
+            // Extraer la ruta física desde la URL guardada
+            $relativePath = explode('https://develop.garzasoft.com/tecnimotors-backend/storage/', $routeImagePrevious->route)[1] ?? null;
+
+            if ($relativePath) {
+                $path = storage_path($relativePath);
+
+                if (file_exists($path)) {
+                    unlink($path);
+                }
+            }
+
+            // Eliminar registro de la base de datos
+            $routeImagePrevious->delete();
+        }
+
         $concession->delete();
-        return response()->json(['message' => 'Concession deleted']);
+
+        return response()->json(['message' => 'Concession eliminada']);
     }
+
 }

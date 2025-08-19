@@ -129,6 +129,11 @@ class SaleController extends Controller
             'total' => $total,
             'person_id' => $request->input('person_id'),
             'budget_sheet_id' => $request->input('budget_sheet_id'),
+
+            'retencion' => $request->input('saleType') === Constants::SALE_RETENCION ? $request->input('retencion') : '',
+
+            'cuentabn' => '000000000',
+
             'cash_id' => $cashId,
             'user_id' => auth()->id(),
         ];
@@ -136,7 +141,7 @@ class SaleController extends Controller
         $sale = Sale::make($data);
 
         if ($sale->paymentType == Constants::SALE_CONTADO) {
-//            CHECK IF CASH MOVEMENT EXISTS
+            //            CHECK IF CASH MOVEMENT EXISTS
             $movCaja = Moviment::where('status', 'Activa')->where('paymentConcept_id', 1)->first();
             if (!$movCaja) {
                 if ($request->input('paymentConcept_id') != 1) {
@@ -164,14 +169,14 @@ class SaleController extends Controller
                 $depositAmount = $request->input('deposit') ?? 0;
             }
 
-//        PAYMENT METHODS
+            //        PAYMENT METHODS
             $efectivo = $request->input('effective') ?? 0;
             $yape = $request->input('yape') ?? 0;
             $plin = $request->input('plin') ?? 0;
             $tarjeta = $request->input('card') ?? 0;
             $deposito = $depositAmount ?? 0;
 
-//        TOTAL
+            //        TOTAL
             $total = $efectivo + $yape + $plin + $tarjeta + $deposito;
 
             if ($total == 0) {
@@ -183,11 +188,11 @@ class SaleController extends Controller
             if (round($sale->total - $total, 1) != 0) {
                 return response()->json([
                     "error" => "El monto a pagar no coincide con el total " . round($sale->total, 1) .
-                    " diferencia " . round($sale->total - $total, 1),
+                        " diferencia " . round($sale->total - $total, 1),
                 ], 422);
             }
 
-//            THEN SAVE SALE
+            //            THEN SAVE SALE
             $sale->save();
             $commitment = Commitment::create([
                 'numberQuota' => 1,
@@ -200,13 +205,13 @@ class SaleController extends Controller
                 'sale_id' => $sale->id,
             ]);
 
-//            MOVEMENT CREATION
+            //            MOVEMENT CREATION
             $tipo = 'M001';
             $tipo = str_pad($tipo, 4, '0', STR_PAD_RIGHT);
             $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(sequentialNumber, LOCATE("-", sequentialNumber) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM moviments WHERE SUBSTRING(sequentialNumber, 1, 4) = ?', [$tipo])[0]->siguienteNum;
             $siguienteNum = (int) $resultado;
 
-//        DATA
+            //        DATA
             $routeVoucher = null;
             $numberVoucher = null;
             $bank_id = null;
@@ -266,7 +271,7 @@ class SaleController extends Controller
             ]);
             $sale->save();
 
-//            AMORTIZATION CREATION
+            //            AMORTIZATION CREATION
             $tipo = 'AMRT';
             $tipo = str_pad($tipo, 4, '0', STR_PAD_RIGHT);
             $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(sequentialNumber, LOCATE("-", sequentialNumber) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM amortizations WHERE SUBSTRING(sequentialNumber, 1, 4) = ?', [$tipo])[0]->siguienteNum;
@@ -432,6 +437,10 @@ class SaleController extends Controller
             'person_id' => $request->input('person_id'),
             'budget_sheet_id' => $request->input('budget_sheet_id'),
             'cash_id' => 1,
+
+            'retencion' => $request->input('saleType') === Constants::SALE_RETENCION ? $request->input('retencion') : '',
+
+
         ]);
         $sale->save();
 
@@ -474,7 +483,7 @@ class SaleController extends Controller
             if (round($sale->total - $total, 1) != 0) {
                 return response()->json([
                     "error" => "El monto a pagar no coincide con el total " . number_format($sale->total, 2) .
-                    " diferencia " . number_format($sale->total - $total, 2),
+                        " diferencia " . number_format($sale->total - $total, 2),
                 ], 422);
             }
 
@@ -763,15 +772,15 @@ class SaleController extends Controller
             'idventa' => $id,
             'comentario' => $comentario,
         ];
-    
+
         // Añadir los correos al array de parámetros
         if (is_array($emails)) {
             foreach ($emails as $index => $email) {
                 $params["emails[$index]"] = $email;
             }
-        }    
+        }
         $url .= '?' . http_build_query($params);
-    
+
         // Inicializar cURL
         $ch = curl_init();
 

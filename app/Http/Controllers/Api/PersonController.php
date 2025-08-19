@@ -47,7 +47,7 @@ class PersonController extends Controller
         // Base query
         $query = Person::where('id', '!=', 1)
             ->whereNull('deleted_at')
-            ->whereDoesntHave('worker') // <-- si tu relación es hasMany, usa 'workers'
+            //->whereDoesntHave('worker') // <-- si tu relación es hasMany, usa 'workers'
             ->when($search, function ($q) use ($search) {
                 $q->where(function ($subQuery) use ($search) {
                     $subQuery->where('documentNumber', 'like', '%' . $search . '%')

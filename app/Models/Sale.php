@@ -41,6 +41,12 @@ class Sale extends Model
         'cash_id',
         'user_id',
         'created_at',
+
+        'detraccion',
+        'retencion',
+        'cuentabn',
+        'codbiendetraccion',
+        'typesale'
     ];
 
     protected $hidden = [
@@ -60,6 +66,10 @@ class Sale extends Model
         'person_id' => '=',
         'person.documentNumber' => 'like',
         'budget_sheet_id' => '=',
+        'detraccion' => '=',
+        'retencion' => '=',
+        'codbiendetraccion' => '=',
+        'typesale' => '=',
     ];
 
     const sorts = [
@@ -143,8 +153,7 @@ class Sale extends Model
         $person_id = null,
         $personDocumentNumber = null,
         $budget_sheet_id = null
-    )
-    {
+    ) {
         $query = Sale::with([
             'person',
             'budgetSheet',

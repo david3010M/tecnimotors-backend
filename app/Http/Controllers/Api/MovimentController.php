@@ -82,6 +82,13 @@ class MovimentController extends Controller
     {
         $paymentConcept = $request->input('paymentConcept_id') ?? '';
         $numberBudget = $request->input('numberBudget') ?? '';
+        $person_id = $request->input('person_id') ?? '';
+
+        $nro_placa = $request->input('nro_placa') ?? '';
+        $proveedor_id = $request->input('proveedor_id') ?? '';
+        $start_date = $request->input('from') ?? '';
+        $end_date = $request->input('to') ?? '';
+        $type_doc = $request->input('type_doc') ?? '';
 
         $movCaja = Moviment::where('status', 'Activa')
             ->where('paymentConcept_id', 1)
@@ -89,11 +96,22 @@ class MovimentController extends Controller
 
         $data = [];
         if ($movCaja) {
-            $data = $this->detalleCajaAperturada($movCaja->id, $paymentConcept, $numberBudget)->original;
-            // $data = [];
+            $data = $this->detalleCajaAperturada(
+                $movCaja->id,
+                $paymentConcept,
+                $numberBudget,
+                $person_id,
+                $nro_placa,
+                $proveedor_id,
+                $start_date,
+                $end_date,
+                $type_doc
+            )->original;
         }
+
         return response()->json($data, 200);
     }
+
 
     /**
      * @OA\Post(
@@ -388,8 +406,18 @@ class MovimentController extends Controller
 
     }
 
-    public function detalleCajaAperturada($id, $paymentConcept = '', $numberBudget = '')
-    {
+    public function detalleCajaAperturada(
+        $id,
+        $paymentConcept = '',
+        $numberBudget = '',
+        $person_id = '',
+        $nro_placa = '',
+        $proveedor_id = '',
+        $start_date = '',
+        $end_date = '',
+        $type_doc = ''
+    ) {
+
         $movCajaAperturada = Moviment::where('id', $id)->where('paymentConcept_id', 1)
             ->first();
 
@@ -405,26 +433,67 @@ class MovimentController extends Controller
 
         if ($movCajaCierre == null) {
             //CAJA ACTIVA
-            $query = Moviment::select(['*', DB::raw('(SELECT obtenerFormaPagoPorCaja(moviments.id)) AS formaPago')])
+            $query = Moviment::select([
+                '*',
+                DB::raw('(SELECT obtenerFormaPagoPorCaja(moviments.id)) AS formaPago')
+            ])
                 ->where('id', '>=', $movCajaAperturada->id)
                 ->orderBy('id', 'desc')
-                ->with(['paymentConcept', 'person', 'vehicle',
-            'proveedor','user.worker.person', 'budgetSheet']);
+                ->with(['paymentConcept', 'person', 'vehicle', 'proveedor', 'user.worker.person', 'budgetSheet']);
 
-            $query->where(function ($query) use ($paymentConcept, $numberBudget) {
+            $query->when(
+                !empty($paymentConcept),
+                fn($q) =>
+                $q->whereHas(
+                    'paymentConcept',
+                    fn($qq) =>
+                    $qq->where('name', 'like', "%$paymentConcept%")
+                )
+            );
 
-                if ($paymentConcept !== '') {
-                    $query->whereHas('paymentConcept', function ($query) use ($paymentConcept) {
-                        $query->where('name', 'like', "%$paymentConcept%");
-                    });
-                }
-                if ($numberBudget !== '') {
-                    $query->whereHas('budgetSheet', function ($query) use ($numberBudget) {
-                        $query->where('number', 'like', "%$numberBudget%");
-                    });
-                }
+            $query->when(
+                !empty($numberBudget),
+                fn($q) =>
+                $q->whereHas(
+                    'budgetSheet',
+                    fn($qq) =>
+                    $qq->where('number', 'like', "%$numberBudget%")
+                )
+            );
 
-            });
+            $query->when(!empty($person_id), fn($q) => $q->where('person_id', $person_id));
+
+            $query->when(
+                !empty($nro_placa),
+                fn($q) =>
+                $q->whereHas(
+                    'vehicle',
+                    fn($qq) =>
+                    $qq->where('plate', 'like', "%$nro_placa%")
+                )
+            );
+
+            $query->when(!empty($proveedor_id), fn($q) => $q->where('proveedor_id', $proveedor_id));
+
+            $query->when(
+                !empty($start_date) && !empty($end_date),
+                fn($q) =>
+                $q->whereBetween('paymentDate', [$start_date, $end_date])
+            )->when(
+                    !empty($start_date) && empty($end_date),
+                    fn($q) =>
+                    $q->whereDate('paymentDate', '>=', $start_date)
+                )->when(
+                    empty($start_date) && !empty($end_date),
+                    fn($q) =>
+                    $q->whereDate('paymentDate', '<=', $end_date)
+                );
+
+            $query->when(
+                !empty($type_doc),
+                fn($q) =>
+                $q->whereRaw('LOWER(typeDocument) LIKE ?', ['%' . strtolower($type_doc) . '%'])
+            );
 
             // Ejecutar la consulta paginada
             $movimientosCaja = $query->paginate(15);
@@ -466,8 +535,14 @@ class MovimentController extends Controller
                 ->where('branchOffice_id', $movCajaAperturada->branchOffice_id)
                 ->where('id', '<', $movCajaCierre->id)
                 ->orderBy('id', 'desc')
-                ->with(['paymentConcept', 'person', 'vehicle',
-            'proveedor','user.worker.person', 'budgetSheet'])
+                ->with([
+                    'paymentConcept',
+                    'person',
+                    'vehicle',
+                    'proveedor',
+                    'user.worker.person',
+                    'budgetSheet'
+                ])
                 ->simplePaginate();
 
             $resumenCaja = Moviment::selectRaw('
@@ -545,8 +620,14 @@ class MovimentController extends Controller
      */
     public function show($id)
     {
-        $object = Moviment::with(['paymentConcept', 'person', 'vehicle',
-            'proveedor','user.worker.person', 'budgetSheet'])->find($id);
+        $object = Moviment::with([
+            'paymentConcept',
+            'person',
+            'vehicle',
+            'proveedor',
+            'user.worker.person',
+            'budgetSheet'
+        ])->find($id);
 
         if (!$object) {
             return response()->json(['message' => 'Moviment not found'], 422);
@@ -848,8 +929,12 @@ class MovimentController extends Controller
             Log::info('Imagen guardada en la base de datos con ruta: ' . $rutaImagen);
         }
 
-        $object = Moviment::with(['paymentConcept', 'vehicle',
-            'proveedor','user.worker.person'])->find($object->id);
+        $object = Moviment::with([
+            'paymentConcept',
+            'vehicle',
+            'proveedor',
+            'user.worker.person'
+        ])->find($object->id);
 
         $object->detalle = $this->detalleCajaAperturada($movCaja->id, '', '')->original;
 
@@ -891,8 +976,13 @@ class MovimentController extends Controller
     public function showLastMovPayment()
     {
 
-        $object = Moviment::with(['paymentConcept', 'person', 'vehicle',
-            'proveedor','user.worker.person'])
+        $object = Moviment::with([
+            'paymentConcept',
+            'person',
+            'vehicle',
+            'proveedor',
+            'user.worker.person'
+        ])
             ->where('paymentConcept_id', 2)
             ->orderBy('created_at', 'desc')
             ->first();
@@ -950,8 +1040,13 @@ class MovimentController extends Controller
      */
     public function showAperturaMovements(Request $request)
     {
-        $query = Moviment::with(['paymentConcept', 'person', 'vehicle',
-            'proveedor','user.worker.person'])
+        $query = Moviment::with([
+            'paymentConcept',
+            'person',
+            'vehicle',
+            'proveedor',
+            'user.worker.person'
+        ])
             ->where('paymentConcept_id', 1)
             ->orderBy('id', 'desc');
 

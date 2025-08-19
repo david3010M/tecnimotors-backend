@@ -93,6 +93,12 @@ class SaleResource extends JsonResource
             'cash_id' => $this->cash_id,
             'user_id' => $this->user_id,
             'client' => $this->person,
+
+            'retencion' => $this->retencion,
+      
+            'cuentabn' => $this->cuentabn,
+          
+
             'budgetSheet' => $this->budgetSheet,
             'created_at' => $this->created_at,
         ];

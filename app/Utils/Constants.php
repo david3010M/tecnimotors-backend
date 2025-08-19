@@ -28,6 +28,8 @@ class Constants
     public const SALE_CREDITO = 'CREDITO';
     public const SALE_NORMAL = 'NORMAL';
     public const SALE_DETRACCION = 'DETRACCION';
+
+    public const SALE_RETENCION = 'RETENCION';
     public const SALE_FACTURA = 'FACTURA';
     public const SALE_BOLETA = 'BOLETA';
     public const SALE_TICKET = 'TICKET';
