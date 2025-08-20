@@ -87,9 +87,11 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::resource('groupmenu', GroupMenuController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'groupmenu.index', 'store' => 'groupmenu.store', 'show' => 'groupmenu.show', 'update' => 'groupmenu.update', 'destroy' => 'groupmenu.destroy']);
 
-    //PERSON
+      //PERSON
     Route::resource('person', PersonController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
-        ->names(['index' => 'person.index', 'store' => 'person.store', 'show' => 'person.show', 'update' => 'person.update', 'destroy' => 'person.destroy']);
+        ->names(['index' => 'person.index', 'store' => 'person.store', 'show' => 'person.show', 'update' => 'person.update']);
+
+         Route::delete('person/{id}/{ocupation}', [PersonController::class, 'destroy'])->name('destroy');
 
     // CONCESSION
     Route::resource('concession', ConcessionController::class)->only(['index', 'show', 'store', 'destroy'])

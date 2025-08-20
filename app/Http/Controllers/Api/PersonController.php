@@ -40,10 +40,12 @@ class PersonController extends Controller
     public function index(Request $request)
     {
         $search = $request->query('search');
-        $ocupation = $request->query('ocupation');
+        $ocupation = $request->query('ocupation','cliente');
+        
         $category = $request->query('category');
         $getAll = filter_var($request->query('all', false), FILTER_VALIDATE_BOOLEAN);
 
+        
         // Base query
         $query = Person::where('id', '!=', 1)
             ->whereNull('deleted_at')
@@ -58,7 +60,7 @@ class PersonController extends Controller
                 });
             })
             ->when(!empty($ocupation), function ($q) use ($ocupation) {
-                $q->whereRaw('LOWER(ocupation) = ?', [strtolower($ocupation)]);
+                $q->whereRaw('LOWER(ocupation) LIKE ?', ['%' . strtolower($ocupation) . '%']);
             })
             ->when(!empty($category), function ($q) use ($category) {
                 $q->whereRaw('LOWER(category) LIKE ?', ['%' . strtolower($category) . '%']);
@@ -159,51 +161,72 @@ class PersonController extends Controller
 
     public function store(Request $request)
     {
-
         $validator = validator()->make($request->all(), [
             'typeofDocument' => 'required',
-            'documentNumber' => [
-                'required',
-                Rule::unique('people')->whereNull('deleted_at'),
-            ],
+            'documentNumber' => 'required',
+            'ocupation' => 'nullable|in:cliente,proveedor', // ✅ solo acepta cliente o proveedor
+        ], [
+            'ocupation.required' => 'El campo ocupación es obligatorio.',
+            'ocupation.in' => 'La ocupación debe ser cliente o proveedor.',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
-        $data = [
-            'typeofDocument' => $request->input('typeofDocument'),
-            'documentNumber' => $request->input('documentNumber'),
-            'address' => $request->input('address') ?? null,
-            'phone' => $request->input('phone') ?? null,
-            'email' => $request->input('email') ?? null,
-            'origin' => $request->input('origin') ?? null,
-            'ocupation' => $request->input('ocupation') ?? null,
-            'category' => $request->input('category') ?? null,
-            'names' => null,
-            'fatherSurname' => null,
-            'motherSurname' => null,
-            'businessName' => null,
-            'representativeDni' => null,
-            'representativeNames' => null,
-        ];
+        $occupation = strtolower($request->input('ocupation','cliente')); // normalizar a minúsculas
 
-        if ($request->input('typeofDocument') == 'DNI') {
-            $data['names'] = $request->input('names') ?? null;
-            $data['fatherSurname'] = $request->input('fatherSurname') ?? null;
-            $data['motherSurname'] = $request->input('motherSurname') ?? null;
-        } elseif ($request->input('typeofDocument') == 'RUC') {
-            $data['businessName'] = $request->input('businessName') ?? null;
-            $data['representativeDni'] = $request->input('representativeDni') ?? null;
-            $data['representativeNames'] = $request->input('representativeNames') ?? null;
+        // Buscar persona por documento
+        $person = Person::where('documentNumber', $request->input('documentNumber'))
+            ->whereNull('deleted_at')
+            ->first();
+
+        if (!$person) {
+            // Crear persona nueva
+            $data = [
+                'typeofDocument' => $request->input('typeofDocument'),
+                'documentNumber' => $request->input('documentNumber'),
+                'address' => $request->input('address') ?? null,
+                'phone' => $request->input('phone') ?? null,
+                'email' => $request->input('email') ?? null,
+                'origin' => $request->input('origin') ?? null,
+                'ocupation' => $occupation, // ocupación desde el request
+                'category' => $request->input('category') ?? null,
+                'names' => null,
+                'fatherSurname' => null,
+                'motherSurname' => null,
+                'businessName' => null,
+                'representativeDni' => null,
+                'representativeNames' => null,
+            ];
+
+            if ($request->input('typeofDocument') == 'DNI') {
+                $data['names'] = $request->input('names') ?? null;
+                $data['fatherSurname'] = $request->input('fatherSurname') ?? null;
+                $data['motherSurname'] = $request->input('motherSurname') ?? null;
+            } elseif ($request->input('typeofDocument') == 'RUC') {
+                $data['businessName'] = $request->input('businessName') ?? null;
+                $data['representativeDni'] = $request->input('representativeDni') ?? null;
+                $data['representativeNames'] = $request->input('representativeNames') ?? null;
+            }
+dd($occupation);
+            $person = Person::create($data);
+        } else {
+            // Si ya existe, concatenar la ocupación si no la tiene
+            $ocupations = explode(',', $person->ocupation ?? '');
+            $ocupations = array_map('trim', $ocupations);
+
+            if (!in_array($occupation, $ocupations)) {
+                $ocupations[] = $occupation;
+                $person->ocupation = implode(',', $ocupations);
+                $person->save();
+            }
         }
 
-        $object = Person::create($data);
-        $object = Person::find($object->id);
-        return response()->json($object, 200);
-
+        return response()->json($person, 200);
     }
+
+
 
     /**
      * Show the specified Person
@@ -421,7 +444,6 @@ class PersonController extends Controller
      */
     public function update(Request $request, string $id)
     {
-
         $object = Person::find($id);
 
         if (!$object) {
@@ -430,12 +452,16 @@ class PersonController extends Controller
                 404
             );
         }
+
+        // Si no envía occupation, asumimos "cliente"
+        $occupation = strtolower($request->input('occupation', 'cliente'));
+
         $validator = validator()->make($request->all(), [
             'typeofDocument' => 'required',
-            'documentNumber' => [
-                'required',
-                Rule::unique('people')->ignore($id)->whereNull('deleted_at'),
-            ],
+            'documentNumber' => 'required', // quitamos unique
+            'occupation' => 'nullable|in:cliente,proveedor', // ahora puede no enviarse
+        ], [
+            'occupation.in' => 'La ocupación debe ser cliente o proveedor.',
         ]);
 
         if ($validator->fails()) {
@@ -449,7 +475,6 @@ class PersonController extends Controller
             'phone' => $request->input('phone') ?? null,
             'email' => $request->input('email') ?? null,
             'origin' => $request->input('origin') ?? null,
-            'ocupation' => $request->input('ocupation') ?? null,
             'category' => $request->input('category') ?? null,
         ];
 
@@ -470,9 +495,20 @@ class PersonController extends Controller
         }
 
         $object->update($data);
-        $object = Person::find($object->id);
+
+        // ✅ Concatenar occupation ("cliente" por defecto)
+        $ocupations = explode(',', $object->ocupation ?? '');
+        $ocupations = array_map('trim', $ocupations);
+
+        if (!in_array($occupation, $ocupations)) {
+            $ocupations[] = $occupation;
+            $object->ocupation = implode(',', $ocupations);
+            $object->save();
+        }
+
         return response()->json($object, 200);
     }
+
 
     /**
      * Remove the specified Person
@@ -525,21 +561,46 @@ class PersonController extends Controller
      * )
      *
      */
-    public function destroy(int $id)
+    public function destroy(int $id, string $occupation = 'cliente')
     {
         $object = Person::with('vehicles.attentions')->find($id);
+
         if (!$object) {
             return response()->json(['message' => 'Person not found'], 404);
         }
 
+        // Normalizamos la ocupación
+        $occupation = strtolower(trim($occupation));
+
+        // Manejo de ocupations en la persona
+        $ocupations = explode(',', $object->ocupation ?? '');
+        $ocupations = array_filter(array_map('trim', $ocupations)); // limpiar espacios y vacíos
+
+        // Quitar la ocupación solicitada
+        $ocupations = array_filter($ocupations, fn($o) => strtolower($o) !== $occupation);
+
+        if (!empty($ocupations)) {
+            // Si quedan otras ocupaciones, solo actualizamos y no eliminamos
+            $object->ocupation = implode(',', $ocupations);
+            $object->save();
+
+            return response()->json([
+                'message' => "Ocupación '{$occupation}' eliminada de la persona",
+                'person' => $object
+            ]);
+        }
+
+        // Si ya no queda ninguna ocupación, validar atenciones antes de borrar
         foreach ($object->vehicles as $vehicle) {
             if ($vehicle->attentions->count() > 0) {
                 return response()->json(['message' => 'Person has attentions'], 409);
             }
         }
 
-        $object->delete();
+        //    $object->delete();
+
         return response()->json(['message' => 'Person deleted successfully']);
     }
+
 
 }

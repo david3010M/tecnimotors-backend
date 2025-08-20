@@ -83,6 +83,7 @@ class WorkerController extends Controller
                 }
             });
         }
+        $query->whereRaw('LOWER(occupation) != ?', ['proveedor']);
 
         // Ejecutar consulta con relaciones
         $workers = $query->with(['person', 'ocupation'])
@@ -270,65 +271,80 @@ class WorkerController extends Controller
      */
 
     public function storeByOccupation(Request $request)
-    {
-        $validator = validator()->make($request->all(), [
-            'typeofDocument' => 'required',
-            'documentNumber' => [
-                'required',
-                Rule::unique('people')->whereNull('deleted_at'),
-            ],
-            // 'occupation' => 'required|in:Cajero,Mecanico,Asesor',
-            'ocupation_id' => 'required|exists:ocupations,id',
-        ]);
+{
+    $validator = validator()->make($request->all(), [
+        'typeofDocument' => 'required',
+        'documentNumber' => 'required',
+        'ocupation_id'   => 'required|exists:ocupations,id',
+    ]);
 
+    if ($validator->fails()) {
+        return response()->json(['error' => $validator->errors()->first()], 422);
+    }
 
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()->first()], 422);
-        }
-        $ocupation = Ocupation::find($request->input('ocupation_id'));
+    $ocupation = Ocupation::find($request->input('ocupation_id'));
 
+    // Buscar persona por documento
+    $person = Person::where('documentNumber', $request->input('documentNumber'))
+        ->whereNull('deleted_at')
+        ->first();
+
+    if (!$person) {
+        // Si no existe la persona, la creo
         $data = [
             'typeofDocument' => $request->input('typeofDocument'),
             'documentNumber' => $request->input('documentNumber'),
-            'address' => $request->input('address') ?? null,
-            'phone' => $request->input('phone') ?? null,
-            'email' => $request->input('email') ?? null,
-            'origin' => $request->input('origin') ?? null,
-
-            'names' => null,
-            'fatherSurname' => null,
-            'motherSurname' => null,
-            'businessName' => null,
-            'representativeDni' => null,
-            'representativeNames' => null,
+            'address'        => $request->input('address') ?? null,
+            'phone'          => $request->input('phone') ?? null,
+            'email'          => $request->input('email') ?? null,
+            'origin'         => $request->input('origin') ?? null,
+            'ocupation'      => 'worker', // primera ocupación
+            'names'          => null,
+            'fatherSurname'  => null,
+            'motherSurname'  => null,
+            'businessName'   => null,
+            'representativeDni'    => null,
+            'representativeNames'  => null,
         ];
 
         if ($request->input('typeofDocument') == 'DNI') {
-            $data['names'] = $request->input('names') ?? null;
+            $data['names']         = $request->input('names') ?? null;
             $data['fatherSurname'] = $request->input('fatherSurname') ?? null;
             $data['motherSurname'] = $request->input('motherSurname') ?? null;
         } elseif ($request->input('typeofDocument') == 'RUC') {
-            $data['businessName'] = $request->input('businessName') ?? null;
-            $data['representativeDni'] = $request->input('representativeDni') ?? null;
-            $data['representativeNames'] = $request->input('representativeNames') ?? null;
+            $data['businessName']       = $request->input('businessName') ?? null;
+            $data['representativeDni']  = $request->input('representativeDni') ?? null;
+            $data['representativeNames']= $request->input('representativeNames') ?? null;
         }
 
         $person = Person::create($data);
-        $person = Person::find($person->id);
+    } else {
+        // Si ya existe, concatenar "worker" a ocupation si no lo tiene
+        $ocupations = explode(',', $person->ocupation ?? '');
+        $ocupations = array_map('trim', $ocupations);
 
-        $dataWorker = [
-            'startDate' => $request->input('startDate') ?? null,
-            'birthDate' => $request->input('birthDate') ?? null,
-            'occupation' => $ocupation->name ?? null,
-            'ocupation_id' => $ocupation->id,
-            'person_id' => $person->id,
-        ];
-
-        $worker = Worker::create($dataWorker);
-        $worker = Worker::with(['person', 'ocupation'])->find($worker->id);
-
-        return response()->json($worker, 201);
+        if (!in_array('worker', $ocupations)) {
+            $ocupations[] = 'worker';
+            $person->ocupation = implode(',', $ocupations);
+            $person->save();
+        }
     }
+
+    // Crear worker asociado
+    $dataWorker = [
+        'startDate'   => $request->input('startDate') ?? null,
+        'birthDate'   => $request->input('birthDate') ?? null,
+        'occupation'  => $ocupation->name ?? null,
+        'ocupation_id'=> $ocupation->id,
+        'person_id'   => $person->id,
+    ];
+
+    $worker = Worker::create($dataWorker);
+    $worker = Worker::with(['person', 'ocupation'])->find($worker->id);
+
+    return response()->json($worker, 201);
+}
+
 
     /**
      * @OA\Put(
@@ -397,82 +413,84 @@ class WorkerController extends Controller
      */
 
     public function updateByOccupation(Request $request, $id)
-    {
-        $worker = Worker::find($id);
+{
+    $worker = Worker::find($id);
 
-        if (!$worker) {
-            return response()->json(['message' => 'Worker not found.'], 404);
-        }
-
-        $person = Person::find($worker->person_id);
-
-        if (!$person) {
-            return response()->json(['message' => 'Person not found.'], 404);
-        }
-
-        $validator = validator()->make($request->all(), [
-            'typeofDocument' => 'required',
-            'documentNumber' => [
-                'required',
-                Rule::unique('people')->ignore($person->id)->whereNull('deleted_at'),
-            ],
-            // 'occupation' => 'required|in:Cajero,Mecanico,Asesor',
-            'ocupation_id' => 'required|exists:ocupations,id',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()->first()], 422);
-        }
-
-        $data = [
-            'typeofDocument' => $request->input('typeofDocument'),
-            'documentNumber' => $request->input('documentNumber'),
-            'address' => $request->input('address') ?? null,
-            'phone' => $request->input('phone') ?? null,
-            'email' => $request->input('email') ?? null,
-            'origin' => $request->input('origin') ?? null,
-            'occupation' => $request->input('occupation') ?? null,
-            'names' => null,
-            'fatherSurname' => null,
-            'motherSurname' => null,
-            'businessName' => null,
-            'representativeDni' => null,
-            'representativeNames' => null,
-            'ocupation_id' => $request->input('ocupation_id') ?? null,
-        ];
-
-        if ($request->input('typeofDocument') == 'DNI') {
-            $data['names'] = $request->input('names') ?? null;
-            $data['fatherSurname'] = $request->input('fatherSurname') ?? null;
-            $data['motherSurname'] = $request->input('motherSurname') ?? null;
-        } elseif ($request->input('typeofDocument') == 'RUC') {
-            $data['businessName'] = $request->input('businessName') ?? null;
-            $data['representativeDni'] = $request->input('representativeDni') ?? null;
-            $data['representativeNames'] = $request->input('representativeNames') ?? null;
-        }
-
-        $person->update($data);
-
-        $worker = Worker::where('person_id', $person->id)->first();
-
-        if (!$worker) {
-            return response()->json(['message' => 'Worker not found.'], 404);
-        }
-        $ocupation = Ocupation::find($request->input('ocupation_id'));
-
-        $dataWorker = [
-            'startDate' => $request->input('startDate') ?? null,
-            'birthDate' => $request->input('birthDate') ?? null,
-            'occupation' => $ocupation->name ?? null,
-            'ocupation_id' => $ocupation->id,
-        ];
-
-        $worker->update($dataWorker);
-
-        $worker = Worker::with(['person', 'ocupation'])->find($worker->id);
-
-        return response()->json($worker, 200);
+    if (!$worker) {
+        return response()->json(['message' => 'Worker not found.'], 404);
     }
+
+    $person = Person::find($worker->person_id);
+
+    if (!$person) {
+        return response()->json(['message' => 'Person not found.'], 404);
+    }
+
+    $validator = validator()->make($request->all(), [
+        'typeofDocument' => 'required',
+        'documentNumber' => 'required', // quitamos unique
+        'ocupation_id'   => 'required|exists:ocupations,id',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['error' => $validator->errors()->first()], 422);
+    }
+
+    // Actualizar datos básicos de la persona
+    $data = [
+        'typeofDocument' => $request->input('typeofDocument'),
+        'documentNumber' => $request->input('documentNumber'),
+        'address'        => $request->input('address') ?? null,
+        'phone'          => $request->input('phone') ?? null,
+        'email'          => $request->input('email') ?? null,
+        'origin'         => $request->input('origin') ?? null,
+        'names'          => null,
+        'fatherSurname'  => null,
+        'motherSurname'  => null,
+        'businessName'   => null,
+        'representativeDni'   => null,
+        'representativeNames' => null,
+    ];
+
+    if ($request->input('typeofDocument') == 'DNI') {
+        $data['names']         = $request->input('names') ?? null;
+        $data['fatherSurname'] = $request->input('fatherSurname') ?? null;
+        $data['motherSurname'] = $request->input('motherSurname') ?? null;
+    } elseif ($request->input('typeofDocument') == 'RUC') {
+        $data['businessName']       = $request->input('businessName') ?? null;
+        $data['representativeDni']  = $request->input('representativeDni') ?? null;
+        $data['representativeNames']= $request->input('representativeNames') ?? null;
+    }
+
+    $person->update($data);
+
+    // ✅ Mantener ocupaciones concatenadas
+    $ocupations = explode(',', $person->ocupation ?? '');
+    $ocupations = array_map('trim', $ocupations);
+
+    if (!in_array('worker', $ocupations)) {
+        $ocupations[] = 'worker';
+        $person->ocupation = implode(',', $ocupations);
+        $person->save();
+    }
+
+    // ✅ Actualizar worker
+    $ocupation = Ocupation::find($request->input('ocupation_id'));
+
+    $dataWorker = [
+        'startDate'    => $request->input('startDate') ?? null,
+        'birthDate'    => $request->input('birthDate') ?? null,
+        'occupation'   => $ocupation->name ?? null,
+        'ocupation_id' => $ocupation->id,
+    ];
+
+    $worker->update($dataWorker);
+
+    $worker = Worker::with(['person', 'ocupation'])->find($worker->id);
+
+    return response()->json($worker, 200);
+}
+
 
     /**
      * @OA\Put(
@@ -607,19 +625,43 @@ class WorkerController extends Controller
      *
      */
     public function destroy(int $id)
-    {
-        $worker = Worker::find($id);
-        $person = Person::find($worker->person_id);
-        if (!$worker)
-            return response()->json(['message' => 'Worker not found'], 404);
-        if (!$person)
-            return response()->json(['message' => 'Person not found'], 404);
-        if ($worker->guides()->count() > 0)
-            return response()->json(['message' => 'Trabajador Tiene Guias Asignadas'], 422);
-        if ($worker->attentions()->count() > 0)
-            return response()->json(['message' => 'Trabajador Tiene Atenciones Asignadas'], 422);
-        $person->delete();
-        $worker->delete();
-        return response()->json(['message' => 'Worker deleted successfully']);
+{
+    $worker = Worker::find($id);
+
+    if (!$worker) {
+        return response()->json(['message' => 'Worker not found'], 404);
     }
+
+    $person = Person::find($worker->person_id);
+
+    if (!$person) {
+        return response()->json(['message' => 'Person not found'], 404);
+    }
+
+    if ($worker->guides()->count() > 0) {
+        return response()->json(['message' => 'Trabajador tiene guías asignadas'], 422);
+    }
+
+    if ($worker->attentions()->count() > 0) {
+        return response()->json(['message' => 'Trabajador tiene atenciones asignadas'], 422);
+    }
+
+ 
+    $ocupations = explode(',', $person->ocupation ?? '');
+    $ocupations = array_filter(array_map('trim', $ocupations));
+
+    $ocupations = array_filter($ocupations, fn($o) => strtolower($o) !== 'worker');
+
+    if (!empty($ocupations)) {
+        // Si aún quedan ocupaciones, solo actualizar
+        $person->ocupation = implode(',', $ocupations);
+        $person->save();
+    }
+
+    // Eliminar el worker
+    $worker->delete();
+
+    return response()->json(['message' => 'Worker deleted successfully']);
+}
+
 }
