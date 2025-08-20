@@ -24,6 +24,10 @@ class BudgetSheetResource extends JsonResource
             'status' => $this->status,
             'attention_id' => $this->attention_id,
             'attention' => $this->attention,
+
+            'sale' => $this->sale,
+
+
             'vehicle_id' => $this->attention?->vehicle_id ?? null,
             'vehicle_plate' => $this->attention?->vehicle?->plate ?? null,
 

@@ -40,12 +40,12 @@ class PersonController extends Controller
     public function index(Request $request)
     {
         $search = $request->query('search');
-        $ocupation = $request->query('ocupation','cliente');
-        
+        $ocupation = $request->query('ocupation', 'cliente');
+
         $category = $request->query('category');
         $getAll = filter_var($request->query('all', false), FILTER_VALIDATE_BOOLEAN);
 
-        
+
         // Base query
         $query = Person::where('id', '!=', 1)
             ->whereNull('deleted_at')
@@ -174,7 +174,7 @@ class PersonController extends Controller
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
-        $occupation = strtolower($request->input('ocupation','cliente')); // normalizar a minúsculas
+        $occupation = strtolower($request->input('ocupation', 'cliente')); // normalizar a minúsculas
 
         // Buscar persona por documento
         $person = Person::where('documentNumber', $request->input('documentNumber'))
@@ -209,7 +209,7 @@ class PersonController extends Controller
                 $data['representativeDni'] = $request->input('representativeDni') ?? null;
                 $data['representativeNames'] = $request->input('representativeNames') ?? null;
             }
-dd($occupation);
+
             $person = Person::create($data);
         } else {
             // Si ya existe, concatenar la ocupación si no la tiene

@@ -74,6 +74,11 @@ class budgetSheet extends Model
     {
         return $this->belongsTo(Attention::class, 'attention_id');
     }
+
+    public function sale()
+    {
+        return $this->hasOne(Sale::class);
+    }
     public function details()
     {
         return $this->hasMany(DetailBudget::class);
