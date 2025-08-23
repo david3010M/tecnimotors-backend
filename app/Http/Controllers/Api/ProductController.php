@@ -134,7 +134,7 @@ class ProductController extends Controller
             'purchase_price' => $request->input('purchase_price'),
             'percentage' => $request->input('percentage'),
             'sale_price' => $request->input('sale_price'),
-            'quantity' => $request->input('quantity'),
+            'quantity' => $request->input('quantity',0),
             'stock' => $request->input('quantity'),
             'type' => $request->input('type','Repuesto'),
             'category_id' => $request->input('category_id'),
