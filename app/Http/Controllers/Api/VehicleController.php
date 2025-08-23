@@ -42,11 +42,25 @@ class VehicleController extends Controller
      *     )
      * )
      */
-    public function index()
-    {
-        return response()->json(Vehicle::with('person', 'typeVehicle', 'vehicleModel')
-            ->simplePaginate(15));
-    }
+    public function index(Request $request)
+{
+    // valores por defecto si no mandan nada
+    $perPage = (int) $request->input('per_page', 15);
+    $page    = (int) $request->input('page', 1);
+
+    $vehicles = Vehicle::with('person', 'typeVehicle', 'vehicleModel')
+        ->paginate($perPage, ['*'], 'page', $page);
+
+    return response()->json([
+        'data'         => $vehicles->items(),
+        'total'        => $vehicles->total(),
+        'current_page' => $vehicles->currentPage(),
+        'last_page'    => $vehicles->lastPage(),
+        'per_page'     => $vehicles->perPage(),
+    ]);
+}
+
+
 
     /**
      * Create a new Vehicle

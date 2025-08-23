@@ -356,7 +356,8 @@ class BudgetSheetController extends Controller
                             $this->docAlmacenService->generate(
                                 budgetProductLines: $result['productLines'],
                                 attention: $attention,
-                                budget: $budget
+                                budget: $budget,
+                                concept_id: 1
                             );
                         }
                     }

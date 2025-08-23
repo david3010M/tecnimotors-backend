@@ -4,12 +4,12 @@
     function fuelLevelToFractionText($fuelLevel)
     {
         $fractions = [
-            0 => 'Tanque Vacío',
+            0 => '0%',
             2 => '20%',
             4 => '40%',
             6 => '60%',
             8 => '80%',
-            10 => 'Tanque Lleno',
+            10 => '100%',
         ];
         return $fractions[$fuelLevel] ?? 'N/A';
     }
@@ -87,7 +87,7 @@
         }
 
         .logo {
-            height: 50px;
+            height: 90px;
         }
 
 
@@ -152,26 +152,32 @@
                 <img src="{{ asset('img/logo.jpg') }}" width="150" class="logo" alt="Logo">
             </td>
             
-            <td class="center">
-                <div class="bold">TECNI MOTORS DEL PERÚ</div>
-                <div>División Mantenimiento</div>
-                <div class="bold">Líderes en Gestión del Mantenimiento Automotriz</div>
-                <div>AV. FRANCISCO CUNEO N° 1150 - URB. PATACZA - CHICLAYO</div>
-                <div>Cel: 952085190 - RPC: 979392964 - Telf: 237348</div>
-                <div>Email: cesargutierrez@tecnimotorsdelperu.com</div>
+           <td class="center">
+                <div class="bold" style="font-size:16">TECNI MOTORS DEL PERÚ</div>
+                <div>Dir: Mz. A Lt. 7 Urb. San Manuel - Prolongación Bolognesi</div>
+                <div>Cel: 941515301 - 986202388</div>
+                <div>Email: cynthiab.tecnimotorsdelperu@gmail.com</div>
             </td>
-            <td class="right">
-                <div class="title">ORDEN DE TRABAJO</div>
-                <div class="number" >N° {{ $order->number }}</div>
-                <div>Fecha: {{ Carbon::parse($order->created_at)->format('d/m/Y') }}</div>
-            </td>
+            <td class="right" style="text-align: right; vertical-align: top; padding: 10px;">
+    <div class="title" style="margin-bottom: 60px;"></div> {{-- margen para separar bloque superior --}}
+    <div class="title" style="font-weight: bold; font-size: 14px; margin-bottom: 5px;">
+        ORDEN DE TRABAJO
+    </div>
+    <div class="number" style="font-size: 14px; margin-bottom: 5px;">
+        N° {{ $order->number }}
+    </div>
+    <div style="font-size: 12px;">
+        Fecha: {{ \Carbon\Carbon::parse($order->created_at)->format('d/m/Y') }}
+    </div>
+</td>
+
         </tr>
     </table>
 
     {{-- Información del Cliente --}}
     <table style="width: 100%;">
         <tr>
-            <th style="text-align: left;">Cliente</th>
+            <th style="text-align: left;">CLIENTE</th>
             <td colspan="5">
                 @if ($order->vehicle->person->typeofDocument == 'DNI')
                     {{ $order->vehicle->person->names }} {{ $order->vehicle->person->fatherSurname }}
@@ -182,8 +188,12 @@
             </td>
         </tr>
         <tr>
-            <th style="text-align: left;">Dirección</th>
+            <th style="text-align: left;">DIRECCIÓN</th>
             <td colspan="5">{{ $order->vehicle->person->address }}</td>
+        </tr>
+        <tr>
+            <th style="text-align: left;">CONDUCTOR RESPONSABLE</th>
+            <td colspan="5">{{ $order->driver }}</td>
         </tr>
 <!-- 
         <tr>
@@ -193,11 +203,11 @@
         <tr>
             <th style="text-align: left;">RUC / DNI</th>
             <td>{{ $order->vehicle->person->documentNumber }}</td>
-            <th style="text-align: left;">Teléfono</th>
+            <th style="text-align: left;">TELEFONO</th>
             <td colspan="3">{{ $order->vehicle->person->phone }}</td>
         </tr>
         <tr>
-            <th style="text-align: left;">Email</th>
+            <th style="text-align: left;">EMAIL</th>
             <td colspan="5">{{ $order->vehicle->person->email }}</td>
         </tr>
     </table>
@@ -206,30 +216,30 @@
     {{-- Información del Vehículo --}}
     <table style="width: 100%; border-collapse: collapse;">
         <tr>
-            <th style="text-align: left;">Tipo</th>
+            <th style="text-align: left;">TIPO</th>
             <td>{{ $order->vehicle->typeVehicle?->name ?? '' }}</td>
 
-            <th style="text-align: left;">Marca</th>
+            <th style="text-align: left;">MARCA</th>
             <td>{{ $order->vehicle->vehicleModel?->brand?->name ?? '' }}</td>
 
-            <th style="text-align: left;">Modelo</th>
+            <th style="text-align: left;">MODELO</th>
             <td>{{ $order->vehicle->vehicleModel?->name ?? '' }}</td>
         </tr>
         <tr>
-            <th style="text-align: left;">Placa</th>
+            <th style="text-align: left;">PLACA</th>
             <td>{{ $order->vehicle?->plate ?? '' }}</td>
 
-            <th style="text-align: left;">Chasis</th>
+            <th style="text-align: left;">CHASIS</th>
             <td>{{ $order->vehicle?->chasis ?? '' }}</td>
 
-            <th style="text-align: left;">Motor</th>
+            <th style="text-align: left;">MOTOR</th>
             <td>{{ $order->vehicle?->motor ?? '' }}</td>
         </tr>
         <tr>
-            <th style="text-align: left;">Kilometraje</th>
+            <th style="text-align: left;">KILOMETRAJE</th>
             <td>{{ intval($order->km) }}</td>
 
-            <th style="text-align: left;">Año</th>
+            <th style="text-align: left;">AÑO</th>
             <td>{{ $order->vehicle?->year ?? '' }}</td>
 
             <th style="text-align: left;">VIN</th>
@@ -247,66 +257,69 @@
         </tr>
     </thead>
     <tbody>
-        @php
-            $minRows = 10;
-            $totalRows = max($order->details->count(), $minRows);
-        @endphp
+        
+    @foreach ($order->details as $i => $detail)
+        <tr>
+            <td style="text-align: center;">
+                {{ $i + 1 }}
+            </td>
+            <td>
+                {{ $detail->service->name ?? $detail->product->name ?? '' }}
+            </td>
+            <td style="text-align: center;">
+                S/ {{ number_format($detail->saleprice ?? 0, 2) }}
+            </td>
+        </tr>
+    @endforeach
+</tbody>
 
-        @for ($i = 0; $i < $totalRows; $i++)
-            <tr>
-                <td style="text-align: center;">
-                    {{ $i + 1 }}
-                </td>
-                <td>
-                    {{ $order->details[$i]->service->name ?? $order->details[$i]->product->name ?? '' }}
-                </td>
-                <td style="text-align: center;">
-                    @if (isset($order->details[$i]))
-                        S/ {{ number_format($order->details[$i]->amount ?? 0, 2) }}
-                    @endif
-                </td>
-            </tr>
-        @endfor
-    </tbody>
 </table>
 
 <br>
-{{-- ELEMENTOS --}}
-<table class="table table-bordered">
+<table class="table table-bordered" 
+       style="font-size: 10px; border-collapse: collapse; width: 100%; table-layout: fixed;">
     <thead>
         <tr>
-            <th colspan="7" class="text-center">Elementos Verificados</th>
+            <th colspan="11" class="text-center" style="font-size: 11px; padding: 3px;background-color: #dcdcdc;">
+                ELEMENTOS VERIFICADOS
+            </th>
         </tr>
     </thead>
     <tbody>
         @php
             $items = \App\Models\Element::get();
             $selectedElements = $order->elements->pluck('element_id')->toArray();
-            $chunks = $items->chunk(7);
+            $chunks = $items->chunk(11);
         @endphp
 
         @foreach ($chunks as $row)
             <tr>
-                @foreach ($row as $item)
+                @foreach ($row as $index => $item)
                     @php
                         $isChecked = in_array($item->id, $selectedElements);
+                        $remaining = 11 - count($row);
+                        $colspan = ($loop->last && $remaining > 0) ? 'colspan=' . (1 + $remaining) : '';
                     @endphp
-                    <td>
-                        <label style="color: black; {{ $isChecked ? 'font-weight: bold;' : '' }}">
+
+                    <td {{ $colspan }} style="padding: 3px; text-align: center; vertical-align: top;">
+                        <div>
                             <input type="checkbox" name="elements[]" value="{{ $item->id }}"
                                 {{ $isChecked ? 'checked' : '' }}
-                                style="{{ $isChecked ? 'accent-color: green;' : '' }}">
+                                style="transform: scale(0.9); margin-bottom: 2px; {{ $isChecked ? 'accent-color: green;' : '' }}">
+                        </div>
+                        <div style="font-size: 9px; color: black; {{ $isChecked ? 'font-weight: bold;' : '' }}">
                             {{ $item->name }}
-                        </label>
+                        </div>
                     </td>
                 @endforeach
-                @for ($i = count($row); $i < 7; $i++)
-                    <td></td>
-                @endfor
             </tr>
         @endforeach
     </tbody>
 </table>
+
+
+
+
 
 <br>
 {{-- Observaciones --}}
@@ -316,19 +329,19 @@
         <td style="vertical-align: top; width: 70%;">
             <table class="left-data" style="width: 100%; border: 1px solid #ccc; border-collapse: collapse;">
                 <tr>
-                    <th style="border: 1px solid #ccc;">Fecha Ingreso</th>
+                    <th style="border: 1px solid #ccc;">FECHA INGRESO</th>
                     <td style="border: 1px solid #ccc;">{{ Carbon::parse($order->arrivalDate)->format('d/m/Y') }}</td>
-                    <th style="border: 1px solid #ccc;">Hora Ingreso</th>
+                    <th style="border: 1px solid #ccc;">HORA INGRESO</th>
                     <td style="border: 1px solid #ccc;">{{ Carbon::parse($order->arrivalDate)->format('H:i') }}</td>
                 </tr>
                 <tr>
-                    <th style="border: 1px solid #ccc;">Fecha Entrega</th>
+                    <th style="border: 1px solid #ccc;">FECHA ENTREGA</th>
                     <td style="border: 1px solid #ccc;">{{ Carbon::parse($order->deliveryDate)->format('d/m/Y') }}</td>
-                    <th style="border: 1px solid #ccc;">Hora Entrega</th>
+                    <th style="border: 1px solid #ccc;">HORA ENTREGA</th>
                     <td style="border: 1px solid #ccc;">{{ Carbon::parse($order->deliveryDate)->format('H:i') }}</td>
                 </tr>
                 <tr>
-                    <th style="border: 1px solid #ccc;">Asesor del Servicio</th>
+                    <th style="border: 1px solid #ccc;">ASESOR DEL SERVICIO</th>
                     <td style="border: 1px solid #ccc;" colspan="3">
                         {{ $order->worker->person->names }}
                         {{ $order->worker->person->fatherSurname }}
@@ -359,7 +372,7 @@
             justify-content: center;
             color: #fff;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 10px;
         ">
             {{ $fuelText }}
         </div>
@@ -371,22 +384,44 @@
 
 
 
+{{-- Observaciones --}}
+@if (!empty($order->observations))
+    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+        <tr>
+            <th style="width: 20%; text-align: center; padding: 5px; border-top: 1px solid #000; border-bottom: 1px solid #000;">
+                OBSERVACIONES
+            </th>
+            <td style="padding: 3px; border-top: 1px solid #000; border-bottom: 1px solid #000; white-space: pre-wrap;">
+                {{ $order->observations }}
+            </td>
+        </tr>
+    </table>
+@endif
+
+
+
+
 <br>
     {{-- Footer y firmas --}}
-    <div class="footer">
-        <p><strong>POR LA PRESENTE AUTORIZO</strong> LAS REPARACIONES AQUÍ DESCRITAS CONJUNTAMENTE CON EL MATERIAL
-            QUE SEA NECESARIO USAR EN ELLAS. TAMBIÉN AUTORIZO A USTEDES Y A SUS EMPLEADOS PARA QUE AFIEREN ESTE
-            VEHÍCULO POR LAS CALLES, CARRETERAS U OTROS SITIOS A FIN DE ASEGURAR LAS PRUEBAS O INSPECCIONES
-            PERTINENTES QUE GARANTICEN EL TRABAJO.</p>
-        <p><strong>NOTA:</strong> SE COBRARÁ DERECHO DE GUARDANÍA SI EL VEHÍCULO NO ES RETIRADO EN LAS 48
-            HORAS DESPUÉS DE TERMINADO EL TRABAJO.</p>
+   <div class="footer" style="text-transform: none;">
+    <p>
+        <strong>Por la presente autorizo</strong> las reparaciones aquí descritas conjuntamente con el material
+        que sea necesario usar en ellas. También autorizo a ustedes y a sus empleados para que afierren este
+        vehículo por las calles, carreteras u otros sitios a fin de asegurar las pruebas o inspecciones
+        pertinentes que garanticen el trabajo.
+    </p>
+    <p>
+        <strong>Nota:</strong> Se cobrará derecho de guardanía si el vehículo no es retirado en las 48
+        horas después de terminado el trabajo.
+    </p>
+    <br>
 
-        <div class="firmas-container">
-            <div class="firma">FIRMA ASESOR DE SERVICIO</div>
-            <div class="firma">FIRMA AUTORIZADA DEL CLIENTE</div>
-        </div>
+    <div class="firmas-container" style="text-transform: none;">
+        <div class="firma">Firma asesor de servicio</div>
+        <div class="firma">Firma autorizada del cliente</div>
+    </div>
+</div>
 
-        </div>
 
    
 </body>

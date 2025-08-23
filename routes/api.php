@@ -431,5 +431,6 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
 
     require __DIR__ . '/Api/DetailBudgetApi.php';     //SCNNER
 
+    Route::get('product-list', [ProductController::class, 'list']);
 
 });

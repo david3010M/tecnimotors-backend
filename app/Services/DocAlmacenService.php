@@ -13,7 +13,7 @@ use Throwable;
 
 class DocAlmacenService
 {
-    public function generate(array $budgetProductLines, $attention, $budget): DocAlmacen
+    public function generate(array $budgetProductLines, $attention, $budget, $concept_id='3'): DocAlmacen
     {
         try {
             $map = $this->normalizeLines($budgetProductLines);
@@ -21,13 +21,13 @@ class DocAlmacenService
                 throw new \InvalidArgumentException('No hay productos válidos para generar el DocAlmacén.');
             }
 
-            return DB::transaction(function () use ($map, $attention, $budget) {
+            return DB::transaction(function () use ($map, $attention, $budget, $concept_id) {
                 $existing = DocAlmacen::where('budget_sheet_id', $budget->id)->lockForUpdate()->first();
                 if ($existing) {
                     return $existing->load('details');
                 }
 
-                $conceptMov = ConceptMov::findOrFail(3);
+                $conceptMov = ConceptMov::findOrFail($concept_id);
                 $totalQuantity = array_sum($map);
 
                 $doc = DocAlmacen::create([

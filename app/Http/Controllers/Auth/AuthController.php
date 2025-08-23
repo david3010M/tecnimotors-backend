@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
@@ -72,14 +73,12 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        // Validar las credenciales del usuario
         $credentials = $request->only('username', 'password');
         $validator = Validator::make($credentials, [
             'username' => 'required',
             'password' => 'required',
         ]);
 
-        // Verificar si las credenciales son válidas
         if ($validator->fails()) {
             return response()->json(['error' => 'Invalid credentials'], 400);
         }
@@ -93,40 +92,47 @@ class AuthController extends Controller
         }
 
         if (Hash::check($request->password, $user->password)) {
-            // Autenticar al usuario
-
             Auth::loginUsingId($user->id);
 
-            $token = $user->createToken('auth_token', ['expires' => now()->addHours(2)])->plainTextToken;
+            // 🔹 Aquí guardamos el objeto completo
+            $tokenResult = $user->createToken('auth_token');
+
+            // 🔹 Este es el string que vas a devolver al cliente
+            $plainTextToken = $tokenResult->plainTextToken;
+
+            // 🔹 Este es el registro en la tabla personal_access_tokens
+            $accessToken = $tokenResult->accessToken;
+            $accessToken->expires_at = now()->addHour(8); // Para pruebas de 8 horas
+            $accessToken->save();
+
             $user = User::with(['typeUser', 'worker'])->find($user->id);
 
             $typeUser = $user->typeUser;
-
             $groupMenu = GroupMenu::getFilteredGroupMenus($typeUser->id);
 
             $tipo = 'OTRS';
-            $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM attentions a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-            $siguienteNum = (int)$resultado;
+            $resultado = DB::select(
+                'SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum 
+             FROM attentions a WHERE SUBSTRING(number, 1, 4) = ?',
+                [$tipo]
+            )[0]->siguienteNum;
 
-            // -------------------------------------------------
+            $siguienteNum = (int) $resultado;
+
             return response()->json([
-                'access_token' => $token,
+                'access_token' => $plainTextToken, 
+                'expires_at' => $accessToken->expires_at->toDateTimeString(),
                 'user' => $user,
                 'correlativo' => $siguienteNum,
                 'groupMenu' => $groupMenu,
-
-//                'optionMenuAccess' => $user->typeUser->getAccess($user->id),
-//                'permissions' => Optionmenu::pluck('id'),
-
             ]);
         } else {
             return response()->json([
                 "error" => "Password Not Correct",
             ], 422);
-
         }
-
     }
+
 
     /**
      * @OA\Get(
@@ -171,38 +177,60 @@ class AuthController extends Controller
      *     ),
      * )
      */
-
     public function authenticate(Request $request)
     {
         try {
+            $tokenValue = $request->bearerToken();
 
-            $user = auth('sanctum')->user();
-            $user = User::with(['typeUser', 'worker'])->find($user->id);
-            $token = $request->bearerToken();
+            if (!$tokenValue) {
+                return response()->json(["message" => "Token no proporcionado"], 401);
+            }
+
+            $accessToken = PersonalAccessToken::findToken($tokenValue);
+
+            if (!$accessToken) {
+                return response()->json(["message" => "Token inválido"], 401);
+            }
+
+            // 🔎 Verificar si está vencido o revocado
+            if (
+                ($accessToken->expires_at && $accessToken->expires_at->isPast())
+                || $accessToken->isRevoked()
+            ) {
+                $accessToken->revoked_at = now();
+                $accessToken->save();
+
+                return response()->json(["message" => "Token expirado o revocado, sesión cerrada"], 401);
+            }
+
+            // Usuario relacionado
+            $user = $accessToken->tokenable()->with(['typeUser', 'worker'])->first();
 
             $groupMenu = GroupMenu::getFilteredGroupMenus($user->typeofUser_id);
 
             $tipo = 'OTRS';
-            $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM attentions a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-            $siguienteNum = (int)$resultado;
+            $resultado = DB::select(
+                'SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum 
+             FROM attentions a WHERE SUBSTRING(number, 1, 4) = ?',
+                [$tipo]
+            )[0]->siguienteNum;
 
             return response()->json([
-                'access_token' => $token,
+                'access_token' => $tokenValue,
+                'expires_at' => $accessToken->expires_at?->toDateTimeString(),
                 'user' => $user,
-                'correlativo' => $siguienteNum,
+                'correlativo' => (int) $resultado,
                 'groupMenu' => $groupMenu,
-
-//                'optionMenuAccess' => $user->typeUser->getAccess($user->id),
-//                'permissions' => Optionmenu::pluck('id'),
-
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
-                "message" => "Error interno del servidor: " . $e,
+                "message" => "Error interno del servidor: " . $e->getMessage(),
             ], 500);
         }
     }
+
+
 
     /**
      * @OA\Get(

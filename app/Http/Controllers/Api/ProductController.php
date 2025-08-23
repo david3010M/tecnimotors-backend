@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProductRequest\IndexRequestProduct;
+use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use App\Services\ProductService;
 use App\Services\RouteImagesService;
@@ -57,6 +59,17 @@ class ProductController extends Controller
     public function index()
     {
         return response()->json(Product::with('category', 'unit', 'brand', 'images')->simplePaginate(15));
+    }
+
+    public function list(IndexRequestProduct $request)
+    {
+        return $this->getFilteredResults(
+            Product::class,
+            $request,
+            Product::filters,
+            Product::sorts,
+            ProductResource::class
+        );
     }
 
     /**
@@ -123,7 +136,7 @@ class ProductController extends Controller
             'sale_price' => $request->input('sale_price'),
             'quantity' => $request->input('quantity'),
             'stock' => $request->input('quantity'),
-            'type' => $request->input('type'),
+            'type' => $request->input('type','Repuesto'),
             'category_id' => $request->input('category_id'),
             'unit_id' => $request->input('unit_id'),
             'brand_id' => $request->input('brand_id'),

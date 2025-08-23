@@ -89,6 +89,31 @@ class Product extends Model
         'deleted_at',
     ];
 
+
+    const filters = [
+        'sequentialnumber' => 'like',
+        'name' => 'like',
+        'purchase_price' => '=',
+        'percentage' => '=',
+        'sale_price' => '=',
+        'stock' => '>=',
+        'quantity' => '=',
+        'type' => 'like',
+        'category_id' => '=',
+        'unit_id' => '=',
+        'brand_id' => '=',
+        'created_at' => 'between',
+    ];
+
+      protected $casts = [
+        'stock' => 'integer',
+    ];
+
+    const sorts = [
+        'id',
+
+    ];
+
     public function category()
     {
         return $this->belongsTo(Category::class);
@@ -108,7 +133,7 @@ class Product extends Model
     {
         return $this->hasMany(DetailAttention::class);
     }
-     public function images()
+    public function images()
     {
         return $this->hasMany(RouteImages::class);
     }

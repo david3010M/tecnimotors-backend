@@ -130,7 +130,7 @@ class SaleController extends Controller
             'person_id' => $request->input('person_id'),
             'budget_sheet_id' => $request->input('budget_sheet_id'),
 
-            'retencion' => $request->input('saleType') === Constants::SALE_RETENCION ? $request->input('retencion') : '',
+            'retencion' => $request->input('saleType') === Constants::SALE_RETENCION ? $request->input('retencion') : 0,
 
             'cuentabn' => '000000000',
 
@@ -438,7 +438,7 @@ class SaleController extends Controller
             'budget_sheet_id' => $request->input('budget_sheet_id'),
             'cash_id' => 1,
 
-            'retencion' => $request->input('saleType') === Constants::SALE_RETENCION ? $request->input('retencion') : '',
+            'retencion' => $request->input('saleType') === Constants::SALE_RETENCION ? $request->input('retencion') : 0,
 
 
         ]);

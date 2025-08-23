@@ -186,18 +186,15 @@ class DocAlmacenController extends Controller
             return response()->json(['message' => 'Concepto de movimiento original no encontrado'], 404);
         }
 
-        // Revertir cambios de stock según el movimiento original solo para los detalles existentes
-        $originalDetails = $docAlmacen->details()->with('product')->get();
-        foreach ($originalDetails as $detail) {
-            $product = $detail->product;
-            if ($product) {
-                // Revertir el stock según el tipo de movimiento original
-                $product->stock += ($conceptOriginal->typemov === 'INGRESO' ? -$detail->quantity : $detail->quantity);
-                $product->save();
+        // 🔄 Revertir stock de los detalles originales
+        foreach ($docAlmacen->details()->with('product')->get() as $detail) {
+            if ($detail->product) {
+                $detail->product->stock += ($conceptOriginal->typemov === 'INGRESO' ? -$detail->quantity : $detail->quantity);
+                $detail->product->save();
             }
         }
 
-        // Actualizar el documento principal con los nuevos datos
+        // 🔄 Actualizar cabecera
         $docAlmacen->update($request->validated());
 
         $conceptUpdated = ConceptMov::find($docAlmacen->concept_mov_id);
@@ -205,55 +202,43 @@ class DocAlmacenController extends Controller
             return response()->json(['message' => 'Concepto de movimiento actualizado no encontrado'], 404);
         }
 
-        // Obtener todos los productos necesarios de la base de datos
+        // Obtener productos en lote para eficiencia
         $productIds = collect($request->products)->pluck('product_id')->unique()->toArray();
         $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
 
-        // Procesar los nuevos detalles de productos
+        // 🔄 Procesar detalles
         foreach ($request->products as $productData) {
             $product = $products->get($productData['product_id']);
             if (!$product) {
-                continue; // Saltar si el producto no existe
+                continue;
             }
 
-            // Verificar si el producto ya existe en los detalles
             $existingDetail = $docAlmacen->details()->where('product_id', $productData['product_id'])->first();
 
             if ($existingDetail) {
-                // Si el producto ya está en los detalles, actualizar la cantidad
-
-                $existingDetail = Docalmacen_details::find($existingDetail->id);
-                $quantityDifference = $productData['quantity'];
-                $existingDetail->quantity += $productData['quantity'];
-                $existingDetail->comment = $existingDetail->comment . ' ' . ($productData['comment'] ?? '');
+                // ✅ Reemplazar cantidad y comentario, no acumular
+                $existingDetail->quantity = $productData['quantity'];
+                $existingDetail->comment = $productData['comment'] ?? '';
                 $existingDetail->save();
-
-                // Actualizar el stock basado en el tipo de movimiento
-                $product->stock += ($conceptUpdated->typemov === 'INGRESO' ? $quantityDifference : -$quantityDifference);
             } else {
-                // Si el producto no existe, agregar un nuevo detalle
-
-                $lastDetailCorrelativo = Docalmacen_details::max('id') ? Docalmacen_details::orderBy('id', 'desc')->value('sequentialnumber') : 'DMA1-00000000';
-                $nextDetailCorrelativo = 'DMA1-' . str_pad((int)substr($lastDetailCorrelativo, -8) + 1, 8, '0', STR_PAD_LEFT);
-
+                // ✅ Nuevo detalle con correlativo
                 Docalmacen_details::create([
                     'doc_almacen_id' => $docAlmacen->id,
                     'product_id' => $productData['product_id'],
                     'quantity' => $productData['quantity'],
                     'comment' => $productData['comment'] ?? '',
-                    'sequentialnumber' => $nextDetailCorrelativo,
+                    'sequentialnumber' => $this->nextCorrelative(Docalmacen_details::class, 'sequentialnumber'),
                 ]);
-
-                // Actualizar el stock según el tipo de movimiento
-                $product->stock += ($conceptUpdated->typemov === 'INGRESO' ? $productData['quantity'] : -$productData['quantity']);
             }
 
-            // Guardar los cambios en el stock
+            // ✅ Actualizar stock en base al movimiento
+            $product->stock += ($conceptUpdated->typemov === 'INGRESO' ? $productData['quantity'] : -$productData['quantity']);
             $product->save();
         }
 
         return response()->json(DocAlmacenResource::make($docAlmacen));
     }
+
 
     /**
      * @OA\Delete(

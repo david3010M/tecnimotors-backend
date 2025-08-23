@@ -71,7 +71,7 @@
             font-weight: bold;
         }
         .logo {
-            height: 50px;
+            height: 90px;
         }
     </style>
 </head>
@@ -84,46 +84,56 @@
                 <img src="{{ asset('img/logo.jpg') }}" width="150" class="logo" alt="Logo">
             </td>
             <td class="center">
-                <div class="bold">TECNI MOTORS DEL PERÚ</div>
-                <div>División Mantenimiento</div>
-                <div class="bold">Líderes en Gestión del Mantenimiento Automotriz</div>
-                <div>AV. FRANCISCO CUNEO N° 1150 - URB. PATACZA - CHICLAYO</div>
-                <div>Cel: 952085190 - RPC: 979392964 - Telf: 237348</div>
-                <div>Email: cesargutierrez@tecnimotorsdelperu.com</div>
+                <div class="bold" style="font-size:16">TECNI MOTORS DEL PERÚ</div>
+                <div>Dir: Mz. A Lt. 7 Urb. San Manuel - Prolongación Bolognesi</div>
+                <div>Cel: 941515301 - 986202388</div>
+                <div>Email: cynthiab.tecnimotorsdelperu@gmail.com</div>
             </td>
-            <td class="right">
-                <div class="title">PRESUPUESTO</div>
-                <div class="number" >N° {{ $budgetsheet->number }}</div>
-                <div>Fecha: {{ Carbon::parse($budgetsheet->created_at)->format('d/m/Y') }}</div>
-            </td>
+            <td class="right" style="text-align: right; vertical-align: top; padding: 10px;">
+    <div class="title" style="margin-bottom: 60px;"></div> {{-- margen para separar bloque superior --}}
+    
+    <div class="title" style="font-weight: bold; font-size: 14px; margin-bottom: 5px;">
+        PRESUPUESTO
+    </div>
+    
+    <div class="number" style="font-size: 14px; margin-bottom: 5px;">
+        N° {{ $budgetsheet->number }}
+    </div>
+    
+    <div style="font-size: 12px;">
+        Fecha: {{ \Carbon\Carbon::parse($budgetsheet->created_at)->format('d/m/Y') }}
+    </div>
+</td>
+
+            
         </tr>
     </table>
 
     {{-- DATOS DEL CLIENTE Y VEHÍCULO --}}
     <table class="info-table">
         <tr>
-            <th>Cliente</th>
+            <th>CLIENTE</th>
             <td>{{ $budgetsheet?->attention?->vehicle->person->businessName ?? $budgetsheet?->attention?->vehicle->person->full_name }}
             </td>
-            <th>Fecha de Entrada</th>
+            <th>FECHA DE ENTRADA</th>
             <td>{{ Carbon::parse($budgetsheet?->attention?->arrivalDate)->format('d/m/Y') }}</td>
         </tr>
         <tr>
-            <th>Placa</th>
+            <th>PLACA</th>
             <td>{{ $budgetsheet?->attention?->vehicle->plate }}</td>
             <th>KM</th>
             <td>{{ $budgetsheet?->attention?->km }}</td>
         </tr>
         <tr>
-            <th>Marca</th>
+            <th>MARCA</th>
             <td>{{ $budgetsheet?->attention?->vehicle->vehicleModel->brand->name ?? '' }}</td>
-            <th>Fecha de Entrega</th>
+            <th>FECHA DE ENTREGA</th>
             <td>{{ Carbon::parse($budgetsheet?->attention?->deliveryDate)->format('d/m/Y') }}</td>
         </tr>
         <tr>
-            <th>Modelo</th>
+            <th>MODELO</th>
             <td>{{ $budgetsheet?->attention?->vehicle->vehicleModel->name ?? '' }}</td>
-            <th>Año</th>
+            <th>AÑO</th>
             <td>{{ $budgetsheet?->attention?->vehicle->year ?? '' }}</td>
         </tr>
     </table>
@@ -221,9 +231,8 @@
         <br>
         <p><strong>CUENTAS DE DEPÓSITO:</strong></p>
         <ul>
-            <li><strong>BCP Soles:</strong> 000-00000000-0-00 | CCI: 000-00000000000000000</li>
-            <li><strong>Interbank Soles:</strong> 000-0000000000 | CCI: 00000000000000000000</li>
-            <li><strong>Banco de la Nación:</strong> 000-000000000</li>
+            <li><strong>BCP Soles:</strong> 3052311871039 | CCI: 00230500231187103913</li>
+            <li><strong>Scotiabank Soles:</strong> 630-0059018  | CCI: 00963020630005901858</li>
         </ul>
       
     </div>
