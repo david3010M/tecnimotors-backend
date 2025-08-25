@@ -275,7 +275,7 @@ class PdfController extends Controller
                     "pu" => $detalle->unitPrice, // Cantidad fija (es un servicio)
                     "dscto" => $detalle->discount ?? 0,
                     // "precioventaunitarioxitem" => $detalle->subTotal ?? 0,
-                    "precioventaunitarioxitem" => $detalle->unitPrice ?? 0,
+                    "precioventaunitarioxitem" => $detalle->unitPrice*$detalle->quantity ?? 0,
                 ];
             }
         }

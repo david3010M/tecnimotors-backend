@@ -108,7 +108,7 @@ class SaleController extends Controller
         $budgetSheet = budgetSheet::find($request->budget_sheet_id);
         $subtotal = 0;
         foreach ($request->saleDetails as $saleDetail) {
-            $subtotal += ($saleDetail['unitPrice'] / 1.18) * $saleDetail['quantity'];
+            $subtotal += ($saleDetail['unitPrice']) * $saleDetail['quantity'];
         }
         $igv = $subtotal * Constants::IGV;
         $total = $subtotal + $igv;
@@ -320,7 +320,7 @@ class SaleController extends Controller
                 'subTotal' => $saleDetail['subTotal'],
                 'sale_id' => $sale->id,
             ]);
-            $taxableOperation += $saleDetail['unitPrice'] / 1.18;
+            $taxableOperation += $saleDetail['unitPrice'];
         }
 
         $igv = $taxableOperation * Constants::IGV;
