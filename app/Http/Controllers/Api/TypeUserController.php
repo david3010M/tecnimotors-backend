@@ -37,15 +37,52 @@ class TypeUserController extends Controller
      * )
      */
 
-    public function index()
+    public function index(Request $request)
     {
-        $typeUsers = TypeUser::whereNotIn('id', [1])->simplePaginate(15);
+        //  Filtros de búsqueda
+        $search = $request->input('name');
+        $perPage = $request->input('per_page', 15); // por defecto 15
+        $page = $request->input('page', 1);      // por defecto página 1
+
+        $query = TypeUser::whereNotIn('id', [1]);
+
+        //  Filtro opcional por nombre
+        if (!empty($search)) {
+            $query->where('name', 'LIKE', "%{$search}%"); // Postgres (usa LIKE si es MySQL)
+        }
+
+        //  Paginación con page y per_page
+        $typeUsers = $query->paginate($perPage, ['*'], 'page', $page);
+
+        // Agregar el menú de accesos a cada item
         $typeUsers->getCollection()->transform(function ($typeUser) {
             $typeUser->optionMenuAccess = $typeUser->getAccess($typeUser->id);
             return $typeUser;
         });
-        return response()->json($typeUsers);
+
+        //  Retorno estándar con data, links y meta
+        return response()->json([
+            'data' => $typeUsers->items(),
+            'links' => [
+                'first' => $typeUsers->url(1),
+                'last' => $typeUsers->url($typeUsers->lastPage()),
+                'prev' => $typeUsers->previousPageUrl(),
+                'next' => $typeUsers->nextPageUrl(),
+            ],
+            'meta' => [
+                'current_page' => $typeUsers->currentPage(),
+                'from' => $typeUsers->firstItem(),
+                'last_page' => $typeUsers->lastPage(),
+                'path' => $typeUsers->path(),
+                'per_page' => $typeUsers->perPage(),
+                'to' => $typeUsers->lastItem(),
+                'total' => $typeUsers->total(),
+            ],
+        ]);
     }
+
+
+
 
     /**
      * Show the specified TypeUser
@@ -101,7 +138,8 @@ class TypeUserController extends Controller
             return response()->json($object, 200);
         }
         return response()->json(
-            ['message' => 'TypeUser not found'], 404
+            ['message' => 'TypeUser not found'],
+            404
         );
 
     }
@@ -384,7 +422,8 @@ class TypeUserController extends Controller
         $object = TypeUser::find($id);
         if (!$object) {
             return response()->json(
-                ['message' => 'TypeUser not found'], 404
+                ['message' => 'TypeUser not found'],
+                404
             );
         }
         $validator = validator()->make($request->all(), [
@@ -466,12 +505,14 @@ class TypeUserController extends Controller
         $object = TypeUser::find($id);
         if (!$object) {
             return response()->json(
-                ['message' => 'TypeUser not found'], 404
+                ['message' => 'TypeUser not found'],
+                404
             );
         }
         if (count($object->getAccess($id)) > 0) {
             return response()->json(
-                ['message' => 'TypeUser has Access associated'], 409
+                ['message' => 'TypeUser has Access associated'],
+                409
             );
         }
         $object->delete();

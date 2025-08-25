@@ -303,7 +303,7 @@ class PdfController extends Controller
         if (strtoupper($personaCliente->typeofDocument) != 'DNI') {
             $nombreCliente = $personaCliente->businessName;
 
-            $direccion = $personaCliente->fiscalAddress ?? '-';
+            $direccion = $personaCliente->address ?? '-';
         } else {
             $nombreCliente = $personaCliente->names . ' ' . $personaCliente->fatherSurname . ' ' . $personaCliente->motherSurname;
             $direccion = $personaCliente->address ?? '-';
@@ -335,13 +335,25 @@ class PdfController extends Controller
             'cuentas' => $Movimiento->commitments,
             'vuelto' => '0.00',
             'totalPagado' => $Movimiento->total,
+            
+            
+            
             'presupuesto' => $Movimiento?->budgetSheet?->number ?? '-',
+            'placa' => $Movimiento?->budgetSheet?->attention?->vehicle?->plate ?? '-',
+            'modelo' => $Movimiento?->budgetSheet?->attention?->vehicle?->model ?? '-',
+            'vin' => $Movimiento?->budgetSheet?->attention?->vehicle?->codeBin ?? '-',
+            'anio' => $Movimiento?->budgetSheet?->attention?->vehicle?->year ?? '-',
+            'cuentabn' => $Movimiento->cuentabn ?? '',
+
+            
             'linkRevisarFact' => $linkRevisarFact,
             'formaPago' => $Movimiento->formaPago ?? '-',
             'fechaInicio' => $fechaInicio,
 
             'typeSale' => $Movimiento->saleType === 'NORMAL' ? 'Normal' : ($Movimiento->saleType === 'DETRACCION' ? 'Detracción' : '-'),
             'codeDetraction' => $Movimiento->detractionCode ?? '-',
+            'detractionPercentage' => $Movimiento->detractionPercentage ?? '0',
+            'retencion' => $Movimiento->retencion ?? '0',
         ];
         // Utiliza el método loadView() directamente en la fachada PDF
         $pdf = PDF::loadView('documentoA4', $dataE);
@@ -425,7 +437,7 @@ class PdfController extends Controller
         $direccion = "";
         if (strtoupper($personaCliente->typeofDocument) != 'DNI') {
             $nombreCliente = $personaCliente->businessName;
-            $direccion = $personaCliente->fiscalAddress ?? '-';
+            $direccion = $personaCliente->address ?? '-';
         } else {
             $nombreCliente = $personaCliente->names . ' ' . $personaCliente->fatherSurname . ' ' . $personaCliente->motherSurname;
             $nombreCliente = $personaCliente->names . ' ' . $personaCliente->fatherSurname . ' ' . $personaCliente->motherSurname;

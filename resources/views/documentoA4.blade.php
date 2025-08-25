@@ -94,6 +94,18 @@
             width: 100%;
         }
 
+        .left {
+            text-align: left;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .juistify {
+            text-align: juistify;
+        }
+
 
         .footerImage {
             position: absolute;
@@ -111,6 +123,12 @@
 
         .contentImage {
             width: 100%;
+            text-align: left;
+        }
+
+        .brandImage {
+            width: 340px;
+            margin: 0px 10px;
             text-align: left;
         }
 
@@ -134,12 +152,13 @@
 
         .titlePresupuesto {
 
-            font-size: 15px;
+            font-size: 20px;
             font-weight: bolder;
-            text-align: justify;
+            text-align: center;
+            padding: 0px 20px;
             /*margin-top: 20px;*/
             /*margin-bottom: 20px;*/
-            color: rgb(126, 0, 0);
+            color: rgb(0, 0, 0);
             ;
         }
 
@@ -195,6 +214,7 @@
 
         .tableDetail {
             margin-top: 30px;
+            border: 1px;
         }
 
         .detTabla {
@@ -256,9 +276,9 @@
         }
 
         .tableDetail th {
-            background-color: rgb(126, 0, 0);
-            color: white;
-            padding: 10px;
+            background-color: #dcdcdc;
+            color: black;
+            padding: 3px;
             font-weight: bolder;
         }
 
@@ -377,179 +397,170 @@
     <div class="content">
 
 
-        <table class="tableInfo">
+        <table class="tableInfo" style="width: 100%; border-collapse: collapse;">
             <tr>
-                <div class="contentImage">
+                <!-- IZQUIERDA -->
+                <td style="text-align: left; vertical-align: middle; width: 25%;">
                     <img src="{{ asset('img/logo.jpg') }}" width="150" class="logo" alt="Logo">
-                </div>
-
-
-
-                <td class="right">
-                    <div style="border: 1px solid black; padding: 10px; display: inline-block; text-align: center;">
-                        <div class="titlePresupuesto">{{ $tipoElectronica }}</div>
-                        <div class="numberPresupuesto">RUC:20487467139</div>
-                        <div class="numberPresupuesto" style="font-weight: bolder;">{{ $numeroVenta }}</div>
-                    </div>
                 </td>
 
+                <!-- CENTRO -->
+                <td style="text-align: center; vertical-align: middle; width: 35%;">
+                    <img src="{{ asset('img/brands.jpg') }}" width="280" alt="Brand">
+                </td>
+
+                <!-- DERECHA -->
+                <td style="text-align: right; vertical-align: middle; width: 40%;">
+                    <div style="border: 1px solid black; padding: 10px; display: inline-block; text-align: center;">
+                        <div class="titlePresupuesto">
+                            {!! str_replace(' ', '<br>', $tipoElectronica) !!}
+                        </div>
+                        <div class="numberPresupuesto">RUC: 20487467139</div>
+                        <div class="numberPresupuesto">{{ $numeroVenta }}</div>
+                    </div>
+                </td>
             </tr>
-
         </table>
+        <br>
 
-        <table>
+
+        <table style="width: 100%; border-collapse: collapse;">
 
 
             <tr>
-                <td class="w10 blue left">
+                <td class="w10 blue left" style="font-size: 21px">
                     <b> TECNI MOTORS DEL PERÚ E.I.R.L.</b>
                 </td>
             </tr>
             <tr>
-                <td class="w10 blue left" style="font-size: 11px">
-                    PRO. AVENIDA BOLOGNESI - URB. SAN MANUEL MZA. A LOTE. 7 LAMBAYEQUE - CHICLAYO - CHICLAYO
+                <td class="w10 blue left" style="font-size: 14px">
+                    PRO.AVENIDA BOLOGNESI MZA. A LOTE. 7 URB. SAN MANUEL - CHICLAYO - CHICLAYO -
+                    LAMBAYEQUE
                 </td>
             </tr>
         </table>
 
-        <table class="tablePeople font-14">
+        <table class="tablePeople font-12"
+            style="width:100%; border:1px solid black; border-collapse:collapse; padding:4px;">
             <tr>
-                <th class="w10 blue">
-                    Fecha Emision:
-                </th>
-                <td class="w50">
-                    {{ $fechaemision }}
+                <th style="width:15%; text-align:left; border:none;">Fecha Emision:</th>
+                <td colspan="5" style="border:none;">{{ \Carbon\Carbon::parse($fechaemision)->format('d/m/Y') }}</td>
+            </tr>
+
+            <tr>
+                <th style="text-align:left; border:none;">Señor(es):</th>
+                <td colspan="5" style="border:none;">{{ $cliente }}</td>
+            </tr>
+
+            <tr>
+                <th style="text-align:left; border:none;">Direccion:</th>
+                <td colspan="5" style="border:none;">{{ $direccion }}</td>
+            </tr>
+
+            <tr>
+                <th style="text-align:left; border:none;">RUC</th>
+                <td style="width:20%; border:none;">{{ $ruc_dni }}</td>
+
+                <th style="text-align:left; width:15%; border:none;">Placa</th>
+                <td style="width:15%; border:none;">
+                    {{ !empty($placa) ? $placa : '' }}
+                </td>
+
+                <th style="text-align:left; width:15%; border:none;">VIN</th>
+                <td style="width:15%; border:none;">
+                    {{ !empty($vin) ? $vin : '' }}
                 </td>
             </tr>
 
             <tr>
-                <th class="w20 blue">
-                    Señor(es):
-                </th>
-                <td class="w20">
-                    {{ $cliente }}
+                <th style="text-align:left; border:none;">Moneda</th>
+                <td style="border:none;">PEN</td>
+
+                <th style="text-align:left; border:none;">Modelo</th>
+                <td style="border:none;">{{ !empty($modelo) ? $modelo : '' }}</td>
+
+                <th style="text-align:left; border:none;">Año</th>
+                <td style="border:none;">
+                    {{ !empty($anio) ? $anio : '' }}
                 </td>
             </tr>
 
             <tr>
-                <th class="w20 blue">
-                    RUC/DNI:
-                </th>
-                <td class="w20">
-                    {{ $ruc_dni }}
-                </td>
-            </tr>
-
-            <tr>
-                <th class="w20 blue">
-                    Direccion:
-                </th>
-                <td class="w20">
-                    {{ $direccion }}
-                </td>
-            </tr>
-
-            <tr>
-                <th class="w20 blue">
-                    Moneda:
-                </th>
-                <td class="w20">
-                    PEN
-                </td>
-            </tr>
-
-            <tr colspan="1">
-                <th class="w20 blue">
-                    Forma de Pago:
-                </th>
-                <td class="w20">
+                <th style="text-align:left; border:none;">Forma de Pago:</th>
+                <td colspan="{{ $typePayment == 'Crédito' ? 1 : 5 }}" style="border:none;">
                     {{ $typePayment }}
                 </td>
-            </tr>
-            @if($presupuesto !== '-')
-                <tr colspan="1">
-                    <th class="w20 blue">
-                        Presupuesto:
-                    </th>
-                    <td class="w20">
-                        {{ $presupuesto }}
-                    </td>
-                </tr>
-            @endif
 
-
-            @if ($typePayment == 'Crédito')
-                <tr colspan="1">
-                    <th class="w20 blue">
-                        Cantidad de Cuotas:
-                    </th>
-                    <td class="w20">
+                @if($typePayment == 'Crédito')
+                    <th style="text-align:left; border:none;">Cuotas:</th>
+                    <td colspan="3" style="border:none;">
                         @php
-                            $totalAmount = $cuentas ? $cuentas->count() : 0; // Validación de $cuentas antes de contar
+                            $totalAmount = $cuentas ? $cuentas->count() : 0;
                         @endphp
                         {{ $totalAmount }}
                     </td>
-                </tr>
+                @endif
+            </tr>
+
+            @if ($typePayment == 'Crédito')
                 <tr>
-                    <td colspan="2">
-                        <!-- Tabla de cuotas -->
-                        <table class="">
-                            <thead>
-                                <tr>
-                                    <th>Cuota</th>
-                                    <th>Fecha Vencimiento</th>
-                                    <th>Monto Neto</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @php
-                                    $i = 1;
-                                @endphp
-                                @foreach ($cuentas as $cuenta)
-                                    <tr>
-                                        <td>{{ $i++ }}</td> <!-- Número acumulativo -->
-                                        <td>{{ \Carbon\Carbon::parse($cuenta->payment_date)->format('d/m/Y') }}</td>
-                                        <!-- Fecha -->
+                    <td colspan="6" style="border:none; padding-top:5px;">
+                        <table class="font-12" style="width:100%; border-collapse:collapse;">
+                            <tr>
+                                <!-- Columna izquierda: todas las cuotas -->
+                                <td style="width:80%; vertical-align:top; padding:5px;">
+                                    @php $i = 1; @endphp
+                                    @foreach ($cuentas as $cuenta)
+                                        <div style="margin-bottom:3px; display:flex; justify-content:space-between;">
+                                            <span style="flex:1; text-align:left;">
+                                                <b>Cuota:</b> {{ $i++ }}
+                                            </span>
+                                            <span style="flex:1; text-align:center;">
+                                                <b>Fecha:</b>
+                                                {{ \Carbon\Carbon::parse($cuenta->payment_date)->format('d/m/Y') }}
+                                            </span>
+                                            <span style="flex:1; text-align:right;">
+                                                @php
+                                                    $descuento = (!is_null($porcentaje) && $porcentaje > 0)
+                                                        ? round(($totalPagado * $porcentaje) / 100)
+                                                        : 0;
+                                                @endphp
+                                                <b>Monto:</b> {{ number_format($cuenta->price - $descuento, 2) }}
+                                            </span>
+                                        </div>
+                                    @endforeach
+                                </td>
 
-                                        <td>
-                                            @php
-                                                // Verifica que el porcentaje no sea null y sea mayor a 0
-                                                $descuento =
-                                                    !is_null($porcentaje) && $porcentaje > 0
-                                                    ? round(($totalPagado * $porcentaje) / 100)
-                                                    : 0;
-                                            @endphp
-                                            {{ $cuenta->price - $descuento }}.00
-                                        </td> <!-- Monto total -->
-                                    </tr>
-                                @endforeach
-
-                            </tbody>
+                                <!-- Columna derecha vacía (equilibrio) -->
+                                <td style="width:20%;"></td>
+                            </tr>
                         </table>
                     </td>
-
                 </tr>
             @endif
 
-            <!-- Si el tipo de pago es a crédito, muestra la tabla de cuotas -->
+
+
 
         </table>
+
+
+
 
 
 
         <table class="tableDetail font-12">
             <tr>
-
-                <th class="item">Item</th>
-                <th class="description">Descripción</th>
-                <th class="unitPrice">UM</th>
-                <th class="sailPrice">Cantidad</th>
-                <th class="sailPrice">V.U.</th>
-                <th class="sailPrice">P.U.</th>
-                <th class="sailPrice">Dscto.</th>
-                <th class="sailPrice">Valor Venta</th>
-
+                <th class="item" style="width:5%; text-align:center;">Ítem</th>
+                <th class="center" style="width:40%;">Descripción</th>
+                <th class="center" style="width:8%;">UM</th>
+                <th class="center" style="width:8%;">Cantidad</th>
+                <th class="center" style="width:9%;">V.U.</th>
+                <th class="center" style="width:9%;">P.U.</th>
+                <th class="center" style="width:9%;">Dscto.</th>
+                <th class="center" style="width:12%;">Valor Venta</th>
             </tr>
+
             <?php
 $totalDetalle = $totalPagado;
 $subtotal = $totalPagado;
@@ -564,14 +575,20 @@ foreach ($detalles as $detHab):
             <tr>
                 <td class="center"><?php    echo $iterador++; ?></td>
 
-                <td class="center font-10"> <?php    echo $detHab['descripcion']; ?> </td>
-                <td class="center font-10"> <?php    echo $detHab['um']; ?> </td>
-                <td class="center font-10"><?php    echo $detHab['cant']; ?></td>
-                <td class="center font-10"><?php    echo number_format($detHab['precioventaunitarioxitem'] / 1.18, 2); ?>
+                <td class="justify font-10">
+                    <?php    echo strtoupper($detHab['descripcion']); ?>
                 </td>
-                <td class="center font-10"><?php    echo number_format($detHab['precioventaunitarioxitem'], 2); ?></td>
-                <td class="center font-10"><?php    echo $detHab['dscto']; ?></td>
-                <td class="center font-10"><?php    echo number_format($detHab['precioventaunitarioxitem'] / 1.18, 2); ?>
+
+                <td class="center font-10 left"> <?php    echo $detHab['um']; ?> </td>
+                <td class="center font-10 left"><?php    echo $detHab['cant']; ?></td>
+                <td class="center font-10 left">
+                    <?php    echo number_format($detHab['precioventaunitarioxitem'] / 1.18, 2); ?>
+                </td>
+                <td class="center font-10 left"><?php    echo number_format($detHab['precioventaunitarioxitem'], 2); ?>
+                </td>
+                <td class="center font-10 left"><?php    echo $detHab['dscto']; ?></td>
+                <td class="center font-10 left">
+                    <?php    echo number_format($detHab['precioventaunitarioxitem'] / 1.18, 2); ?>
                 </td>
             </tr>
 
@@ -641,51 +658,86 @@ if ($linkRevisarFact) {
 
         <table>
             <tr>
-                <td>
+    <td>
+        <?php
+$typeSale ="Retencion";
+        ?>
+        @if ($typeSale == 'Detraccion')
+            @php
+                // Mapeo de códigos a nombres
+                $detractionNames = [
+                    '027' => 'Servicio de Transporte',
+                    '021' => 'Servicio de Almacenaje',
+                    '022' => 'Otros Servicios Empresariales',
+                    // 👉 aquí puedes ir agregando más códigos según tabla SUNAT
+                ];
 
-                    @if ($typeSale != 'Normal')
-                        <table style="text-align: left; width: 100%;">
-                            <tr>
-                                <td style="padding-left: 0;">
-                                    <ul style="list-style: none; padding-left: 0; margin: 0;">
-                                        <li>Operación sujeta a detracción:</li>
-                                        <li>Porcentaje:
-                                            {{ $porcentaje }}
-                                        </li>
-                                        <li>Cod. Bien: {{ $codeDetraction }}</li>
-                                        <li>Monto:
+                $nombreDetraccion = $detractionNames[$codeDetraction] ?? '';
+            @endphp
 
-                                            {{ round(($totalDetalle * $porcentaje) / 100) }}
+            <table style="text-align: left; width: 100%;">
+                <tr>
+                    <td style="padding-left: 0;">
+                        <ul style="list-style: none; padding-left: 0; margin: 0;">
+                        <li><b>Información de la Detracción</b></li>    
+                        <li>Bien o Servicio: {{ $nombreDetraccion ?? '' }}</li>
+                            <li>Nro. Cuenta Banco Nacion: {{ $cuentabn }}</li>
+                            <li>Porcentaje Detracción: {{ $detractionPercentage }}%</li>
+                            <li>Monto Detracción: S/ {{ round(($totalDetalle * $detractionPercentage) / 100) }}</li>
+                            <li>Monto neto pendiente de pago:
+                                S/ {{ $totalDetalle - round(($totalDetalle * $detractionPercentage) / 100) }}
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        @endif
 
-                                        </li>
+        @if ($typeSale == 'Retencion')
+            <table style="text-align: left; width: 100%;">
+                <tr>
+                    <td style="padding-left: 0;">
+                        <ul style="list-style: none; padding-left: 0; margin: 0;">
+                            <li><b>Información de la Retención</b></li>
+                            <li>Nro. Cuenta Banco Nacion: {{ $cuentabn }}</li>
+                            <li>Porcentaje Retención: {{ $retencion }}%</li>
+                            <li>Monto Retención: {{ round(($totalDetalle * $retencion) / 100) }}</li>
+                            <li>Monto neto pendiente de pago:
+                                {{ $totalDetalle - round(($totalDetalle * $retencion) / 100) }}
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        @endif
+        <br>
+    </td>
+</tr>
 
-                                        <li>Cuenta B.N.: 00000000000</li>
-                                    </ul>
-                                </td>
-
-                            </tr>
-                        </table>
-                    @endif
-                    <br>
-                </td>
-            </tr>
 
             <tr>
                 <td class="w10 blue left">
-                    <label for="total"><b>SON:<?php
+                    <label for="total">
+                        <b>
+                            SON:
+                            <?php
 $formatter = new NumberFormatter('es', NumberFormatter::SPELLOUT);
-$totalEnPalabras = $formatter->format(floor($totalDetalle)); // Redondeamos hacia abajo para quitar la parte decimal
+$totalEnPalabras = $formatter->format(floor($totalDetalle)); // Número en letras (solo parte entera)
+
 if ($totalDetalle != floor($totalDetalle)) {
-    $parteDecimal = round(($totalDetalle - floor($totalDetalle)) * 100); // Convertimos la parte decimal a centavos
-    echo ucfirst($totalEnPalabras) . " CON $parteDecimal/100 SOLES";
+    $parteDecimal = round(($totalDetalle - floor($totalDetalle)) * 100); // Parte decimal como centavos
+    echo strtoupper($totalEnPalabras) . " CON $parteDecimal/100 SOLES";
 } else {
-    echo ucfirst($totalEnPalabras) . ' CON 00/100 SOLES';
+    echo strtoupper($totalEnPalabras) . " CON 00/100 SOLES";
 }
-                    ?></b></label>
+                ?>
+                        </b>
+                    </label>
                 </td>
             </tr>
+
             <tr>
-                <td class="w10 left">
+                <td class="w10 left" style="font-size:11px">
                     Representación impresa de la Factura Electrónica, consulte
                     <br>
                     en<a href="https://facturae-garzasoft.com" style="text-decoration: none; color: inherit;"
