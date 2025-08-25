@@ -108,10 +108,11 @@ class SaleController extends Controller
         $budgetSheet = budgetSheet::find($request->budget_sheet_id);
         $subtotal = 0;
         foreach ($request->saleDetails as $saleDetail) {
-            $subtotal += ($saleDetail['unitPrice']) * $saleDetail['quantity'];
+            $subtotal += ($saleDetail['unitValue']) * $saleDetail['quantity'];
         }
         $igv = $subtotal * Constants::IGV;
         $total = $subtotal + $igv;
+
 
         $cashId = 2;
         $query = Sale::where('documentType', $request->documentType)
@@ -132,7 +133,7 @@ class SaleController extends Controller
 
             'retencion' => $request->input('saleType') === Constants::SALE_RETENCION ? $request->input('retencion') : 0,
 
-            'cuentabn' => '000000000',
+            'cuentabn' => '00231124403',
 
             'cash_id' => $cashId,
             'user_id' => auth()->id(),
@@ -320,17 +321,21 @@ class SaleController extends Controller
                 'subTotal' => $saleDetail['subTotal'],
                 'sale_id' => $sale->id,
             ]);
-            $taxableOperation += $saleDetail['unitPrice'];
+            $taxableOperation += $saleDetail['unitValue'] * $saleDetail['quantity'];
         }
 
         $igv = $taxableOperation * Constants::IGV;
         $total = $taxableOperation + $igv;
 
+        $igv = round($taxableOperation * Constants::IGV, 2);
+        $total = round($taxableOperation + $igv, 2);
+
         $sale->update([
-            'taxableOperation' => $taxableOperation,
+            'taxableOperation' => round($taxableOperation, 2),
             'igv' => $igv,
             'total' => $total,
         ]);
+
         $sale->save();
 
         $this->updateFullNumber($sale);
@@ -420,7 +425,7 @@ class SaleController extends Controller
 
         $subtotal = 0;
         foreach ($request->saleDetails as $saleDetail) {
-            $subtotal += $saleDetail['subTotal'];
+            $subtotal += $saleDetail['unitValue'];
         }
         $igv = $subtotal * Constants::IGV;
         $total = $subtotal + $igv;

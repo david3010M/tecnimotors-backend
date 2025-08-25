@@ -39,9 +39,9 @@ class PdfController extends Controller
     public function getBudgetSheet($id)
     {
         $object = budgetSheet::getBudgetSheet($id);
-         $details = DetailBudget::with(['service', 'product'])
-                ->where('budget_sheet_id', $id)
-                ->get();
+        $details = DetailBudget::with(['service', 'product'])
+            ->where('budget_sheet_id', $id)
+            ->get();
 
         $pdf = Pdf::loadView('presupuesto', [
             'budgetsheet' => $object,
@@ -264,21 +264,39 @@ class PdfController extends Controller
         }
         // Inicializar el array de detalles
         $detalles = [];
+        $totalVenta = 0; // inicializamos el acumulador
 
-        if (($productList) != []) {
+        if (!empty($productList)) {
             foreach ($productList as $detalle) {
+                $pu = isset($detalle->unitPrice) ? round($detalle->unitPrice, 3) : 0;
+                $cantidad = $detalle->quantity ?? 0;
+                $descuento = $detalle->discount ?? 0;
+
+                $igvRate = 0.18;
+                $vu = $pu > 0 ? round($pu / (1 + $igvRate), 3) : 0;
+
+                $valorVentaItem = round(($vu * $cantidad) - $descuento, 2);
+
                 $detalles[] = [
                     "descripcion" => $detalle->description ?? '-',
                     "um" => $detalle->unit ?? '-',
-                    "cant" => $detalle->quantity ?? '-',
-                    "vu" => $detalle->unitValue ?? '-',
-                    "pu" => $detalle->unitPrice, // Cantidad fija (es un servicio)
-                    "dscto" => $detalle->discount ?? 0,
-                    // "precioventaunitarioxitem" => $detalle->subTotal ?? 0,
-                    "precioventaunitarioxitem" => $detalle->unitPrice*$detalle->quantity ?? 0,
+                    "cant" => $cantidad,
+                    "pu" => $pu,
+                    "vu" => $vu,
+                    "dscto" => $descuento,
+                    "precioventaunitarioxitem" => $valorVentaItem,
                 ];
+
+                // Acumular el total
+                $totalVenta += $valorVentaItem;
             }
         }
+
+        // Redondeamos el total general a 2 decimales
+        $totalVenta = round($totalVenta, 2);
+
+
+
 
         $tipoDocumento = '';
 
@@ -329,15 +347,16 @@ class PdfController extends Controller
             'typePayment' => $Movimiento->paymentType === 'CONTADO' ? 'Contado' : ($Movimiento->paymentType === 'CREDITO' ? 'Crédito' : '-'),
             'numeroVenta' => $num,
             'porcentaje' => $Movimiento->detractionPercentage,
+            'porcentaje_retencion' => $Movimiento->retencion,
             'fechaemision' => $Movimiento->paymentDate,
             'cliente' => $nombreCliente,
             'detalles' => $detalles,
             'cuentas' => $Movimiento->commitments,
             'vuelto' => '0.00',
-            'totalPagado' => $Movimiento->total,
-            
-            
-            
+            'totalPagado' => $totalVenta * 1.18,
+
+
+
             'presupuesto' => $Movimiento?->budgetSheet?->number ?? '-',
             'placa' => $Movimiento?->budgetSheet?->attention?->vehicle?->plate ?? '-',
             'modelo' => $Movimiento?->budgetSheet?->attention?->vehicle?->model ?? '-',
@@ -345,12 +364,20 @@ class PdfController extends Controller
             'anio' => $Movimiento?->budgetSheet?->attention?->vehicle?->year ?? '-',
             'cuentabn' => $Movimiento->cuentabn ?? '',
 
-            
+
             'linkRevisarFact' => $linkRevisarFact,
             'formaPago' => $Movimiento->formaPago ?? '-',
             'fechaInicio' => $fechaInicio,
 
-            'typeSale' => $Movimiento->saleType === 'NORMAL' ? 'Normal' : ($Movimiento->saleType === 'DETRACCION' ? 'Detracción' : '-'),
+            'typeSale' => $Movimiento->saleType === 'NORMAL'
+                ? 'Normal'
+                : ($Movimiento->saleType === 'DETRACCION'
+                    ? 'Detracción'
+                    : ($Movimiento->saleType === 'RETENCION'
+                        ? 'Retencion'
+                        : '-')),
+
+
             'codeDetraction' => $Movimiento->detractionCode ?? '-',
             'detractionPercentage' => $Movimiento->detractionPercentage ?? '0',
             'retencion' => $Movimiento->retencion ?? '0',
