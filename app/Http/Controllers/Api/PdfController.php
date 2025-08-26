@@ -357,11 +357,11 @@ class PdfController extends Controller
 
 
 
-            'presupuesto' => $Movimiento?->budgetSheet?->number ?? '-',
-            'placa' => $Movimiento?->budgetSheet?->attention?->vehicle?->plate ?? '-',
-            'modelo' => $Movimiento?->budgetSheet?->attention?->vehicle?->model ?? '-',
-            'vin' => $Movimiento?->budgetSheet?->attention?->vehicle?->codeBin ?? '-',
-            'anio' => $Movimiento?->budgetSheet?->attention?->vehicle?->year ?? '-',
+            'presupuesto' => $Movimiento?->budgetSheet?->number ?? '',
+            'placa' => $Movimiento?->budgetSheet?->attention?->vehicle?->plate ?? '',
+            'modelo' => $Movimiento?->budgetSheet?->attention?->vehicle?->model ?? '',
+            'vin' => $Movimiento?->budgetSheet?->attention?->vehicle?->codeBin ?? '',
+            'anio' => $Movimiento?->budgetSheet?->attention?->vehicle?->year ?? '',
             'cuentabn' => $Movimiento->cuentabn ?? '',
 
 

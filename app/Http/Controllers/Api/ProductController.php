@@ -134,9 +134,9 @@ class ProductController extends Controller
             'purchase_price' => $request->input('purchase_price'),
             'percentage' => $request->input('percentage'),
             'sale_price' => $request->input('sale_price'),
-            'quantity' => $request->input('quantity',0),
+            'quantity' => $request->input('quantity', 0),
             'stock' => $request->input('quantity'),
-            'type' => $request->input('type','Repuesto'),
+            'type' => $request->input('type', 'Repuesto'),
             'category_id' => $request->input('category_id'),
             'unit_id' => $request->input('unit_id'),
             'brand_id' => $request->input('brand_id'),
@@ -146,7 +146,7 @@ class ProductController extends Controller
         $product = $this->productService->createProduct($data);
         $product = Product::with('category', 'unit', 'brand', 'images')->find($product->id);
 
-        return response()->json($product);
+        return new ProductResource($product);
     }
 
     /**
@@ -185,13 +185,13 @@ class ProductController extends Controller
      */
     public function show(int $id)
     {
+        $product = Product::with(['category', 'unit', 'brand', 'images'])->find($id);
 
-        $product = Product::find($id);
-        if ($product) {
-            return response()->json($product);
+        if (!$product) {
+            return response()->json(['message' => 'Producto No Encontrado'], 404);
         }
-        $product = Product::with('category', 'unit', 'brand', 'images')->find($id);
-        return response()->json(['message' => 'Producto No Encontrado'], 404);
+
+        return new ProductResource($product);
     }
 
     /**
@@ -276,8 +276,8 @@ class ProductController extends Controller
             'percentage' => $request->input('percentage'),
             'sale_price' => $request->input('sale_price'),
             'quantity' => $request->input('quantity'),
-            'stock' => $request->input('quantity'),
-            'type' => $request->input('type'),
+            // 'stock' => $request->input('quantity'),
+            // 'type' => $request->input('type'),
             'category_id' => $request->input('category_id'),
             'unit_id' => $request->input('unit_id'),
             'brand_id' => $request->input('brand_id'),
@@ -287,7 +287,7 @@ class ProductController extends Controller
         $this->productService->updateProduct($product, $data);
         $product = Product::with('category', 'unit', 'brand', 'images')->find($id);
 
-        return response()->json($product);
+        return new ProductResource($product);
 
     }
 

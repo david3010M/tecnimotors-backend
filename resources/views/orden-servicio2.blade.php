@@ -45,6 +45,9 @@
             font-size: 10px;
             margin: 5px;
         }
+        .sombra{
+            background-color: #dcdcdc;
+        }
 
         .title,
         .number {
@@ -177,7 +180,7 @@
     {{-- Información del Cliente --}}
     <table style="width: 100%;">
         <tr>
-            <th style="text-align: left;">CLIENTE</th>
+            <th style="text-align: left;" class="sombra">CLIENTE</th>
             <td colspan="5">
                 @if ($order->vehicle->person->typeofDocument == 'DNI')
                     {{ $order->vehicle->person->names }} {{ $order->vehicle->person->fatherSurname }}
@@ -188,11 +191,11 @@
             </td>
         </tr>
         <tr>
-            <th style="text-align: left;">DIRECCIÓN</th>
+            <th style="text-align: left;" class="sombra">DIRECCIÓN</th>
             <td colspan="5">{{ $order->vehicle->person->address }}</td>
         </tr>
         <tr>
-            <th style="text-align: left;">CONDUCTOR RESPONSABLE</th>
+            <th style="text-align: left;" class="sombra">CONDUCTOR RESPONSABLE</th>
             <td colspan="5">{{ $order->driver }}</td>
         </tr>
 <!-- 
@@ -201,13 +204,13 @@
             <td colspan="5">{{ $order->vehicle->person->representativeNames }}</td>
         </tr> -->
         <tr>
-            <th style="text-align: left;">RUC / DNI</th>
+            <th style="text-align: left;" class="sombra">RUC / DNI</th>
             <td>{{ $order->vehicle->person->documentNumber }}</td>
-            <th style="text-align: left;">TELEFONO</th>
+            <th style="text-align: left;" class="sombra">TELEFONO</th>
             <td colspan="3">{{ $order->vehicle->person->phone }}</td>
         </tr>
         <tr>
-            <th style="text-align: left;">EMAIL</th>
+            <th style="text-align: left;" class="sombra">EMAIL</th>
             <td colspan="5">{{ $order->vehicle->person->email }}</td>
         </tr>
     </table>
@@ -216,33 +219,33 @@
     {{-- Información del Vehículo --}}
     <table style="width: 100%; border-collapse: collapse;">
         <tr>
-            <th style="text-align: left;">TIPO</th>
+            <th style="text-align: left;" class="sombra">TIPO</th>
             <td>{{ $order->vehicle->typeVehicle?->name ?? '' }}</td>
 
-            <th style="text-align: left;">MARCA</th>
+            <th style="text-align: left;" class="sombra">MARCA</th>
             <td>{{ $order->vehicle->vehicleModel?->brand?->name ?? '' }}</td>
 
-            <th style="text-align: left;">MODELO</th>
+            <th style="text-align: left;" class="sombra">MODELO</th>
             <td>{{ $order->vehicle->vehicleModel?->name ?? '' }}</td>
         </tr>
         <tr>
-            <th style="text-align: left;">PLACA</th>
+            <th style="text-align: left;" class="sombra">PLACA</th>
             <td>{{ $order->vehicle?->plate ?? '' }}</td>
 
-            <th style="text-align: left;">CHASIS</th>
+            <th style="text-align: left;" class="sombra">CHASIS</th>
             <td>{{ $order->vehicle?->chasis ?? '' }}</td>
 
-            <th style="text-align: left;">MOTOR</th>
+            <th style="text-align: left;" class="sombra">MOTOR</th>
             <td>{{ $order->vehicle?->motor ?? '' }}</td>
         </tr>
         <tr>
-            <th style="text-align: left;">KILOMETRAJE</th>
+            <th style="text-align: left;" class="sombra">KILOMETRAJE</th>
             <td>{{ intval($order->km) }}</td>
 
-            <th style="text-align: left;">AÑO</th>
+            <th style="text-align: left;" class="sombra">AÑO</th>
             <td>{{ $order->vehicle?->year ?? '' }}</td>
 
-            <th style="text-align: left;">VIN</th>
+            <th style="text-align: left;" class="sombra">VIN</th>
             <td>{{ $order->vehicle?->codeBin ?? '' }}</td>
         </tr>
     </table>
@@ -251,9 +254,9 @@
 <table style="width: 100%; border-collapse: collapse;">
     <thead>
         <tr>
-            <th style="width: 5%; text-align: center;">N°</th>
-            <th style="text-align: left;">Descripción</th>
-            <th style="width: 20%; text-align: center;">Monto</th>
+            <th style="width: 5%; text-align: center;" class="sombra">N°</th>
+            <th style="text-align: left;" class="sombra">Descripción</th>
+            <th style="width: 20%; text-align: center;" class="sombra">Monto</th>
         </tr>
     </thead>
     <tbody>
@@ -280,7 +283,7 @@
        style="font-size: 10px; border-collapse: collapse; width: 100%; table-layout: fixed;">
     <thead>
         <tr>
-            <th colspan="11" class="text-center" style="font-size: 11px; padding: 3px;background-color: #dcdcdc;">
+            <th colspan="11" class="text-center sombra" style="font-size: 11px; padding: 3px;">
                 ELEMENTOS VERIFICADOS
             </th>
         </tr>
@@ -329,19 +332,19 @@
         <td style="vertical-align: top; width: 70%;">
             <table class="left-data" style="width: 100%; border: 1px solid #ccc; border-collapse: collapse;">
                 <tr>
-                    <th style="border: 1px solid #ccc;">FECHA INGRESO</th>
+                    <th style="border: 1px solid #ccc;"  class="sombra">FECHA INGRESO</th>
                     <td style="border: 1px solid #ccc;">{{ Carbon::parse($order->arrivalDate)->format('d/m/Y') }}</td>
-                    <th style="border: 1px solid #ccc;">HORA INGRESO</th>
+                    <th style="border: 1px solid #ccc;"  class="sombra">HORA INGRESO</th>
                     <td style="border: 1px solid #ccc;">{{ Carbon::parse($order->arrivalDate)->format('H:i') }}</td>
                 </tr>
                 <tr>
-                    <th style="border: 1px solid #ccc;">FECHA ENTREGA</th>
+                    <th style="border: 1px solid #ccc;" class="sombra" >FECHA ENTREGA</th>
                     <td style="border: 1px solid #ccc;">{{ Carbon::parse($order->deliveryDate)->format('d/m/Y') }}</td>
-                    <th style="border: 1px solid #ccc;">HORA ENTREGA</th>
+                    <th style="border: 1px solid #ccc;" class="sombra" >HORA ENTREGA</th>
                     <td style="border: 1px solid #ccc;">{{ Carbon::parse($order->deliveryDate)->format('H:i') }}</td>
                 </tr>
                 <tr>
-                    <th style="border: 1px solid #ccc;">ASESOR DEL SERVICIO</th>
+                    <th style="border: 1px solid #ccc;" class="sombra">ASESOR DEL SERVICIO</th>
                     <td style="border: 1px solid #ccc;" colspan="3">
                         {{ $order->worker->person->names }}
                         {{ $order->worker->person->fatherSurname }}
@@ -388,7 +391,7 @@
 @if (!empty($order->observations))
     <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
         <tr>
-            <th style="width: 20%; text-align: center; padding: 5px; border-top: 1px solid #000; border-bottom: 1px solid #000;">
+            <th  class="sombra" style="width: 20%; text-align: center; padding: 5px; border-top: 1px solid #000; border-bottom: 1px solid #000;">
                 OBSERVACIONES
             </th>
             <td style="padding: 3px; border-top: 1px solid #000; border-bottom: 1px solid #000; white-space: pre-wrap;">

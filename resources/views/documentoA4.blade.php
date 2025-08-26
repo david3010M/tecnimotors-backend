@@ -460,89 +460,109 @@
                 <td colspan="5" style="border:none;">{{ $direccion }}</td>
             </tr>
 
+            @if(!empty($presupuesto))
+                <tr>
+                    <th  style="text-align:left; width:15%; border:none;">Presupueto</th>
+                    <td colspan="5" ="width:15%; border:none;">{{ $presupuesto }}</td>
+                </tr>
+
+            @endif
+
+
             <tr>
                 <th style="text-align:left; border:none;">RUC</th>
-                <td colspan="5" style="border:none;">{{ $ruc_dni }}</td>
+                <td style="width:20%; border:none;">{{ $ruc_dni }}</td>
+
+                @if(!empty($placa))
+                    <th style="text-align:left; width:15%; border:none;">Placa</th>
+                    <td style="width:15%; border:none;">{{ $placa }}</td>
+                @endif
+
+                @if(!empty($vin))
+                    <th style="text-align:left; width:15%; border:none;">VIN</th>
+                    <td style="width:15%; border:none;">{{ $vin }}</td>
+                @endif
             </tr>
 
             <tr>
                 <th style="text-align:left; border:none;">Moneda</th>
-                <td colspan="5" style="border:none;">PEN</td>
+                <td style="border:none;">PEN</td>
+
+                @if(!empty($modelo))
+                    <th style="text-align:left; border:none;">Modelo</th>
+                    <td style="border:none;">{{ $modelo }}</td>
+                @endif
+
+                @if(!empty($anio))
+                    <th style="text-align:left; border:none;">Año</th>
+                    <td style="border:none;">{{ $anio }}</td>
+                @endif
             </tr>
 
             <tr>
-    <th style="text-align:left; border:none;">Forma de Pago:</th>
-    <td colspan="{{ $typePayment == 'Crédito' ? 2 : 5 }}" style="border:none;">
-        {{ $typePayment }}
-    </td>
+                <th style="text-align:left; border:none;">Forma de Pago:</th>
+                <td colspan="{{ $typePayment == 'Crédito' ? 2 : 5 }}" style="border:none;">
+                    {{ $typePayment }}
+                </td>
 
-    @if($typePayment == 'Crédito')
-        <th style="text-align:left; border:none;">Cuotas:</th>
-        <td colspan="2" style="border:none;">
-            @php
-                $totalAmount = $cuentas ? $cuentas->count() : 0;
-            @endphp
-            {{ $totalAmount }}
-        </td>
-    @endif
-</tr>
-
-@if ($typePayment == 'Crédito')
-    <tr>
-        <td colspan="6" style="border:none; padding-top:5px;">
-            <table class="font-12" style="width:100%; border-collapse:collapse;">
-                <tr>
-                    <!-- Columna izquierda: todas las cuotas -->
-                    <td style="width:80%; vertical-align:top; padding:5px;">
-                        @php $i = 1; @endphp
-                        @foreach ($cuentas as $cuenta)
-                            <div style="margin-bottom:3px; display:flex; justify-content:space-between;">
-                                <span style="flex:1; text-align:left;">
-                                    <b>Cuota:</b> {{ $i++ }}
-                                </span>
-                                <span style="flex:1; text-align:center;">
-                                    <b>Fecha:</b>
-                                    {{ \Carbon\Carbon::parse($cuenta->payment_date)->format('d/m/Y') }}
-                                </span>
-                                <span style="flex:1; text-align:right;">
-                                    @php
-                                        // Obtener el porcentaje correcto según el tipo de venta
-                                        $porcentajeAplicado = 0;
-                                        if ($typeSale == 'Detracción' && !is_null($porcentaje)) {
-                                            $porcentajeAplicado = $porcentaje;
-                                        } elseif ($typeSale == 'Retencion' && !is_null($retencion)) {
-                                            $porcentajeAplicado = $retencion;
-                                        }
-
-                                        // Calcular descuento exacto (NO redondeamos el %)
-                                        $descuento = $porcentajeAplicado > 0
-                                            ? ($totalPagado * $porcentajeAplicado) / 100
-                                            : 0;
-
-                                        // Monto final de la cuota (sí redondeado a 2 decimales)
-                                        $montoFinal = $cuenta->price - $descuento;
-                                    @endphp
-                                    <b>Monto:</b> {{ number_format($montoFinal, 2) }}
-                                    @if($porcentajeAplicado > 0)
-                                        <!-- <small>({{ $porcentajeAplicado }}%)</small> -->
-                                    @endif
-                                </span>
-                            </div>
-                        @endforeach
+                @if($typePayment == 'Crédito')
+                    <th style="text-align:left; border:none;">Cuotas:</th>
+                    <td colspan="2" style="border:none;">
+                        @php
+                            $totalAmount = $cuentas ? $cuentas->count() : 0;
+                        @endphp
+                        {{ $totalAmount }}
                     </td>
+                @endif
+            </tr>
 
-                    <!-- Columna derecha vacía (equilibrio) -->
-                    <td style="width:20%;"></td>
+            @if ($typePayment == 'Crédito')
+                <tr>
+                    <td colspan="6" style="border:none; padding-top:5px;">
+                        <table class="font-12" style="width:100%; border-collapse:collapse;">
+                            <tr>
+                                <!-- Columna izquierda: todas las cuotas -->
+                                <td style="width:80%; vertical-align:top; padding:5px;">
+                                    @php $i = 1; @endphp
+                                    @foreach ($cuentas as $cuenta)
+                                        <div style="margin-bottom:3px; display:flex; justify-content:space-between;">
+                                            <span style="flex:1; text-align:left;">
+                                                <b>Cuota:</b> {{ $i++ }}
+                                            </span>
+                                            <span style="flex:1; text-align:center;">
+                                                <b>Fecha:</b>
+                                                {{ \Carbon\Carbon::parse($cuenta->payment_date)->format('d/m/Y') }}
+                                            </span>
+                                            <span style="flex:1; text-align:right;">
+                                                @php
+                                                    $porcentajeAplicado = 0;
+                                                    if ($typeSale == 'Detracción' && !is_null($porcentaje)) {
+                                                        $porcentajeAplicado = $porcentaje;
+                                                    } elseif ($typeSale == 'Retencion' && !is_null($retencion)) {
+                                                        $porcentajeAplicado = $retencion;
+                                                    }
+
+                                                    $descuento = $porcentajeAplicado > 0
+                                                        ? ($totalPagado * $porcentajeAplicado) / 100
+                                                        : 0;
+
+                                                    $montoFinal = $cuenta->price - $descuento;
+                                                @endphp
+                                                <b>Monto:</b> {{ number_format($montoFinal, 2) }}
+                                            </span>
+                                        </div>
+                                    @endforeach
+                                </td>
+
+                                <!-- Columna derecha vacía (equilibrio) -->
+                                <td style="width:20%;"></td>
+                            </tr>
+                        </table>
+                    </td>
                 </tr>
-            </table>
-        </td>
-    </tr>
-@endif
-
+            @endif
 
         </table>
-
-
 
 
 
@@ -682,7 +702,7 @@ if ($linkRevisarFact) {
                                         <li>Nro. Cuenta Banco Nacion: {{ $cuentabn }}</li>
                                         <li>Porcentaje Detracción: {{ $porcentaje }}%</li>
                                         <li>Monto Detracción:
-                                          S/ {{ number_format(($totalDetalle * $porcentaje) / 100, 2) }}
+                                            S/ {{ number_format(($totalDetalle * $porcentaje) / 100, 2) }}
 
                                         </li>
 
@@ -708,10 +728,11 @@ if ($linkRevisarFact) {
                                         <li><b>Información de la Retención</b></li>
                                         <li>Nro. Cuenta Banco Nacion: {{ $cuentabn }}</li>
                                         <li>Porcentaje Retención: {{ $retencion }}%</li>
-                                        <li>Monto Retención: S/ {{ number_format(($totalDetalle * $retencion) / 100, 2) }}</li>
+                                        <li>Monto Retención: S/ {{ number_format(($totalDetalle * $retencion) / 100, 2) }}
+                                        </li>
 
                                         <li>Monto neto pendiente de pago:
-                                            {{ $totalDetalle - round(($totalDetalle * $retencion) / 100) }}
+                                            {{ $totalDetalle - (($totalDetalle * $retencion) / 100) }}
                                         </li>
                                     </ul>
                                 </td>
@@ -773,8 +794,8 @@ if ($totalDetalle != floor($totalDetalle)) {
                         </tr>
                         <tr>
                             <td class="border">BCP</td>
-                            <td class="border">000-0000000-0-00</td>
-                            <td class="border">00000000000000000000</td>
+                            <td class="border">3052311871039</td>
+                            <td class="border">00230500231187103913</td>
                         </tr>
                         <tr>
                             <th class="border">BANCO</th>
@@ -783,7 +804,7 @@ if ($totalDetalle != floor($totalDetalle)) {
                         </tr>
                         <tr>
                             <td class="border">BN</td>
-                            <td class="border">00000000000</td>
+                            <td class="border">630-0059018</td>
                             <td class="border"></td>
                         </tr>
                     </table>

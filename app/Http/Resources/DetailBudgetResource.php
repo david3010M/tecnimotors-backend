@@ -73,6 +73,8 @@ class DetailBudgetResource extends JsonResource
         return [
             'id' => $this->id,
             'saleprice' => $this->saleprice,
+            'saleprice_x_1_18' => number_format(($this->saleprice ?? 0) * 1.18, 2, '.', '')
+,
             'type' => $this->type,
             'date_max' => $this->dateMax,
             'comment' => $this->comment,
