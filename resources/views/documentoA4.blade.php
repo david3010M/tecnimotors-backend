@@ -440,74 +440,95 @@
             </tr>
         </table>
 
-        <table class="tablePeople font-12"
-            style="width:100%; border:1px solid black; border-collapse:collapse; padding:4px;">
+         <table class="tablePeople font-12" style="width:100%; border:1px solid black; border-collapse:collapse;">
 
             <tr>
-                <th style="width:15%; text-align:left; border:none;">Fecha Emision:</th>
-                <td colspan="5" style="border:none;">
+                <th
+                    style="width:15%; text-align:left; border:1px solid black; padding:4px;  background-color: #dcdcdc;">
+                    Fecha Emisión:</th>
+                <td colspan="5" style="border:1px solid black; padding:4px;">
                     {{ \Carbon\Carbon::parse($fechaemision)->format('d/m/Y') }}
                 </td>
             </tr>
 
             <tr>
-                <th style="text-align:left; border:none;">Señor(es):</th>
-                <td colspan="5" style="border:none;">{{ $cliente }}</td>
+                <th style="text-align:left; border:1px solid black; padding:4px;  background-color: #dcdcdc;">Señor(es):
+                </th>
+                <td colspan="5" style="border:1px solid black; padding:4px;">{{ $cliente }}</td>
             </tr>
 
             <tr>
-                <th style="text-align:left; border:none;">Direccion:</th>
-                <td colspan="5" style="border:none;">{{ $direccion }}</td>
+                <th style="text-align:left; border:1px solid black; padding:4px;  background-color: #dcdcdc;">Dirección:
+                </th>
+                <td colspan="5" style="border:1px solid black; padding:4px;">{{ $direccion }}</td>
             </tr>
 
             @if(!empty($presupuesto))
                 <tr>
-                    <th  style="text-align:left; width:15%; border:none;">Presupueto</th>
-                    <td colspan="5" ="width:15%; border:none;">{{ $presupuesto }}</td>
+                    <th
+                        style="text-align:left; width:15%; border:1px solid black; padding:4px;  background-color: #dcdcdc;">
+                        Presupuesto</th>
+                    <td colspan="5" style="border:1px solid black; padding:4px;">{{ $presupuesto }}</td>
                 </tr>
-
             @endif
 
-
             <tr>
-                <th style="text-align:left; border:none;">RUC</th>
-                <td style="width:20%; border:none;">{{ $ruc_dni }}</td>
+                <th style="text-align:left; border:1px solid black; padding:4px;  background-color: #dcdcdc;">RUC</th>
+                <td style="width:20%; border:1px solid black; padding:4px;">{{ $ruc_dni }}</td>
 
                 @if(!empty($placa))
-                    <th style="text-align:left; width:15%; border:none;">Placa</th>
-                    <td style="width:15%; border:none;">{{ $placa }}</td>
+                    <th style="text-align:left; width:15%; border:1px solid black; padding:4px; background-color: #dcdcdc;">Placa</th>
+                    <td style="width:15%; border:1px solid black; padding:4px;">{{ $placa }}</td>
                 @endif
 
                 @if(!empty($vin))
-                    <th style="text-align:left; width:15%; border:none;">VIN</th>
-                    <td style="width:15%; border:none;">{{ $vin }}</td>
+                    <th style="text-align:left; width:15%; border:1px solid black; padding:4px; background-color: #dcdcdc;">VIN</th>
+                    <td style="width:15%; border:1px solid black; padding:4px;">{{ $vin }}</td>
+                @endif
+
+                {{-- Si no hay ni placa ni vin, expandimos --}}
+                @if(empty($placa) && empty($vin))
+                    <td colspan="4" style="border:1px solid black; padding:4px; background-color: #ffffffff;"></td>
+                @elseif(empty($placa) || empty($vin))
+                    {{-- Si falta uno, expandimos el hueco del otro para no romper --}}
+                    <td colspan="2" style="border:1px solid black; padding:4px; "></td>
                 @endif
             </tr>
 
+
             <tr>
-                <th style="text-align:left; border:none;">Moneda</th>
-                <td style="border:none;">PEN</td>
+                <th style="text-align:left; border:1px solid black; padding:4px; background-color: #dcdcdc;">Moneda</th>
+                <td style="border:1px solid black; padding:4px;">PEN</td>
 
                 @if(!empty($modelo))
-                    <th style="text-align:left; border:none;">Modelo</th>
-                    <td style="border:none;">{{ $modelo }}</td>
+                    <th style="text-align:left; border:1px solid black; padding:4px;background-color: #dcdcdc;">Modelo</th>
+                    <td style="border:1px solid black; padding:4px;">{{ $modelo }}</td>
                 @endif
 
                 @if(!empty($anio))
-                    <th style="text-align:left; border:none;">Año</th>
-                    <td style="border:none;">{{ $anio }}</td>
+                    <th style="text-align:left; border:1px solid black; padding:4px;background-color: #dcdcdc;">Año</th>
+                    <td style="border:1px solid black; padding:4px;">{{ $anio }}</td>
+                @endif
+
+                {{-- Igual que arriba: si no hay modelo ni año, compensamos --}}
+                @if(empty($modelo) && empty($anio))
+                    <td colspan="4" style="border:1px solid black; padding:4px;"></td>
+                @elseif(empty($modelo) || empty($anio))
+                    <td colspan="2" style="border:1px solid black; padding:4px; background-color: #dcdcdc;"></td>
                 @endif
             </tr>
 
+
             <tr>
-                <th style="text-align:left; border:none;">Forma de Pago:</th>
-                <td colspan="{{ $typePayment == 'Crédito' ? 2 : 5 }}" style="border:none;">
+                <th style="text-align:left; border:1px solid black; padding:4px; background-color: #dcdcdc;">Forma de
+                    Pago:</th>
+                <td colspan="{{ $typePayment == 'Crédito' ? 2 : 5 }}" style="border:1px solid black; padding:4px;">
                     {{ $typePayment }}
                 </td>
 
                 @if($typePayment == 'Crédito')
-                    <th style="text-align:left; border:none;">Cuotas:</th>
-                    <td colspan="2" style="border:none;">
+                    <th style="text-align:left; border:1px solid black; padding:4px; background-color: #dcdcdc;">Cuotas:</th>
+                    <td colspan="2" style="border:1px solid black; padding:4px;">
                         @php
                             $totalAmount = $cuentas ? $cuentas->count() : 0;
                         @endphp
@@ -518,11 +539,11 @@
 
             @if ($typePayment == 'Crédito')
                 <tr>
-                    <td colspan="6" style="border:none; padding-top:5px;">
+                    <td colspan="6" style="border:1px solid black; padding:5px;">
                         <table class="font-12" style="width:100%; border-collapse:collapse;">
                             <tr>
                                 <!-- Columna izquierda: todas las cuotas -->
-                                <td style="width:80%; vertical-align:top; padding:5px;">
+                                <td style="width:80%; vertical-align:top; padding:5px; border:none;">
                                     @php $i = 1; @endphp
                                     @foreach ($cuentas as $cuenta)
                                         <div style="margin-bottom:3px; display:flex; justify-content:space-between;">
@@ -554,8 +575,8 @@
                                     @endforeach
                                 </td>
 
-                                <!-- Columna derecha vacía (equilibrio) -->
-                                <td style="width:20%;"></td>
+                                <!-- Columna derecha vacía (equilibrio visual) -->
+                                <td style="width:20%; border:none;"></td>
                             </tr>
                         </table>
                     </td>
@@ -563,6 +584,8 @@
             @endif
 
         </table>
+
+
 
 
 
@@ -788,9 +811,9 @@ if ($totalDetalle != floor($totalDetalle)) {
                 <td style="vertical-align: top;">
                     <table class="border" style="width:80%;">
                         <tr>
-                            <th class="border">BANCO</th>
-                            <th class="border">CUENTA</th>
-                            <th class="border">CCI</th>
+                            <th class="border" style=" background-color: #dcdcdc;">BANCO</th>
+                            <th class="border" style=" background-color: #dcdcdc;">CUENTA</th>
+                            <th class="border" style=" background-color: #dcdcdc;">CCI</th>
                         </tr>
                         <tr>
                             <td class="border">BCP</td>
@@ -798,9 +821,9 @@ if ($totalDetalle != floor($totalDetalle)) {
                             <td class="border">00230500231187103913</td>
                         </tr>
                         <tr>
-                            <th class="border">BANCO</th>
-                            <th class="border">CUENTA DETRACCION</th>
-                            <th class="border">CCI</th>
+                            <th class="border" style=" background-color: #dcdcdc;">BANCO</th>
+                            <th class="border" style=" background-color: #dcdcdc;">CUENTA DETRACCION</th>
+                            <th class="border" style=" background-color: #dcdcdc;">CCI</th>
                         </tr>
                         <tr>
                             <td class="border">BN</td>
