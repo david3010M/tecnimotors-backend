@@ -416,169 +416,220 @@ class SaleController extends Controller
      *     @OA\Response(response="422", description="Unprocessable Entity")
      * )
      */
-    public function update(UpdateSaleRequest $request, Sale $sale)
+    public function update(UpdateSaleRequest $request, $id)
     {
-        $budgetSheet = BudgetSheet::find($request->budget_sheet_id);
-        if (!$budgetSheet) {
-            return response()->json(['message' => 'Budget sheet not found'], 404);
-        }
+        return DB::transaction(function () use ($request, $id) {
 
-        $subtotal = 0;
-        foreach ($request->saleDetails as $saleDetail) {
-            $subtotal += $saleDetail['unitValue'];
-        }
-        $igv = $subtotal * Constants::IGV;
-        $total = $subtotal + $igv;
+            $sale = Sale::with(['saleDetails', 'commitments.amortizations', 'moviment.amortizations'])->findOrFail($id);
 
-        $sale->update([
-            'paymentDate' => $request->input('paymentDate'),
-            'documentType' => $request->input('documentType'),
-            'saleType' => $request->input('saleType'),
-            'detractionCode' => $request->input('saleType') === Constants::SALE_DETRACCION ? $request->input('detractionCode') : '',
-            'detractionPercentage' => $request->input('saleType') === Constants::SALE_DETRACCION ? $request->input('detractionPercentage') : '',
-            'paymentType' => $request->input('paymentType'),
-            'status' => Constants::SALE_PENDIENTE,
-            'total' => $total,
-            'person_id' => $request->input('person_id'),
-            'budget_sheet_id' => $request->input('budget_sheet_id'),
-            'cash_id' => 1,
-
-            'retencion' => $request->input('saleType') === Constants::SALE_RETENCION ? $request->input('retencion') : 0,
-
-
-        ]);
-        $sale->save();
-
-        if ($sale->paymentType == Constants::SALE_CONTADO) {
-            $movCaja = Moviment::where('status', 'Activa')->where('paymentConcept_id', 1)->first();
-            if (!$movCaja) {
-                if ($request->input('paymentConcept_id') != 1) {
-                    return response()->json(["message" => "Debe Aperturar Caja"], 422);
-                }
-            } else {
-                if ($request->input('paymentConcept_id') == 1) {
-                    return response()->json(["message" => "Caja Ya Aperturada"], 422);
-                }
-            }
-
-            $routeVoucher = null;
-            $numberVoucher = null;
-            $bank_id = null;
-            $depositAmount = 0;
-
-            if ($request->input('isBankPayment') == 1) {
-                $routeVoucher = 'ruta.jpg';
-                $numberVoucher = $request->input('numberVoucher');
-                $bank_id = $request->input('bank_id');
-                $depositAmount = $request->input('deposit') ?? 0;
-            }
-
-            $efectivo = $request->input('effective') ?? 0;
-            $yape = $request->input('yape') ?? 0;
-            $plin = $request->input('plin') ?? 0;
-            $tarjeta = $request->input('card') ?? 0;
-            $deposito = $depositAmount ?? 0;
-
-            $total = $efectivo + $yape + $plin + $tarjeta + $deposito;
-
-            if ($total == 0) {
-                return response()->json(["error" => "El monto a pagar no puede ser 0"], 422);
-            }
-
-            if (round($sale->total - $total, 1) != 0) {
-                return response()->json([
-                    "error" => "El monto a pagar no coincide con el total " . number_format($sale->total, 2) .
-                        " diferencia " . number_format($sale->total - $total, 2),
-                ], 422);
-            }
-
-            $commitment = $sale->commitment()->update([
-                'price' => $sale->total,
-                'balance' => $sale->total,
-                'status' => Constants::COMMITMENT_PAGADO,
-                'payment_type' => Constants::COMMITMENT_CONTADO,
-                'payment_date' => now(),
+            // === 1) Encabezado ===
+            $sale->fill([
+                'paymentDate' => $request->paymentDate,
+                'saleType' => $request->saleType,
+                'detractionCode' => $request->saleType === Constants::SALE_DETRACCION ? ($request->detractionCode ?? '') : '',
+                'detractionPercentage' => $request->saleType === Constants::SALE_DETRACCION ? ($request->detractionPercentage ?? 0) : 0,
+                'paymentType' => $request->paymentType,
+                'status' => $sale->status ?? Constants::SALE_PENDIENTE,
+                'person_id' => $request->person_id,
+                'budget_sheet_id' => $request->budget_sheet_id,
+                'retencion' => $request->saleType === Constants::SALE_RETENCION ? ($request->retencion ?? 0) : 0,
+                'cuentabn' => $request->cuentabn ?? ($sale->cuentabn ?? '00231124403'),
+                'cash_id' => 2,
+                'user_id' => auth()->id(),
             ]);
-            $commitment->save();
 
-            $sale->moviment()->update([
-                'total' => $commitment->price,
-                'yape' => $request->input('yape') ?? 0,
-                'deposit' => $depositAmount ?? 0,
-                'nro_operation' => $request->input('nro_operation'),
-                'cash' => $request->input('cash') ?? 0,
-                'card' => $request->input('card') ?? 0,
-                'plin' => $request->input('plin') ?? 0,
-                'isBankPayment' => $request->input('isBankPayment'),
-                'routeVoucher' => $routeVoucher,
-                'numberVoucher' => $numberVoucher,
-                'comment' => $request->input('comment') ?? '-',
-            ]);
-        } else if ($sale->paymentType == Constants::SALE_CREDITO) {
-            $sumCommitments = array_sum(array_column($request->input('commitments'), 'price'));
-            if (round($sale->total - $sumCommitments, 1) != 0) {
-                return response()->json(['error' => 'La suma de los compromisos no coincide con el total ' . $sale->total . ' diferencia ' . ($sale->total - $sumCommitments)], 422);
-            }
+            // === 2) Sincronizar Detalles ===
+            $this->syncDetails($sale, $request->saleDetails);
 
-            $commitments = $request->input('commitments');
-            foreach ($commitments as $index => $commitmentData) {
-                $commitment = $sale->commitments()->find($commitmentData['id']);
+            // === 3) Totales del request ===
+            $sale->taxableOperation = round($request->__calc_taxable, 2);
+            $sale->igv = $request->__calc_igv;
+            $sale->total = $request->__calc_total;
+            $sale->save();
+
+            // === 4) Flujo de pago ===
+            if ($sale->paymentType === Constants::SALE_CONTADO) {
+                // compromisos → si existe actualizo, sino creo
+                $commitment = $sale->commitments()->first();
                 if ($commitment) {
+                    // actualizar y borrar amortizaciones ligadas (para regenerarlas)
+                    $commitment->amortizations()->delete();
                     $commitment->update([
-                        'numberQuota' => $index + 1,
-                        'price' => $commitmentData['price'],
-                        'balance' => $commitmentData['price'],
-                        'status' => Constants::COMMITMENT_PENDING,
-                        'payment_date' => Carbon::parse($sale->budgetSheet->attention->arrivalDate)->addDays($commitmentData['paymentDate']),
+                        'price' => $sale->total,
+                        'balance' => 0,
+                        'amount' => $sale->total,
+                        'status' => Constants::COMMITMENT_PAGADO,
+                        'payment_type' => Constants::COMMITMENT_CONTADO,
+                        'payment_date' => today(),
                     ]);
-                    $commitment->save();
                 } else {
-                    Commitment::create([
-                        'numberQuota' => $index + 1,
-                        'price' => $commitmentData['price'],
-                        'balance' => $commitmentData['price'],
-                        'status' => Constants::COMMITMENT_PENDING,
-                        'payment_date' => Carbon::today()->addDays($commitmentData['paymentDate']),
-                        'sale_id' => $sale->id,
+                    $commitment = $sale->commitments()->create([
+                        'numberQuota' => 1,
+                        'price' => $sale->total,
+                        'balance' => 0,
+                        'amount' => $sale->total,
+                        'status' => Constants::COMMITMENT_PAGADO,
+                        'payment_type' => Constants::COMMITMENT_CONTADO,
+                        'payment_date' => today(),
                     ]);
                 }
+
+                // movimiento → update si existe, create si no
+                $movement = $sale->moviment;
+                if (!$movement) {
+                    $movement = $sale->moviment()->create([
+                        'sequentialNumber' => $this->nextSequential('M001', 'moviments'),
+                    ]);
+                }
+                $movement->fill([
+                    'paymentDate' => now(),
+                    'total' => $commitment->price,
+                    'yape' => $request->yape,
+                    'deposit' => $request->deposit,
+                    'nro_operation' => $request->nro_operation,
+                    'cash' => $request->effective,
+                    'card' => $request->card,
+                    'plin' => $request->plin,
+                    'isBankPayment' => $request->isBankPayment,
+                    'numberVoucher' => $request->numberVoucher,
+                    'bank_id' => $request->bank_id,
+                    'comment' => $request->comment ?? '-',
+                    'status' => 'Generada',
+                    'paymentConcept_id' => 7,
+                    'person_id' => $request->person_id,
+                    'user_id' => auth()->id(),
+                ])->save();
+
+                // voucher
+                if ($request->hasFile('routeVoucher')) {
+                    $file = $request->file('routeVoucher');
+                    $filename = now()->format('YmdHis') . '_' . $file->getClientOriginalName();
+                    $movement->routeVoucher = Storage::url($file->storeAs('public/photosVouchers', $filename));
+                    $movement->save();
+                }
+
+                // actualizar venta con medios
+                $sale->fill([
+                    'yape' => $movement->yape,
+                    'deposit' => $movement->deposit,
+                    'nro_operation' => $movement->nro_operation,
+                    'effective' => $movement->cash,
+                    'card' => $movement->card,
+                    'plin' => $movement->plin,
+                    'isBankPayment' => $movement->isBankPayment,
+                    'bank_id' => $movement->bank_id,
+                    'numberVoucher' => $movement->numberVoucher,
+                    'routeVoucher' => $movement->routeVoucher,
+                    'comment' => $movement->comment,
+                ])->save();
+
+                // amortización → siempre regenerar
+                $movement->amortizations()->delete();
+                $commitment->amortizations()->delete();
+                $movement->amortizations()->create([
+                    'sequentialNumber' => $this->nextSequential('AMRT', 'amortizations'),
+                    'amount' => $commitment->price,
+                    'paymentDate' => now(),
+                    'commitment_id' => $commitment->id,
+                ]);
+
+            } else { // === CRÉDITO ===
+                // eliminar movement + amorts si existían
+                if ($sale->moviment) {
+                    $sale->moviment->amortizations()->delete();
+                    $sale->moviment->delete();
+                }
+
+                // sincronizar compromisos por id
+                $this->syncCommitments($sale, $request->commitments);
+            }
+
+            // === 5) Hoja de presupuesto ===
+            if ($sale->budget_sheet_id) {
+                $bs = budgetSheet::find($sale->budget_sheet_id);
+                if ($bs) {
+                    $bs->status = Constants::BUDGET_SHEET_FACTURADO;
+                    $bs->save();
+                }
+            }
+
+            $sale->refresh();
+
+            switch ($sale->documentType) {
+                case 'BOLETA':
+                    Log::info($this->declararBoletaFactura($sale->id, 3));
+                    break;
+                case 'FACTURA':
+                    $this->declararBoletaFactura($sale->id, 2);
+                    break;
+                default:
+                    Log::info("documentType es un Ticket, id venta: $sale->id");
+                    break;
+            }
+
+            $sale = SaleResource::make($sale)->withBudgetSheet();
+            return response()->json($sale);
+        });
+    }
+
+    /** Helpers **/
+
+    private function syncDetails(Sale $sale, array $details)
+    {
+        $existing = $sale->saleDetails->keyBy('id');
+        $incoming = collect($details);
+
+        // update o create
+        foreach ($incoming as $row) {
+            if (!empty($row['id']) && $existing->has($row['id'])) {
+                $existing[$row['id']]->update($row);
+                $existing->forget($row['id']);
+            } else {
+                $sale->saleDetails()->create($row);
             }
         }
 
-        $taxableOperation = 0;
-        foreach ($request->saleDetails as $saleDetail) {
-            $sale->details()->updateOrCreate(
-                ['id' => $saleDetail['id']],
-                [
-                    'description' => $saleDetail['description'],
-                    'unit' => $saleDetail['unit'],
-                    'quantity' => $saleDetail['quantity'],
-                    'unitValue' => $saleDetail['unitValue'],
-                    'unitPrice' => $saleDetail['unitPrice'],
-                    'discount' => 0,
-                    'subTotal' => $saleDetail['subTotal'],
-                ]
-            );
-            $taxableOperation += $saleDetail['subTotal'];
+        // los que no vinieron → delete
+        foreach ($existing as $detail) {
+            $detail->delete();
         }
+    }
 
-        $igv = $taxableOperation * Constants::IGV;
-        $total = $taxableOperation + $igv;
+    private function syncCommitments(Sale $sale, array $commitments)
+    {
+        $existing = $sale->commitments->keyBy('id');
+        foreach ($commitments as $i => $c) {
+            $data = [
+                'numberQuota' => $i + 1,
+                'price' => $c['price'],
+                'balance' => $c['price'],
+                'amount' => 0,
+                'status' => Constants::COMMITMENT_PENDING,
+                'payment_date' => Carbon::today()->addDays($c['paymentDate']),
+                'payment_type' => Constants::COMMITMENT_CREDITO,
+            ];
+            if (!empty($c['id']) && $existing->has($c['id'])) {
+                $existing[$c['id']]->update($data);
+                $existing->forget($c['id']);
+            } else {
+                $sale->commitments()->create($data);
+            }
+        }
+        // los que no vinieron → borrar con amortizaciones
+        foreach ($existing as $old) {
+            $old->amortizations()->delete();
+            $old->delete();
+        }
+    }
 
-        $sale->update([
-            'taxableOperation' => $taxableOperation,
-            'igv' => $igv,
-            'total' => $total,
-        ]);
-        $sale->save();
 
-        $this->updateFullNumber($sale);
-
-        $sale = Sale::find($sale->id);
-        $budgetSheet->status = Constants::BUDGET_SHEET_FACTURADO;
-        $budgetSheet->save();
-
-        return response()->json(SaleResource::make($sale)->withBudgetSheet());
+    private function nextSequential(string $prefix, string $table): string
+    {
+        $prefix = str_pad($prefix, 4, '0', STR_PAD_RIGHT);
+        $sql = "SELECT COALESCE(MAX(CAST(SUBSTRING(sequentialNumber, LOCATE('-', sequentialNumber) + 1) AS SIGNED)), 0) + 1 AS n
+            FROM {$table} WHERE SUBSTRING(sequentialNumber,1,4)=?";
+        $n = DB::select($sql, [$prefix])[0]->n ?? 1;
+        return $prefix . '-' . str_pad($n, 8, '0', STR_PAD_LEFT);
     }
 
     /**

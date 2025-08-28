@@ -23,6 +23,7 @@ class ProductResource extends JsonResource
             'unit_code' => $this?->unit?->code ?? null,
             'brand_id' => $this->brand_id ?? null,
             'brand_name' => $this?->brand?->name ?? null,
+            'images' => $this?->images ?? null,
             'created_at' => $this->created_at ?? null,
         ];
     }

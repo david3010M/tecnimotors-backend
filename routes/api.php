@@ -87,11 +87,11 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::resource('groupmenu', GroupMenuController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'groupmenu.index', 'store' => 'groupmenu.store', 'show' => 'groupmenu.show', 'update' => 'groupmenu.update', 'destroy' => 'groupmenu.destroy']);
 
-      //PERSON
+    //PERSON
     Route::resource('person', PersonController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
         ->names(['index' => 'person.index', 'store' => 'person.store', 'show' => 'person.show', 'update' => 'person.update']);
 
-         Route::delete('person/{id}/{ocupation}', [PersonController::class, 'destroy'])->name('destroy');
+    Route::delete('person/{id}/{ocupation}', [PersonController::class, 'destroy'])->name('destroy');
 
     // CONCESSION
     Route::resource('concession', ConcessionController::class)->only(['index', 'show', 'store', 'destroy'])
@@ -369,9 +369,11 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
             'index' => 'sale.index',
             'store' => 'sale.store',
             'show' => 'sale.show',
-            'update' => 'sale.update',
+            //'update' => 'sale.update',
             'destroy' => 'sale.destroy'
         ]);
+
+    Route::post('sale/{id}', [SaleController::class, 'update'])->name('sale.update');
 
     //    NOTE REASON
     Route::resource('noteReason', NoteReasonController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
