@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ModelVehicleRequest\IndexRequestModelVehicle;
+use App\Http\Resources\VehicleModelResource;
 use App\Models\VehicleModel;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -46,6 +48,17 @@ class VehicleModelController extends Controller
         return response()->json($vehicleModels);
     }
 
+
+     public function list(IndexRequestModelVehicle $request)
+    {
+        return $this->getFilteredResults(
+            VehicleModel::class,
+            $request,
+            VehicleModel::filters,
+            VehicleModel::sorts,
+            VehicleModelResource::class
+        );
+    }
 
     /**
      * @OA\Post(

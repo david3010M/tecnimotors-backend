@@ -37,6 +37,17 @@ class VehicleModel extends Model
         'created_at',
     ];
 
+    const filters = [
+        'name' => 'like',
+        'brand_id' => '=',
+        'created_at' => 'between',
+    ];
+
+
+    const sorts = [
+        'id',
+    ];
+
     protected $hidden = [
         'updated_at',
         'deleted_at',
