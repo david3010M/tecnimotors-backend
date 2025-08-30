@@ -435,5 +435,6 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
 
     Route::get('product-list', [ProductController::class, 'list']);
 Route::get('vehicleModel-list', [VehicleModelController::class, 'list']);
+Route::get('brand-list', [BrandController::class, 'list']);
 
 });

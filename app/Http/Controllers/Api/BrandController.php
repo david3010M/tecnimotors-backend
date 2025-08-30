@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BrandRequest\IndexRequestBrand;
+use App\Http\Resources\BrandResource;
 use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -52,13 +54,29 @@ class BrandController extends Controller
     {
         $query = Brand::query();
 
-        if ($request->filled('type') && in_array($request->input('type'), ['vehicle', 'product'])) {
+        if ($request->filled('type')) {
             $query->where('type', $request->input('type'));
         }
+
+        if ($request->filled('name')) {
+            $query->where('name', 'LIKE', '%' . $request->input('name') . '%');
+        }
+
 
         return response()->json($query->paginate(50));
     }
 
+
+    public function list(IndexRequestBrand $request)
+    {
+        return $this->getFilteredResults(
+            Brand::class,
+            $request,
+            Brand::filters,
+            Brand::sorts,
+            BrandResource::class
+        );
+    }
 
     /**
      * Create a new Brand

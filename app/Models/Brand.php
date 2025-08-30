@@ -35,12 +35,23 @@ class Brand extends Model
         'deleted_at'
     ];
 
+    const filters = [
+        'name' => 'like',
+        'type' => 'like',
+        'created_at' => 'between',
+    ];
+
+
+    const sorts = [
+        'id',
+    ];
+
     public function vehicles()
     {
         return $this->hasMany(Vehicle::class);
     }
 
-//    public function products()
+    //    public function products()
 //    {
 //        return $this->hasMany(Product::class);
 //    }
