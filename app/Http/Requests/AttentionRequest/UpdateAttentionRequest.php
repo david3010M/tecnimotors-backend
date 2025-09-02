@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\DetailBudgetRequest;
+namespace App\Http\Requests\AttentionRequest;
 
 use App\Http\Requests\StoreRequest;
 use App\Models\Attention;

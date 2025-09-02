@@ -2,7 +2,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\DetailBudgetRequest\UpdateAttentionRequest;
+use App\Http\Requests\AttentionRequest\UpdateAttentionRequest;
 use App\Models\Attention;
 use App\Models\budgetSheet;
 use App\Models\ConceptMov;
@@ -656,59 +656,8 @@ class AttentionController extends Controller
             return response()->json(['message' => 'attention not found.'], 404);
         }
 
-        $validator = Validator::make($request->all(), [
-            'arrivalDate' => ['required', 'date'],
-            'deliveryDate' => ['required', 'date', 'after_or_equal:arrivalDate'],
-
-            'correlativo' => [
-                'required',
-                'numeric',
-                Rule::unique('attentions', 'correlativo')
-                    ->ignore($id)
-                    ->whereNull('deleted_at'),
-            ],
-
-            'observations' => ['nullable', 'string'],
-            'fuelLevel' => ['required', 'numeric'],
-            'km' => ['required', 'numeric'],
-
-            'vehicle_id' => ['required', 'exists:vehicles,id'],
-            'worker_id' => ['required', 'exists:workers,id'],
-            'concession_id' => ['nullable', 'exists:concessions,id'],
-            'driver' => ['nullable', 'string'],
-
-            'typeMaintenance' => [
-                'nullable',
-                Rule::in([
-                    Attention::MAINTENICE_CORRECTIVE,
-                    Attention::MAINTENICE_PREVENTIVE,
-                ])
-            ],
-
-            'elements' => ['nullable', 'array'],
-            'elements.*' => ['integer', 'exists:elements,id'],
-
-            'details' => ['nullable', 'array'],
-            'details.*.idDetail' => ['nullable', 'integer', 'exists:detail_attentions,id'],
-            'details.*.service_id' => ['required_with:details', 'integer', 'exists:services,id'],
-            'details.*.worker_id' => ['required_with:details', 'integer', 'exists:workers,id'],
-            'details.*.period' => ['nullable', 'integer', 'min:0'],
-            'details.*.comment' => ['nullable', 'string'],
-            'details.*.status' => ['nullable', 'string'],
-
-            'detailsProducts' => ['nullable', 'array'],
-            'detailsProducts.*.idProduct' => ['required_with:detailsProducts', 'integer', 'exists:products,id'],
-            'detailsProducts.*.quantity' => ['required_with:detailsProducts', 'numeric', 'min:0.01'],
-
-            'routeImage' => ['nullable', 'array'],
-            'routeImage.*' => ['file', 'image', 'max:5120'], // 5MB c/u
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()->first()], 422);
-        }
-
-        $v = $validator->validated();
+        // Usamos directamente los datos validados por UpdateAttentionRequest
+        $v = $request->validated();
 
         DB::beginTransaction();
         try {
@@ -718,7 +667,8 @@ class AttentionController extends Controller
                 'arrivalDate' => $v['arrivalDate'],
                 'deliveryDate' => $v['deliveryDate'],
                 'observations' => $v['observations'] ?? null,
-                'typeofDocument' => $request->input('typeofDocument'), // si aplica en tu fillable
+                // 'typeofDocument' puede provenir del request aunque no esté en validated()
+                'typeofDocument' => $request->input('typeofDocument', $attention->typeofDocument ?? null),
                 'fuelLevel' => $v['fuelLevel'],
                 'km' => $v['km'],
                 'vehicle_id' => $v['vehicle_id'],
@@ -726,41 +676,37 @@ class AttentionController extends Controller
                 'concession_id' => $v['concession_id'] ?? null,
                 'typeMaintenance' => $v['typeMaintenance'] ?? null,
                 'worker_id' => $v['worker_id'],
-            ])->save();
+            ]);
+            $attention->save();
 
-            // Elements (solo si viene en el request; si no, no toques lo existente)
-            if (array_key_exists('elements', $v)) {
-                $attention->setElements($attention->id, $v['elements'] ?? []);
-            }
+            $attention->setElements($attention->id, $v['elements'] ?? []);
+
 
             $attention->setDetails($attention->id, $v['details'] ?? [], $v['deliveryDate']);
-
 
 
             $attention->setDetailProducts($attention->id, $v['detailsProducts'] ?? []);
 
 
-            // Imágenes de ruta (si se envían)
-            if ($request->hasFile('routeImage')) {
-                $attention->setImages($attention->id, $request->file('routeImage'));
-            }
+            $attention->setImages($attention->id, $request->file('routeImage'));
+
 
             // Recalcular totales de forma consistente
             $attention->totalService = (float) $attention->details()
                 ->where('type', 'Service')
                 ->sum('saleprice');
 
+            // suma de productos: saleprice * quantity
             $attention->totalProducts = (float) $attention->details()
                 ->where('type', 'Product')
-                ->selectRaw('COALESCE(SUM(saleprice * quantity),0) as total')
-                ->value('total');
+                ->sum(DB::raw('COALESCE(saleprice * quantity, 0)'));
 
             $attention->total = round($attention->totalService + $attention->totalProducts, 2);
             $attention->save();
 
             // Sincroniza BudgetSheet si existe
             if ($budgetSheet = BudgetSheet::where('attention_id', $attention->id)->first()) {
-                $subtotal = round($attention->total / 1.18, 2);
+                $subtotal = $attention->total > 0 ? round($attention->total / 1.18, 2) : 0.00;
                 $budgetSheet->fill([
                     'totalService' => $attention->totalService,
                     'totalProducts' => $attention->totalProducts,
@@ -780,10 +726,9 @@ class AttentionController extends Controller
             $attention->task = $attention->getTask($attention->id);
 
             return response()->json($attention);
-
         } catch (\Throwable $e) {
             DB::rollBack();
-            Log::error('Attention update failed', ['id' => $id, 'error' => $e->getMessage()]);
+            Log::error('Attention update failed', ['id' => $id, 'error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
             return response()->json(['error' => 'Failed to update attention.'], 500);
         }
     }
