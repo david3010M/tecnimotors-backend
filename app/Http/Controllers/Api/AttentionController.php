@@ -2,8 +2,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AttentionRequest\StoreAttentionRequest;
 use App\Http\Requests\AttentionRequest\UpdateAttentionRequest;
-use App\Http\Requests\BudgetSheetRequest\StoreAttentionRequest;
 use App\Models\Attention;
 use App\Models\budgetSheet;
 use App\Models\ConceptMov;
