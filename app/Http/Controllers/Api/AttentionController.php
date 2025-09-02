@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AttentionRequest\UpdateAttentionRequest;
+use App\Http\Requests\BudgetSheetRequest\StoreAttentionRequest;
 use App\Models\Attention;
 use App\Models\budgetSheet;
 use App\Models\ConceptMov;
@@ -354,212 +355,164 @@ class AttentionController extends Controller
      * )
      */
 
-    public function store(Request $request)
-    {
+    public function store(StoreAttentionRequest $request)
+{
+    // Validated data
+    $v = $request->validated();
 
-        $validator = validator()->make($request->all(), [
+    // Mantén la lógica original: si no viene details, devuelves 409 (igual que tu código)
+    if (empty($v['details']) || !is_array($v['details']) || count($v['details']) === 0) {
+        return response()->json(['error' => 'Atención sin Servicios'], 409);
+    }
 
-            'correlativo' => 'required|numeric|unique:attentions,correlativo,NULL,id,deleted_at,NULL',
-
-            'arrivalDate' => 'required',
-            'deliveryDate' => 'required',
-            'observations' => 'nullable',
-            'fuelLevel' => 'required|in:0,2,4,6,8,10',
-            'km' => 'required',
-            'routeImage.*' => 'nullable|image|mimes:jpeg,png,jpg,gif',
-            'vehicle_id' => 'required|exists:vehicles,id',
-            'worker_id' => 'required|exists:workers,id',
-            'concession_id' => 'nullable|exists:concessions,id',
-            'driver' => 'nullable|string',
-
-            'typeMaintenance' => 'required|in:' . Attention::MAINTENICE_CORRECTIVE . ',' . Attention::MAINTENICE_PREVENTIVE,
-
-            'elements' => 'nullable',
-            'elements.*' => 'exists:elements,id',
-            'details' => 'nullable',
-            'detailsProducts' => 'nullable',
-            'detailsProducts.*.idProduct' => 'required|exists:products,id',
-        ]);
-
-        if (!$request->input('details')) {
-            return response()->json(['error' => 'Atención sin Servicios'], 409);
-        }
-
-
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()->first()], 422);
-        }
-
+    DB::beginTransaction();
+    try {
+        // Generar next number (igual a tu lógica)
         $tipo = 'OTRS';
-        $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM attentions a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-        $siguienteNum = (int) $resultado;
+        $resultado = DB::select(
+            'SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM attentions a WHERE SUBSTRING(number, 1, 4) = ?',
+            [$tipo]
+        )[0]->siguienteNum;
+        $siguienteNum = (int)$resultado;
 
         $data = [
             'number' => $tipo . "-" . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT),
-            'correlativo' => $request->input('correlativo') ?? null,
-            'arrivalDate' => $request->input('arrivalDate') ?? null,
-            'deliveryDate' => $request->input('deliveryDate') ?? null,
-            'observations' => $request->input('observations') ?? null,
+            'correlativo' => $v['correlativo'] ?? null,
+            'arrivalDate' => $v['arrivalDate'] ?? null,
+            'deliveryDate' => $v['deliveryDate'] ?? null,
+            'observations' => $v['observations'] ?? null,
             'typeofDocument' => $request->input('typeofDocument') ?? null,
-            'fuelLevel' => $request->input('fuelLevel') ?? null,
-            'km' => $request->input('km') ?? null,
-            'routeImage' => 'ruta.jpg',
-            'vehicle_id' => $request->input('vehicle_id') ?? null,
-            'driver' => $request->input('driver') ?? null,
-            'concession_id' => $request->input('concession_id') ?? null,
-            'typeMaintenance' => $request->input('typeMaintenance') ?? null,
-
-            'worker_id' => $request->input('worker_id') ?? null,
+            'fuelLevel' => $v['fuelLevel'] ?? null,
+            'km' => $v['km'] ?? null,
+            'routeImage' => null,
+            'vehicle_id' => $v['vehicle_id'] ?? null,
+            'driver' => $v['driver'] ?? null,
+            'concession_id' => $v['concession_id'] ?? null,
+            'typeMaintenance' => $v['typeMaintenance'] ?? null,
+            'worker_id' => $v['worker_id'] ?? null,
         ];
 
-        $object = Attention::create($data);
+        $attention = Attention::create($data);
 
+        // ELEMENTS (si vienen)
+        $elements = $v['elements'] ?? [];
+        foreach ($elements as $elementId) {
+            ElementForAttention::create([
+                'element_id' => $elementId,
+                'attention_id' => $attention->id,
+            ]);
+        }
+
+        // DETAILS PRODUCTS (si vienen)
+        $sumProducts = 0;
         $totalQuantityProducts = 0;
+        $detailsProducts = $v['detailsProducts'] ?? [];
 
-        if ($object) {
-            //ASIGNAR ELEMENTS
-            $elements = $request->input('elements') ?? [];
-            foreach ($elements as $element) {
-                $objectData = [
-                    'element_id' => $element,
-                    'attention_id' => $object->id,
-                ];
-                ElementForAttention::create($objectData);
-            }
+        if (!empty($detailsProducts)) {
+            // Optimizar: obtener productos por ids para no hacer N queries
+            $productIds = array_map(fn($p) => (int)$p['idProduct'], $detailsProducts);
+            $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
 
-            //ASIGNAR PRODUCTS
-            $detailsProducts = $request->input('detailsProducts') ?? [];
+            foreach ($detailsProducts as $prodDetail) {
+                $idProduct = (int)($prodDetail['idProduct']);
+                $quantity = isset($prodDetail['quantity']) ? (float)$prodDetail['quantity'] : 1.0;
+                $product = $products->get($idProduct);
 
-            $sumProducts = 0;
-
-            // Verificar si $detailsProducts tiene registros
-            if ($detailsProducts != []) {
-                foreach ($detailsProducts as $productDetail) {
-                    $idProduct = $productDetail['idProduct'];
-                    $quantity = $productDetail['quantity'] ?? 1;
-
-                    $product = Product::find($idProduct);
-
-                    $objectData = [
-                        'saleprice' => $product->sale_price ?? '0.00',
-                        'type' => 'Product',
-                        'quantity' => $quantity,
-                        'comment' => '-',
-                        'status' => 'Generada',
-                        'dateRegister' => Carbon::now(),
-                        'dateMax' => null,
-                        'worker_id' => null,
-                        'product_id' => $product->id ?? null,
-                        'service_id' => null,
-                        'attention_id' => $object->id,
-                    ];
-                    $detailProd = DetailAttention::create($objectData);
-                    $sumProducts += $detailProd->saleprice * $quantity;
-                    $totalQuantityProducts += $quantity;
-                }
-
-                $object->totalProducts = $sumProducts;
-            }
-
-            //ASIGNAR DETAILS
-            $detailsAttentions = $request->input('details') ?? [];
-            $sumServices = 0;
-            foreach ($detailsAttentions as $detail) {
-
-                $service = Service::find($detail['service_id']);
-                $objectData = [
-                    'saleprice' => $service->saleprice ?? '0.00',
-                    'type' => 'Service',
-                    'comment' => $detail['comment'] ?? '-',
-                    'status' => $detail['status'] ?? 'Pendiente',
+                $detailData = [
+                    'saleprice' => $product->sale_price ?? 0.00,
+                    'type' => 'Product',
+                    'quantity' => $quantity,
+                    'comment' => $prodDetail['comment'] ?? '-',
+                    'status' => $prodDetail['status'] ?? 'Generada',
                     'dateRegister' => Carbon::now(),
-                    'dateMax' => $request->input('deliveryDate') ?? null,
-
-                    'worker_id' => $detail['worker_id'],
-                    'product_id' => $detail['product_id'] ?? null,
-                    'service_id' => $detail['service_id'],
-                    'attention_id' => $object->id,
-                    'period' => isset($detail['period']) ? $detail['period'] : 0,
+                    'dateMax' => null,
+                    'worker_id' => null,
+                    'product_id' => $product->id ?? null,
+                    'service_id' => null,
+                    'attention_id' => $attention->id,
                 ];
-                $detailService = DetailAttention::create($objectData);
-                $sumServices += $detailService->saleprice;
+                $detailProd = DetailAttention::create($detailData);
+                $sumProducts += ($detailProd->saleprice * $quantity);
+                $totalQuantityProducts += $quantity;
             }
 
-            $object->totalService = $sumServices;
-
+            $attention->totalProducts = $sumProducts;
+        } else {
+            $attention->totalProducts = 0;
         }
-        logger($object->totalService);
-        logger($object->totalProducts);
-        $object->total = $object->totalService + $object->totalProducts;
-        logger($object->total);
-        $object->save();
 
-        //IMAGEN
-        $images = $request->file('routeImage') ?? [];
-        $index = 1;
-        foreach ($images as $image) {
-
-            $file = $image;
-            $currentTime = now();
-            $filename = $index . '-' . $currentTime->format('YmdHis') . '_' . $file->getClientOriginalName();
-
-            $originalName = str_replace(' ', '_', $file->getClientOriginalName());
-            $filename = $index . '-' . $currentTime->format('YmdHis') . '_' . $originalName;
-            $path = $file->storeAs('public/photosSheetService', $filename);
-            $routeImage = 'https://develop.garzasoft.com/tecnimotors-backend/storage/app/' . $path;
-
-            // $rutaImagen = Storage::url($path);
-            $object->routeImage = $routeImage;
-            $object->save();
-            $index++;
-            $dataImage = [
-                'route' => $routeImage,
-                'attention_id' => $object->id,
+        // DETAILS (SERVICIOS)
+        $sumServices = 0;
+        foreach ($v['details'] as $detail) {
+            $service = Service::find($detail['service_id']);
+            $detailServiceData = [
+                'saleprice' => $service->saleprice ?? 0.00,
+                'type' => 'Service',
+                'comment' => $detail['comment'] ?? '-',
+                'status' => $detail['status'] ?? 'Pendiente',
+                'dateRegister' => Carbon::now(),
+                'dateMax' => $v['deliveryDate'] ?? null,
+                'worker_id' => $detail['worker_id'],
+                'product_id' => $detail['product_id'] ?? null,
+                'service_id' => $detail['service_id'],
+                'attention_id' => $attention->id,
+                'period' => isset($detail['period']) ? $detail['period'] : 0,
             ];
-            RouteImages::create($dataImage);
+            $detailService = DetailAttention::create($detailServiceData);
+            $sumServices += $detailService->saleprice;
         }
 
-        $object = Attention::with(['worker.person', 'vehicle', 'details', 'routeImages', 'concession'])->find($object->id);
-        $object->elements = $object->getElements($object->id);
-        $object->details = $object->getDetails($object->id);
-        $object->task = $object->getTask($object->id);
+        $attention->totalService = $sumServices;
+        $attention->total = round($attention->totalService + $attention->totalProducts, 2);
+        $attention->save();
 
-        // $correlative= $this->nextCorrelative(DocAlmacen::class, 'sequentialnumber');
+        // IMÁGENES (si vienen)
+        if ($request->hasFile('routeImage')) {
+            $images = $request->file('routeImage');
+            $index = 1;
+            foreach ($images as $image) {
+                $file = $image;
+                $currentTime = now();
+                $originalName = str_replace(' ', '_', $file->getClientOriginalName());
+                $filename = $index . '-' . $currentTime->format('YmdHis') . '_' . $originalName;
+                $path = $file->storeAs('public/photosSheetService', $filename);
+                $routeImage = config('app.url') . '/storage/' . substr($path, strlen('public/')); 
+                // Si prefieres la ruta absoluta que usabas, ajústala.
 
-        // if ($detailsProducts != []) {
+                // Guarda ruta en attention (si quieres mantener última ruta)
+                $attention->routeImage = $routeImage;
+                $attention->save();
 
-        //     $conceptMov = ConceptMov::find(3);
-        //     $docAlmacen = DocAlmacen::create([
-        //         'sequentialnumber' => $this->nextCorrelative(DocAlmacen::class, 'sequentialnumber'),
-        //         'date_moviment' => $object->deliveryDate,
-        //         'quantity' => $totalQuantityProducts,
-        //         'comment' => 'Salida de Producto por Atención',
-        //         'typemov' => DocAlmacen::TIPOMOV_EGRESO,
-        //         'concept' => $conceptMov->name,
-        //         'user_id' => Auth::user()->id,
-        //         'person_id' => $object->vehicle->person->id,
-        //         'concept_mov_id' => $conceptMov->id,
-        //         'attention_id' => $object->id,
-        //     ]);
+                // Crea registro en RouteImages
+                RouteImages::create([
+                    'route' => $routeImage,
+                    'attention_id' => $attention->id,
+                ]);
 
-        //     foreach ($detailsProducts as $productDetail) {
-        //         $idProduct = $productDetail['idProduct'];
-        //         $quantity = $productDetail['quantity'] ?? 1;
-        //         $product = Product::find($idProduct);
-        //         Docalmacen_details::create([
-        //             'sequentialnumber' => $this->nextCorrelative(Docalmacen_details::class, 'sequentialnumber'),
-        //             'quantity' => $quantity,
-        //             'comment' => 'Detalle de Salida de Producto por Atención',
-        //             'product_id' => $product->id,
-        //             'doc_almacen_id' => $docAlmacen->id,
-        //         ]);
-        //         $product->stock -= $quantity;
-        //         $product->save();
-        //     }
-        // }
+                $index++;
+            }
+        }
 
-        return response()->json($object);
+        // Refrescar relaciones para respuesta
+        DB::commit();
+
+        $attention = Attention::with(['worker.person', 'vehicle', 'details', 'routeImages', 'concession'])
+            ->find($attention->id);
+        $attention->elements = $attention->getElements($attention->id);
+        $attention->details = $attention->getDetails($attention->id);
+        $attention->task = $attention->getTask($attention->id);
+
+        return response()->json($attention, 201);
+    } catch (\Throwable $e) {
+        DB::rollBack();
+        Log::error('Attention store failed', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+            'input' => $request->all(),
+        ]);
+        return response()->json(['error' => 'Failed to create attention.'], 500);
     }
+}
 
     /**
      * Update an attention
@@ -688,8 +641,13 @@ class AttentionController extends Controller
             $attention->setDetailProducts($attention->id, $v['detailsProducts'] ?? []);
 
 
-            $attention->setImages($attention->id, $request->file('routeImage'));
-
+            // imágenes: solo si se subieron archivos válidos
+            if ($request->hasFile('routeImage')) {
+                $files = $request->file('routeImage');
+                if (!empty($files) && is_array($files)) {
+                    $attention->setImages($attention->id, $files);
+                }
+            }
 
             // Recalcular totales de forma consistente
             $attention->totalService = (float) $attention->details()
