@@ -416,11 +416,11 @@ class SaleController extends Controller
      *     @OA\Response(response="422", description="Unprocessable Entity")
      * )
      */
-    public function update(UpdateSaleRequest $request, $id)
+     public function update(UpdateSaleRequest $request, $id)
     {
         return DB::transaction(function () use ($request, $id) {
 
-            $sale = Sale::with(['saleDetails', 'commitments.amortizations', 'moviment.amortizations'])->findOrFail($id);
+            $sale = Sale::with(['saleDetails', 'commitments.amortizations', 'moviment'])->findOrFail($id);
 
             // === 1) Encabezado ===
             $sale->fill([
@@ -524,19 +524,19 @@ class SaleController extends Controller
                 ])->save();
 
                 // amortización → siempre regenerar
-                $movement->amortizations()->delete();
+                // $movement->amortizations()->delete();
                 $commitment->amortizations()->delete();
-                $movement->amortizations()->create([
-                    'sequentialNumber' => $this->nextSequential('AMRT', 'amortizations'),
-                    'amount' => $commitment->price,
-                    'paymentDate' => now(),
-                    'commitment_id' => $commitment->id,
-                ]);
+                // $movement->amortizations()->create([
+                //     'sequentialNumber' => $this->nextSequential('AMRT', 'amortizations'),
+                //     'amount' => $commitment->price,
+                //     'paymentDate' => now(),
+                //     'commitment_id' => $commitment->id,
+                // ]);
 
             } else { // === CRÉDITO ===
                 // eliminar movement + amorts si existían
                 if ($sale->moviment) {
-                    $sale->moviment->amortizations()->delete();
+                    // $sale->moviment->amortizations()->delete();
                     $sale->moviment->delete();
                 }
 

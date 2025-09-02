@@ -17,6 +17,9 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class AttentionController extends Controller
 {
@@ -117,8 +120,8 @@ class AttentionController extends Controller
         }
 
 
-        if (($isBudgetActive!='')) {
-         
+        if (($isBudgetActive != '')) {
+
             if ($isBudgetActive == '1') {
                 $query->whereHas('budgetSheet', function ($q) {
                     $q->whereNull('deleted_at');
@@ -647,109 +650,146 @@ class AttentionController extends Controller
      */
     public function update(Request $request, int $id)
     {
-        $object = Attention::find($id);
-        if (!$object) {
+        $attention = Attention::find($id);
+        if (!$attention) {
             return response()->json(['message' => 'attention not found.'], 404);
         }
 
-        $validator = validator()->make($request->all(), [
-            'arrivalDate' => 'required',
+        $validator = Validator::make($request->all(), [
+            'arrivalDate' => ['required', 'date'],
+            'deliveryDate' => ['required', 'date', 'after_or_equal:arrivalDate'],
 
-            'correlativo' => "required|numeric|unique:attentions,correlativo,{$id},id,deleted_at,NULL",
+            'correlativo' => [
+                'required',
+                'numeric',
+                Rule::unique('attentions', 'correlativo')
+                    ->ignore($id)
+                    ->whereNull('deleted_at'),
+            ],
 
-            'deliveryDate' => 'required',
-            'observations' => 'nullable',
-            'fuelLevel' => 'required',
-            'km' => 'required',
+            'observations' => ['nullable', 'string'],
+            'fuelLevel' => ['required', 'numeric'],
+            'km' => ['required', 'numeric'],
 
-            'vehicle_id' => 'required|exists:vehicles,id',
-            'worker_id' => 'required|exists:workers,id',
-            'concession_id' => 'nullable|exists:concessions,id',
-            'driver' => 'nullable|string',
+            'vehicle_id' => ['required', 'exists:vehicles,id'],
+            'worker_id' => ['required', 'exists:workers,id'],
+            'concession_id' => ['nullable', 'exists:concessions,id'],
+            'driver' => ['nullable', 'string'],
 
-            'typeMaintenance' => 'nullable|in:' . Attention::MAINTENICE_CORRECTIVE . ',' . Attention::MAINTENICE_PREVENTIVE,
+            'typeMaintenance' => [
+                'nullable',
+                Rule::in([
+                    Attention::MAINTENICE_CORRECTIVE,
+                    Attention::MAINTENICE_PREVENTIVE,
+                ])
+            ],
 
-            'elements' => 'nullable|array',
-            'elements.*' => 'exists:elements,id',
-            'details' => 'nullable',
-            'detailsProducts' => 'nullable',
-            'detailsProducts.*.idProduct' => 'required|exists:products,id',
+            'elements' => ['nullable', 'array'],
+            'elements.*' => ['integer', 'exists:elements,id'],
+
+            'details' => ['nullable', 'array'],
+            'details.*.idDetail' => ['nullable', 'integer', 'exists:detail_attentions,id'],
+            'details.*.service_id' => ['required_with:details', 'integer', 'exists:services,id'],
+            'details.*.worker_id' => ['required_with:details', 'integer', 'exists:workers,id'],
+            'details.*.period' => ['nullable', 'integer', 'min:0'],
+            'details.*.comment' => ['nullable', 'string'],
+            'details.*.status' => ['nullable', 'string'],
+
+            'detailsProducts' => ['nullable', 'array'],
+            'detailsProducts.*.idProduct' => ['required_with:detailsProducts', 'integer', 'exists:products,id'],
+            'detailsProducts.*.quantity' => ['required_with:detailsProducts', 'numeric', 'min:0.01'],
+
+            'routeImage' => ['nullable', 'array'],
+            'routeImage.*' => ['file', 'image', 'max:5120'], // 5MB c/u
         ]);
-
-        // $validator->after(function ($validator) use ($request) {
-        //     foreach ($request->input('detailsProducts', []) as $index => $detail) {
-        //         $productId = $detail['idProduct'] ?? null;
-        //         $quantity = $detail['quantity'] ?? 0;
-
-        //         if ($productId) {
-        //             $product = Product::find($productId);
-        //             if ($product && $product->stock < $quantity) {
-        //                 $validator->errors()->add(
-        //                     "detailsProducts.{$index}.quantity",
-        //                     "The requested quantity for product {$product->name} exceeds the available stock ({$product->stock})."
-        //                 );
-        //             }
-        //         }
-        //     }
-        // });
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
-        $data = [
-            'correlativo' => $request->input('correlativo') ?? null,
-            'arrivalDate' => $request->input('arrivalDate') ?? null,
-            'deliveryDate' => $request->input('deliveryDate') ?? null,
-            'observations' => $request->input('observations') ?? null,
-            'typeofDocument' => $request->input('typeofDocument') ?? null,
-            'fuelLevel' => $request->input('fuelLevel') ?? null,
-            'km' => $request->input('km') ?? null,
-            'routeImage' => 'ruta.jpg',
-            'vehicle_id' => $request->input('vehicle_id') ?? null,
-            'driver' => $request->input('driver') ?? null,
-            'concession_id' => $request->input('concession_id') ?? null,
-            'typeMaintenance' => $request->input('typeMaintenance') ?? null,
+        $v = $validator->validated();
 
-            'worker_id' => $request->input('worker_id') ?? null,
-        ];
-        $totalQuantityProducts = 0;
+        DB::beginTransaction();
+        try {
+            // Actualiza cabecera (solo con campos válidos)
+            $attention->fill([
+                'correlativo' => $v['correlativo'],
+                'arrivalDate' => $v['arrivalDate'],
+                'deliveryDate' => $v['deliveryDate'],
+                'observations' => $v['observations'] ?? null,
+                'typeofDocument' => $request->input('typeofDocument'), // si aplica en tu fillable
+                'fuelLevel' => $v['fuelLevel'],
+                'km' => $v['km'],
+                'vehicle_id' => $v['vehicle_id'],
+                'driver' => $v['driver'] ?? null,
+                'concession_id' => $v['concession_id'] ?? null,
+                'typeMaintenance' => $v['typeMaintenance'] ?? null,
+                'worker_id' => $v['worker_id'],
+            ])->save();
 
-        $object->update($data);
+            // Elements (solo si viene en el request; si no, no toques lo existente)
+            if (array_key_exists('elements', $v)) {
+                $attention->setElements($attention->id, $v['elements'] ?? []);
+            }
 
-        $details = $request->input('elements', []);
-        $object->setElements($object->id, $details);
+            // Detalles de servicios
+            if (array_key_exists('details', $v)) {
+                $this->setDetails($attention->id, $v['details'] ?? [], $v['deliveryDate']);
+            }
 
-        $detailsAt = $request->input('details', []);
-        $object->setDetails($object->id, $detailsAt, $request->input('deliveryDate'));
+            // Detalles de productos
+            if (array_key_exists('detailsProducts', $v)) {
+                $this->setDetailProducts($attention->id, $v['detailsProducts'] ?? []);
+            }
 
-        $detailsProducts = $request->input('detailsProducts') ?? [];
+            // Imágenes de ruta (si se envían)
+            if ($request->hasFile('routeImage')) {
+                $attention->setImages($attention->id, $request->file('routeImage'));
+            }
 
-        $object->total = $object->details()->get()->sum(function ($detail) {
-            return $detail->saleprice * $detail->quantity;
-        });
-        $object->save();
+            // Recalcular totales de forma consistente
+            $attention->totalService = (float) $attention->details()
+                ->where('type', 'Service')
+                ->sum('saleprice');
 
-        $images = $request->file('routeImage') ?? [];
-        $object->setImages($object->id, $images);
+            $attention->totalProducts = (float) $attention->details()
+                ->where('type', 'Product')
+                ->selectRaw('COALESCE(SUM(saleprice * quantity),0) as total')
+                ->value('total');
 
-        $object = Attention::with(['worker.person', 'vehicle', 'details', 'routeImages', 'concession'])->find($object->id);
-        $object->elements = $object->getElements($object->id);
-        $object->details = $object->getDetails($object->id);
-        $object->task = $object->getTask($object->id);
+            $attention->total = round($attention->totalService + $attention->totalProducts, 2);
+            $attention->save();
 
-        $budgetSheet = budgetSheet::where('attention_id', $object->id)->first();
-        if ($budgetSheet) {
-            $budgetSheet->totalService = $object->totalService;
-            $budgetSheet->totalProducts = $object->totalProducts;
-            $budgetSheet->subtotal = floatval($object->total) / 1.18;
-            $subtotal = floatval($object->total) / 1.18;
-            $budgetSheet->igv = $subtotal * 0.18;
-            $budgetSheet->total = $object->total;
-            $budgetSheet->save();
+            // Sincroniza BudgetSheet si existe
+            if ($budgetSheet = BudgetSheet::where('attention_id', $attention->id)->first()) {
+                $subtotal = round($attention->total / 1.18, 2);
+                $budgetSheet->fill([
+                    'totalService' => $attention->totalService,
+                    'totalProducts' => $attention->totalProducts,
+                    'subtotal' => $subtotal,
+                    'igv' => round($subtotal * 0.18, 2),
+                    'total' => $attention->total,
+                ])->save();
+            }
+
+            DB::commit();
+
+            // Respuesta enriquecida
+            $attention = Attention::with(['worker.person', 'vehicle', 'details', 'routeImages', 'concession'])
+                ->find($attention->id);
+            $attention->elements = $attention->getElements($attention->id);
+            $attention->details = $attention->getDetails($attention->id);
+            $attention->task = $attention->getTask($attention->id);
+
+            return response()->json($attention);
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('Attention update failed', ['id' => $id, 'error' => $e->getMessage()]);
+            return response()->json(['error' => 'Failed to update attention.'], 500);
         }
-        return response()->json($object);
     }
+
 
     /**
      * Delete an Attention

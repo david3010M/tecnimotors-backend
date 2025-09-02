@@ -54,17 +54,23 @@ class BrandController extends Controller
     {
         $query = Brand::query();
 
-        if ($request->filled('type')) {
+        if ($request->has('type') && $request->input('type') !== null && $request->input('type') !== 'undefined') {
             $query->where('type', $request->input('type'));
         }
 
-        if ($request->filled('name')) {
+        if ($request->has('name') && $request->input('name') !== null && $request->input('name') !== 'undefined') {
             $query->where('name', 'LIKE', '%' . $request->input('name') . '%');
         }
 
+        $perPage = (int) $request->input('per_page', 50); // default 50
+        $page = (int) $request->input('page', 1);      // default 1
 
-        return response()->json($query->paginate(50));
+        return response()->json(
+            $query->paginate($perPage, ['*'], 'page', $page)
+        );
     }
+
+
 
 
     public function list(IndexRequestBrand $request)

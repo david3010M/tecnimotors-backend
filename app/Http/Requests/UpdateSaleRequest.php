@@ -38,7 +38,7 @@ class UpdateSaleRequest extends FormRequest
             'plin' => 'nullable|numeric',
             'isBankPayment' => 'required|in:0,1',
             'nro_operation' => 'nullable|string',
-            'bank_id' => 'required_if:isBankPayment,1|integer|exists:banks,id',
+            'bank_id' => 'nullable|exists:banks,id',
             'numberVoucher' => 'nullable|string',
             'routeVoucher' => 'nullable|file',
             'comment' => 'nullable|string',
@@ -63,7 +63,7 @@ class UpdateSaleRequest extends FormRequest
             // Cuotas (crédito)
             'commitments' => 'required_if:paymentType,' . Constants::SALE_CREDITO . '|array',
             'commitments.*.price' => 'required_if:paymentType,' . Constants::SALE_CREDITO . '|numeric',
-            'commitments.*.paymentDate' => 'required_if:paymentType,' . Constants::SALE_CREDITO . '|integer',
+            'commitments.*.paymentDate' => 'required_if:paymentType,' . Constants::SALE_CREDITO ,
         ];
     }
 
