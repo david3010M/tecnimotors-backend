@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\DetailBudgetRequest\UpdateAttentionRequest;
 use App\Models\Attention;
 use App\Models\budgetSheet;
 use App\Models\ConceptMov;
@@ -648,7 +649,7 @@ class AttentionController extends Controller
      *     )
      * )
      */
-    public function update(Request $request, int $id)
+    public function update(UpdateAttentionRequest $request, int $id)
     {
         $attention = Attention::find($id);
         if (!$attention) {
@@ -732,15 +733,12 @@ class AttentionController extends Controller
                 $attention->setElements($attention->id, $v['elements'] ?? []);
             }
 
-            // Detalles de servicios
-            if (array_key_exists('details', $v)) {
-                $this->setDetails($attention->id, $v['details'] ?? [], $v['deliveryDate']);
-            }
+            $attention->setDetails($attention->id, $v['details'] ?? [], $v['deliveryDate']);
 
-            // Detalles de productos
-            if (array_key_exists('detailsProducts', $v)) {
-                $this->setDetailProducts($attention->id, $v['detailsProducts'] ?? []);
-            }
+
+
+            $attention->setDetailProducts($attention->id, $v['detailsProducts'] ?? []);
+
 
             // Imágenes de ruta (si se envían)
             if ($request->hasFile('routeImage')) {
