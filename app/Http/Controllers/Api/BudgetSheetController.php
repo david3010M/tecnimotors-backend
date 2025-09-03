@@ -299,7 +299,7 @@ class BudgetSheetController extends Controller
                     'totalProducts' => 0.0,
                     'debtAmount' => 0.0,
                     'total' => 0.0,
-                    'discount' => 0.0,
+                    'discount' => $request->input('discount', 0),
                     'subtotal' => 0.0,
                     'igv' => 0.0,
                     'attention_id' => $attention->id,
@@ -477,6 +477,11 @@ class BudgetSheetController extends Controller
 
                 // 2) Recalcular totales
                 $this->detail_budgetService->calculateAndUpdateTotals($budget);
+
+                // 2.1) Actualizar descuento (validado en el request)
+                $budget->discount = (float) $request->input('discount', 0);
+                $budget->save();
+
 
                 // 3) Preparar productos para Doc Almacén (ignora servicios)
                 $productLines = collect($incomingDetails)

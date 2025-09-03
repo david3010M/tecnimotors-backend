@@ -33,7 +33,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class DetailBudgetResource extends JsonResource
 {
-     public function toArray($request)
+    public function toArray($request)
     {
         $periodDetail = null;
 
@@ -42,7 +42,6 @@ class DetailBudgetResource extends JsonResource
             $daysDiference = now()->diffInDays(Carbon::parse($this->dateRegister));
             $percentageDiference = round(($daysDiference / $totalDays) * 100);
 
-            // Determinar las luces del semáforo
             if ($daysDiference > $totalDays) {
                 $lights = ['rojo', 'rojo', 'rojo'];
                 $statusColor = 'vencido';
@@ -70,11 +69,29 @@ class DetailBudgetResource extends JsonResource
             ?  trim("{$clientName->names} {$clientName->fatherSurname} {$clientName->motherSurname} {$clientName->businessName}")
             : null;
 
+        // === Calcular prorrateo del descuento ===
+        $budgetDiscount = (float) ($this->budget_sheet?->discount ?? 0);
+        $detailsCount = $this->budget_sheet?->details?->count() ?? 0;
+        $discountPerDetail = $detailsCount > 0 ? $budgetDiscount / $detailsCount : 0;
+
+        // Bandera y precio con descuento
+        $hasDiscount = $budgetDiscount > 0;
+        $salepriceWithDiscount = max(($this->saleprice ?? 0) - $discountPerDetail, 0);
+
         return [
             'id' => $this->id,
             'saleprice' => $this->saleprice,
-            'saleprice_x_1_18' => number_format(($this->saleprice ?? 0) * 1.18, 2, '.', '')
-,
+            'saleprice_x_1_18' => number_format(($this->saleprice ?? 0) * 1.18, 2, '.', ''),
+
+            // NUEVOS CAMPOS CON DESCUENTO
+            'saleprice_with_discount' => number_format($salepriceWithDiscount, 2, '.', ''),
+            'saleprice_x_1_18_with_discount' => number_format($salepriceWithDiscount * 1.18, 2, '.', ''),
+
+            // BANDERA Y DATOS DE DESCUENTO
+            'discount_applied' => $hasDiscount,
+            'discount_budget_total' => number_format($budgetDiscount, 2, '.', ''), // total del presupuesto
+            'discount_item' => number_format($discountPerDetail, 2, '.', ''), // lo que le corresponde a este detalle
+
             'type' => $this->type,
             'date_max' => $this->dateMax,
             'comment' => $this->comment,
@@ -90,7 +107,7 @@ class DetailBudgetResource extends JsonResource
             'worker_name' => $this->worker && $this->worker->person
                 ? trim("{$this->worker->person->names} {$this->worker->person->fatherSurname} {$this->worker->person->motherSurname} {$this->worker->person->businessName}")
                 : null,
-                
+
             'product_name' => $this->product?->name,
             'budget_sheet_id' => $this->budget_sheet_id,
             'budget_sheet_number' => $this->budget_sheet?->number,

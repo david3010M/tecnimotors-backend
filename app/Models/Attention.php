@@ -295,144 +295,148 @@ class Attention extends Model
     }
 
     public function setDetails(int $id, array $detailServices, $deliveryDate): void
-{
-    $attention = Attention::findOrFail($id);
+    {
+        $attention = Attention::findOrFail($id);
 
-    $currentIds = $attention->details()
-        ->where('type', 'Service')
-        ->pluck('id')->all();
-
-    $newIds = [];
-
-    foreach ($detailServices as $row) {
-        $detailId  = $row['idDetail']   ?? null;
-        $serviceId = $row['service_id'] ?? null;
-        $workerId  = $row['worker_id']  ?? null;
-
-        if ($detailId) {
-            $detail = DetailAttention::where('id', $detailId)
-                ->where('attention_id', $attention->id)
-                ->first();
-
-            if ($detail) {
-                $detail->update([
-                    'service_id' => $serviceId,
-                    'worker_id'  => $workerId,
-                    'period'     => $row['period']  ?? 0,
-                    'dateMax'    => $deliveryDate,
-                    'product_id' => null,
-                    'comment'    => $row['comment'] ?? $detail->comment,
-                    'status'     => $row['status']  ?? $detail->status,
-                    // quantity fijo en 1 para servicios (evita nulls)
-                    'quantity'   => $detail->quantity ?: 1,
-                ]);
-                $newIds[] = $detail->id;
-            }
-        } else {
-            $service = Service::find($serviceId);
-            $created = DetailAttention::create([
-                'saleprice'    => $service->saleprice ?? 0.00,
-                'type'         => 'Service',
-                'comment'      => $row['comment'] ?? '-',
-                'status'       => $row['status']  ?? 'Generada',
-                'dateRegister' => Carbon::now(),
-                'dateMax'      => $deliveryDate,
-                'worker_id'    => $workerId,
-                'product_id'   => null,
-                'service_id'   => $serviceId,
-                'period'       => $row['period'] ?? 0,
-                'quantity'     => 1,
-                'attention_id' => $attention->id,
-            ]);
-            $newIds[] = $created->id;
-        }
-    }
-
-    $toDelete = array_diff($currentIds, $newIds);
-    if (!empty($toDelete)) {
-        $attention->details()
+        $currentIds = $attention->details()
             ->where('type', 'Service')
-            ->whereIn('id', $toDelete)
-            ->delete();
+            ->pluck('id')->all();
+
+        $newIds = [];
+
+        foreach ($detailServices as $row) {
+            $detailId = $row['idDetail'] ?? null;
+            $serviceId = $row['service_id'] ?? null;
+            $workerId = $row['worker_id'] ?? null;
+
+            if ($detailId) {
+                $detail = DetailAttention::where('id', $detailId)
+                    ->where('attention_id', $attention->id)
+                    ->first();
+
+                if ($detail) {
+                    $service = Service::find($serviceId);
+
+                    $detail->update([
+                        'service_id' => $serviceId,
+                        'saleprice' => $service->saleprice ?? 0.00,
+                        'worker_id' => $workerId,
+                        'period' => $row['period'] ?? 0,
+                        'dateMax' => $deliveryDate,
+                        'product_id' => null,
+                        'comment' => $row['comment'] ?? $detail->comment,
+                        'status' => $row['status'] ?? $detail->status,
+                        // quantity fijo en 1 para servicios (evita nulls)
+                        'quantity' => $detail->quantity ?: 1,
+                    ]);
+                    $newIds[] = $detail->id;
+                }
+            } else {
+                $service = Service::find($serviceId);
+                $created = DetailAttention::create([
+                    'saleprice' => $service->saleprice ?? 0.00,
+                    'type' => 'Service',
+                    'comment' => $row['comment'] ?? '-',
+                    'status' => $row['status'] ?? 'Generada',
+                    'dateRegister' => Carbon::now(),
+                    'dateMax' => $deliveryDate,
+                    'worker_id' => $workerId,
+                    'product_id' => null,
+                    'service_id' => $serviceId,
+                    'period' => $row['period'] ?? 0,
+                    'quantity' => 1,
+                    'attention_id' => $attention->id,
+                ]);
+                $newIds[] = $created->id;
+            }
+        }
+
+        $toDelete = array_diff($currentIds, $newIds);
+        if (!empty($toDelete)) {
+            $attention->details()
+                ->where('type', 'Service')
+                ->whereIn('id', $toDelete)
+                ->delete();
+        }
+
+        $attention->totalService = (float) $attention->details()
+            ->where('type', 'Service')
+            ->sum('saleprice');
+
+        $attention->save();
     }
-
-    $attention->totalService = (float) $attention->details()
-        ->where('type', 'Service')
-        ->sum('saleprice');
-
-    $attention->save();
-}
 
 
     public function setDetailProducts(int $id, array $details): void
-{
-    $attention = Attention::findOrFail($id);
-    // $docAlmacen = DocAlmacen::where('attention_id', $attention->id)->first();
+    {
+        $attention = Attention::findOrFail($id);
+        // $docAlmacen = DocAlmacen::where('attention_id', $attention->id)->first();
 
-    $currentIds = $attention->details()
-        ->where('type', 'Product')
-        ->pluck('id')->all();
+        $currentIds = $attention->details()
+            ->where('type', 'Product')
+            ->pluck('id')->all();
 
-    $newIds = [];
+        $newIds = [];
 
-    foreach ($details as $row) {
-        $detailId  = $row['idDetail']  ?? null;
-        $productId = $row['idProduct'] ?? null;
-        $quantity  = (float) ($row['quantity'] ?? 0);
+        foreach ($details as $row) {
+            $detailId = $row['idDetail'] ?? null;
+            $productId = $row['idProduct'] ?? null;
+            $quantity = (float) ($row['quantity'] ?? 0);
 
-        if ($detailId) {
-            $detail = DetailAttention::where('id', $detailId)
-                ->where('attention_id', $attention->id)
-                ->first();
+            if ($detailId) {
+                $detail = DetailAttention::where('id', $detailId)
+                    ->where('attention_id', $attention->id)
+                    ->first();
 
-            if ($detail) {
+                if ($detail) {
+                    $product = Product::find($productId);
+                    $detail->update([
+                        'quantity' => $quantity,
+                        
+                        'product_id' => $productId,
+                        'service_id' => null,
+                        'saleprice' => $product->sale_price ?? $detail->saleprice,
+                    ]);
+
+                    // Aquí iría tu lógica de DocAlmacen si corresponde
+                    $newIds[] = $detail->id;
+                }
+            } else {
                 $product = Product::find($productId);
-                $detail->update([
-                    'quantity'   => $quantity,
-                    'product_id' => $productId,
+                $created = DetailAttention::create([
+                    'saleprice' => $product->sale_price ?? 0.00,
+                    'type' => 'Product',
+                    'quantity' => $quantity,
+                    'comment' => $row['comment'] ?? '-',
+                    'status' => $row['status'] ?? 'Generada',
+                    'dateRegister' => Carbon::now(),
+                    'dateMax' => null,
+                    'worker_id' => null,
+                    'product_id' => $product->id ?? null,
                     'service_id' => null,
-                    'saleprice'  => $product->sale_price ?? $detail->saleprice,
+                    'attention_id' => $attention->id,
                 ]);
 
-                // Aquí iría tu lógica de DocAlmacen si corresponde
-                $newIds[] = $detail->id;
+                // Si usas DocAlmacen, descomenta e integra aquí
+                $newIds[] = $created->id;
             }
-        } else {
-            $product = Product::find($productId);
-            $created = DetailAttention::create([
-                'saleprice'    => $product->sale_price ?? 0.00,
-                'type'         => 'Product',
-                'quantity'     => $quantity,
-                'comment'      => $row['comment'] ?? '-',
-                'status'       => $row['status']  ?? 'Generada',
-                'dateRegister' => Carbon::now(),
-                'dateMax'      => null,
-                'worker_id'    => null,
-                'product_id'   => $product->id ?? null,
-                'service_id'   => null,
-                'attention_id' => $attention->id,
-            ]);
-
-            // Si usas DocAlmacen, descomenta e integra aquí
-            $newIds[] = $created->id;
         }
-    }
 
-    $toDelete = array_diff($currentIds, $newIds);
-    if (!empty($toDelete)) {
-        $attention->details()
+        $toDelete = array_diff($currentIds, $newIds);
+        if (!empty($toDelete)) {
+            $attention->details()
+                ->where('type', 'Product')
+                ->whereIn('id', $toDelete)
+                ->delete();
+        }
+
+        $attention->totalProducts = (float) $attention->details()
             ->where('type', 'Product')
-            ->whereIn('id', $toDelete)
-            ->delete();
+            ->selectRaw('COALESCE(SUM(saleprice * quantity),0) as total')
+            ->value('total');
+
+        $attention->save();
     }
-
-    $attention->totalProducts = (float) $attention->details()
-        ->where('type', 'Product')
-        ->selectRaw('COALESCE(SUM(saleprice * quantity),0) as total')
-        ->value('total');
-
-    $attention->save();
-}
 
 
     public function setImages($id, $images)

@@ -16,6 +16,8 @@ class UpdateBudgetSheetRequest extends UpdateRequest
     public function rules(): array
     {
         return [
+            'discount' => ['nullable', 'numeric', 'min:0'],
+
             // En update enviarás SOLO detalles
             'details' => ['required', 'array', 'min:1'],
 
@@ -44,6 +46,9 @@ class UpdateBudgetSheetRequest extends UpdateRequest
     public function messages(): array
     {
         return [
+            'discount.numeric' => 'El descuento debe ser numérico.',
+            'discount.min'     => 'El descuento no puede ser negativo.',
+
             'details.required' => 'Debe enviar la lista de detalles.',
             'details.array'    => 'El campo details debe ser un array.',
             'details.min'      => 'Debe enviar al menos un detalle.',
@@ -79,5 +84,23 @@ class UpdateBudgetSheetRequest extends UpdateRequest
             }
         }
         return false;
+    }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            $details = $this->input('details', []);
+            $discount = (float) $this->input('discount', 0);
+
+            $total = collect($details)->sum(function ($d) {
+                $quantity = (int) ($d['quantity'] ?? 0);
+                $saleprice = (float) ($d['saleprice'] ?? 0);
+                return $quantity * $saleprice;
+            });
+
+            if ($discount > $total) {
+                $validator->errors()->add('discount', 'El descuento no puede superar el total de los montos de los detalles.');
+            }
+        });
     }
 }

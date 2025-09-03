@@ -213,19 +213,33 @@
         </tbody>
 
         <tfoot class="totales">
-            <tr>
-                <td colspan="5" class="right">SUBTOTAL</td>
-                <td class="right">S/ {{ number_format($total, 2) }}</td>
-            </tr>
-            <tr>
-                <td colspan="5" class="right">I.G.V. (18%)</td>
-                <td class="right">S/ {{ number_format($total * 0.18, 2) }}</td>
-            </tr>
-            <tr>
-                <td colspan="5" class="right">TOTAL</td>
-                <td class="right">S/ {{ number_format($total * 1.18, 2) }}</td>
-            </tr>
-        </tfoot>
+    <tr>
+        <td colspan="5" class="right">SUBTOTAL</td>
+        <td class="right">S/ {{ number_format($total, 2) }}</td>
+    </tr>
+    <tr>
+        <td colspan="5" class="right">I.G.V. (18%)</td>
+        <td class="right">S/ {{ number_format($total * 0.18, 2) }}</td>
+    </tr>
+
+    @php
+        $discount = $budgetsheet->discount ?? 0;
+        $grandTotal = ($total * 1.18) - $discount;
+    @endphp
+
+    @if ($discount > 0)
+        <tr>
+            <td colspan="5" class="right">DESCUENTO</td>
+            <td class="right">- S/ {{ number_format($discount, 2) }}</td>
+        </tr>
+    @endif
+
+    <tr>
+        <td colspan="5" class="right bold">TOTAL</td>
+        <td class="right bold">S/ {{ number_format(max($grandTotal, 0), 2) }}</td>
+    </tr>
+</tfoot>
+
     </table>
 
 

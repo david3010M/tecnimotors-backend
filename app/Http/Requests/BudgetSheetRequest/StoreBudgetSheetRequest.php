@@ -16,6 +16,7 @@ class StoreBudgetSheetRequest extends StoreRequest
     {
         return [
             'attention_id' => 'required|exists:attentions,id',
+            'discount' => 'nullable|numeric|min:0',
             'details' => 'required|array|min:1',
             'details.*.saleprice' => 'required|numeric|min:0',
             'details.*.quantity' => 'required|integer|min:1',
@@ -52,6 +53,7 @@ class StoreBudgetSheetRequest extends StoreRequest
         $validator->after(function ($validator) {
             $attentionId = $this->input('attention_id');
 
+            // === Verificar presupuesto duplicado ===
             $alreadyExists = DB::table('budget_sheets')
                 ->where('attention_id', $attentionId)
                 ->whereNull('deleted_at')
@@ -60,6 +62,21 @@ class StoreBudgetSheetRequest extends StoreRequest
             if ($alreadyExists) {
                 $validator->errors()->add('attention_id', 'Ya existe un presupuesto activo para esta atención.');
             }
+
+            // === Verificar que el descuento no supere el total ===
+            $details = $this->input('details', []);
+            $discount = (float) $this->input('discount', 0);
+
+            $total = collect($details)->sum(function ($d) {
+                $quantity = (int) ($d['quantity'] ?? 0);
+                $saleprice = (float) ($d['saleprice'] ?? 0);
+                return $quantity * $saleprice;
+            });
+
+            if ($discount > $total) {
+                $validator->errors()->add('discount', 'El descuento no puede superar el total de los montos de los detalles.');
+            }
         });
     }
+
 }

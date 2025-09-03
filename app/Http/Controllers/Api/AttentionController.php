@@ -356,163 +356,146 @@ class AttentionController extends Controller
      */
 
     public function store(StoreAttentionRequest $request)
-{
-    // Validated data
-    $v = $request->validated();
+    {
 
-    // Mantén la lógica original: si no viene details, devuelves 409 (igual que tu código)
-    if (empty($v['details']) || !is_array($v['details']) || count($v['details']) === 0) {
-        return response()->json(['error' => 'Atención sin Servicios'], 409);
-    }
 
-    DB::beginTransaction();
-    try {
-        // Generar next number (igual a tu lógica)
         $tipo = 'OTRS';
-        $resultado = DB::select(
-            'SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM attentions a WHERE SUBSTRING(number, 1, 4) = ?',
-            [$tipo]
-        )[0]->siguienteNum;
-        $siguienteNum = (int)$resultado;
+        $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM attentions a WHERE SUBSTRING(number, 1, 4) = ?', [$tipo])[0]->siguienteNum;
+        $siguienteNum = (int) $resultado;
 
         $data = [
             'number' => $tipo . "-" . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT),
-            'correlativo' => $v['correlativo'] ?? null,
-            'arrivalDate' => $v['arrivalDate'] ?? null,
-            'deliveryDate' => $v['deliveryDate'] ?? null,
-            'observations' => $v['observations'] ?? null,
+            'correlativo' => $request->input('correlativo') ?? null,
+            'arrivalDate' => $request->input('arrivalDate') ?? null,
+            'deliveryDate' => $request->input('deliveryDate') ?? null,
+            'observations' => $request->input('observations') ?? null,
             'typeofDocument' => $request->input('typeofDocument') ?? null,
-            'fuelLevel' => $v['fuelLevel'] ?? null,
-            'km' => $v['km'] ?? null,
-            'routeImage' => null,
-            'vehicle_id' => $v['vehicle_id'] ?? null,
-            'driver' => $v['driver'] ?? null,
-            'concession_id' => $v['concession_id'] ?? null,
-            'typeMaintenance' => $v['typeMaintenance'] ?? null,
-            'worker_id' => $v['worker_id'] ?? null,
+            'fuelLevel' => $request->input('fuelLevel') ?? null,
+            'km' => $request->input('km') ?? null,
+            'routeImage' => 'ruta.jpg',
+            'vehicle_id' => $request->input('vehicle_id') ?? null,
+            'driver' => $request->input('driver') ?? null,
+            'concession_id' => $request->input('concession_id') ?? null,
+            'typeMaintenance' => $request->input('typeMaintenance') ?? null,
+
+            'worker_id' => $request->input('worker_id') ?? null,
         ];
 
-        $attention = Attention::create($data);
+        $object = Attention::create($data);
 
-        // ELEMENTS (si vienen)
-        $elements = $v['elements'] ?? [];
-        foreach ($elements as $elementId) {
-            ElementForAttention::create([
-                'element_id' => $elementId,
-                'attention_id' => $attention->id,
-            ]);
-        }
-
-        // DETAILS PRODUCTS (si vienen)
-        $sumProducts = 0;
         $totalQuantityProducts = 0;
-        $detailsProducts = $v['detailsProducts'] ?? [];
 
-        if (!empty($detailsProducts)) {
-            // Optimizar: obtener productos por ids para no hacer N queries
-            $productIds = array_map(fn($p) => (int)$p['idProduct'], $detailsProducts);
-            $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
-
-            foreach ($detailsProducts as $prodDetail) {
-                $idProduct = (int)($prodDetail['idProduct']);
-                $quantity = isset($prodDetail['quantity']) ? (float)$prodDetail['quantity'] : 1.0;
-                $product = $products->get($idProduct);
-
-                $detailData = [
-                    'saleprice' => $product->sale_price ?? 0.00,
-                    'type' => 'Product',
-                    'quantity' => $quantity,
-                    'comment' => $prodDetail['comment'] ?? '-',
-                    'status' => $prodDetail['status'] ?? 'Generada',
-                    'dateRegister' => Carbon::now(),
-                    'dateMax' => null,
-                    'worker_id' => null,
-                    'product_id' => $product->id ?? null,
-                    'service_id' => null,
-                    'attention_id' => $attention->id,
+        if ($object) {
+            //ASIGNAR ELEMENTS
+            $elements = $request->input('elements') ?? [];
+            foreach ($elements as $element) {
+                $objectData = [
+                    'element_id' => $element,
+                    'attention_id' => $object->id,
                 ];
-                $detailProd = DetailAttention::create($detailData);
-                $sumProducts += ($detailProd->saleprice * $quantity);
-                $totalQuantityProducts += $quantity;
+                ElementForAttention::create($objectData);
             }
 
-            $attention->totalProducts = $sumProducts;
-        } else {
-            $attention->totalProducts = 0;
-        }
+            //ASIGNAR PRODUCTS
+            $detailsProducts = $request->input('detailsProducts') ?? [];
 
-        // DETAILS (SERVICIOS)
-        $sumServices = 0;
-        foreach ($v['details'] as $detail) {
-            $service = Service::find($detail['service_id']);
-            $detailServiceData = [
-                'saleprice' => $service->saleprice ?? 0.00,
-                'type' => 'Service',
-                'comment' => $detail['comment'] ?? '-',
-                'status' => $detail['status'] ?? 'Pendiente',
-                'dateRegister' => Carbon::now(),
-                'dateMax' => $v['deliveryDate'] ?? null,
-                'worker_id' => $detail['worker_id'],
-                'product_id' => $detail['product_id'] ?? null,
-                'service_id' => $detail['service_id'],
-                'attention_id' => $attention->id,
-                'period' => isset($detail['period']) ? $detail['period'] : 0,
+            $sumProducts = 0;
+
+            // Verificar si $detailsProducts tiene registros
+            if ($detailsProducts != []) {
+                foreach ($detailsProducts as $productDetail) {
+                    $idProduct = $productDetail['idProduct'];
+                    $quantity = $productDetail['quantity'] ?? 1;
+
+                    $product = Product::find($idProduct);
+
+                    $objectData = [
+                        'saleprice' => $product->sale_price ?? '0.00',
+                        'type' => 'Product',
+                        'quantity' => $quantity,
+                        'comment' => '-',
+                        'status' => 'Generada',
+                        'dateRegister' => Carbon::now(),
+                        'dateMax' => null,
+                        'worker_id' => null,
+                        'product_id' => $product->id ?? null,
+                        'service_id' => null,
+                        'attention_id' => $object->id,
+                    ];
+                    $detailProd = DetailAttention::create($objectData);
+                    $sumProducts += $detailProd->saleprice * $quantity;
+                    $totalQuantityProducts += $quantity;
+                }
+
+                $object->totalProducts = $sumProducts;
+            }
+
+            //ASIGNAR DETAILS
+            $detailsAttentions = $request->input('details') ?? [];
+            $sumServices = 0;
+            foreach ($detailsAttentions as $detail) {
+
+                $service = Service::find($detail['service_id']);
+                $objectData = [
+                    'saleprice' => $service->saleprice ?? '0.00',
+                    'type' => 'Service',
+                    'comment' => $detail['comment'] ?? '-',
+                    'status' => $detail['status'] ?? 'Pendiente',
+                    'dateRegister' => Carbon::now(),
+                    'dateMax' => $request->input('deliveryDate') ?? null,
+
+                    'worker_id' => $detail['worker_id'],
+                    'product_id' => $detail['product_id'] ?? null,
+                    'service_id' => $detail['service_id'],
+                    'attention_id' => $object->id,
+                    'period' => isset($detail['period']) ? $detail['period'] : 0,
+                ];
+                $detailService = DetailAttention::create($objectData);
+                $sumServices += $detailService->saleprice;
+            }
+
+            $object->totalService = $sumServices;
+
+        }
+        logger($object->totalService);
+        logger($object->totalProducts);
+        $object->total = $object->totalService + $object->totalProducts;
+        logger($object->total);
+        $object->save();
+
+        //IMAGEN
+        $images = $request->file('routeImage') ?? [];
+        $index = 1;
+        foreach ($images as $image) {
+
+            $file = $image;
+            $currentTime = now();
+            $filename = $index . '-' . $currentTime->format('YmdHis') . '_' . $file->getClientOriginalName();
+
+            $originalName = str_replace(' ', '_', $file->getClientOriginalName());
+            $filename = $index . '-' . $currentTime->format('YmdHis') . '_' . $originalName;
+            $path = $file->storeAs('public/photosSheetService', $filename);
+            $routeImage = 'https://develop.garzasoft.com/tecnimotors-backend/storage/app/' . $path;
+
+            // $rutaImagen = Storage::url($path);
+            $object->routeImage = $routeImage;
+            $object->save();
+            $index++;
+            $dataImage = [
+                'route' => $routeImage,
+                'attention_id' => $object->id,
             ];
-            $detailService = DetailAttention::create($detailServiceData);
-            $sumServices += $detailService->saleprice;
+            RouteImages::create($dataImage);
         }
 
-        $attention->totalService = $sumServices;
-        $attention->total = round($attention->totalService + $attention->totalProducts, 2);
-        $attention->save();
+        $object = Attention::with(['worker.person', 'vehicle', 'details', 'routeImages', 'concession'])->find($object->id);
+        $object->elements = $object->getElements($object->id);
+        $object->details = $object->getDetails($object->id);
+        $object->task = $object->getTask($object->id);
 
-        // IMÁGENES (si vienen)
-        if ($request->hasFile('routeImage')) {
-            $images = $request->file('routeImage');
-            $index = 1;
-            foreach ($images as $image) {
-                $file = $image;
-                $currentTime = now();
-                $originalName = str_replace(' ', '_', $file->getClientOriginalName());
-                $filename = $index . '-' . $currentTime->format('YmdHis') . '_' . $originalName;
-                $path = $file->storeAs('public/photosSheetService', $filename);
-                $routeImage = config('app.url') . '/storage/' . substr($path, strlen('public/')); 
-                // Si prefieres la ruta absoluta que usabas, ajústala.
 
-                // Guarda ruta en attention (si quieres mantener última ruta)
-                $attention->routeImage = $routeImage;
-                $attention->save();
-
-                // Crea registro en RouteImages
-                RouteImages::create([
-                    'route' => $routeImage,
-                    'attention_id' => $attention->id,
-                ]);
-
-                $index++;
-            }
-        }
-
-        // Refrescar relaciones para respuesta
-        DB::commit();
-
-        $attention = Attention::with(['worker.person', 'vehicle', 'details', 'routeImages', 'concession'])
-            ->find($attention->id);
-        $attention->elements = $attention->getElements($attention->id);
-        $attention->details = $attention->getDetails($attention->id);
-        $attention->task = $attention->getTask($attention->id);
-
-        return response()->json($attention, 201);
-    } catch (\Throwable $e) {
-        DB::rollBack();
-        Log::error('Attention store failed', [
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString(),
-            'input' => $request->all(),
-        ]);
-        return response()->json(['error' => 'Failed to create attention.'], 500);
+        return response()->json($object);
     }
-}
 
     /**
      * Update an attention
