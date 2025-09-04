@@ -45,53 +45,50 @@ class RouteImagesService
 
 
     public function updateImage(
-        array $images,
-        array $meta = [],
-        array $imageIds = []
-    ): array {
-        $savedRouteImages = [];
+    array $images,
+    array $meta = [],
+    array $imageIds = []
+): array {
+    $savedRouteImages = [];
 
-        // Filtrar imágenes existentes asociadas al contexto (product_id, etc.)
-        $query = RouteImages::query();
-        foreach (['attention_id', 'product_id', 'task_id', 'concession_id'] as $key) {
-            if (!empty($meta[$key])) {
-                $query->where($key, $meta[$key]);
-            }
+    // Filtrar imágenes existentes asociadas al contexto (product_id, etc.)
+    $query = RouteImages::query();
+    foreach (['attention_id', 'product_id', 'task_id', 'concession_id'] as $key) {
+        if (!empty($meta[$key])) {
+            $query->where($key, $meta[$key]);
         }
-        $existingImages = $query->get();
-
-        // Eliminar imágenes que ya no están en imageIds
-        $existingImages->whereNotIn('id', $imageIds)->each(function ($img) {
-            $this->deletePhysicalFile($img->route);
-            $img->delete();
-        });
-
-        // Guardar o actualizar imágenes
-        foreach ($images as $index => $file) {
-            $now = now();
-            $filename = ($index + 1) . '-' . $now->format('YmdHis') . '_' . str_replace(' ', '_', $file->getClientOriginalName());
-
-            $file->storeAs('public/route_images', $filename);
-            $url = asset("storage/route_images/$filename");
-
-            $data = array_merge($meta, [
-                'route' => $url,
-                'updated_at' => $now,
-            ]);
-
-            // Si se proporciona un ID válido en la posición actual, actualiza
-            if (!empty($imageIds[$index]) && $imageModel = RouteImages::find($imageIds[$index])) {
-                $this->deletePhysicalFile($imageModel->route);
-                $imageModel->update($data);
-                $savedRouteImages[] = $imageModel;
-            } else {
-                $data['created_at'] = $now;
-                $savedRouteImages[] = RouteImages::create($data);
-            }
-        }
-
-        return $savedRouteImages;
     }
+    $existingImages = $query->get();
+
+    // 🔴 Eliminado el bloque que borraba imágenes previas
+
+    // Guardar o actualizar imágenes
+    foreach ($images as $index => $file) {
+        $now = now();
+        $filename = ($index + 1) . '-' . $now->format('YmdHis') . '_' . str_replace(' ', '_', $file->getClientOriginalName());
+
+        $file->storeAs('public/route_images', $filename);
+        $url = asset("storage/route_images/$filename");
+
+        $data = array_merge($meta, [
+            'route' => $url,
+            'updated_at' => $now,
+        ]);
+
+        // Si se proporciona un ID válido en la posición actual, actualiza
+        if (!empty($imageIds[$index]) && $imageModel = RouteImages::find($imageIds[$index])) {
+            $this->deletePhysicalFile($imageModel->route);
+            $imageModel->update($data);
+            $savedRouteImages[] = $imageModel;
+        } else {
+            $data['created_at'] = $now;
+            $savedRouteImages[] = RouteImages::create($data);
+        }
+    }
+
+    return $savedRouteImages;
+}
+
 
     protected function deletePhysicalFile(string $url): void
     {
