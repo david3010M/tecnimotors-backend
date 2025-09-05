@@ -306,7 +306,7 @@
                 </td>
                 <td class="right">
                     <div class="titlePresupuesto">REPORTE DE CAJA</div>
-                    <div class="numberPresupuesto">{{ $data['MovCajaApertura']->sequentialNumber }}</div>
+                    <div class="numberPresupuesto">{{ $data['MovCajaApertura']?->sequentialNumber ?? '-' }}</div>
                 </td>
             </tr>
             <tr>
@@ -316,7 +316,10 @@
                     <div class="text-sm">Telfono: 986202388 - 941515301</div>
                 </td>
                 <td class="right">
-                    <div><strong>{{ Carbon::parse($data['MovCajaApertura']->created_at)->format('d-m-Y') }}</strong>
+                    <div>
+                        <strong>
+                            {{ $data['MovCajaApertura']?->created_at ? Carbon::parse($data['MovCajaApertura']->created_at)->format('d-m-Y') : '-' }}
+                        </strong>
                     </div>
                 </td>
             </tr>
@@ -329,21 +332,27 @@
                 </th>
 
                 <td class="w50">
-                    @if ($data['MovCajaApertura']->user->worker->person->typeofDocument == 'DNI')
-                        {{ $data['MovCajaApertura']->user->worker->person->names .
+                    @php
+                        $userPerson = $data['MovCajaApertura']?->user?->worker?->person;
+                    @endphp
+
+                    @if ($userPerson?->typeofDocument === 'DNI')
+                        {{ ($userPerson?->names ?? '') .
                             ' ' .
-                            $data['MovCajaApertura']->user->worker->person->fatherSurname .
+                            ($userPerson?->fatherSurname ?? '') .
                             ' ' .
-                            $data['MovCajaApertura']->user->worker->person->motherSurname }}
-                    @elseif($data['MovCajaApertura']->user->worker->person->typeofDocument == 'RUC')
-                        {{ $data['MovCajaApertura']->user->worker->person->businessName }}
+                            ($userPerson?->motherSurname ?? '') }}
+                    @elseif($userPerson?->typeofDocument === 'RUC')
+                        {{ $userPerson?->businessName ?? '-' }}
+                    @else
+                        -
                     @endif
                 </td>
                 <th class="w20 blue">
                     Fecha de Impresión
                 </th>
                 <td class="w20">
-                    {{ Carbon::parse(now()) }}
+                    {{ Carbon::now()->format('d-m-Y H:i') }}
                 </td>
             </tr>
 
@@ -352,13 +361,13 @@
                     T. Apertura
                 </th>
                 <td class="w20">
-                    {{ $data['MovCajaApertura']->total }}
+                    {{ $data['MovCajaApertura']?->total ?? '-' }}
                 </td>
                 <th class="w10 blue">
                     Fecha Apertura
                 </th>
                 <td class="w50">
-                    {{ $data['MovCajaApertura']->created_at }}
+                    {{ $data['MovCajaApertura']?->created_at ?? '-' }}
                 </td>
 
             </tr>
@@ -369,13 +378,13 @@
                     T. Cierre
                 </th>
                 <td class="w20">
-                    {{ $data['MovCajaCierre'] ? $data['MovCajaCierre']->total : '-' }}
+                    {{ $data['MovCajaCierre']?->total ?? '-' }}
                 </td>
                 <th class="w10 blue">
                     Fecha Cierre
                 </th>
                 <td class="w50">
-                    {{ $data['MovCajaCierre'] ? \Carbon\Carbon::parse($data['MovCajaCierre']->created_at)->format('d-m-Y') : '-' }}
+                    {{ $data['MovCajaCierre']?->created_at ? Carbon::parse($data['MovCajaCierre']->created_at)->format('d-m-Y') : '-' }}
                 </td>
             </tr>
 
@@ -401,43 +410,49 @@
 
             </tr>
 
-
-            @if (isset($data['MovCajaInternos']) && is_array($data['MovCajaInternos']))
+            @if (isset($data['MovCajaInternos']) && is_array($data['MovCajaInternos']) && isset($data['MovCajaInternos']['data']) && is_iterable($data['MovCajaInternos']['data']))
 
                 @foreach ($data['MovCajaInternos']['data'] as $movCajaInterno)
                     <tr>
                         <td class="id">
-                            {{ $movCajaInterno->paymentDate ? \Carbon\Carbon::parse($movCajaInterno->paymentDate)->format('d-m-Y') : '-' }}
+                            {{ $movCajaInterno?->paymentDate ? Carbon::parse($movCajaInterno->paymentDate)->format('d-m-Y') : '-' }}
                         </td>
-                        <td class="id">{{ $movCajaInterno->paymentConcept->type ?? '-' }}</td>
+                        <td class="id">{{ $movCajaInterno?->paymentConcept?->type ?? '-' }}</td>
 
-                        <td class="id">{{ $movCajaInterno->paymentConcept->name ?? '-' }}</td>
+                        <td class="id">{{ $movCajaInterno?->paymentConcept?->name ?? '-' }}</td>
                         <td class="w50">
-                            @if ($movCajaInterno->person->typeofDocument == 'DNI')
-                                {{ $movCajaInterno->person->names .
+                            @php
+                                $person = $movCajaInterno?->person;
+                            @endphp
+
+                            @if ($person?->typeofDocument === 'DNI')
+                                {{ ($person?->names ?? '') .
                                     ' ' .
-                                    $movCajaInterno->person->fatherSurname .
+                                    ($person?->fatherSurname ?? '') .
                                     ' ' .
-                                    $movCajaInterno->person->motherSurname }}
-                            @elseif($movCajaInterno->person->typeofDocument == 'RUC')
-                                {{ $movCajaInterno->person->businessName }}
+                                    ($person?->motherSurname ?? '') }}
+                            @elseif($person?->typeofDocument === 'RUC')
+                                {{ $person?->businessName ?? '-' }}
+                            @else
+                                -
                             @endif
+
                         </td>
-                        <td class="id">{{ $movCajaInterno->cash ?? '0.00' }}</td>
+                        <td class="id">{{ $movCajaInterno?->cash ?? '0.00' }}</td>
 
-                        <td class="id">{{ $movCajaInterno->yape ?? '0.00' }}</td>
-                        <td class="id">{{ $movCajaInterno->plin ?? '0.00' }}</td>
-                        <td class="id">{{ $movCajaInterno->card ?? '0.00' }}</td>
-                        <td class="id">{{ $movCajaInterno->deposit ?? '0.00' }}</td>
+                        <td class="id">{{ $movCajaInterno?->yape ?? '0.00' }}</td>
+                        <td class="id">{{ $movCajaInterno?->plin ?? '0.00' }}</td>
+                        <td class="id">{{ $movCajaInterno?->card ?? '0.00' }}</td>
+                        <td class="id">{{ $movCajaInterno?->deposit ?? '0.00' }}</td>
 
-                        <td class="id">{{ $movCajaInterno->total ?? '-' }}</td>
-                        <td class="id">{{ $movCajaInterno->comment ?? '-' }}</td>
+                        <td class="id">{{ $movCajaInterno?->total ?? '-' }}</td>
+                        <td class="id">{{ $movCajaInterno?->comment ?? '-' }}</td>
 
                     </tr>
                 @endforeach
             @else
                 <tr>
-                    <td colspan="1">No data available</td>
+                    <td colspan="11">No data available</td>
                 </tr>
             @endif
 
@@ -449,20 +464,19 @@
             <h2>Resumen de Caja</h2>
             <br>
             @php
-                $resumenCaja = $data['resumenCaja'];
+                $resumenCaja = $data['resumenCaja'] ?? [];
                 $totalIngresos =
-                    $resumenCaja['efectivo_ingresos'] +
-                    $resumenCaja['yape_ingresos'] +
-                    $resumenCaja['plin_ingresos'] +
-                    $resumenCaja['tarjeta_ingresos'] +
-                    $resumenCaja['deposito_ingresos'];
+                    ($resumenCaja['efectivo_ingresos'] ?? 0) +
+                    ($resumenCaja['yape_ingresos'] ?? 0) +
+                    ($resumenCaja['plin_ingresos'] ?? 0) +
+                    ($resumenCaja['tarjeta_ingresos'] ?? 0) +
+                    ($resumenCaja['deposito_ingresos'] ?? 0);
                 $totalEgresos =
-                    $resumenCaja['efectivo_egresos'] +
-                    $resumenCaja['yape_egresos'] +
-                    $resumenCaja['plin_egresos'] +
-                    $resumenCaja['tarjeta_egresos'] +
-                    $resumenCaja['deposito_egresos'];
-
+                    ($resumenCaja['efectivo_egresos'] ?? 0) +
+                    ($resumenCaja['yape_egresos'] ?? 0) +
+                    ($resumenCaja['plin_egresos'] ?? 0) +
+                    ($resumenCaja['tarjeta_egresos'] ?? 0) +
+                    ($resumenCaja['deposito_egresos'] ?? 0);
             @endphp
             <table class="fondoNegro">
                 <tr>
@@ -473,43 +487,33 @@
                 </tr>
                 <tr>
                     <td>Efectivo</td>
-                    <td>S/. {{ number_format($resumenCaja['efectivo_ingresos'], 2) ?? '0.00' }}</td>
-                    <td>S/. {{ number_format($resumenCaja['efectivo_egresos'], 2) ?? '0.00' }}</td>
-                    <td><b>S/.
-                            {{ number_format($resumenCaja['efectivo_ingresos'] - $resumenCaja['efectivo_egresos'], 2) ?? '0.00' }}
-                        </b></td>
+                    <td>S/. {{ number_format($resumenCaja['efectivo_ingresos'] ?? 0, 2) }}</td>
+                    <td>S/. {{ number_format($resumenCaja['efectivo_egresos'] ?? 0, 2) }}</td>
+                    <td><b>S/. {{ number_format(($resumenCaja['efectivo_ingresos'] ?? 0) - ($resumenCaja['efectivo_egresos'] ?? 0), 2) }}</b></td>
                 </tr>
                 <tr>
                     <td>Yape</td>
-                    <td>S/. {{ number_format($resumenCaja['yape_ingresos'], 2) ?? '0.00' }}</td>
-                    <td>S/. {{ number_format($resumenCaja['yape_egresos'], 2) ?? '0.00' }}</td>
-                    <td><b>S/.
-                            {{ number_format($resumenCaja['yape_ingresos'] - $resumenCaja['yape_egresos'], 2) ?? '0.00' }}
-                        </b></td>
+                    <td>S/. {{ number_format($resumenCaja['yape_ingresos'] ?? 0, 2) }}</td>
+                    <td>S/. {{ number_format($resumenCaja['yape_egresos'] ?? 0, 2) }}</td>
+                    <td><b>S/. {{ number_format(($resumenCaja['yape_ingresos'] ?? 0) - ($resumenCaja['yape_egresos'] ?? 0), 2) }}</b></td>
                 </tr>
                 <tr>
                     <td>Plin</td>
-                    <td>S/. {{ number_format($resumenCaja['plin_ingresos'], 2) ?? '0.00' }}</td>
-                    <td>S/. {{ number_format($resumenCaja['plin_egresos'], 2) ?? '0.00' }}</td>
-                    <td><b>S/.
-                            {{ number_format($resumenCaja['plin_ingresos'] - $resumenCaja['plin_egresos'], 2) ?? '0.00' }}
-                        </b></td>
+                    <td>S/. {{ number_format($resumenCaja['plin_ingresos'] ?? 0, 2) }}</td>
+                    <td>S/. {{ number_format($resumenCaja['plin_egresos'] ?? 0, 2) }}</td>
+                    <td><b>S/. {{ number_format(($resumenCaja['plin_ingresos'] ?? 0) - ($resumenCaja['plin_egresos'] ?? 0), 2) }}</b></td>
                 </tr>
                 <tr>
                     <td>Tarjeta</td>
-                    <td>S/. {{ number_format($resumenCaja['tarjeta_ingresos'], 2) ?? '0.00' }}</td>
-                    <td>S/. {{ number_format($resumenCaja['tarjeta_egresos'], 2) ?? '0.00' }}</td>
-                    <td><b>S/.
-                            {{ number_format($resumenCaja['tarjeta_ingresos'] - $resumenCaja['tarjeta_egresos'], 2) ?? '0.00' }}
-                        </b></td>
+                    <td>S/. {{ number_format($resumenCaja['tarjeta_ingresos'] ?? 0, 2) }}</td>
+                    <td>S/. {{ number_format($resumenCaja['tarjeta_egresos'] ?? 0, 2) }}</td>
+                    <td><b>S/. {{ number_format(($resumenCaja['tarjeta_ingresos'] ?? 0) - ($resumenCaja['tarjeta_egresos'] ?? 0), 2) }}</b></td>
                 </tr>
                 <tr>
                     <td>Depósito</td>
-                    <td>S/. {{ number_format($resumenCaja['deposito_ingresos'], 2) ?? '0.00' }}</td>
-                    <td>S/. {{ number_format($resumenCaja['deposito_egresos'], 2) ?? '0.00' }}</td>
-                    <td><b>S/.
-                            {{ number_format($resumenCaja['deposito_ingresos'] - $resumenCaja['deposito_egresos'], 2) ?? '0.00' }}
-                        </b></td>
+                    <td>S/. {{ number_format($resumenCaja['deposito_ingresos'] ?? 0, 2) }}</td>
+                    <td>S/. {{ number_format($resumenCaja['deposito_egresos'] ?? 0, 2) }}</td>
+                    <td><b>S/. {{ number_format(($resumenCaja['deposito_ingresos'] ?? 0) - ($resumenCaja['deposito_egresos'] ?? 0), 2) }}</b></td>
                 </tr>
                 <!-- Otros métodos de pago aquí -->
 
