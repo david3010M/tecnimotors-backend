@@ -29,7 +29,7 @@ class VehicleResource extends JsonResource
             'vehicle_model_id' => $this->vehicle_model_id,
             'vehicleModel_name' => $this->vehicleModel?->name,
             'brand_name'        => $this->vehicleModel?->brand?->name,
-
+'brand_id'        => $this->vehicleModel?->brand_id,
             'created_at' => $this->created_at,
 
             // Relaciones simplificadas con ?->

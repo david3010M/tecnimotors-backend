@@ -121,7 +121,7 @@ class AuthController extends Controller
             $siguienteNum = (int) $resultado;
 
             return response()->json([
-                'access_token' => $plainTextToken, 
+                'access_token' => $plainTextToken,
                 'expires_at' => $accessToken->expires_at->toDateTimeString(),
                 'user' => $user,
                 'correlativo' => $siguienteNum,
@@ -179,59 +179,60 @@ class AuthController extends Controller
      * )
      */
 
-public function authenticate(Request $request)
-{
-    try {
-        $tokenValue = $request->bearerToken();
+    public function authenticate(Request $request)
+    {
+        try {
+            $tokenValue = $request->bearerToken();
 
-        if (!$tokenValue) {
-            return response()->json(["message" => "Token no proporcionado"], 401);
-        }
+            if (!$tokenValue) {
+                return response()->json(["message" => "Token no proporcionado"], 401);
+            }
 
-        $accessToken = PersonalAccessToken::findToken($tokenValue);
+            $accessToken = PersonalAccessToken::findToken($tokenValue);
 
-        if (!$accessToken) {
-            return response()->json(["message" => "Token inválido"], 401);
-        }
+            if (!$accessToken) {
+                return response()->json(["message" => "Token inválido"], 401);
+            }
 
-        // 🔎 Verificar si está vencido o revocado
-        if ($accessToken->expires_at && Carbon::parse($accessToken->expires_at)->isPast()) {
-            $accessToken->revoked_at = now(); // eliminación lógica
-            $accessToken->save();
+            // 🔎 Verificar si está vencido o revocado
+            if ($accessToken->expires_at && Carbon::parse($accessToken->expires_at)->isPast()) {
+                $accessToken->revoked_at = now(); // eliminación lógica
+                $accessToken->save();
+                $accessToken->delete();
 
-            return response()->json(["message" => "Token expirado o revocado, sesión cerrada"], 401);
-        }
+                return response()->json(["message" => "Token expirado o revocado, sesión cerrada"], 401);
+            }
 
-        // Usuario relacionado
-        $user = $accessToken->tokenable()->with(['typeUser', 'worker'])->first();
+            // Usuario relacionado
+            $user = $accessToken->tokenable()->with(['typeUser', 'worker'])->first();
 
-        // Obtener correlativo
-        $tipo = 'OTRS';
-        $resultado = DB::select(
-            'SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum 
+            // Obtener correlativo
+            $tipo = 'OTRS';
+            $resultado = DB::select(
+                'SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE("-", number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum 
              FROM attentions a WHERE SUBSTRING(number, 1, 4) = ?',
-            [$tipo]
-        )[0]->siguienteNum;
+                [$tipo]
+            )[0]->siguienteNum;
 
-        // ⚡ Aquí la conversión correcta de fecha
-        $expiresAt = $accessToken->expires_at
-            ? Carbon::parse($accessToken->expires_at)->toDateTimeString()
-            : null;
+            // ⚡ Aquí la conversión correcta de fecha
+            $expiresAt = $accessToken->expires_at
+                ? Carbon::parse($accessToken->expires_at)->toDateTimeString()
+                : null;
 
-        return response()->json([
-            'access_token' => $tokenValue,
-            'expires_at' => $expiresAt,
-            'user' => $user,
-            'correlativo' => (int) $resultado,
-            'groupMenu' => GroupMenu::getFilteredGroupMenus($user->typeofUser_id),
-        ]);
+            return response()->json([
+                'access_token' => $tokenValue,
+                'expires_at' => $expiresAt,
+                'user' => $user,
+                'correlativo' => (int) $resultado,
+                'groupMenu' => GroupMenu::getFilteredGroupMenus($user->typeofUser_id),
+            ]);
 
-    } catch (\Exception $e) {
-        return response()->json([
-            "message" => "Error interno del servidor: " . $e->getMessage(),
-        ], 500);
+        } catch (\Exception $e) {
+            return response()->json([
+                "message" => "Error interno del servidor: " . $e->getMessage(),
+            ], 500);
+        }
     }
-}
 
 
 
@@ -263,23 +264,23 @@ public function authenticate(Request $request)
      * )
      */
     public function logout(Request $request)
-{
-    $user = auth('sanctum')->user();
+    {
+        $user = auth('sanctum')->user();
 
-    if ($user) {
-        $token = $user->currentAccessToken();
+        if ($user) {
+            $token = $user->currentAccessToken();
 
-        if ($token) {
-            // 👇 en vez de delete, guardamos la revocación lógica
-            $token->revoked_at = Carbon::now();
-            $token->save();
+            if ($token) {
+                // 👇 en vez de delete, guardamos la revocación lógica
+                $token->revoked_at = Carbon::now();
+                $token->save();
+            }
+
+            return response()->json(['message' => 'Sesión cerrada correctamente']);
         }
 
-        return response()->json(['message' => 'Sesión cerrada correctamente']);
+        return response()->json(['message' => 'Usuario no autenticado'], 401);
     }
-
-    return response()->json(['message' => 'Usuario no autenticado'], 401);
-}
 
     public function logs()
     {
