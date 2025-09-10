@@ -27,6 +27,12 @@ public function generate(array $budgetProductLines, $attention, $budget, $concep
                 return $existing->load('details');
             }
 
+            // Si no llega ningún valor válido para concept_id => usar 3
+            if ($concept_id === null || $concept_id === '' || strtoupper((string)$concept_id) === 'NULL') {
+                $concept_id = 3;
+            }
+            $concept_id = (int) $concept_id;
+
             $conceptMov = ConceptMov::findOrFail($concept_id);
             $totalQuantity = array_sum($map);
 
@@ -72,6 +78,7 @@ public function generate(array $budgetProductLines, $attention, $budget, $concep
         throw $e;
     }
 }
+
 
 
 

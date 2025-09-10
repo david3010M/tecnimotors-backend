@@ -81,6 +81,25 @@ class Vehicle extends Model
         'pivot'
     ];
 
+    const filters = [
+        'plate' => 'like',
+        'year' => 'like',
+        'model' => 'like',
+        'chasis' => 'like',
+        'motor' => 'like',
+        'codeBin' => 'like',
+        'person_id' => '=',
+        'typeVehicle_id' => '=',
+        'vehicle_model_id' => '=',
+        'created_at' => 'between'
+    ];
+
+
+    const sorts = [
+        'id',
+    ];
+
+
     public function person()
     {
         return $this->belongsTo(Person::class);
@@ -96,7 +115,7 @@ class Vehicle extends Model
         return $this->belongsTo(VehicleModel::class, 'vehicle_model_id')->with('brand');
     }
 
-//    public function brand()
+    //    public function brand()
 //    {
 //        return $this->belongsTo(Brand::class);
 //    }

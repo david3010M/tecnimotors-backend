@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\VehicleRequest\IndexVehicleRequest;
+use App\Http\Resources\VehicleResource;
 use App\Models\Person;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
@@ -43,22 +45,34 @@ class VehicleController extends Controller
      * )
      */
     public function index(Request $request)
-{
-    // valores por defecto si no mandan nada
-    $perPage = (int) $request->input('per_page', 15);
-    $page    = (int) $request->input('page', 1);
+    {
+        // valores por defecto si no mandan nada
+        $perPage = (int) $request->input('per_page', 15);
+        $page = (int) $request->input('page', 1);
 
-    $vehicles = Vehicle::with('person', 'typeVehicle', 'vehicleModel')
-        ->paginate($perPage, ['*'], 'page', $page);
+        $vehicles = Vehicle::with('person', 'typeVehicle', 'vehicleModel')
+            ->paginate($perPage, ['*'], 'page', $page);
 
-    return response()->json([
-        'data'         => $vehicles->items(),
-        'total'        => $vehicles->total(),
-        'current_page' => $vehicles->currentPage(),
-        'last_page'    => $vehicles->lastPage(),
-        'per_page'     => $vehicles->perPage(),
-    ]);
-}
+        return response()->json([
+            'data' => $vehicles->items(),
+            'total' => $vehicles->total(),
+            'current_page' => $vehicles->currentPage(),
+            'last_page' => $vehicles->lastPage(),
+            'per_page' => $vehicles->perPage(),
+        ]);
+    }
+
+    
+    public function list(IndexVehicleRequest $request)
+    {
+        return $this->getFilteredResults(
+            Vehicle::class,
+            $request,
+            Vehicle::filters,
+            Vehicle::sorts,
+            VehicleResource::class
+        );
+    }
 
 
 
