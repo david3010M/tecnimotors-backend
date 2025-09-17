@@ -29,5 +29,6 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
+    'api_key_message_whatsapp' => env('API_KEY_MESSAGE_WHATSAPP', 'default_value'),
 
 ];

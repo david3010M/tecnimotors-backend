@@ -32,7 +32,7 @@ class SendWhatsappController extends Controller
     //     ));
 
     //     $url = 'https://sistema.gesrest.net/api/sendBillByWhatsApp';
-    //     $headers = array('Authorization:}*rA3>#pyM<dITk]]DFP2,/wc)1md_Y/');
+    //     $headers = 
 
     //     $curl = curl_init($url);
     //     curl_setopt($curl, CURLOPT_POST, true);
@@ -116,18 +116,18 @@ class SendWhatsappController extends Controller
             $url = 'https://sistema.gesrest.net/api/send-document-by-whatsapp';
 
             $response = Http::withHeaders([
-                'Authorization' => '}*rA3>#pyM<dITk]]DFP2,/wc)1md_Y/',
+                'Authorization' => config('services.api_key_message_whatsapp'),
             ])->post($url, [
-                "nombre_plantilla" => "tecnimotors",
-                "ruc" => "20487467139",
-                "razon_social" => "TECNI MOTORS DEL PERU E.I.R.L.",
-                "nombre_comercial" => "TECNI MOTORS DEL PERU E.I.R.L.",
-                "cliente" => $client->typeofDocument == 'DNI' ? $client->names . ' ' . $client->fatherSurname : $client->businessName,
-                "celular" => $request->input('phone_number'),
-                "tipo_documento" => "ORDEN DE SERVICIO " . $attention->number,
-                "tipo_documento_url" => "ordenservicio",
-                "documento_id_url" => $attention->id,
-            ]);
+                        "nombre_plantilla" => "tecnimotors",
+                        "ruc" => "20487467139",
+                        "razon_social" => "TECNI MOTORS DEL PERU E.I.R.L.",
+                        "nombre_comercial" => "TECNI MOTORS DEL PERU E.I.R.L.",
+                        "cliente" => $client->typeofDocument == 'DNI' ? $client->names . ' ' . $client->fatherSurname : $client->businessName,
+                        "celular" => $request->input('phone_number'),
+                        "tipo_documento" => "ORDEN DE SERVICIO " . $attention->number,
+                        "tipo_documento_url" => "ordenservicio",
+                        "documento_id_url" => $attention->id,
+                    ]);
             return response()->json(['message' => 'El mensaje de WhatsApp se ha enviado correctamente'], 200);
         } catch (Exception $e) {
 
@@ -189,23 +189,22 @@ class SendWhatsappController extends Controller
         $budgetSheet = budgetSheet::getBudgetSheet($request->input('idBudgetSheet'));
         $client = $budgetSheet->attention->vehicle->person;
 
-        try
-        {
+        try {
             $url = 'https://sistema.gesrest.net/api/send-document-by-whatsapp';
 
             $response = Http::withHeaders([
-                'Authorization' => '}*rA3>#pyM<dITk]]DFP2,/wc)1md_Y/',
+                'Authorization' => config('services.api_key_message_whatsapp'),
             ])->post($url, [
-                "nombre_plantilla" => "tecnimotors",
-                "ruc" => "20487467139",
-                "razon_social" => "TECNI MOTORS DEL PERU E.I.R.L.",
-                "nombre_comercial" => "TECNI MOTORS DEL PERU E.I.R.L.",
-                "cliente" => $client->typeofDocument == 'DNI' ? $client->names . ' ' . $client->fatherSurname : $client->businessName,
-                "celular" => $request->input('phone_number'),
-                "tipo_documento" => "PRESUPUESTO DE ORDEN DE SERVICIO " . $budgetSheet->number,
-                "tipo_documento_url" => "presupuesto",
-                "documento_id_url" => $budgetSheet->id,
-            ]);
+                        "nombre_plantilla" => "tecnimotors",
+                        "ruc" => "20487467139",
+                        "razon_social" => "TECNI MOTORS DEL PERU E.I.R.L.",
+                        "nombre_comercial" => "TECNI MOTORS DEL PERU E.I.R.L.",
+                        "cliente" => $client->typeofDocument == 'DNI' ? $client->names . ' ' . $client->fatherSurname : $client->businessName,
+                        "celular" => $request->input('phone_number'),
+                        "tipo_documento" => "PRESUPUESTO DE ORDEN DE SERVICIO " . $budgetSheet->number,
+                        "tipo_documento_url" => "presupuesto",
+                        "documento_id_url" => $budgetSheet->id,
+                    ]);
 
             return response()->json(['message' => 'El mensaje de WhatsApp se ha enviado correctamente'], 200);
 
@@ -218,7 +217,7 @@ class SendWhatsappController extends Controller
     }
 
 
- /**
+    /**
      * Send sheet service information via WhatsApp
      * @OA\Post(
      *     path="/tecnimotors-backend/public/api/sendEvidenceByWhatsapp",
@@ -259,7 +258,7 @@ class SendWhatsappController extends Controller
     public function sendEvidenceByWhatsapp(Request $request)
     {
         $validator = validator()->make($request->all(), [
-           'idAttention' => 'required|exists:attentions,id',
+            'idAttention' => 'required|exists:attentions,id',
             'phone_number' => 'required|digits:9',
         ]);
 
@@ -273,18 +272,18 @@ class SendWhatsappController extends Controller
             $url = 'https://sistema.gesrest.net/api/send-document-by-whatsapp';
 
             $response = Http::withHeaders([
-                'Authorization' => '}*rA3>#pyM<dITk]]DFP2,/wc)1md_Y/',
+                'Authorization' => config('services.api_key_message_whatsapp'),
             ])->post($url, [
-                "nombre_plantilla" => "tecnimotors",
-                "ruc" => "20487467139",
-                "razon_social" => "TECNI MOTORS DEL PERU E.I.R.L.",
-                "nombre_comercial" => "TECNI MOTORS DEL PERU E.I.R.L.",
-                "cliente" => $client->typeofDocument == 'DNI' ? $client->names . ' ' . $client->fatherSurname : $client->businessName,
-                "celular" => $request->input('phone_number'),
-                "tipo_documento" => "EVIDENCIAS DE LA ORDEN DE SERVICIO " . $attention->number,
-                "tipo_documento_url" => "evidencias",
-                "documento_id_url" => $attention->id,
-            ]);
+                        "nombre_plantilla" => "tecnimotors",
+                        "ruc" => "20487467139",
+                        "razon_social" => "TECNI MOTORS DEL PERU E.I.R.L.",
+                        "nombre_comercial" => "TECNI MOTORS DEL PERU E.I.R.L.",
+                        "cliente" => $client->typeofDocument == 'DNI' ? $client->names . ' ' . $client->fatherSurname : $client->businessName,
+                        "celular" => $request->input('phone_number'),
+                        "tipo_documento" => "EVIDENCIAS DE LA ORDEN DE SERVICIO " . $attention->number,
+                        "tipo_documento_url" => "evidencias",
+                        "documento_id_url" => $attention->id,
+                    ]);
             return response()->json(['message' => 'El mensaje de WhatsApp se ha enviado correctamente'], 200);
         } catch (Exception $e) {
 

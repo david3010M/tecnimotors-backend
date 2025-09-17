@@ -23,13 +23,13 @@ class VehicleResource extends JsonResource
             'motor' => $this->motor,
             'codeBin' => $this->codeBin,
             'person_id' => $this->person_id,
-            'person_name' => $this?->person?->names . ' ' . $this?->person?->fatherSurname . ' ' . $this?->person?->motherSurname,
+            'person_name' => $this?->person?->names . ' ' . $this?->person?->fatherSurname . ' ' . $this?->person?->motherSurname.' '.$this?->person?->businessName,
             'typeVehicle_id' => $this->typeVehicle_id,
             'typeVehicle_name' => $this->typeVehicle?->name,
             'vehicle_model_id' => $this->vehicle_model_id,
             'vehicleModel_name' => $this->vehicleModel?->name,
-            'brand_name'        => $this->vehicleModel?->brand?->name,
-'brand_id'        => $this->vehicleModel?->brand_id,
+            'brand_name' => $this->vehicleModel?->brand?->name,
+            'brand_id' => $this->vehicleModel?->brand_id,
             'created_at' => $this->created_at,
 
             // Relaciones simplificadas con ?->
