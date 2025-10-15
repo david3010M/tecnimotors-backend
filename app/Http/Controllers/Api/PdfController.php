@@ -209,6 +209,7 @@ class PdfController extends Controller
         $dompdf->set_option('isHtml5ParserEnabled', true);
         $dompdf->set_option('isRemoteEnabled', true);
         $dompdf->loadHtml($html);
+        $dompdf->setPaper('a4', 'landscape');
         $dompdf->render();
 
         // Descargar el PDF con un nombre de archivo dinámico basado en el ID

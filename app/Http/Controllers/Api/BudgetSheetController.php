@@ -281,7 +281,7 @@ class BudgetSheetController extends Controller
 
                 // Generar número correlativo de presupuesto
                 $tipo = 'PRES';
-                $resultado = DB::selectOne("
+                /*$resultado = DB::selectOne("
                 SELECT COALESCE(MAX(CAST(SUBSTRING(number, LOCATE('-', number) + 1) AS SIGNED)), 0) + 1 AS siguienteNum
                 FROM budget_sheets
                 WHERE SUBSTRING(number, 1, 4) = ?
@@ -289,7 +289,9 @@ class BudgetSheetController extends Controller
             ", [$tipo]);
 
                 $siguienteNum = (int) $resultado->siguienteNum;
-                $numeroPresupuesto = $tipo . '-' . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT);
+                $numeroPresupuesto = $tipo . '-' . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT);*/
+                $numeroPresupuesto = $tipo . '-' . explode('-',$attention->number)[1];
+                
 
                 // Crear presupuesto (persistido de inmediato)
                 $budget = BudgetSheet::create([

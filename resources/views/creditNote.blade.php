@@ -135,12 +135,12 @@
 
         .titlePresupuesto {
 
-            font-size: 15px;
+            font-size: 20px;
             font-weight: bolder;
             text-align: center;
             /*margin-top: 20px;*/
             /*margin-bottom: 20px;*/
-            color: rgb(126, 0, 0);
+            color: rgb(0, 0, 0);
 
 
         }
@@ -258,8 +258,8 @@
         }
 
         .tableDetail th {
-            background-color: rgb(126, 0, 0);
-            color: white;
+            background-color: #dcdcdc;
+            color: black;
             padding: 10px;
             font-weight: bolder;
         }
@@ -381,13 +381,17 @@
 
         <table class="tableInfo">
             <tr>
-                <div class="contentImage">
+                <!-- IZQUIERDA -->
+                <td style="text-align: left; vertical-align: middle; width: 25%;">
                     <img src="{{ asset('img/logo.jpg') }}" width="150" class="logo" alt="Logo">
-                </div>
+                </td>
+                <!-- CENTRO -->
+                <td style="text-align: center; vertical-align: middle; width: 35%;">
+                    <img src="{{ asset('img/brands.jpg') }}" width="280" alt="Brand">
+                </td>
 
-
-
-                <td class="right">
+                <!-- DERECHA -->
+                <td style="text-align: right; vertical-align: middle; width: 40%;">
                     <div style="border: 1px solid black; padding: 10px; display: inline-block; text-align: center;">
                         <div class="titlePresupuesto">NOTA DE CRÉDITO</div>
                         <div class="titlePresupuesto">ELECTRÓNICA</div>
@@ -412,7 +416,7 @@
                 </td>
             </tr>
             <tr>
-                <td class="w10 blue left" style="font-size: 11px">
+                <td class="w10 blue left" style="font-size: 14px">
                     PRO. AVENIDA BOLOGNESI - URB. SAN MANUEL MZA. A LOTE. 7 LAMBAYEQUE - CHICLAYO - CHICLAYO
                 </td>
             </tr>
@@ -420,46 +424,51 @@
 
         <table class="tablePeople font-14">
             <tr>
-                <th class="w10 blue">
+                <th
+                    style="width:15%; text-align:left; border:1px solid black; padding:4px;  background-color: #dcdcdc;">
                     Fecha Emision:
                 </th>
-                <td class="w50">
+                <td style="border:1px solid black; padding:4px;">
                     {{ $fechaemision }}
                 </td>
             </tr>
 
             <tr>
-                <th class="w20 blue">
+                <th
+                    style="width:15%; text-align:left; border:1px solid black; padding:4px;  background-color: #dcdcdc;">
                     Señor(es):
                 </th>
-                <td class="w20">
+                <td style="border:1px solid black; padding:4px;">
                     {{ $cliente }}
                 </td>
             </tr>
 
             <tr>
-                <th class="w20 blue">
+                <th
+                    style="width:15%; text-align:left; border:1px solid black; padding:4px;  background-color: #dcdcdc;">
                     RUC/DNI:
                 </th>
-                <td class="w20">
+                <td style="border:1px solid black; padding:4px;">
                     {{ $ruc_dni }}
                 </td>
             </tr>
 
             <tr>
-                <th class="w20 blue">
+                <th
+                    style="width:15%; text-align:left; border:1px solid black; padding:4px;  background-color: #dcdcdc;">
                     Direccion:
                 </th>
-                <td class="w20">
+                <td style="border:1px solid black; padding:4px;">
                     {{ $direccion }}
                 </td>
             </tr>
 
             <tr>
-                <th class="w20 blue">
+                <th
+                    style="width:15%; text-align:left; border:1px solid black; padding:4px;  background-color: #dcdcdc;">
                     Moneda:
                 </th>
-                <td class="w20">
+                <td style="border:1px solid black; padding:4px;">
                     PEN
                 </td>
             </tr>
@@ -467,19 +476,21 @@
 
 
             <tr>
-                <th class="w20 blue">
+                <th
+                    style="width:15%; text-align:left; border:1px solid black; padding:4px;  background-color: #dcdcdc;">
                     Motivo:
                 </th>
-                <td class="w20">
+                <td style="border:1px solid black; padding:4px;">
                     {{ $motive ?? 'Motivo no encontrado' }} <!-- Mostrar el nombre o un mensaje por defecto -->
                 </td>
             </tr>
 
             <tr>
-                <th class="w20 blue">
+                <th
+                    style="width:15%; text-align:left; border:1px solid black; padding:4px;  background-color: #dcdcdc;">
                     Nro Referencia:
                 </th>
-                <td class="w20">
+                <td style="border:1px solid black; padding:4px;">
                     {{ $nroReferencia }}
                 </td>
             </tr>
@@ -516,7 +527,7 @@
             <tr>
                 <td class="center"><?php echo $iterador++; ?></td>
 
-                <td class="center font-10"> <?php echo $detHab['descripcion']; ?> </td>
+                <td class="justify font-10"> <?php echo $detHab['descripcion']; ?> </td>
                 <td class="center font-10"> <?php echo $detHab['um']; ?> </td>
                 <td class="center font-10"><?php echo $detHab['cant']; ?></td>
 
@@ -621,8 +632,7 @@
                         target="_blank">
                         https://facturae-garzasoft.com
                     </a>
-                    <br> <br><br>
-                    <b>CUENTA CORRIENTE OPERACIONES LOGISTICAS HERNANDEZ S.A.C</b>
+                    <br>                    
                 </td>
 
             </tr>
@@ -634,28 +644,7 @@
             <tr>
 
                 <td style="vertical-align: top;">
-                    <table class="border" style="width:80%;">
-                        <tr>
-                            <th class="border">BANCO</th>
-                            <th class="border">CUENTA</th>
-                            <th class="border">CCI</th>
-                        </tr>
-                        <tr>
-                            <td class="border">BCP</td>
-                            <td class="border">000-0000000-0-00</td>
-                            <td class="border">00000000000000000000</td>
-                        </tr>
-                        <tr>
-                            <th class="border">BANCO</th>
-                            <th class="border">CUENTA DETRACCION</th>
-                            <th class="border">CCI</th>
-                        </tr>
-                        <tr>
-                            <td class="border">BN</td>
-                            <td class="border">00000000000</td>
-                            <td class="border"></td>
-                        </tr>
-                    </table>
+
                 </td>
 
                 <td style="vertical-align: top; padding-right: 10px;">

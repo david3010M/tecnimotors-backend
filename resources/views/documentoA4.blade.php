@@ -707,6 +707,7 @@ if ($linkRevisarFact) {
                         @php
                             // Mapeo de códigos a nombres
                             $detractionNames = [
+                                '020' => 'Mantenimiento y reparación de bienes muebles',
                                 '027' => 'Servicio de Transporte',
                                 '021' => 'Servicio de Almacenaje',
                                 '022' => 'Otros Servicios Empresariales',

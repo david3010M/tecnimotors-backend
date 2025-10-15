@@ -397,9 +397,12 @@
             <tr>
 
                 <th class="description">Fecha</th>
-                <th class="quantity">Tipo</th>
+                <th class="quantity">Nro Mov.</th>
                 <th class="unitPrice">Concepto</th>
+                <th class="quantity">Tipo</th>
                 <th class="sailPrice">Persona</th>
+                <th class="sailPrice">Proveedor</th>
+                <th class="sailPrice">Placa</th>
                 <th class="sailPrice">Efect.</th>
                 <th class="sailPrice">Yape</th>
                 <th class="sailPrice">Plin</th>
@@ -407,7 +410,7 @@
                 <th class="sailPrice">Depós.</th>
                 <th class="sailPrice">Total</th>
                 <th class="sailPrice">Comentario</th>
-
+                <th class="sailPrice">Voucher</th>
             </tr>
 
             @if (isset($data['MovCajaInternos']) && is_array($data['MovCajaInternos']) && isset($data['MovCajaInternos']['data']) && is_iterable($data['MovCajaInternos']['data']))
@@ -417,9 +420,9 @@
                         <td class="id">
                             {{ $movCajaInterno?->paymentDate ? Carbon::parse($movCajaInterno->paymentDate)->format('d-m-Y') : '-' }}
                         </td>
-                        <td class="id">{{ $movCajaInterno?->paymentConcept?->type ?? '-' }}</td>
-
+                        <td class="id">{{ $movCajaInterno?->sequentialNumber?? '-' }}</td>
                         <td class="id">{{ $movCajaInterno?->paymentConcept?->name ?? '-' }}</td>
+                        <td class="id">{{ $movCajaInterno?->paymentConcept?->type ?? '-' }}</td>                        
                         <td class="w50">
                             @php
                                 $person = $movCajaInterno?->person;
@@ -438,6 +441,8 @@
                             @endif
 
                         </td>
+                        <td class="id">{{ $movCajaInterno?->proveedor?->businessName ?? '-' }}</td>  
+                        <td class="id">{{ $movCajaInterno?->vehicle?->plate ?? '-' }}</td> 
                         <td class="id">{{ $movCajaInterno?->cash ?? '0.00' }}</td>
 
                         <td class="id">{{ $movCajaInterno?->yape ?? '0.00' }}</td>
@@ -447,6 +452,7 @@
 
                         <td class="id">{{ $movCajaInterno?->total ?? '-' }}</td>
                         <td class="id">{{ $movCajaInterno?->comment ?? '-' }}</td>
+                        <td class="id">{{ $movCajaInterno?->numberVoucher ?? '-' }}</td>
 
                     </tr>
                 @endforeach
