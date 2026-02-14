@@ -8458,14 +8458,14 @@
                         }
                     },
                     "404": {
-                        "description": "Product not found",
+                        "description": "Producto No Encontrado",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Product not found"
+                                            "example": "Producto No Encontrado"
                                         }
                                     },
                                     "type": "object"
@@ -8535,14 +8535,14 @@
                         }
                     },
                     "404": {
-                        "description": "Product not found",
+                        "description": "Producto No Encontrado",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Product not found"
+                                            "example": "Producto No Encontrado"
                                         }
                                     },
                                     "type": "object"
@@ -8608,14 +8608,14 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Product deleted",
+                        "description": "Producto Eliminado",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Product deleted"
+                                            "example": "Producto Eliminado"
                                         }
                                     },
                                     "type": "object"
@@ -8624,14 +8624,14 @@
                         }
                     },
                     "404": {
-                        "description": "Product not found",
+                        "description": "Producto No Encontrado",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Product not found"
+                                            "example": "Producto No Encontrado"
                                         }
                                     },
                                     "type": "object"
@@ -15538,14 +15538,14 @@
                         }
                     },
                     "404": {
-                        "description": "Concession not found",
+                        "description": "Concession No encontrada",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Concession not found"
+                                            "example": "Concession No encontrada"
                                         }
                                     },
                                     "type": "object"
@@ -15598,14 +15598,14 @@
                         }
                     },
                     "404": {
-                        "description": "Concession not found",
+                        "description": "Concession No encontrada",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Concession not found"
+                                            "example": "Concession No encontrada"
                                         }
                                     },
                                     "type": "object"
@@ -15649,14 +15649,14 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Concession deleted",
+                        "description": "Concession eliminada",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Concession deleted"
+                                            "example": "Concession eliminada"
                                         }
                                     },
                                     "type": "object"
@@ -15665,14 +15665,14 @@
                         }
                     },
                     "404": {
-                        "description": "Concession not found",
+                        "description": "Concession No encontrada",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Concession not found"
+                                            "example": "Concession No encontrada"
                                         }
                                     },
                                     "type": "object"
@@ -17960,6 +17960,123 @@
                 },
                 "type": "object"
             },
+            "StoreDetailBudgetRequest": {
+                "required": [
+                    "saleprice",
+                    "quantity",
+                    "type",
+                    "comment",
+                    "dateRegister",
+                    "dateMax",
+                    "dateCurrent",
+                    "percentage",
+                    "period",
+                    "budget_sheet_id",
+                    "worker_id"
+                ],
+                "properties": {
+                    "saleprice": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "quantity": {
+                        "type": "integer"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "comment": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "dateRegister": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "dateMax": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "dateCurrent": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "percentage": {
+                        "type": "integer"
+                    },
+                    "period": {
+                        "type": "integer"
+                    },
+                    "budget_sheet_id": {
+                        "type": "integer"
+                    },
+                    "worker_id": {
+                        "type": "integer"
+                    },
+                    "service_id": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "product_id": {
+                        "type": "integer",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateDetailBudgetRequest": {
+                "properties": {
+                    "saleprice": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "quantity": {
+                        "type": "integer"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "comment": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "dateRegister": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "dateMax": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "dateCurrent": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "percentage": {
+                        "type": "integer"
+                    },
+                    "period": {
+                        "type": "integer"
+                    },
+                    "budget_sheet_id": {
+                        "type": "integer"
+                    },
+                    "worker_id": {
+                        "type": "integer"
+                    },
+                    "service_id": {
+                        "type": "integer"
+                    },
+                    "product_id": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
             "StoreConcessionRequest": {
                 "title": "StoreConcessionRequest",
                 "description": "Store concession request",
@@ -18605,39 +18722,204 @@
             },
             "UpdateSaleRequest": {
                 "title": "UpdateSaleRequest",
+                "description": "Request para actualizar una venta",
+                "required": [
+                    "paymentDate",
+                    "documentType",
+                    "paymentType",
+                    "saleType",
+                    "person_id",
+                    "saleDetails"
+                ],
                 "properties": {
                     "paymentDate": {
                         "type": "string",
                         "format": "date",
-                        "example": "2021-01-01"
+                        "example": "2024-06-30"
                     },
                     "documentType": {
                         "type": "string",
-                        "example": "FACTURA"
-                    },
-                    "saleType": {
-                        "type": "string",
-                        "example": "NORMAL"
-                    },
-                    "detractionCode": {
-                        "type": "string",
-                        "example": "123456"
-                    },
-                    "detractionPercentage": {
-                        "type": "string",
-                        "example": "10.00"
+                        "enum": [
+                            "Boleta",
+                            "Factura",
+                            "Ticket",
+                            "Nota de Crédito Boleta",
+                            "Nota de Crédito Factura"
+                        ],
+                        "example": "Factura"
                     },
                     "paymentType": {
                         "type": "string",
-                        "example": "CONTADO"
+                        "enum": [
+                            "Contado",
+                            "Crédito"
+                        ],
+                        "example": "Contado"
+                    },
+                    "saleType": {
+                        "type": "string",
+                        "enum": [
+                            "Normal",
+                            "Detracción",
+                            "Retención"
+                        ],
+                        "example": "Normal"
                     },
                     "person_id": {
                         "type": "integer",
-                        "example": "1"
+                        "example": 1
                     },
                     "budget_sheet_id": {
                         "type": "integer",
-                        "example": "1"
+                        "example": 2,
+                        "nullable": true
+                    },
+                    "yape": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 100.5,
+                        "nullable": true
+                    },
+                    "deposit": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 200,
+                        "nullable": true
+                    },
+                    "effective": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 150,
+                        "nullable": true
+                    },
+                    "card": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 50,
+                        "nullable": true
+                    },
+                    "plin": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 75,
+                        "nullable": true
+                    },
+                    "isBankPayment": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "nro_operation": {
+                        "type": "string",
+                        "example": "123456789",
+                        "nullable": true
+                    },
+                    "bank_id": {
+                        "type": "integer",
+                        "example": 3,
+                        "nullable": true
+                    },
+                    "numberVoucher": {
+                        "type": "string",
+                        "example": "VCH-001",
+                        "nullable": true
+                    },
+                    "routeVoucher": {
+                        "type": "string",
+                        "format": "binary",
+                        "nullable": true
+                    },
+                    "comment": {
+                        "type": "string",
+                        "example": "Pago realizado con tarjeta",
+                        "nullable": true
+                    },
+                    "paymentConcept_id": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "retencion": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 18,
+                        "nullable": true
+                    },
+                    "detractionCode": {
+                        "type": "string",
+                        "example": "DETR-001",
+                        "nullable": true
+                    },
+                    "detractionPercentage": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 12,
+                        "nullable": true
+                    },
+                    "saleDetails": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer",
+                                    "example": 1,
+                                    "nullable": true
+                                },
+                                "description": {
+                                    "type": "string",
+                                    "example": "Cambio de aceite"
+                                },
+                                "unit": {
+                                    "type": "string",
+                                    "example": "Servicio"
+                                },
+                                "quantity": {
+                                    "type": "number",
+                                    "format": "float",
+                                    "example": 1
+                                },
+                                "unitValue": {
+                                    "type": "number",
+                                    "format": "float",
+                                    "example": 100
+                                },
+                                "unitPrice": {
+                                    "type": "number",
+                                    "format": "float",
+                                    "example": 118
+                                },
+                                "discount": {
+                                    "type": "number",
+                                    "format": "float",
+                                    "example": 0,
+                                    "nullable": true
+                                },
+                                "subTotal": {
+                                    "type": "number",
+                                    "format": "float",
+                                    "example": 118
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "commitments": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "price": {
+                                    "type": "number",
+                                    "format": "float",
+                                    "example": 100
+                                },
+                                "paymentDate": {
+                                    "type": "string",
+                                    "format": "date",
+                                    "example": "2024-07-30"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "nullable": true
                     }
                 },
                 "type": "object"
@@ -18793,6 +19075,86 @@
                     },
                     "meta": {
                         "$ref": "#/components/schemas/PaginationMeta"
+                    }
+                },
+                "type": "object"
+            },
+            "DetailBudgetResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "saleprice": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "quantity": {
+                        "type": "integer"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "comment": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "status": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "dateRegister": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "dateMax": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "dateCurrent": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "percentage": {
+                        "type": "integer"
+                    },
+                    "period": {
+                        "type": "integer"
+                    },
+                    "budget_sheet_id": {
+                        "type": "integer"
+                    },
+                    "budget_sheet_number": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "worker_id": {
+                        "type": "integer"
+                    },
+                    "worker_name": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "service_id": {
+                        "type": "integer"
+                    },
+                    "service_name": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "product_id": {
+                        "type": "integer"
+                    },
+                    "product_name": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
                     }
                 },
                 "type": "object"
@@ -21794,5 +22156,195 @@
                 "scheme": "bearer"
             }
         }
-    }
+    },
+    "tags": [
+        {
+            "name": "Amortization",
+            "description": "Amortization"
+        },
+        {
+            "name": "Attention",
+            "description": "Attention"
+        },
+        {
+            "name": "Bank",
+            "description": "Bank"
+        },
+        {
+            "name": "Branches",
+            "description": "Branches"
+        },
+        {
+            "name": "Brand",
+            "description": "Brand"
+        },
+        {
+            "name": "BudgetSheet",
+            "description": "BudgetSheet"
+        },
+        {
+            "name": "Cash",
+            "description": "Cash"
+        },
+        {
+            "name": "Category",
+            "description": "Category"
+        },
+        {
+            "name": "Commitment",
+            "description": "Commitment"
+        },
+        {
+            "name": "ConceptMovs",
+            "description": "ConceptMovs"
+        },
+        {
+            "name": "ConceptPay",
+            "description": "ConceptPay"
+        },
+        {
+            "name": "DetailAttention",
+            "description": "DetailAttention"
+        },
+        {
+            "name": "Element",
+            "description": "Element"
+        },
+        {
+            "name": "ElementForAttention",
+            "description": "ElementForAttention"
+        },
+        {
+            "name": "Extension",
+            "description": "Extension"
+        },
+        {
+            "name": "Group Menu",
+            "description": "Group Menu"
+        },
+        {
+            "name": "Moviment",
+            "description": "Moviment"
+        },
+        {
+            "name": "Ocupation",
+            "description": "Ocupation"
+        },
+        {
+            "name": "Option Menu",
+            "description": "Option Menu"
+        },
+        {
+            "name": "Reporte",
+            "description": "Reporte"
+        },
+        {
+            "name": "Person",
+            "description": "Person"
+        },
+        {
+            "name": "Product",
+            "description": "Product"
+        },
+        {
+            "name": "Search",
+            "description": "Search"
+        },
+        {
+            "name": "WhatsApp",
+            "description": "WhatsApp"
+        },
+        {
+            "name": "Service",
+            "description": "Service"
+        },
+        {
+            "name": "Specialty",
+            "description": "Specialty"
+        },
+        {
+            "name": "SpecialtyPerson",
+            "description": "SpecialtyPerson"
+        },
+        {
+            "name": "Supplier",
+            "description": "Supplier"
+        },
+        {
+            "name": "Task",
+            "description": "Task"
+        },
+        {
+            "name": "Type Attention",
+            "description": "Type Attention"
+        },
+        {
+            "name": "TypeUser",
+            "description": "TypeUser"
+        },
+        {
+            "name": "Type Vehicle",
+            "description": "Type Vehicle"
+        },
+        {
+            "name": "Ubigeo",
+            "description": "Ubigeo"
+        },
+        {
+            "name": "Unit",
+            "description": "Unit"
+        },
+        {
+            "name": "User",
+            "description": "User"
+        },
+        {
+            "name": "Vehicle",
+            "description": "Vehicle"
+        },
+        {
+            "name": "VehicleModel",
+            "description": "VehicleModel"
+        },
+        {
+            "name": "Worker",
+            "description": "Worker"
+        },
+        {
+            "name": "Authentication",
+            "description": "Authentication"
+        },
+        {
+            "name": "Concession",
+            "description": "Concession"
+        },
+        {
+            "name": "Doc Almacen",
+            "description": "Doc Almacen"
+        },
+        {
+            "name": "Reporte Excel",
+            "description": "Reporte Excel"
+        },
+        {
+            "name": "Guide",
+            "description": "Guide"
+        },
+        {
+            "name": "GuideMotive",
+            "description": "GuideMotive"
+        },
+        {
+            "name": "Note",
+            "description": "Note"
+        },
+        {
+            "name": "Note Reason",
+            "description": "Note Reason"
+        },
+        {
+            "name": "Sale",
+            "description": "Sale"
+        }
+    ]
 }

@@ -70,7 +70,7 @@ class DetailBudgetService
             ->where('type', 'Service')
             ->sum(fn($detail) => $detail->saleprice * $detail->quantity);
 
-        $subtotal = $totalProducts + $totalService;
+        $subtotal = $totalProducts + $totalService - $budget->discount;
         $igv = round($subtotal * 0.18, 2);
         $total = $subtotal + $igv;
 

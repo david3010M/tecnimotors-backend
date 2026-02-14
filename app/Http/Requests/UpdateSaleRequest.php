@@ -7,6 +7,49 @@ use Illuminate\Foundation\Http\FormRequest;
 use App\Models\{Sale, Moviment};
 use Illuminate\Validation\Validator;
 
+/**
+ * @OA\Schema(
+ *     title="UpdateSaleRequest",
+ *     description="Request para actualizar una venta",
+ *     type="object",
+ *     required={"paymentDate", "documentType", "paymentType", "saleType", "person_id", "saleDetails"},
+ *     @OA\Property(property="paymentDate", type="string", format="date", example="2024-06-30"),
+ *     @OA\Property(property="documentType", type="string", enum={"Boleta", "Factura", "Ticket", "Nota de Crédito Boleta", "Nota de Crédito Factura"}, example="Factura"),
+ *     @OA\Property(property="paymentType", type="string", enum={"Contado", "Crédito"}, example="Contado"),
+ *     @OA\Property(property="saleType", type="string", enum={"Normal", "Detracción", "Retención"}, example="Normal"),
+ *     @OA\Property(property="person_id", type="integer", example=1),
+ *     @OA\Property(property="budget_sheet_id", type="integer", nullable=true, example=2),
+ *     @OA\Property(property="yape", type="number", format="float", nullable=true, example=100.50),
+ *     @OA\Property(property="deposit", type="number", format="float", nullable=true, example=200.00),
+ *     @OA\Property(property="effective", type="number", format="float", nullable=true, example=150.00),
+ *     @OA\Property(property="card", type="number", format="float", nullable=true, example=50.00),
+ *     @OA\Property(property="plin", type="number", format="float", nullable=true, example=75.00),
+ *     @OA\Property(property="isBankPayment", type="boolean", example=true),
+ *     @OA\Property(property="nro_operation", type="string", nullable=true, example="123456789"),
+ *     @OA\Property(property="bank_id", type="integer", nullable=true, example=3),
+ *     @OA\Property(property="numberVoucher", type="string", nullable=true, example="VCH-001"),
+ *     @OA\Property(property="routeVoucher", type="string", format="binary", nullable=true),
+ *     @OA\Property(property="comment", type="string", nullable=true, example="Pago realizado con tarjeta"),
+ *     @OA\Property(property="paymentConcept_id", type="integer", nullable=true, example=1),
+ *     @OA\Property(property="retencion", type="number", format="float", nullable=true, example=18.00),
+ *     @OA\Property(property="detractionCode", type="string", nullable=true, example="DETR-001"),
+ *     @OA\Property(property="detractionPercentage", type="number", format="float", nullable=true, example=12.00),
+ *     @OA\Property(property="saleDetails", type="array", @OA\Items(
+ *         @OA\Property(property="id", type="integer", nullable=true, example=1),
+ *         @OA\Property(property="description", type="string", example="Cambio de aceite"),
+ *         @OA\Property(property="unit", type="string", example="Servicio"),
+ *         @OA\Property(property="quantity", type="number", format="float", example=1),
+ *         @OA\Property(property="unitValue", type="number", format="float", example=100.00),
+ *         @OA\Property(property="unitPrice", type="number", format="float", example=118.00),
+ *         @OA\Property(property="discount", type="number", format="float", nullable=true, example=0.00),
+ *         @OA\Property(property="subTotal", type="number", format="float", example=118.00),
+ *     )),
+ *     @OA\Property(property="commitments", type="array", nullable=true, @OA\Items(
+ *         @OA\Property(property="price", type="number", format="float", example=100.00),
+ *         @OA\Property(property="paymentDate", type="string", format="date", example="2024-07-30"),
+ *     ))
+ * )
+ */
 class UpdateSaleRequest extends FormRequest
 {
     public function authorize(): bool
@@ -63,7 +106,7 @@ class UpdateSaleRequest extends FormRequest
             // Cuotas (crédito)
             'commitments' => 'required_if:paymentType,' . Constants::SALE_CREDITO . '|array',
             'commitments.*.price' => 'required_if:paymentType,' . Constants::SALE_CREDITO . '|numeric',
-            'commitments.*.paymentDate' => 'required_if:paymentType,' . Constants::SALE_CREDITO ,
+            'commitments.*.paymentDate' => 'required_if:paymentType,' . Constants::SALE_CREDITO,
         ];
     }
 
@@ -100,7 +143,7 @@ class UpdateSaleRequest extends FormRequest
 
             // Totales calculados desde detalle
             $taxable = collect($this->saleDetails ?? [])->sum(
-                fn($d) => (float) $d['unitValue'] * (float) $d['quantity']
+                fn($d) => (float)$d['unitValue'] * (float)$d['quantity']
             );
             $igv = round($taxable * Constants::IGV, 2);
             $total = round($taxable + $igv, 2);
@@ -115,7 +158,7 @@ class UpdateSaleRequest extends FormRequest
             if ($this->paymentType === Constants::SALE_CONTADO) {
                 // Reglas de caja
                 $movCaja = Moviment::where('status', 'Activa')->where('paymentConcept_id', 1)->first();
-                $pc = (int) ($this->paymentConcept_id ?? 0);
+                $pc = (int)($this->paymentConcept_id ?? 0);
                 if (!$movCaja && $pc != 1) {
                     $v->errors()->add('paymentConcept_id', 'Debe Aperturar Caja.');
                 }
@@ -124,8 +167,8 @@ class UpdateSaleRequest extends FormRequest
                 }
 
                 // Validación de pagos vs total
-                $pagos = (float) $this->effective + (float) $this->yape + (float) $this->plin
-                    + (float) $this->card + (float) $this->deposit;
+                $pagos = (float)$this->effective + (float)$this->yape + (float)$this->plin
+                    + (float)$this->card + (float)$this->deposit;
 
                 if ($pagos <= 0) {
                     $v->errors()->add('payments', 'El monto a pagar no puede ser 0.');

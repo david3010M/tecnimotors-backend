@@ -8,7 +8,6 @@ use App\Http\Requests\UpdateSaleRequest;
 use App\Http\Resources\SaleResource;
 use App\Models\Amortization;
 use App\Models\budgetSheet;
-use App\Models\Cash;
 use App\Models\Commitment;
 use App\Models\Moviment;
 use App\Models\Sale;
@@ -210,7 +209,7 @@ class SaleController extends Controller
             $tipo = 'M001';
             $tipo = str_pad($tipo, 4, '0', STR_PAD_RIGHT);
             $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(sequentialNumber, LOCATE("-", sequentialNumber) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM moviments WHERE SUBSTRING(sequentialNumber, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-            $siguienteNum = (int) $resultado;
+            $siguienteNum = (int)$resultado;
 
             //        DATA
             $routeVoucher = null;
@@ -276,7 +275,7 @@ class SaleController extends Controller
             $tipo = 'AMRT';
             $tipo = str_pad($tipo, 4, '0', STR_PAD_RIGHT);
             $resultado = DB::select('SELECT COALESCE(MAX(CAST(SUBSTRING(sequentialNumber, LOCATE("-", sequentialNumber) + 1) AS SIGNED)), 0) + 1 AS siguienteNum FROM amortizations WHERE SUBSTRING(sequentialNumber, 1, 4) = ?', [$tipo])[0]->siguienteNum;
-            $siguienteNum = (int) $resultado;
+            $siguienteNum = (int)$resultado;
 
             Amortization::create([
                 'sequentialNumber' => $tipo . '-' . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT),
@@ -416,7 +415,7 @@ class SaleController extends Controller
      *     @OA\Response(response="422", description="Unprocessable Entity")
      * )
      */
-     public function update(UpdateSaleRequest $request, $id)
+    public function update(UpdateSaleRequest $request, $id)
     {
         return DB::transaction(function () use ($request, $id) {
 
@@ -809,6 +808,7 @@ class SaleController extends Controller
         $sale->update(['fullNumber' => $fullNumber]);
         $sale->save();
     }
+
     public function sendemail(Request $request, $id)
     {
         // Base URL de la API

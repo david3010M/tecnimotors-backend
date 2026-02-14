@@ -5,11 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BudgetSheetRequest\StoreBudgetSheetRequest;
 use App\Http\Requests\BudgetSheetRequest\UpdateBudgetSheetRequest;
-use App\Http\Resources\BudgetSheetDetailsResource;
 use App\Http\Resources\BudgetSheetResource;
 use App\Models\Attention;
 use App\Models\budgetSheet;
-use App\Models\Commitment;
 use App\Models\DocAlmacen;
 use App\Models\Product;
 use App\Services\DetailBudgetService;
@@ -20,7 +18,6 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -157,8 +154,6 @@ class BudgetSheetController extends Controller
         ]);
     }
 
-
-
     /**
      * Get a single BudgetSheet
      * @OA\Get (
@@ -267,11 +262,9 @@ class BudgetSheetController extends Controller
      *     )
      * )
      */
-
-
     public function store(StoreBudgetSheetRequest $request)
     {
-        $traceId = (string) Str::uuid();
+        $traceId = (string)Str::uuid();
 
         try {
             // 1) Transacción principal: guarda presupuesto y detalles
@@ -290,8 +283,8 @@ class BudgetSheetController extends Controller
 
                 $siguienteNum = (int) $resultado->siguienteNum;
                 $numeroPresupuesto = $tipo . '-' . str_pad($siguienteNum, 8, '0', STR_PAD_LEFT);*/
-                $numeroPresupuesto = $tipo . '-' . explode('-',$attention->number)[1];
-                
+                $numeroPresupuesto = $tipo . '-' . explode('-', $attention->number)[1];
+
 
                 // Crear presupuesto (persistido de inmediato)
                 $budget = BudgetSheet::create([
@@ -327,10 +320,10 @@ class BudgetSheetController extends Controller
 
                 // Preparar líneas de productos válidas para Doc Almacén
                 $productLines = collect($details)
-                    ->filter(fn($i) => !empty($i['product_id']) && (int) ($i['quantity'] ?? 0) > 0)
+                    ->filter(fn($i) => !empty($i['product_id']) && (int)($i['quantity'] ?? 0) > 0)
                     ->map(fn($i) => [
-                        'product_id' => (int) $i['product_id'],
-                        'quantity' => (int) $i['quantity'],
+                        'product_id' => (int)$i['product_id'],
+                        'quantity' => (int)$i['quantity'],
                     ])
                     ->values()
                     ->all();
@@ -398,10 +391,6 @@ class BudgetSheetController extends Controller
         }
     }
 
-
-
-
-
     /**
      * Update a budgetSheet
      * @OA\Put (
@@ -452,10 +441,9 @@ class BudgetSheetController extends Controller
      *     )
      * )
      */
-
     public function update(UpdateBudgetSheetRequest $request, $id)
     {
-        $traceId = (string) Str::uuid();
+        $traceId = (string)Str::uuid();
 
         try {
             return DB::transaction(function () use ($request, $id) {
@@ -464,7 +452,7 @@ class BudgetSheetController extends Controller
                 /** @var \App\Models\BudgetSheet $budget */
                 $budget = BudgetSheet::with(['attention', 'details'])
                     ->lockForUpdate()
-                    ->findOrFail((int) $id);
+                    ->findOrFail((int)$id);
 
                 $attention = $budget->attention; // no cambia en este endpoint (solo detalles)
 
@@ -477,20 +465,21 @@ class BudgetSheetController extends Controller
                     $this->detail_budgetService->createDetailBudget($item);
                 }
 
-                // 2) Recalcular totales
-                $this->detail_budgetService->calculateAndUpdateTotals($budget);
 
-                // 2.1) Actualizar descuento (validado en el request)
-                $budget->discount = (float) $request->input('discount', 0);
+                // 2) Actualizar descuento (validado en el request)
+                $budget->discount = (float)$request->input('discount', 0);
                 $budget->save();
+
+                // 2.1) Recalcular totales
+                $this->detail_budgetService->calculateAndUpdateTotals($budget);
 
 
                 // 3) Preparar productos para Doc Almacén (ignora servicios)
                 $productLines = collect($incomingDetails)
-                    ->filter(fn($i) => !empty($i['product_id']) && (int) ($i['quantity'] ?? 0) > 0)
+                    ->filter(fn($i) => !empty($i['product_id']) && (int)($i['quantity'] ?? 0) > 0)
                     ->map(fn($i) => [
-                        'product_id' => (int) $i['product_id'],
-                        'quantity' => (int) $i['quantity'],
+                        'product_id' => (int)$i['product_id'],
+                        'quantity' => (int)$i['quantity'],
                     ])
                     ->values()
                     ->all();
@@ -510,7 +499,7 @@ class BudgetSheetController extends Controller
                         foreach ($doc->details as $d) {
                             $p = Product::query()->lockForUpdate()->find($d->product_id);
                             if ($p) {
-                                $p->increment('stock', (int) $d->quantity);
+                                $p->increment('stock', (int)$d->quantity);
                             }
                         }
                         $doc->details()->delete();
@@ -554,7 +543,6 @@ class BudgetSheetController extends Controller
             ], 500);
         }
     }
-
 
 
     /**
@@ -663,6 +651,7 @@ class BudgetSheetController extends Controller
                     ->orWhere('number', 'like', '%' . $search . '%');
             })
             ->limit(30)
+            ->orderBy('id', 'desc')
             ->get();
 
         return response()->json(BudgetSheetResource::collection($budgetSheets));
